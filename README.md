@@ -4,12 +4,12 @@ A document request service for client onboarding. One secure link lets a client 
 
 ## Product Information
 
-**Name**: Sendocs
-**Title**: Client Document Collection
-**Slug**: sendocs
-**Description**: A secure document request service for client onboarding.
-**Short description**: Collect client documents with one secure link.
-**Tags**: SaaS, docs collect, client onboarding,
+- **Name**: Sendocs
+- **Title**: Client Document Collection
+- **Slug**: sendocs
+- **Description**: A secure document request service for client onboarding.
+- **Short description**: Collect client documents with one secure link.
+- **Tags**: SaaS, docs collect, client onboarding,
 
 ## Documentation
 
