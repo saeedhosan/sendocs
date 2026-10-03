@@ -42,7 +42,6 @@ This system does one job, one request, one link, one place for the files, with e
 - [Deploy](#deploy)
 - [Release](#release)
 - [Discussion](#discussion)
-- [Open Questions](#open-questions)
 
 ## Requirements
 
