@@ -6,6 +6,11 @@ Sendocs uses a monorepo containing the API, web UI, and future mobile and deskto
 
 ```text
 sendocs/
+├── .github/          Automation
+│   ├── workflows/    Dispatch and reusable per-surface workflows
+│   ├── actions/      Shared composite steps
+│   ├── dependabot.yml
+│   └── CODEOWNERS
 ├── api/              Laravel API application
 │   ├── app/
 │   ├── database/
@@ -33,6 +38,7 @@ sendocs/
 
 | Directory  | Responsibility                                                      |
 | :--------- | :------------------------------------------------------------------ |
+| `.github/` | Continuous integration, delivery, dependency updates                |
 | `api/`     | REST API, authentication, business rules, database, storage, queues |
 | `web/`     | Owner dashboard and client portal UI                                |
 | `mobile/`  | Future mobile client                                                |
@@ -55,7 +61,35 @@ Each deployable owns its dependencies, configuration, tests, and build process. 
 - Each application surface has its own environment configuration.
 - `api/` contains application, database, storage, and other server-side configuration.
 - `web/` contains only public configuration required by the browser.
-- Secrets must never be included in client bundles, build artifacts, or runtime payloads.
+- Secrets must never appear in client bundles, build artifacts, or runtime payloads.
+
+## Workflow Files
+
+**Workflow Dispatches**
+
+| Workflow file                   | Purpose                               |
+| :------------------------------ | :------------------------------------ |
+| `.github/workflows/tests.yml`   | Run all tests and checks              |
+| `.github/workflows/build.yml`   | Build all available applications      |
+| `.github/workflows/release.yml` | Create releases and release artifacts |
+| `.github/workflows/deploy.yml`  | Deploy applications to production     |
+| `.github/workflows/stage.yml`   | Deploy applications to staging        |
+| `.github/workflows/codeql.yml`  | Scan client code and workflow files   |
+
+**Workflow Templates**
+
+Future work. Added per surface when a second surface repeats the same steps.
+
+| Workflow file                         | Purpose                           |
+| :------------------------------------ | :-------------------------------- |
+| `.github/workflows/api-tests.yml`     | API-specific tests and checks     |
+| `.github/workflows/api-build.yml`     | API-specific build steps          |
+| `.github/workflows/web-tests.yml`     | Web-specific tests and checks     |
+| `.github/workflows/web-build.yml`     | Web-specific build steps          |
+| `.github/workflows/mobile-tests.yml`  | Mobile-specific tests and checks  |
+| `.github/workflows/mobile-build.yml`  | Mobile-specific build steps       |
+| `.github/workflows/desktop-tests.yml` | Desktop-specific tests and checks |
+| `.github/workflows/desktop-build.yml` | Desktop-specific build steps      |
 
 ## Root Commands
 
@@ -69,6 +103,8 @@ Each deployable owns its dependencies, configuration, tests, and build process. 
 | `npm run build`      | Build all available applications              |
 | `npm run test`       | Run all tests and checks                      |
 | `npm run lint`       | Run all linters                               |
+
+Every root command runs the same checks as its `tests.yml` job, so a green pipeline is reproducible on a developer machine.
 
 ## Local Services
 
