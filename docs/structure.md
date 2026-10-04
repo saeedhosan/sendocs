@@ -115,16 +115,19 @@ Production is the same commands with production values in `.env`: set the variab
 
 ## Workflow Files
 
-**Workflow Dispatches**
+| Workflow file                   | Purpose                               | Trigger                    |
+| :------------------------------ | :------------------------------------ | :------------------------- |
+| `.github/workflows/tests.yml`   | Run all tests and checks              | Push, pull request, manual |
+| `.github/workflows/codeql.yml`  | Scan client code and workflow files   | Push, pull request, manual, weekly |
+| `.github/workflows/build.yml`   | Build all available applications      | Future work                |
+| `.github/workflows/release.yml` | Create releases and release artifacts | Future work                |
+| `.github/workflows/deploy.yml`  | Deploy applications to production     | Future work                |
+| `.github/workflows/stage.yml`   | Deploy applications to staging        | Future work                |
 
-| Workflow file                   | Purpose                               |
-| :------------------------------ | :------------------------------------ |
-| `.github/workflows/tests.yml`   | Run all tests and checks              |
-| `.github/workflows/build.yml`   | Build all available applications      |
-| `.github/workflows/release.yml` | Create releases and release artifacts |
-| `.github/workflows/deploy.yml`  | Deploy applications to production     |
-| `.github/workflows/stage.yml`   | Deploy applications to staging        |
-| `.github/workflows/codeql.yml`  | Scan client code and workflow files   |
+Both workflows run on a push to `main` and on any pull request, so branch
+protection needs two required checks. Each also keeps `workflow_dispatch`, so
+one stage can be rerun alone. CodeQL adds a weekly schedule because a scan only
+runs on changes otherwise.
 
 **Workflow Templates**
 
