@@ -25,43 +25,53 @@ Design docs live in `docs/`. Each feature has one doc and one owner, so rules ar
 | [`owner-dashboard.md`](docs/features/owner-dashboard.md)     | Owner screens, states, and interactions                       |
 | [`client-portal.md`](docs/features/client-portal.md)         | Client screens, uploads, and untrusted rendering              |
 | [`frontend.md`](docs/frontend.md)                            | Shared React rendering, loading, and data handling            |
+| [`structure.md`](docs/structure.md)                          | Repository layout, containers, and root commands               |
 | [`openapi.yaml`](docs/openapi.yaml)                          | HTTP contract: endpoints, bodies, responses, and limits       |
 | [`decisions.md`](docs/decisions.md)                          | Architectural decisions and their reasoning                   |
 
 ## Status
 
-This repository currently contains documentation only. There is no application code yet, so the setup below is the intended workflow.
+The API and web surfaces are scaffolded, and the container stack runs them locally. Features are still to be built against the documents below.
 
-The stack is settled in `docs/decisions.md`: Laravel on PHP 8.3 and React for both surfaces.
+The stack is settled in `docs/decisions.md`: Laravel on PHP 8.4 and React for both surfaces.
 
 ## Stack
 
 - **PostgreSQL** — users, sessions, requests, items, and file metadata.
-- **Private S3 storage** — MinIO locally; private bucket with signed URLs in production.
-- **Laravel on PHP 8.3** — sessions, CSRF, migrations, and queues.
+- **Laravel on PHP 8.4** — sessions, CSRF, migrations, and queues.
 - **React** — both surfaces render as single-page apps.
 - **Queue worker** — account emails only; never used by requests or uploads.
-- **Docker Compose** — app, PostgreSQL, and MinIO locally.
+- **Docker Compose** — app and PostgreSQL locally.
 
 ## Requirements
 
 - Docker with Compose.
-- PHP 8.3+ and Composer for host-based runs.
+- Node.js, to run the root commands.
+
+No host PHP, Composer, Bun, or PostgreSQL is needed.
+
+## Commands
+
+The root `package.json` is the command surface for the repository.
+
+| Command         | Purpose                            |
+| :-------------- | :--------------------------------- |
+| `npm run setup` | Create `.env`, build images, write an app key, migrate |
+| `npm run dev`   | Start all development services     |
+| `npm run test`  | Run all API and web tests          |
+| `npm run lint`  | Run all linters and static checks  |
+| `npm run build` | Build all applications             |
+
+`dev` starts the API, the web UI, the queue worker, and PostgreSQL. The application is served at `http://localhost:3000`, which also proxies `/api` and `/health`, so the browser only ever sees one origin; the API is published separately on `http://localhost:8000` for command-line clients. Containers run from built images rather than mounted source, so run `npm run build` again to see an application change.
 
 ## Local Development
 
 ```bash
-cp .env.example .env
-docker compose up -d
-composer install
-php artisan migrate
-php artisan queue:work
-php artisan serve
+npm run setup
+npm run dev
 ```
 
-The compose file, Dockerfile, and `.env.example` arrive with the application code, so these commands are not runnable today.
-
-The MinIO bucket must be private. No environment exposes a public object path.
+Production uses the same commands with production values in `.env`: set the `SENDOCS_*` image and target variables, `WEB_PORT`, and `WEB_BIND` as listed in [`docs/structure.md`](docs/structure.md), then run `npm run build` and `npm run start`.
 
 ## Conventions
 

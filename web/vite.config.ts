@@ -4,4 +4,19 @@ import { defineConfig } from 'vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  server: {
+    host: '0.0.0.0',
+    port: 3000,
+    strictPort: true,
+    proxy: {
+      '/api': {
+        target: 'http://api:8000',
+        changeOrigin: true,
+      },
+      '/health': {
+        target: 'http://api:8000',
+        changeOrigin: true,
+      },
+    },
+  },
 })

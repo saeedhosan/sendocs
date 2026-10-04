@@ -6,10 +6,12 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "typecheck": "tsc -b",
     "lint:check": "eslint .",
     "lint:write": "eslint . --fix",
-    "test:lint": "lint:check",
-    "test": "lint:check",
+    "lint": "eslint . && tsc -b",
+    "test:lint": "bun run lint:check",
+    "test": "bun run lint:check",
     "preview": "vite preview"
   },
   "dependencies": {
