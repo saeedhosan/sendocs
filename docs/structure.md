@@ -118,16 +118,16 @@ Production is the same commands with production values in `.env`: set the variab
 | Workflow file                   | Purpose                               | Trigger                    |
 | :------------------------------ | :------------------------------------ | :------------------------- |
 | `.github/workflows/tests.yml`   | Run all tests and checks              | Push, pull request, manual |
-| `.github/workflows/codeql.yml`  | Scan client code and workflow files   | Push, pull request, manual, weekly |
+| `.github/workflows/codeql.yml`  | Scan client code and workflow files   | Future work                |
 | `.github/workflows/build.yml`   | Build all available applications      | Future work                |
 | `.github/workflows/release.yml` | Create releases and release artifacts | Future work                |
 | `.github/workflows/deploy.yml`  | Deploy applications to production     | Future work                |
 | `.github/workflows/stage.yml`   | Deploy applications to staging        | Future work                |
 
-Both workflows run on a push to `main` and on any pull request, so branch
-protection needs two required checks. Each also keeps `workflow_dispatch`, so
-one stage can be rerun alone. CodeQL adds a weekly schedule because a scan only
-runs on changes otherwise.
+`tests.yml` runs on a push to `main` and on any pull request, so branch
+protection needs one required check. It also keeps `workflow_dispatch`, so the
+run can be repeated alone. CodeQL waits until the web client holds real code
+and a workflow interpolates an expression into a shell step.
 
 **Workflow Templates**
 
