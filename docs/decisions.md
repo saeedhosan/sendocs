@@ -12,6 +12,7 @@ Feature-specific implementation details belong in their respective feature docum
 - [TD-004 - Backend Framework](#td-004---backend-framework)
 - [TD-005 - Frontend Framework](#td-005---frontend-framework)
 - [TD-006 - Production Deployment](#td-006---production-deployment)
+- [TD-007 - Cookie-baed API access](#td-007---cookie-based-api-access)
 
 ## TD-001 - Database
 
@@ -317,3 +318,55 @@ Migrations run before the new version takes traffic.
 - One instance is a single point of failure.
 - Each deploy replaces the running one, so downtime is brief but real.
 - There is no CDN and no second region at the start.
+
+## TD-007 - Cookie-Based API Access
+
+**Status:** Accepted
+**Date:** 2026-10-05
+
+### Context
+
+The owner app and API use the same origin.
+
+The API needs authenticated access to owner resources.
+
+We do not need third-party API access yet.
+
+### Decision
+
+Use **session cookies** for owner API access.
+
+- Store only the session token hash.
+- Send the session in an HttpOnly cookie.
+- Require CSRF protection for state-changing requests.
+- Scope resources by `owner_id`.
+- Do not use API tokens for now.
+
+### Alternatives Considered
+
+- **API tokens:** — Useful for external clients, but not needed now.
+- **JWT:** — Adds complexity without a clear benefit.
+- **Cookies without CSRF:** — Not safe for browser requests.
+
+### Rationale
+
+The owner API is used by a browser-based React app.
+
+Cookies fit the same-origin setup and keep session credentials out of JavaScript.
+
+Sessions also make expiry and revocation simple.
+
+### Consequences
+
+**Positive**
+
+- Simple browser authentication.
+- HttpOnly session cookie.
+- Easy logout and revocation.
+- No API token management.
+
+**Negative**
+
+- State-changing requests need CSRF protection.
+- CLI clients cannot use the browser session directly.
+- API testing needs a session cookie.
