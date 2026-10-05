@@ -11,11 +11,13 @@
     "dev:worker": "npm run compose -- up worker",
     "test": "npm run test:api && npm run test:web",
     "test:api": "npm run compose -- run --rm api composer test",
-    "test:web": "npm run compose -- run --rm web bun run test",
+    "test:web": "npm run compose -- run --rm web npm run test",
     "lint": "npm run lint:api && npm run lint:web",
     "lint:api": "npm run compose -- run --rm api composer lint",
-    "lint:web": "npm run compose -- run --rm web bun run lint",
+    "lint:web": "npm run compose -- run --rm web npm run lint",
     "build": "npm run compose -- build",
+    "build:api": "npm run compose -- build api",
+    "build:web": "npm run compose -- build web",
     "start": "npm run compose -- up --no-build",
     "migrate": "npm run compose -- run --rm api php artisan migrate --force"
   }

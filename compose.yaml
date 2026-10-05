@@ -1,69 +1,64 @@
-name: sendocs
-
 services:
-  api:
-    image: ${SENDOCS_API_IMAGE:-sendocs/api:local}
-    build:
-      context: ./api
-      target: ${SENDOCS_API_TARGET:-dev}
-    env_file:
-      - .env
-    ports:
-      - "${API_BIND:-127.0.0.1}:${API_PORT:-8000}:8000"
-    depends_on:
-      db:
-        condition: service_healthy
-    restart: unless-stopped
+    api:
+        build:
+            context: ./api
+            target: ${API_TARGET:-dev}
+        env_file:
+            - .env
+        ports:
+            - "${API_BIND:-127.0.0.1}:${API_PORT:-8000}:8000"
+        depends_on:
+            db:
+                condition: service_healthy
+        restart: unless-stopped
 
-  worker:
-    image: ${SENDOCS_API_IMAGE:-sendocs/api:local}
-    build:
-      context: ./api
-      target: ${SENDOCS_API_TARGET:-dev}
-    command:
-      - php
-      - artisan
-      - queue:work
-      - --sleep=3
-      - --tries=3
-      - --max-time=3600
-    env_file:
-      - .env
-    depends_on:
-      db:
-        condition: service_healthy
-    restart: unless-stopped
+    worker:
+        build:
+            context: ./api
+            target: ${API_TARGET:-dev}
+        command:
+            - php
+            - artisan
+            - queue:work
+            - --sleep=3
+            - --tries=3
+            - --max-time=3600
+        env_file:
+            - .env
+        depends_on:
+            db:
+                condition: service_healthy
+        restart: unless-stopped
 
-  web:
-    image: ${SENDOCS_WEB_IMAGE:-sendocs/web:local}
-    build:
-      context: ./web
-      target: ${SENDOCS_WEB_TARGET:-dev}
-    env_file:
-      - .env
-    ports:
-      - "${WEB_BIND:-127.0.0.1}:${WEB_PORT:-3000}:3000"
-    depends_on:
-      api:
-        condition: service_started
-    restart: unless-stopped
+    web:
+        build:
+            context: ./web
+            target: ${WEB_TARGET:-dev}
+        env_file:
+            - .env
+        ports:
+            - "${WEB_BIND:-127.0.0.1}:${WEB_PORT:-3000}:3000"
+        depends_on:
+            api:
+                condition: service_started
+        restart: unless-stopped
 
-  db:
-    image: postgres:17-alpine
-    env_file:
-      - .env
-    ports:
-      - "${POSTGRES_BIND:-127.0.0.1}:5432:5432"
-    volumes:
-      - db-data:/var/lib/postgresql/data
-    healthcheck:
-      test:
-        - CMD-SHELL
-        - pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"
-      interval: 5s
-      timeout: 5s
-      retries: 12
-    restart: unless-stopped
+    db:
+        image: postgres:17-alpine
+        env_file:
+            - .env
+        ports:
+            - "${POSTGRES_BIND:-127.0.0.1}:5432:5432"
+        volumes:
+            - db-data:/var/lib/postgresql/data
+        healthcheck:
+            test:
+                - CMD-SHELL
+                - pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"
+            interval: 5s
+            timeout: 5s
+            retries: 12
+        restart: unless-stopped
 
 volumes:
-  db-data:
+    db-data:
