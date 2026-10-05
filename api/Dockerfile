@@ -50,12 +50,11 @@ RUN composer dump-autoload \
     --classmap-authoritative
 
 COPY docker/php.ini /usr/local/etc/php/conf.d/zz-api.ini
-COPY docker/prepare.sh /usr/local/bin/prepare
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint
 
-RUN chmod +x /usr/local/bin/prepare /usr/local/bin/entrypoint
+RUN chmod +x /usr/local/bin/entrypoint
 
-RUN prepare --own
+RUN chown -R www-data:www-data bootstrap/cache storage
 
 USER www-data
 
@@ -69,13 +68,6 @@ COPY . .
 
 RUN composer install --prefer-dist
 
-COPY docker/prepare.sh /usr/local/bin/prepare
-COPY docker/dev-entrypoint.sh /usr/local/bin/dev-entrypoint
-
-RUN chmod +x /usr/local/bin/prepare /usr/local/bin/dev-entrypoint
-
 EXPOSE 8000
-
-ENTRYPOINT ["dev-entrypoint"]
 
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000", "--no-reload"]
