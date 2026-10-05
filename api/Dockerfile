@@ -50,9 +50,12 @@ RUN composer dump-autoload \
     --classmap-authoritative
 
 COPY docker/php.ini /usr/local/etc/php/conf.d/zz-api.ini
+COPY docker/prepare.sh /usr/local/bin/prepare
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint
 
-RUN chmod +x /usr/local/bin/entrypoint
+RUN chmod +x /usr/local/bin/prepare /usr/local/bin/entrypoint
+
+RUN prepare
 
 USER www-data
 
@@ -66,9 +69,10 @@ COPY . .
 
 RUN composer install --prefer-dist
 
+COPY docker/prepare.sh /usr/local/bin/prepare
 COPY docker/dev-entrypoint.sh /usr/local/bin/dev-entrypoint
 
-RUN chmod +x /usr/local/bin/dev-entrypoint
+RUN chmod +x /usr/local/bin/prepare /usr/local/bin/dev-entrypoint
 
 EXPOSE 8000
 
