@@ -26,8 +26,11 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Create the environment file
-        run: cp .env.example .env
+      - name: Create the environment files
+        run: |
+          cp .env.example .env
+          cp api/.env.example api/.env
+          cp web/.env.example web/.env
 
       - name: Build images
         run: npm run build

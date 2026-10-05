@@ -8,6 +8,9 @@ services:
             - api/.env
         ports:
             - "${API_BIND:-127.0.0.1}:${API_PORT:-8000}:8000"
+        volumes:
+            - ./api:/var/www/html
+            - /var/www/html/vendor
         depends_on:
             db:
                 condition: service_healthy
@@ -27,6 +30,9 @@ services:
         env_file:
             - .env
             - api/.env
+        volumes:
+            - ./api:/var/www/html
+            - /var/www/html/vendor
         depends_on:
             db:
                 condition: service_healthy
@@ -41,6 +47,9 @@ services:
             - web/.env
         ports:
             - "${WEB_BIND:-127.0.0.1}:${WEB_PORT:-3000}:3000"
+        volumes:
+            - ./web:/app
+            - /app/node_modules
         depends_on:
             api:
                 condition: service_started

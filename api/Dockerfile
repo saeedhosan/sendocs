@@ -55,7 +55,7 @@ COPY docker/entrypoint.sh /usr/local/bin/entrypoint
 
 RUN chmod +x /usr/local/bin/prepare /usr/local/bin/entrypoint
 
-RUN prepare
+RUN prepare --own
 
 USER www-data
 
