@@ -16,7 +16,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => env('AUTH_GUARD', 'web'),
+        'guard' => env('AUTH_GUARD', 'owner'),
         'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
     ],
 
@@ -35,11 +35,20 @@ return [
     |
     | Supported: "session"
     |
+    | The API does not use the "web" guard: an owner session is an opaque
+    | cookie backed by the sessions table, so the "owner" guard resolves the
+    | caller from that cookie and is the default guard for the application.
+    |
     */
 
     'guards' => [
         'web' => [
             'driver' => 'session',
+            'provider' => 'users',
+        ],
+
+        'owner' => [
+            'driver' => 'owner',
             'provider' => 'users',
         ],
     ],
@@ -113,5 +122,8 @@ return [
     */
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
+
+    'account_token_lifetime_minutes' => (int) env('ACCOUNT_TOKEN_LIFETIME_MINUTES', 60),
+    'csrf_secret' => env('CSRF_SECRET'),
 
 ];

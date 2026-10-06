@@ -190,8 +190,9 @@ Every Other Session Revoked
 **POST /api/v1/auth/logout** — Destroy the current session.
 
 - **Payload:** none; session cookie plus CSRF header
-- **Response:** `204` — no content
+- **Response:** `204` — no content, and the cookie is expired on the way out
 - **Failure:** `401` — no valid session
+- **Failure:** `403` — CSRF check failed
 - **Failure:** `429` — rate limited (120 per minute per owner)
 
 **GET /api/v1/auth/session** — Resolve the caller, used by the UI on load and refresh.
@@ -214,6 +215,7 @@ Every Other Session Revoked
 
 - **Payload:** `token`, `password`
 - **Response:** `200` — user, CSRF token, session cookie set, so the owner is signed in
+- **Failure:** `400` — the account has no password to reset (Google-only)
 - **Failure:** `410` — token unknown, expired, or already used
 - **Failure:** `422` — password fails policy
 - **Failure:** `429` — rate limited (5 per hour per IP)
@@ -222,7 +224,9 @@ Every Other Session Revoked
 
 - **Payload:** `currentPassword`, `password`
 - **Response:** `204` — no content
+- **Failure:** `400` — the account has no password to change (Google-only)
 - **Failure:** `401` — `currentPassword` is wrong
+- **Failure:** `403` — CSRF check failed
 - **Failure:** `422` — password fails policy
 - **Failure:** `429` — rate limited (120 per minute per owner)
 
@@ -233,6 +237,7 @@ Every Other Session Revoked
 - **Payload:** `token` (query parameter)
 - **Response:** `200` — verified address
 - **Failure:** `410` — token unknown, expired, or already used
+- **Failure:** `422` — the token is missing or longer than 200 characters
 - **Failure:** `429` — rate limited (5 per hour per IP)
 
 **POST /api/v1/auth/email/resend** — Send a new verification link.
@@ -247,7 +252,8 @@ Every Other Session Revoked
 **DELETE /api/v1/auth/account** — Delete the owner account and everything it owns.
 
 - **Payload:** `password`, `confirm` (the email, typed to confirm)
-- **Response:** `204` — no content
+- **Response:** `204` — no content, with the session cookie expired
+- **Failure:** `400` — the account has no password (Google-only)
 - **Failure:** `401` — wrong password
 - **Failure:** `422` — `confirm` does not match
 - **Failure:** `429` — rate limited (120 per minute per owner)
@@ -285,8 +291,8 @@ Only the guard boundary is noted here; the endpoint itself is defined in secure-
 
 **Google OAuth**
 
-- Google OAuth uses Authorization Code flow with PKCE or state for CSRF protection.
-- state is generated, stored or signed, and validated on callback.
+- Google OAuth uses Authorization Code flow with PKCE and state for CSRF protection.
+- state is generated, stored, and consumed on callback, so a replayed redirect finds nothing. The PKCE verifier is stored alongside it and never appears in the authorization URL.
 - Google ID token is verified using Google's public keys.
 - Google emails are treated as verified if `email_verified` is true.
 - First Google sign-in creates a user and an auth_identities entry and set provider.
@@ -304,11 +310,13 @@ Only the guard boundary is noted here; the endpoint itself is defined in secure-
 - Every sign-in creates a new session, so a second device does't logout the first.
 - An expired row is deleted by the request that sees it.
 - A malformed cookie is rejected without a query.
+- One indexed read resolves the cookie per request, and its owner is read with it.
 - No in-process cache, so nothing to invalidate.
 
 **CSRF Token**
 
 - The value is HMAC-SHA256(session_id, CSRF_SECRET).
+- The check is Auth middleware, not the framework's CSRF middleware, which compares a Laravel session token this application does not have.
 - Returned by register, login, reset, and GET /auth/session.
 - The UI holds it in memory and sends X-CSRF-Token on every state-changing request.
 - Binding it to the session prevents cross-session replay.
@@ -713,6 +721,13 @@ Only the guard boundary is noted here; the endpoint itself is defined in secure-
 - A 7-day absolute expiry forces a weekly re-login for active owners.
 - Option: re-issue within 24 hours of expiry, at the cost of a sliding window.
 
+**Logout Cookie**
+
+- The row is deleted, so the old cookie is inert either way. Sending the deletion
+  in the same response only saves the browser from presenting a dead cookie.
+- Open: expire it server-side, or leave it to the seven-day expiry?
+- Implemented as: expired server-side, on the documented path `/`.
+
 **Concurrent Sessions**
 
 - Unbounded today, so a compromised account can hold many valid cookies.
@@ -728,6 +743,46 @@ Only the guard boundary is noted here; the endpoint itself is defined in secure-
 - Verification gates nothing today.
 - Open: Can outbound or bulk email make the domain look spammy?
 - Option: Gate outbound email until verification.
+
+**A Second Verification Link**
+
+- Resending replaces the live token, so only the newest link works.
+- Redeeming a second live link keeps the first `email_verified_at` and reports it,
+  because verification is documented to happen once.
+- Resending to an address that is already verified still sends a link and still
+  answers `202`, because verification grants nothing, so there is nothing to withhold.
+- Open: should a second redemption answer `410` instead, or should resend short-circuit
+  for an already verified address?
+
+**Recovery For Google-Only Accounts**
+
+- A Google-only owner has no password, and `POST /auth/password/reset` answers
+  `400 password_not_supported` for one.
+- Open: send nothing, or send a link that ends in that 400?
+- Implemented as: nothing is sent and the answer stays the same `202`, because the
+  response is identical either way and a dead-end link is worse than no link.
+
+**Deletion For Google-Only Accounts**
+
+- `DELETE /auth/account` asks for a password, so a Google-only owner cannot delete
+  their own account at all. That is a worse dead end than a dead link: an owner who
+  signed up with Google cannot ask for their data to go away.
+- Implemented as: `400 password_not_supported`, matching the same account on change
+  and reset, and published in openapi.yaml for this operation.
+- Open: is that acceptable, or should deletion for a Google-only owner require only
+  the address confirmation, with the session itself as proof of identity?
+- Option: allow it when the session was issued by an identity provider, and keep
+  requiring the password otherwise.
+
+**Deletion Cleanup Job**
+
+- The contract says stored objects are removed afterwards by a cleanup job, retried
+  and logged rather than surfaced as an error.
+- There is nothing to clean yet: `document_requests` and `documents` are not part of
+  the API, so the only rows a delete touches are `sessions`, `account_tokens`, and
+  `auth_identities`, all of which cascade from the one delete.
+- Implemented as: the cascading delete only. The job belongs with the feature that
+  uploads the objects, not before it.
 
 **bcrypt Work Factor**
 
@@ -748,6 +803,12 @@ Only the guard boundary is noted here; the endpoint itself is defined in secure-
 - Option: Request only the minimum required scopes for name, email and profile.
 - Open: allow linking existing email/password accounts to Google later?
 - Option: Keep Google and email/password accounts separate for now.
+
+**OAuth State Lifetime**
+
+- The state token is single-use and stored server-side with its PKCE verifier, consumed on the callback.
+- It currently expires after 10 minutes, a placeholder rather than a measured value.
+- Open: is 10 minutes the right window, given how long a Google consent screen takes?
 
 **Client IP**
 
