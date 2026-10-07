@@ -20,11 +20,14 @@ class UserResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        /** @var User $user */
+        $user = $this->resource;
+
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'email' => $this->email,
-            'emailVerifiedAt' => $this->email_verified_at?->toIso8601String(),
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'emailVerifiedAt' => $user->email_verified_at?->toIso8601String(),
         ];
     }
 }
