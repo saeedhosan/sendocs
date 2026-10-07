@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sessions', function (Blueprint $table) {
+        Schema::create('notifications', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('user_id')->constrained()->cascadeOnDelete();
-            $table->char('token_hash', 64)->unique();
-            $table->timestampTz('expires_at')->index();
-            $table->timestampTz('created_at');
+            $table->string('type');
+            $table->morphs('notifiable');
+            $table->text('data');
+            $table->timestamp('read_at')->nullable();
+            $table->timestamps();
         });
     }
 
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sessions');
+        Schema::dropIfExists('notifications');
     }
 };
