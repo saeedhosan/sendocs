@@ -5,6 +5,7 @@ namespace App\Auth\Actions;
 use App\Auth\Services\AccountTokenService;
 use App\Exceptions\ApiException;
 use App\Models\AccountToken;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 final class VerifyEmail
@@ -13,7 +14,7 @@ final class VerifyEmail
         private readonly AccountTokenService $accountTokens,
     ) {}
 
-    public function handle(string $token)
+    public function handle(string $token): Carbon
     {
         return DB::transaction(function () use ($token) {
             $accountToken = $this->accountTokens->find(

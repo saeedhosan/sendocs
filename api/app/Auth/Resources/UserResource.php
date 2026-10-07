@@ -3,6 +3,7 @@
 namespace App\Auth\Resources;
 
 use App\Models\User;
+use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -20,11 +21,18 @@ class UserResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        /** @var User $user */
+        $user = $this->resource;
+
+        $emailVerifiedAt = $user->getRawOriginal('email_verified_at');
+
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'email' => $this->email,
-            'emailVerifiedAt' => $this->email_verified_at?->toIso8601String(),
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'emailVerifiedAt' => is_string($emailVerifiedAt)
+                ? Carbon::parse($emailVerifiedAt)->toIso8601String()
+                : null,
         ];
     }
 }

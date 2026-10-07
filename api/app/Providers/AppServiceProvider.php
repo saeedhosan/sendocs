@@ -32,7 +32,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        EncryptCookies::except(env('SESSION_COOKIE', 'sendocs_session'));
+        EncryptCookies::except((string) config('session.owner_cookie.name'));
 
         RateLimiter::for('auth.register', fn (Request $request) => Limit::perMinute(10)
             ->by($request->ip()));
