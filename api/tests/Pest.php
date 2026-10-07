@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Auth\Notifications\VerifyEmailNotification;
 use App\Auth\Services\CsrfTokenService;
 use App\Auth\Services\SecureToken;
@@ -42,9 +44,7 @@ pest()->extend(TestCase::class)
 |
 */
 
-expect()->extend('toBeOne', function () {
-    return $this->toBe(1);
-});
+expect()->extend('toBeOne', fn () => $this->toBe(1));
 
 /*
 |--------------------------------------------------------------------------
@@ -77,7 +77,7 @@ function sessionCookieName(): string
 function signInAndKeepToken(string $email = 'ada@example.com', string $password = 'analytical-engine'): array
 {
     $response = test()->postJson('/api/v1/auth/login', [
-        'email' => $email,
+        'email'    => $email,
         'password' => $password,
     ]);
 

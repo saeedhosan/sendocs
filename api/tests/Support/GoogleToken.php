@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Support;
+
+use OpenSSLAsymmetricKey;
 
 /**
  * Builds Google-shaped tokens and a matching published key set.
@@ -10,36 +14,36 @@ namespace Tests\Support;
  */
 final class GoogleToken
 {
-    private static ?\OpenSSLAsymmetricKey $privateKey = null;
-
     /**
      * The key id of the signing key.
      */
-    public const KID = 'test-key-1';
+    public const string KID = 'test-key-1';
 
     /**
      * The client id the tokens are issued for.
      */
-    public const CLIENT_ID = 'test-client-id.apps.googleusercontent.com';
+    public const string CLIENT_ID = 'test-client-id.apps.googleusercontent.com';
+
+    private static ?OpenSSLAsymmetricKey $privateKey = null;
 
     /**
      * A signed ID token.
      *
      * @param  array<string, mixed>  $claims
      */
-    public static function idToken(array $claims = [], ?\OpenSSLAsymmetricKey $privateKey = null): string
+    public static function idToken(array $claims = [], ?OpenSSLAsymmetricKey $privateKey = null): string
     {
         $privateKey ??= self::privateKey();
-        $header = self::base64Url((string) json_encode(['alg' => 'RS256', 'typ' => 'JWT', 'kid' => self::KID]));
+        $header  = self::base64Url((string) json_encode(['alg' => 'RS256', 'typ' => 'JWT', 'kid' => self::KID]));
         $payload = self::base64Url((string) json_encode(array_merge([
-            'iss' => 'https://accounts.google.com',
-            'aud' => self::CLIENT_ID,
-            'sub' => 'google-subject-1',
-            'email' => 'owner@example.com',
+            'iss'            => 'https://accounts.google.com',
+            'aud'            => self::CLIENT_ID,
+            'sub'            => 'google-subject-1',
+            'email'          => 'owner@example.com',
             'email_verified' => true,
-            'name' => 'Owner',
-            'iat' => now()->getTimestamp(),
-            'exp' => now()->addHour()->getTimestamp(),
+            'name'           => 'Owner',
+            'iat'            => now()->getTimestamp(),
+            'exp'            => now()->addHour()->getTimestamp(),
         ], $claims)));
 
         openssl_sign($header.'.'.$payload, $signature, $privateKey, OPENSSL_ALGO_SHA256);
@@ -52,7 +56,7 @@ final class GoogleToken
      *
      * @return array<string, mixed>
      */
-    public static function jwks(?\OpenSSLAsymmetricKey $privateKey = null): array
+    public static function jwks(?OpenSSLAsymmetricKey $privateKey = null): array
     {
         $details = openssl_pkey_get_details($privateKey ?? self::privateKey());
 
@@ -63,8 +67,8 @@ final class GoogleToken
                     'alg' => 'RS256',
                     'use' => 'sig',
                     'kid' => self::KID,
-                    'n' => self::base64Url($details['rsa']['n']),
-                    'e' => self::base64Url($details['rsa']['e']),
+                    'n'   => self::base64Url($details['rsa']['n']),
+                    'e'   => self::base64Url($details['rsa']['e']),
                 ],
             ],
         ];
@@ -73,7 +77,7 @@ final class GoogleToken
     /**
      * A second, unrelated signing key.
      */
-    public static function untrustedPrivateKey(): \OpenSSLAsymmetricKey
+    public static function untrustedPrivateKey(): OpenSSLAsymmetricKey
     {
         return openssl_pkey_new([
             'private_key_type' => OPENSSL_KEYTYPE_RSA,
@@ -84,7 +88,7 @@ final class GoogleToken
     /**
      * The cached signing key for the test run.
      */
-    private static function privateKey(): \OpenSSLAsymmetricKey
+    private static function privateKey(): OpenSSLAsymmetricKey
     {
         return self::$privateKey ??= openssl_pkey_new([
             'private_key_type' => OPENSSL_KEYTYPE_RSA,

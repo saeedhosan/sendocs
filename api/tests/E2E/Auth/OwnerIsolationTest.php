@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
@@ -10,12 +12,12 @@ beforeEach(function (): void {
     $this->withCredentials();
 
     $this->ada = User::factory()->create([
-        'email' => 'ada@example.com',
+        'email'    => 'ada@example.com',
         'password' => Hash::make('analytical-engine'),
     ]);
 
     $this->grace = User::factory()->create([
-        'email' => 'grace@example.com',
+        'email'    => 'grace@example.com',
         'password' => Hash::make('compiler-1902'),
     ]);
 });
@@ -26,8 +28,8 @@ beforeEach(function (): void {
 function registerOwnerOn(string $email, string $password): string
 {
     $response = test()->postJson('/api/v1/auth/register', [
-        'name' => 'Owner',
-        'email' => $email,
+        'name'     => 'Owner',
+        'email'    => $email,
         'password' => $password,
     ]);
 
@@ -38,12 +40,12 @@ function registerOwnerOn(string $email, string $password): string
 
 it('gives each owner a session that resolves to nobody else', function (): void {
     $adaSession = test()->postJson('/api/v1/auth/login', [
-        'email' => 'ada@example.com',
+        'email'    => 'ada@example.com',
         'password' => 'analytical-engine',
     ])->assertOk();
 
     $graceSession = test()->postJson('/api/v1/auth/login', [
-        'email' => 'grace@example.com',
+        'email'    => 'grace@example.com',
         'password' => 'compiler-1902',
     ])->assertOk();
 
@@ -87,12 +89,12 @@ it('verifies only the account the emailed link was issued for', function (): voi
 
 it('leaves the other owner untouched when one account is deleted', function (): void {
     $graceSession = test()->postJson('/api/v1/auth/login', [
-        'email' => 'grace@example.com',
+        'email'    => 'grace@example.com',
         'password' => 'compiler-1902',
     ])->assertOk();
 
     $adaSession = test()->postJson('/api/v1/auth/login', [
-        'email' => 'ada@example.com',
+        'email'    => 'ada@example.com',
         'password' => 'analytical-engine',
     ])->assertOk();
 
@@ -101,7 +103,7 @@ it('leaves the other owner untouched when one account is deleted', function (): 
 
     $this->deleteJson('/api/v1/auth/account', [
         'password' => 'analytical-engine',
-        'confirm' => 'ada@example.com',
+        'confirm'  => 'ada@example.com',
     ], ['X-CSRF-Token' => $csrf])->assertNoContent();
 
     expect(User::query()->count())->toBe(1)
@@ -117,18 +119,18 @@ it('leaves the other owner untouched when one account is deleted', function (): 
 
     $this->postJson('/api/v1/auth/password/change', [
         'currentPassword' => 'compiler-1902',
-        'password' => 'cobol-refusal',
+        'password'        => 'cobol-refusal',
     ], ['X-CSRF-Token' => $session->json('csrfToken')])->assertNoContent();
 });
 
 it('keeps one owner signed out without signing the other out', function (): void {
     $adaSession = test()->postJson('/api/v1/auth/login', [
-        'email' => 'ada@example.com',
+        'email'    => 'ada@example.com',
         'password' => 'analytical-engine',
     ])->assertOk();
 
     $graceSession = test()->postJson('/api/v1/auth/login', [
-        'email' => 'grace@example.com',
+        'email'    => 'grace@example.com',
         'password' => 'compiler-1902',
     ])->assertOk();
 
@@ -137,7 +139,7 @@ it('keeps one owner signed out without signing the other out', function (): void
 
     $this->postJson('/api/v1/auth/password/change', [
         'currentPassword' => 'analytical-engine',
-        'password' => 'difference-engine',
+        'password'        => 'difference-engine',
     ], ['X-CSRF-Token' => $csrf])->assertNoContent();
 
     // Ada's change signed out Ada's other devices and nothing of Grace's.
@@ -153,8 +155,8 @@ it('refuses to register an address that another owner already holds', function (
     Notification::fake();
 
     $this->postJson('/api/v1/auth/register', [
-        'name' => 'Impostor',
-        'email' => 'ada@example.com',
+        'name'     => 'Impostor',
+        'email'    => 'ada@example.com',
         'password' => 'analytical-engine',
     ])
         ->assertStatus(409)

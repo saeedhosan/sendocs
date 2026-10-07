@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Auth\Resources;
 
 use Illuminate\Http\Request;
@@ -13,7 +15,7 @@ class SessionPayloadResource extends JsonResource
         $session = $this['session'];
 
         return [
-            'user' => UserResource::make($session->user),
+            'user'      => UserResource::make($session->user),
             'csrfToken' => $this['csrfToken'],
             'expiresAt' => $session->expires_at->toIso8601String(),
         ];

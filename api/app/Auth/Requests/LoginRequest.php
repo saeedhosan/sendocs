@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Auth\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -24,7 +26,7 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string', Rule::email()->strict(), 'max:254'],
+            'email'    => ['required', 'string', Rule::email()->strict(), 'max:254'],
             'password' => ['required', 'string'],
         ];
     }

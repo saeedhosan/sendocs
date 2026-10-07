@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Auth\Services;
 
 use App\Auth\Support\Jwk;
@@ -22,17 +24,17 @@ use Illuminate\Support\Str;
  */
 final class GoogleOAuthService
 {
-    private const AUTHORIZE_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
+    private const string AUTHORIZE_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
 
-    private const TOKEN_URL = 'https://oauth2.googleapis.com/token';
+    private const string TOKEN_URL = 'https://oauth2.googleapis.com/token';
 
-    private const JWKS_URL = 'https://www.googleapis.com/oauth2/v3/certs';
+    private const string JWKS_URL = 'https://www.googleapis.com/oauth2/v3/certs';
 
-    private const ISSUER = 'https://accounts.google.com';
+    private const string ISSUER = 'https://accounts.google.com';
 
-    private const SCOPES = ['openid', 'email', 'profile'];
+    private const array SCOPES = ['openid', 'email', 'profile'];
 
-    private const JWKS_CACHE_KEY = 'auth.oauth.google.jwks';
+    private const string JWKS_CACHE_KEY = 'auth.oauth.google.jwks';
 
     /**
      * Generate a state-protected authorization URL with a PKCE challenge.
@@ -42,18 +44,18 @@ final class GoogleOAuthService
      */
     public function generateAuthUrl(): string
     {
-        $state = Str::random(40);
+        $state    = Str::random(40);
         $verifier = Str::random(96);
 
         Cache::put($this->stateKey($state), ['verifier' => $verifier], now()->addMinutes((int) config('services.google.state_lifetime_minutes')));
 
         return self::AUTHORIZE_URL.'?'.http_build_query([
-            'client_id' => $this->clientId(),
-            'redirect_uri' => $this->redirectUri(),
-            'response_type' => 'code',
-            'scope' => implode(' ', self::SCOPES),
-            'state' => $state,
-            'code_challenge' => $this->challengeFor($verifier),
+            'client_id'             => $this->clientId(),
+            'redirect_uri'          => $this->redirectUri(),
+            'response_type'         => 'code',
+            'scope'                 => implode(' ', self::SCOPES),
+            'state'                 => $state,
+            'code_challenge'        => $this->challengeFor($verifier),
             'code_challenge_method' => 'S256',
         ]);
     }
@@ -83,11 +85,11 @@ final class GoogleOAuthService
     public function exchangeCode(string $code, string $codeVerifier): array
     {
         $body = $this->callGoogle(fn () => Http::asForm()->post(self::TOKEN_URL, [
-            'grant_type' => 'authorization_code',
-            'code' => $code,
-            'client_id' => $this->clientId(),
+            'grant_type'    => 'authorization_code',
+            'code'          => $code,
+            'client_id'     => $this->clientId(),
             'client_secret' => (string) config('services.google.client_secret'),
-            'redirect_uri' => $this->redirectUri(),
+            'redirect_uri'  => $this->redirectUri(),
             'code_verifier' => $codeVerifier,
         ]));
 
@@ -113,7 +115,7 @@ final class GoogleOAuthService
     {
         $identity = $this->existingIdentity($profile);
 
-        if ($identity !== null) {
+        if ($identity instanceof AuthIdentity) {
             return $identity->user;
         }
 
@@ -125,14 +127,14 @@ final class GoogleOAuthService
 
         try {
             return $this->createGoogleUser($profile);
-        } catch (QueryException $exception) {
+        } catch (QueryException $queryException) {
             // Two callbacks for one Google account can both miss the lookup.
             // The unique index settles it, so the loser reads the winner
             // rather than failing a sign-in the owner already completed.
             $winner = $this->existingIdentity($profile);
 
-            if ($winner === null) {
-                throw $exception;
+            if (! $winner instanceof AuthIdentity) {
+                throw $queryException;
             }
 
             return $winner->user;
@@ -148,8 +150,8 @@ final class GoogleOAuthService
     {
         return DB::transaction(function () use ($profile): User {
             $user = User::query()->create([
-                'name' => $profile['name'],
-                'email' => $profile['email'],
+                'name'     => $profile['name'],
+                'email'    => $profile['email'],
                 'provider' => AuthIdentity::PROVIDER_GOOGLE,
             ]);
 
@@ -158,8 +160,8 @@ final class GoogleOAuthService
             $user->forceFill(['email_verified_at' => now()])->save();
 
             AuthIdentity::query()->create([
-                'user_id' => $user->getKey(),
-                'provider' => AuthIdentity::PROVIDER_GOOGLE,
+                'user_id'     => $user->getKey(),
+                'provider'    => AuthIdentity::PROVIDER_GOOGLE,
                 'provider_id' => $profile['sub'],
             ]);
 
@@ -213,9 +215,9 @@ final class GoogleOAuthService
 
         $this->assertValidClaims($claims);
 
-        $sub = $claims['sub'] ?? null;
+        $sub   = $claims['sub']   ?? null;
         $email = $claims['email'] ?? null;
-        $name = $claims['name'] ?? null;
+        $name  = $claims['name']  ?? null;
 
         if (! is_string($sub) || $sub === '' || ! is_string($email) || ! is_string($name)) {
             throw ApiException::oauthFailed('Google returned an incomplete profile.');
@@ -226,9 +228,9 @@ final class GoogleOAuthService
         }
 
         return [
-            'sub' => $sub,
+            'sub'   => $sub,
             'email' => mb_strtolower($email),
-            'name' => Str::limit($name, 120, ''),
+            'name'  => Str::limit($name, 120, ''),
         ];
     }
 
@@ -241,7 +243,7 @@ final class GoogleOAuthService
     {
         $expiresAt = $claims['exp'] ?? null;
 
-        if (($claims['iss'] ?? null) !== self::ISSUER
+        if (($claims['iss'] ?? null)    !== self::ISSUER
             || ($claims['aud'] ?? null) !== $this->clientId()
             || ! is_numeric($expiresAt)
             || (int) $expiresAt < now()->getTimestamp()) {

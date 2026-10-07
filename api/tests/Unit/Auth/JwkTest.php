@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Auth\Support\Jwk;
 
 it('builds a public key byte for byte identical to the one openssl derives', function (): void {
@@ -12,8 +14,8 @@ it('builds a public key byte for byte identical to the one openssl derives', fun
 
     $pem = Jwk::toPem([
         'kty' => 'RSA',
-        'n' => rtrim(strtr(base64_encode($details['rsa']['n']), '+/', '-_'), '='),
-        'e' => rtrim(strtr(base64_encode($details['rsa']['e']), '+/', '-_'), '='),
+        'n'   => rtrim(strtr(base64_encode($details['rsa']['n']), '+/', '-_'), '='),
+        'e'   => rtrim(strtr(base64_encode($details['rsa']['e']), '+/', '-_'), '='),
     ]);
 
     expect($pem)->toBe($details['key']);
@@ -40,5 +42,5 @@ it('verifies a signature made by the matching private key', function (): void {
 });
 
 it('rejects a key that is missing its modulus or exponent', function (): void {
-    expect(fn () => Jwk::toPem(['kty' => 'RSA', 'e' => 'AQAB']))->toThrow(RuntimeException::class);
+    expect(fn (): string => Jwk::toPem(['kty' => 'RSA', 'e' => 'AQAB']))->toThrow(RuntimeException::class);
 });

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Auth\Notifications\VerifyEmailNotification;
 use App\Auth\Services\AccountTokenService;
 use App\Models\AccountToken;
@@ -15,7 +17,7 @@ beforeEach(function (): void {
     $this->withCredentials();
 
     $this->owner = User::factory()->unverified()->create([
-        'email' => 'ada@example.com',
+        'email'    => 'ada@example.com',
         'password' => Hash::make('analytical-engine'),
     ]);
 });
@@ -56,8 +58,8 @@ it('reports the same timestamp the user row holds', function (): void {
 
     $this->travelTo($verifiedAt);
     AccountToken::query()->create([
-        'user_id' => $this->owner->getKey(),
-        'purpose' => AccountToken::PURPOSE_EMAIL_VERIFICATION,
+        'user_id'    => $this->owner->getKey(),
+        'purpose'    => AccountToken::PURPOSE_EMAIL_VERIFICATION,
         'token_hash' => hash('sha256', 'a-raw-token'),
         'expires_at' => now()->addHour(),
     ]);
@@ -75,7 +77,7 @@ it('rejects a replayed link with the same 410 as an unknown token', function ():
 
     verifyEmail($token)->assertOk();
 
-    $replay = verifyEmail($token);
+    $replay  = verifyEmail($token);
     $unknown = verifyEmail(str_repeat('a', 43));
 
     $replay->assertStatus(410)
@@ -111,13 +113,13 @@ it('verifies an address registered through the api', function (): void {
     Notification::fake();
 
     $this->postJson('/api/v1/auth/register', [
-        'name' => 'Ada Lovelace',
-        'email' => 'Grace@Example.com',
+        'name'     => 'Ada Lovelace',
+        'email'    => 'Grace@Example.com',
         'password' => 'analytical-engine',
     ])->assertCreated();
 
     $registered = User::query()->where('email', 'Grace@Example.com')->sole();
-    $row = AccountToken::query()->where('user_id', $registered->getKey())->sole();
+    $row        = AccountToken::query()->where('user_id', $registered->getKey())->sole();
 
     expect($registered->email_verified_at)->toBeNull()
         ->and($row->used_at)->toBeNull();
@@ -176,7 +178,7 @@ it('sends a new link and replaces the token the old one carried', function (): v
     Notification::fake();
 
     [$session] = signInAndKeepToken();
-    $stale = issueVerificationToken($this->owner);
+    $stale     = issueVerificationToken($this->owner);
 
     resendVerification(csrfFor($session))
         ->assertStatus(202)
@@ -201,7 +203,7 @@ it('sends a link to an account that has no password', function (): void {
     Notification::fake();
 
     $google = User::factory()->create([
-        'email' => 'grace@example.com',
+        'email'    => 'grace@example.com',
         'password' => null,
         'provider' => AuthIdentity::PROVIDER_GOOGLE,
     ]);

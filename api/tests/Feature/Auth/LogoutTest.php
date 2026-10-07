@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\Session;
 use App\Models\User;
 use Illuminate\Cache\RateLimiter;
@@ -11,7 +13,7 @@ beforeEach(function (): void {
     $this->withCredentials();
 
     $this->owner = User::factory()->create([
-        'email' => 'ada@example.com',
+        'email'    => 'ada@example.com',
         'password' => Hash::make('analytical-engine'),
     ]);
 });
@@ -22,6 +24,7 @@ it('returns 204 with no body and deletes the session row', function (): void {
     $response = $this->postJson('/api/v1/auth/logout', [], ['X-CSRF-Token' => csrfFor($session)]);
 
     $response->assertNoContent();
+
     expect($response->getContent())->toBe('');
 
     expect(Session::query()->find($session->getKey()))->toBeNull();
@@ -55,7 +58,7 @@ it('tells the browser to drop the cookie', function (): void {
 
 it('keeps a second device signed in', function (): void {
     [$laptop, $laptopToken] = signInAndKeepToken();
-    [$phone, $phoneToken] = signInAndKeepToken();
+    [$phone, $phoneToken]   = signInAndKeepToken();
 
     $this->withUnencryptedCookies([sessionCookieName() => $laptopToken]);
     Auth::forgetGuards();
@@ -89,7 +92,7 @@ it('rejects logout without a csrf token', function (): void {
 });
 
 it('rejects a csrf token that belongs to another session', function (): void {
-    [$session] = signInAndKeepToken();
+    [$session]    = signInAndKeepToken();
     $foreignToken = csrfFor($session);
 
     // A second session for the same owner: the token from the first one is not
@@ -121,7 +124,7 @@ it('rate limits logout at 120 a minute per owner', function (): void {
 
 it('keys the logout limit on the owner, not the address', function (): void {
     $grace = User::factory()->create([
-        'email' => 'grace@example.com',
+        'email'    => 'grace@example.com',
         'password' => Hash::make('cobol-coffee'),
     ]);
 
@@ -129,6 +132,7 @@ it('keys the logout limit on the owner, not the address', function (): void {
 
     $request = Request::create('/api/v1/auth/logout', 'POST');
     $request->setUserResolver(fn (): User => $this->owner);
+
     $adaKey = $limiter($request)->key;
 
     $request->setUserResolver(fn (): User => $grace);

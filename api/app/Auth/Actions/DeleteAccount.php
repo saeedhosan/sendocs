@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Auth\Actions;
 
 use App\Auth\Services\SessionService;
@@ -8,10 +10,10 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
-final class DeleteAccount
+final readonly class DeleteAccount
 {
     public function __construct(
-        private readonly SessionService $sessions,
+        private SessionService $sessions,
     ) {}
 
     public function handle(User $user, array $attributes): void

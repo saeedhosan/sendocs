@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -10,7 +12,7 @@ beforeEach(function (): void {
     $this->withCredentials();
 
     $this->owner = User::factory()->create([
-        'email' => 'ada@example.com',
+        'email'    => 'ada@example.com',
         'password' => Hash::make('analytical-engine'),
     ]);
 });
@@ -22,7 +24,7 @@ beforeEach(function (): void {
 function signInOn(string $email = 'ada@example.com', string $password = 'analytical-engine'): string
 {
     $response = test()->postJson('/api/v1/auth/login', [
-        'email' => $email,
+        'email'    => $email,
         'password' => $password,
     ]);
 
@@ -33,7 +35,7 @@ function signInOn(string $email = 'ada@example.com', string $password = 'analyti
 
 it('signs out one device without touching the other', function (): void {
     $laptop = signInOn();
-    $phone = signInOn();
+    $phone  = signInOn();
 
     useDevice($phone);
     $phoneSession = $this->getJson('/api/v1/auth/session')->assertOk();
@@ -89,7 +91,7 @@ it('rejects a session cookie after the session is gone', function (): void {
 
 it('refuses a csrf token that belongs to another session', function (): void {
     $laptop = signInOn();
-    $phone = signInOn();
+    $phone  = signInOn();
 
     useDevice($laptop);
     $laptopCsrf = $this->getJson('/api/v1/auth/session')->json('csrfToken');
@@ -130,14 +132,14 @@ it('expires a session at its absolute lifetime', function (): void {
 
     // And signing in again works.
     $this->postJson('/api/v1/auth/login', [
-        'email' => 'ada@example.com',
+        'email'    => 'ada@example.com',
         'password' => 'analytical-engine',
     ])->assertOk();
 });
 
 it('hands the browser a session cookie that script cannot read', function (): void {
     $response = $this->postJson('/api/v1/auth/login', [
-        'email' => 'ada@example.com',
+        'email'    => 'ada@example.com',
         'password' => 'analytical-engine',
     ]);
 

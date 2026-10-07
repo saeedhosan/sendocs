@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Auth\Middleware;
 
 use App\Auth\Services\CsrfTokenService;
 use App\Auth\Services\SessionService;
 use App\Exceptions\ApiException;
+use App\Models\Session;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,14 +20,14 @@ use Symfony\Component\HttpFoundation\Response;
  * only from the header and never from a cookie, so a cross-origin caller can
  * neither read nor forge it. A missing or mismatched token is a 403.
  */
-final class VerifyCsrfToken
+final readonly class VerifyCsrfToken
 {
     /**
      * Create a new class instance.
      */
     public function __construct(
-        private readonly SessionService $sessions,
-        private readonly CsrfTokenService $csrf,
+        private SessionService $sessions,
+        private CsrfTokenService $csrf,
     ) {}
 
     /**
@@ -34,7 +37,7 @@ final class VerifyCsrfToken
     {
         $session = $this->sessions->resolveFromRequest($request);
 
-        if ($session === null) {
+        if (! $session instanceof Session) {
             throw ApiException::unauthenticated();
         }
 

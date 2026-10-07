@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Auth\Actions;
 
 use App\Auth\Services\AccountTokenService;
@@ -9,11 +11,11 @@ use App\Models\AccountToken;
 use App\Models\Session;
 use Illuminate\Support\Facades\DB;
 
-final class ResetPassword
+final readonly class ResetPassword
 {
     public function __construct(
-        private readonly AccountTokenService $accountTokens,
-        private readonly SessionService $sessions,
+        private AccountTokenService $accountTokens,
+        private SessionService $sessions,
     ) {}
 
     public function handle(array $attributes): Session
@@ -24,7 +26,7 @@ final class ResetPassword
                 AccountToken::PURPOSE_PASSWORD_RESET,
             );
 
-            if ($token === null) {
+            if (! $token instanceof AccountToken) {
                 throw ApiException::invalidToken();
             }
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\Session;
 use App\Models\User;
 use Illuminate\Hashing\HashManager;
@@ -8,14 +10,14 @@ use Illuminate\Support\Facades\Hash;
 function loginOwner(array $attributes = [])
 {
     return test()->postJson('/api/v1/auth/login', array_merge([
-        'email' => 'ada@example.com',
+        'email'    => 'ada@example.com',
         'password' => 'analytical-engine',
     ], $attributes));
 }
 
-test('login exchanges valid credentials for a session cookie', function () {
+test('login exchanges valid credentials for a session cookie', function (): void {
     User::factory()->create([
-        'email' => 'ada@example.com',
+        'email'    => 'ada@example.com',
         'password' => Hash::make('analytical-engine'),
     ]);
 
@@ -31,11 +33,11 @@ test('login exchanges valid credentials for a session cookie', function () {
         ->and(Session::query()->sole()->user_id)->toBe(User::query()->sole()->id);
 });
 
-test('login returns byte-identical 401 bodies for a wrong password and an unknown address', function () {
+test('login returns byte-identical 401 bodies for a wrong password and an unknown address', function (): void {
     User::factory()->create(['email' => 'ada@example.com', 'password' => Hash::make('correct-password')]);
 
     $wrongPassword = loginOwner(['password' => 'wrong-password']);
-    $unknown = loginOwner(['email' => 'unknown@example.com']);
+    $unknown       = loginOwner(['email' => 'unknown@example.com']);
 
     $wrongPassword->assertStatus(401);
     $unknown->assertStatus(401);
@@ -46,7 +48,7 @@ test('login returns byte-identical 401 bodies for a wrong password and an unknow
         ->and(Session::query()->count())->toBe(0);
 });
 
-test('login still verifies a password when the address is unknown, so timing cannot reveal it', function () {
+test('login still verifies a password when the address is unknown, so timing cannot reveal it', function (): void {
     $hash = Mockery::spy(HashManager::class);
     $hash->shouldReceive('check')->andReturnFalse();
 
@@ -57,13 +59,13 @@ test('login still verifies a password when the address is unknown, so timing can
     $hash->shouldHaveReceived('check')->once();
 });
 
-test('login does not normalize the address before the lookup', function () {
+test('login does not normalize the address before the lookup', function (): void {
     User::factory()->create(['email' => 'ada@example.com', 'password' => Hash::make('analytical-engine')]);
 
     loginOwner(['email' => '  ADA@Example.COM  '])->assertStatus(401);
 });
 
-test('login fails a malformed address with a validation error', function () {
+test('login fails a malformed address with a validation error', function (): void {
     loginOwner(['email' => 'not-an-email'])->assertStatus(422)
         ->assertJsonPath('error.code', 'validation_failed')
         ->assertJsonPath('error.details.email', 'The email field must be a valid email address.');
@@ -72,7 +74,7 @@ test('login fails a malformed address with a validation error', function () {
         ->toBeNull();
 });
 
-test('login is rate limited to ten attempts a minute per ip', function () {
+test('login is rate limited to ten attempts a minute per ip', function (): void {
     foreach (range(1, 10) as $attempt) {
         loginOwner(['password' => 'wrong-password'])->assertStatus(401);
     }
@@ -82,7 +84,7 @@ test('login is rate limited to ten attempts a minute per ip', function () {
         ->assertJsonPath('error.code', 'rate_limited');
 });
 
-test('login adds a session without revoking the sessions already issued', function () {
+test('login adds a session without revoking the sessions already issued', function (): void {
     User::factory()->create(['email' => 'ada@example.com', 'password' => Hash::make('analytical-engine')]);
 
     loginOwner()->assertOk();

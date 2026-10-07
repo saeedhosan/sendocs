@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Facades\Notification;
 
 beforeEach(function (): void {
@@ -17,8 +19,8 @@ it('carries an owner from registration through verification to deletion', functi
     Notification::fake();
 
     $register = $this->postJson('/api/v1/auth/register', [
-        'name' => 'Ada Lovelace',
-        'email' => 'ada@example.com',
+        'name'     => 'Ada Lovelace',
+        'email'    => 'ada@example.com',
         'password' => 'analytical-engine',
     ]);
 
@@ -51,7 +53,7 @@ it('carries an owner from registration through verification to deletion', functi
 
     $this->deleteJson('/api/v1/auth/account', [
         'password' => 'analytical-engine',
-        'confirm' => 'ada@example.com',
+        'confirm'  => 'ada@example.com',
     ], ['X-CSRF-Token' => $session->json('csrfToken')])
         ->assertNoContent();
 
@@ -62,7 +64,7 @@ it('carries an owner from registration through verification to deletion', functi
         ->assertJsonPath('error.code', 'unauthenticated');
 
     $this->postJson('/api/v1/auth/login', [
-        'email' => 'ada@example.com',
+        'email'    => 'ada@example.com',
         'password' => 'analytical-engine',
     ])
         ->assertStatus(401)
@@ -73,17 +75,17 @@ it('leaves a deleted account unable to reuse its verification link', function ()
     Notification::fake();
 
     keepCookiesFrom($this->postJson('/api/v1/auth/register', [
-        'name' => 'Ada Lovelace',
-        'email' => 'ada@example.com',
+        'name'     => 'Ada Lovelace',
+        'email'    => 'ada@example.com',
         'password' => 'analytical-engine',
     ])->assertCreated());
 
     $token = rawVerificationToken();
-    $csrf = $this->getJson('/api/v1/auth/session')->json('csrfToken');
+    $csrf  = $this->getJson('/api/v1/auth/session')->json('csrfToken');
 
     $this->deleteJson('/api/v1/auth/account', [
         'password' => 'analytical-engine',
-        'confirm' => 'ada@example.com',
+        'confirm'  => 'ada@example.com',
     ], ['X-CSRF-Token' => $csrf])->assertNoContent();
 
     // The link outlived the account it pointed at, and is inert.
@@ -96,13 +98,13 @@ it('lets an owner resend a verification link and use the new one', function (): 
     Notification::fake();
 
     keepCookiesFrom($this->postJson('/api/v1/auth/register', [
-        'name' => 'Ada Lovelace',
-        'email' => 'ada@example.com',
+        'name'     => 'Ada Lovelace',
+        'email'    => 'ada@example.com',
         'password' => 'analytical-engine',
     ])->assertCreated());
 
     $superseded = rawVerificationToken();
-    $csrf = $this->getJson('/api/v1/auth/session')->json('csrfToken');
+    $csrf       = $this->getJson('/api/v1/auth/session')->json('csrfToken');
 
     $this->postJson('/api/v1/auth/email/resend', [], ['X-CSRF-Token' => $csrf])->assertStatus(202);
 

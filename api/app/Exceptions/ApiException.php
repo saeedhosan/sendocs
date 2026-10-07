@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Exceptions;
 
 use Illuminate\Http\JsonResponse;
@@ -123,7 +125,7 @@ class ApiException extends RuntimeException
     public function render(Request $request): JsonResponse
     {
         $error = [
-            'code' => $this->errorCode,
+            'code'    => $this->errorCode,
             'message' => $this->getMessage(),
         ];
 

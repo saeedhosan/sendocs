@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Auth\Services\CsrfTokenService;
 use App\Models\AuthIdentity;
 use App\Models\Session;
@@ -13,7 +15,7 @@ beforeEach(function (): void {
     $this->withCredentials();
 
     $this->owner = User::factory()->create([
-        'email' => 'ada@example.com',
+        'email'    => 'ada@example.com',
         'password' => Hash::make('analytical-engine'),
     ]);
 });
@@ -29,7 +31,7 @@ function changePassword(
 ) {
     return test()->postJson('/api/v1/auth/password/change', [
         'currentPassword' => $currentPassword,
-        'password' => $password,
+        'password'        => $password,
     ], array_filter(['X-CSRF-Token' => $csrf ?? csrfFor($session)]));
 }
 
@@ -39,6 +41,7 @@ it('changes the password and leaves the caller signed in', function (): void {
     $response = changePassword($session);
 
     $response->assertNoContent();
+
     expect($response->getContent())->toBe('');
 
     expect(Hash::check('difference-engine', $this->owner->fresh()->password))->toBeTrue()
@@ -54,7 +57,7 @@ it('changes the password and leaves the caller signed in', function (): void {
 
 it('revokes every other session', function (): void {
     [$laptop, $laptopToken] = signInAndKeepToken();
-    [$phone] = signInAndKeepToken();
+    [$phone]                = signInAndKeepToken();
 
     $this->withUnencryptedCookies([sessionCookieName() => $laptopToken]);
     Auth::forgetGuards();
@@ -81,7 +84,7 @@ it('rejects a wrong current password and changes nothing', function (): void {
 
 it('refuses an account with no password and revokes nothing', function (): void {
     $google = User::factory()->create([
-        'email' => 'grace@example.com',
+        'email'    => 'grace@example.com',
         'password' => null,
         'provider' => AuthIdentity::PROVIDER_GOOGLE,
     ]);
@@ -110,7 +113,7 @@ it('requires a csrf token', function (): void {
 
     test()->postJson('/api/v1/auth/password/change', [
         'currentPassword' => 'analytical-engine',
-        'password' => 'difference-engine',
+        'password'        => 'difference-engine',
     ])
         ->assertStatus(403)
         ->assertJsonPath('error.code', 'csrf_failed');
@@ -128,7 +131,7 @@ it('rejects a csrf token from another session', function (): void {
 
     test()->postJson('/api/v1/auth/password/change', [
         'currentPassword' => 'analytical-engine',
-        'password' => 'difference-engine',
+        'password'        => 'difference-engine',
     ], ['X-CSRF-Token' => $foreign])
         ->assertStatus(403)
         ->assertJsonPath('error.code', 'csrf_failed');
@@ -137,7 +140,7 @@ it('rejects a csrf token from another session', function (): void {
 it('requires being signed in', function (): void {
     $this->postJson('/api/v1/auth/password/change', [
         'currentPassword' => 'analytical-engine',
-        'password' => 'difference-engine',
+        'password'        => 'difference-engine',
     ])
         ->assertStatus(401)
         ->assertJsonPath('error.code', 'unauthenticated');

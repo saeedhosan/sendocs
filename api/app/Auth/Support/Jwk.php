@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Auth\Support;
 
 use RuntimeException;
@@ -20,7 +22,7 @@ final class Jwk
      */
     public static function toPem(array $jwk): string
     {
-        $modulus = self::base64UrlDecode($jwk['n'] ?? null);
+        $modulus  = self::base64UrlDecode($jwk['n'] ?? null);
         $exponent = self::base64UrlDecode($jwk['e'] ?? null);
 
         if ($modulus === null || $exponent === null) {
@@ -96,7 +98,7 @@ final class Jwk
      */
     private static function derOid(string $oid): string
     {
-        $parts = array_map(intval(...), explode('.', $oid));
+        $parts   = array_map(intval(...), explode('.', $oid));
         $encoded = chr(array_shift($parts) * 40 + array_shift($parts));
 
         foreach ($parts as $part) {
@@ -108,7 +110,7 @@ final class Jwk
             } while ($part > 0);
 
             $groups = array_reverse($groups);
-            $last = count($groups) - 1;
+            $last   = count($groups) - 1;
 
             foreach ($groups as $index => $group) {
                 $encoded .= chr($group | ($index === $last ? 0x00 : 0x80));

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Auth\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -27,7 +29,7 @@ class ResetPasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'token' => ['required', 'string', 'max:200'],
+            'token'    => ['required', 'string', 'max:200'],
             'password' => ['required', 'string', 'min:12', 'max:200'],
         ];
     }

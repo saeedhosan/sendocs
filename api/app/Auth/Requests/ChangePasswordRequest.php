@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Auth\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -28,7 +30,7 @@ class ChangePasswordRequest extends FormRequest
     {
         return [
             'currentPassword' => ['required', 'string', 'max:200'],
-            'password' => ['required', 'string', 'min:12', 'max:200'],
+            'password'        => ['required', 'string', 'min:12', 'max:200'],
         ];
     }
 }

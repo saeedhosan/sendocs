@@ -1,16 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Auth\Actions;
 
 use App\Auth\Services\GoogleOAuthService;
 use App\Auth\Services\SessionService;
 use App\Models\Session;
 
-final class SignInWithGoogle
+final readonly class SignInWithGoogle
 {
     public function __construct(
-        private readonly GoogleOAuthService $google,
-        private readonly SessionService $sessions,
+        private GoogleOAuthService $google,
+        private SessionService $sessions,
     ) {}
 
     public function handle(string $code, string $state): Session

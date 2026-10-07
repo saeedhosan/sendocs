@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Auth\Controllers;
 
 use App\Auth\Actions\ChangePassword;
@@ -122,7 +124,7 @@ class AuthController extends Controller
         AccountTokenService $accountTokens,
         AuthMailer $mailer,
     ): JsonResponse {
-        $user = $request->user();
+        $user  = $request->user();
         $token = $accountTokens->issue($user, AccountToken::PURPOSE_EMAIL_VERIFICATION);
         DB::afterCommit(fn () => $mailer->sendVerification($user, $token));
 
@@ -161,7 +163,7 @@ class AuthController extends Controller
         CsrfTokenService $csrf,
     ): JsonResponse {
         $attributes = $request->validated();
-        $session = $signIn->handle($attributes['code'], $attributes['state']);
+        $session    = $signIn->handle($attributes['code'], $attributes['state']);
 
         return response()->json(
             SessionPayloadResource::make(['session' => $session, 'csrfToken' => $csrf->derive($session->id)])

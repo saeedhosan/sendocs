@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\AuthIdentity;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
@@ -33,7 +35,7 @@ function followGoogleRedirect(): TestResponse
     // The state comes from the start response rather than a fixture, so the
     // callback is consuming a state that was really issued.
     return test()->getJson('/api/v1/auth/oauth/google/callback?'.http_build_query([
-        'code' => 'google-authorization-code',
+        'code'  => 'google-authorization-code',
         'state' => $query['state'],
     ]));
 }
@@ -105,7 +107,7 @@ it('refuses a callback whose state was already spent', function (): void {
     parse_str((string) parse_url($start->json('authUrl'), PHP_URL_QUERY), $query);
 
     $callback = 'api/v1/auth/oauth/google/callback?'.http_build_query([
-        'code' => 'google-authorization-code',
+        'code'  => 'google-authorization-code',
         'state' => $query['state'],
     ]);
 

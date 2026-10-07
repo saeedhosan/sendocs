@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Auth\Middleware\VerifyCsrfToken;
 use App\Models\Session;
 use App\Models\User;
@@ -11,7 +13,7 @@ beforeEach(function (): void {
     $this->withCredentials();
 
     User::factory()->create([
-        'email' => 'ada@example.com',
+        'email'    => 'ada@example.com',
         'password' => Hash::make('analytical-engine'),
     ]);
 
@@ -20,7 +22,7 @@ beforeEach(function (): void {
     Route::middleware(['auth:owner', VerifyCsrfToken::class])
         ->post('/test/owner-state-change', fn () => response()->json(['changed' => true]));
 
-    $this->session = signInFor('ada@example.com', 'analytical-engine');
+    $this->session   = signInFor('ada@example.com', 'analytical-engine');
     $this->csrfToken = $this->getJson('/api/v1/auth/session')->json('csrfToken');
 });
 
@@ -30,7 +32,7 @@ beforeEach(function (): void {
 function signInFor(string $email, string $password): Session
 {
     $response = test()->postJson('/api/v1/auth/login', [
-        'email' => $email,
+        'email'    => $email,
         'password' => $password,
     ]);
 
@@ -67,7 +69,7 @@ it('rejects a state-changing request with a forged csrf token', function (): voi
 
 it('rejects a token that belongs to another session', function (): void {
     User::factory()->create([
-        'email' => 'grace@example.com',
+        'email'    => 'grace@example.com',
         'password' => Hash::make('cobol-coffee'),
     ]);
 

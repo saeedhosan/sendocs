@@ -1,16 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * An issued owner session. Only the SHA-256 hash of the cookie value is stored.
  *
- * @property \Illuminate\Support\Carbon $expires_at
+ * @property Carbon $expires_at
  */
 #[Fillable(['user_id', 'token_hash', 'expires_at'])]
 class Session extends Model

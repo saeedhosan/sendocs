@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Auth\Services;
 
 use App\Models\Session;
@@ -28,7 +30,7 @@ final class SessionService
         $token = SecureToken::generate();
 
         $session = new Session([
-            'user_id' => $user->getKey(),
+            'user_id'    => $user->getKey(),
             'token_hash' => SecureToken::hash($token),
             'expires_at' => now()->addDays((int) config('session.owner_cookie.lifetime_days')),
         ]);
@@ -42,46 +44,11 @@ final class SessionService
     public function resolveFromRequest(Request $request): ?Session
     {
         if ($this->resolvedFor !== $request) {
-            $this->current = $this->lookup($request->cookie($this->cookieName()));
+            $this->current     = $this->lookup($request->cookie($this->cookieName()));
             $this->resolvedFor = $request;
         }
 
         return $this->current;
-    }
-
-    private function lookup(mixed $token): ?Session
-    {
-        if (! is_string($token) || preg_match('/^[A-Za-z0-9_-]{43}$/', $token) !== 1) {
-            return null;
-        }
-
-        $session = $this->resolve($token);
-
-        if ($session === null) {
-            return null;
-        }
-
-        if ($session->expires_at->isPast()) {
-            $this->deleteQuietly($session);
-
-            return null;
-        }
-
-        return $session;
-    }
-
-    private function deleteQuietly(Session $session): void
-    {
-        try {
-            $session->delete();
-        } catch (Throwable $exception) {
-            report($exception);
-        }
-    }
-
-    private function cookieName(): string
-    {
-        return (string) config('session.owner_cookie.name');
     }
 
     public function resolve(string $token): ?Session
@@ -110,6 +77,41 @@ final class SessionService
             ->where('user_id', $user->getKey())
             ->whereKeyNot($session->getKey())
             ->delete();
+    }
+
+    private function lookup(mixed $token): ?Session
+    {
+        if (! is_string($token) || preg_match('/^[A-Za-z0-9_-]{43}$/', $token) !== 1) {
+            return null;
+        }
+
+        $session = $this->resolve($token);
+
+        if (! $session instanceof Session) {
+            return null;
+        }
+
+        if ($session->expires_at->isPast()) {
+            $this->deleteQuietly($session);
+
+            return null;
+        }
+
+        return $session;
+    }
+
+    private function deleteQuietly(Session $session): void
+    {
+        try {
+            $session->delete();
+        } catch (Throwable $throwable) {
+            report($throwable);
+        }
+    }
+
+    private function cookieName(): string
+    {
+        return (string) config('session.owner_cookie.name');
     }
 
     private function makeCookie(string $token, DateTimeInterface $expiresAt): SymfonyCookie

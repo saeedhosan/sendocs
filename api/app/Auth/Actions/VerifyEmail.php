@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Auth\Actions;
 
 use App\Auth\Services\AccountTokenService;
@@ -8,10 +10,10 @@ use App\Models\AccountToken;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
-final class VerifyEmail
+final readonly class VerifyEmail
 {
     public function __construct(
-        private readonly AccountTokenService $accountTokens,
+        private AccountTokenService $accountTokens,
     ) {}
 
     public function handle(string $token): Carbon
@@ -22,11 +24,11 @@ final class VerifyEmail
                 AccountToken::PURPOSE_EMAIL_VERIFICATION,
             );
 
-            if ($accountToken === null || ! $this->accountTokens->claim($accountToken)) {
+            if (! $accountToken instanceof AccountToken || ! $this->accountTokens->claim($accountToken)) {
                 throw ApiException::invalidToken();
             }
 
-            $user = $accountToken->user;
+            $user       = $accountToken->user;
             $verifiedAt = $user->email_verified_at ?? now();
 
             $user->forceFill(['email_verified_at' => $verifiedAt])->save();

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Auth\Notifications\ResetPasswordNotification;
 use App\Auth\Services\AccountTokenService;
 use App\Models\AccountToken;
@@ -13,7 +15,7 @@ beforeEach(function (): void {
     Notification::fake();
 
     $this->owner = User::factory()->create([
-        'email' => 'ada@example.com',
+        'email'    => 'ada@example.com',
         'password' => Hash::make('analytical-engine'),
     ]);
 });
@@ -42,7 +44,7 @@ function requestResetToken(User $user): string
 function resetPassword(string $token, string $password = 'difference-engine')
 {
     return test()->postJson('/api/v1/auth/password/reset', [
-        'token' => $token,
+        'token'    => $token,
         'password' => $password,
     ]);
 }
@@ -68,7 +70,7 @@ it('sets the new password and signs the owner in', function (): void {
 
 it('marks the token used', function (): void {
     $token = requestResetToken($this->owner);
-    $row = AccountToken::query()->sole();
+    $row   = AccountToken::query()->sole();
 
     expect($row->used_at)->toBeNull();
 
@@ -82,7 +84,7 @@ it('rejects a replayed token with the same 410 as an unknown one', function (): 
 
     resetPassword($token)->assertOk();
 
-    $replay = resetPassword($token);
+    $replay  = resetPassword($token);
     $unknown = resetPassword(str_repeat('a', 43));
 
     $replay->assertStatus(410)
@@ -109,7 +111,7 @@ it('revokes every other session and keeps the new one', function (): void {
 
     // A session from before the reset, on another device.
     $stale = Session::query()->create([
-        'user_id' => $this->owner->getKey(),
+        'user_id'    => $this->owner->getKey(),
         'token_hash' => hash('sha256', 'stale-device-token'),
         'expires_at' => now()->addDays(7),
     ]);
@@ -122,7 +124,7 @@ it('revokes every other session and keeps the new one', function (): void {
 
 it('refuses an account with no password and leaves the token alone', function (): void {
     $google = User::factory()->create([
-        'email' => 'grace@example.com',
+        'email'    => 'grace@example.com',
         'password' => null,
         'provider' => AuthIdentity::PROVIDER_GOOGLE,
     ]);
@@ -213,7 +215,7 @@ it('spends a token once, decided by the conditional update alone', function (): 
 });
 
 it('reports an expired, spent, or misdirected token as missing', function (): void {
-    $reset = requestResetToken($this->owner);
+    $reset        = requestResetToken($this->owner);
     $verification = app(AccountTokenService::class)->issue($this->owner, AccountToken::PURPOSE_EMAIL_VERIFICATION);
 
     $find = fn (string $token, string $purpose) => app(AccountTokenService::class)->find($token, $purpose);

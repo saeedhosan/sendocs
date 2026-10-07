@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -45,7 +47,7 @@ class AccountToken extends Model
     {
         return [
             'expires_at' => 'datetime',
-            'used_at' => 'datetime',
+            'used_at'    => 'datetime',
         ];
     }
 }

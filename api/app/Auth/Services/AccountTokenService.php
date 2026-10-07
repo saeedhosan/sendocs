@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Auth\Services;
 
 use App\Models\AccountToken;
@@ -24,8 +26,8 @@ final class AccountTokenService
         $token = SecureToken::generate();
 
         AccountToken::query()->create([
-            'user_id' => $user->getKey(),
-            'purpose' => $purpose,
+            'user_id'    => $user->getKey(),
+            'purpose'    => $purpose,
             'token_hash' => SecureToken::hash($token),
             'expires_at' => now()->addMinutes((int) config('auth.account_token_lifetime_minutes')),
         ]);

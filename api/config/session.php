@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Str;
 
 return [
@@ -21,9 +23,9 @@ return [
     'driver' => env('SESSION_DRIVER', 'database'),
 
     'owner_cookie' => [
-        'name' => env('SESSION_COOKIE', 'sendocs_session'),
+        'name'          => env('SESSION_COOKIE', 'sendocs_session'),
         'lifetime_days' => (int) env('SESSION_LIFETIME_DAYS', 7),
-        'secure' => env('SESSION_SECURE_COOKIE', env('APP_ENV') === 'production'),
+        'secure'        => env('SESSION_SECURE_COOKIE', env('APP_ENV') === 'production'),
     ],
 
     /*

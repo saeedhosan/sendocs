@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Auth\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -27,7 +29,7 @@ class DeleteAccountRequest extends FormRequest
     {
         return [
             'password' => ['required', 'string', 'max:200'],
-            'confirm' => ['required', 'string', 'email', 'max:254'],
+            'confirm'  => ['required', 'string', 'email', 'max:254'],
         ];
     }
 }

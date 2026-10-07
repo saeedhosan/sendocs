@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Auth\Services\GoogleOAuthService;
 use App\Models\AuthIdentity;
 use App\Models\Session;
@@ -27,7 +29,7 @@ beforeEach(function (): void {
 function fakeIdToken(?string $idToken, ?array $response = null): void
 {
     Http::fake([
-        'oauth2.googleapis.com/token' => Http::response($response ?? ['id_token' => $idToken]),
+        'oauth2.googleapis.com/token'        => Http::response($response ?? ['id_token' => $idToken]),
         'www.googleapis.com/oauth2/v3/certs' => Http::response(GoogleToken::jwks()),
     ]);
 }
@@ -46,7 +48,7 @@ function googleStart(): array
 function googleCallback(array $overrides = []): TestResponse
 {
     return test()->getJson('/api/v1/auth/oauth/google/callback?'.http_build_query(array_merge([
-        'code' => 'google-authorization-code',
+        'code'  => 'google-authorization-code',
         'state' => 'state-token',
     ], $overrides)));
 }
@@ -102,12 +104,10 @@ it('sends the pkce verifier and client secret when exchanging the code', functio
 
     googleCallback(['state' => $state])->assertOk();
 
-    Http::assertSent(function (ClientRequest $request): bool {
-        return $request->url() === 'https://oauth2.googleapis.com/token'
-            && $request['code_verifier'] !== ''
-            && $request['client_secret'] === 'test-client-secret'
-            && $request['grant_type'] === 'authorization_code';
-    });
+    Http::assertSent(fn (ClientRequest $request): bool => $request->url() === 'https://oauth2.googleapis.com/token'
+        && $request['code_verifier'] !== ''
+        && $request['client_secret'] === 'test-client-secret'
+        && $request['grant_type']    === 'authorization_code');
 });
 
 it('signs an existing google identity in without creating another owner', function (): void {
@@ -115,8 +115,8 @@ it('signs an existing google identity in without creating another owner', functi
 
     $existing = User::factory()->create(['email' => 'owner@example.com']);
     AuthIdentity::query()->create([
-        'user_id' => $existing->getKey(),
-        'provider' => AuthIdentity::PROVIDER_GOOGLE,
+        'user_id'     => $existing->getKey(),
+        'provider'    => AuthIdentity::PROVIDER_GOOGLE,
         'provider_id' => 'google-subject-1',
     ]);
 
@@ -219,20 +219,20 @@ it('rejects an unverified google email', function (): void {
 });
 
 it('rejects a tampered token', function (): void {
-    $token = GoogleToken::idToken();
+    $token              = GoogleToken::idToken();
     [$header, $payload] = explode('.', $token);
-    $tampered = $header.'.'.rtrim(strtr(base64_encode((string) json_encode([
-        'iss' => 'https://accounts.google.com',
-        'aud' => GoogleToken::CLIENT_ID,
-        'sub' => 'google-subject-1',
-        'email' => 'attacker@example.com',
+    $tampered           = $header.'.'.rtrim(strtr(base64_encode((string) json_encode([
+        'iss'            => 'https://accounts.google.com',
+        'aud'            => GoogleToken::CLIENT_ID,
+        'sub'            => 'google-subject-1',
+        'email'          => 'attacker@example.com',
         'email_verified' => true,
-        'name' => 'Attacker',
-        'exp' => now()->addHour()->getTimestamp(),
+        'name'           => 'Attacker',
+        'exp'            => now()->addHour()->getTimestamp(),
     ])), '+/', '-_'), '=').'.'.explode('.', $token)[2];
 
     Http::fake([
-        'oauth2.googleapis.com/token' => Http::response(['id_token' => $tampered]),
+        'oauth2.googleapis.com/token'        => Http::response(['id_token' => $tampered]),
         'www.googleapis.com/oauth2/v3/certs' => Http::response(GoogleToken::jwks()),
     ]);
 
@@ -266,7 +266,7 @@ it('fails when google returns no id token', function (): void {
 });
 
 it('reports google sign-in as unconfigured when no client id is set', function (): void {
-    config()->set('services.google.client_id', null);
+    config()->set('services.google.client_id');
 
     $this->getJson('/api/v1/auth/oauth/google')
         ->assertStatus(400)
@@ -307,7 +307,7 @@ it('fails the sign-in when google cannot be reached', function (): void {
 
 it('fails the sign-in when the published keys cannot be read', function (): void {
     Http::fake([
-        'oauth2.googleapis.com/token' => Http::response(['id_token' => GoogleToken::idToken()]),
+        'oauth2.googleapis.com/token'        => Http::response(['id_token' => GoogleToken::idToken()]),
         'www.googleapis.com/oauth2/v3/certs' => Http::response('nope', 503),
     ]);
 
@@ -323,12 +323,12 @@ it('resolves two callbacks for one google account to a single owner', function (
 
     $service = app(GoogleOAuthService::class);
     $profile = [
-        'sub' => 'google-subject-1',
+        'sub'   => 'google-subject-1',
         'email' => 'owner@example.com',
-        'name' => 'Owner',
+        'name'  => 'Owner',
     ];
 
-    $first = $service->findOrCreateUser($profile);
+    $first  = $service->findOrCreateUser($profile);
     $second = $service->findOrCreateUser($profile);
 
     expect($second->getKey())->toBe($first->getKey())

@@ -81,6 +81,7 @@
             "rector --dry-run"
         ],
         "test:unit": "pest --parallel",
+        "test:view": "pest",
         "test:types": "phpstan",
         "test": [
             "@test:lint",

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Auth\Actions;
 
 use App\Auth\Services\SessionService;
@@ -9,10 +11,10 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
-final class ChangePassword
+final readonly class ChangePassword
 {
     public function __construct(
-        private readonly SessionService $sessions,
+        private SessionService $sessions,
     ) {}
 
     public function handle(User $user, Session $session, array $attributes): void

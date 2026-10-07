@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Auth\Actions;
 
 use App\Auth\Services\AccountTokenService;
@@ -12,12 +14,12 @@ use App\Models\User;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 
-final class RegisterOwner
+final readonly class RegisterOwner
 {
     public function __construct(
-        private readonly SessionService $sessions,
-        private readonly AccountTokenService $accountTokens,
-        private readonly AuthMailer $mailer,
+        private SessionService $sessions,
+        private AccountTokenService $accountTokens,
+        private AuthMailer $mailer,
     ) {}
 
     /** @return array{user: User, session: Session} */
@@ -30,26 +32,26 @@ final class RegisterOwner
         try {
             [$user, $session] = DB::transaction(function () use ($attributes): array {
                 $user = User::query()->create([
-                    'name' => $attributes['name'],
-                    'email' => $attributes['email'],
+                    'name'     => $attributes['name'],
+                    'email'    => $attributes['email'],
                     'password' => $attributes['password'],
                 ]);
 
                 $session = $this->sessions->issue($user);
-                $token = $this->accountTokens->issue($user, AccountToken::PURPOSE_EMAIL_VERIFICATION);
+                $token   = $this->accountTokens->issue($user, AccountToken::PURPOSE_EMAIL_VERIFICATION);
 
                 DB::afterCommit(fn () => $this->mailer->sendVerification($user, $token));
 
                 return [$user, $session];
             });
-        } catch (QueryException $e) {
-            if ($e->getCode() === '23505') {
+        } catch (QueryException $queryException) {
+            if ($queryException->getCode() === '23505') {
                 throw ApiException::emailTaken();
             }
 
-            throw $e;
+            throw $queryException;
         }
 
-        return compact('user', 'session');
+        return ['user' => $user, 'session' => $session];
     }
 }

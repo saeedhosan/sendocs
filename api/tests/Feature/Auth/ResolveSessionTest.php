@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Auth\Services\CsrfTokenService;
 use App\Models\Session;
 use App\Models\User;
@@ -13,7 +15,7 @@ beforeEach(function (): void {
     $this->withCredentials();
 
     $this->owner = User::factory()->create([
-        'email' => 'ada@example.com',
+        'email'    => 'ada@example.com',
         'password' => Hash::make('analytical-engine'),
     ]);
 });
@@ -28,7 +30,7 @@ beforeEach(function (): void {
 function signIn(string $email = 'ada@example.com', string $password = 'analytical-engine'): Session
 {
     $response = test()->postJson('/api/v1/auth/login', [
-        'email' => $email,
+        'email'    => $email,
         'password' => $password,
     ]);
 
@@ -72,7 +74,7 @@ it('does not expose the session row or its token hash', function (): void {
 it('derives the same csrf token on every call', function (): void {
     $session = signIn();
 
-    $first = $this->getJson('/api/v1/auth/session')->json('csrfToken');
+    $first  = $this->getJson('/api/v1/auth/session')->json('csrfToken');
     $second = $this->getJson('/api/v1/auth/session')->json('csrfToken');
 
     expect($first)->toBe($second)
@@ -148,7 +150,7 @@ it('rate limits session resolution per owner', function (): void {
 
 it('keeps one owner over the limit from spending another owner allowance', function (): void {
     User::factory()->create([
-        'email' => 'grace@example.com',
+        'email'    => 'grace@example.com',
         'password' => Hash::make('cobol-coffee'),
     ]);
 

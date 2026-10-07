@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Auth\Notifications\ResetPasswordNotification;
 use App\Models\AuthIdentity;
 use App\Models\User;
@@ -12,7 +14,7 @@ beforeEach(function (): void {
     $this->withCredentials();
 
     $this->owner = User::factory()->create([
-        'email' => 'ada@example.com',
+        'email'    => 'ada@example.com',
         'password' => Hash::make('analytical-engine'),
     ]);
 });
@@ -43,7 +45,7 @@ it('recovers an account from a forgotten password', function (): void {
 
     // A session from before the recovery, on another device.
     $stale = test()->postJson('/api/v1/auth/login', [
-        'email' => 'ada@example.com',
+        'email'    => 'ada@example.com',
         'password' => 'analytical-engine',
     ])->assertOk()->getCookie(sessionCookieName(), decrypt: false)->getValue();
 
@@ -53,7 +55,7 @@ it('recovers an account from a forgotten password', function (): void {
     $token = rawResetToken();
 
     $reset = $this->postJson('/api/v1/auth/password/reset', [
-        'token' => $token,
+        'token'    => $token,
         'password' => 'difference-engine',
     ]);
 
@@ -67,7 +69,7 @@ it('recovers an account from a forgotten password', function (): void {
 
     // The old password is dead, everywhere.
     $this->postJson('/api/v1/auth/login', [
-        'email' => 'ada@example.com',
+        'email'    => 'ada@example.com',
         'password' => 'analytical-engine',
     ])
         ->assertStatus(401)
@@ -80,7 +82,7 @@ it('recovers an account from a forgotten password', function (): void {
 
     // The new password works, and the device that reset it is signed in.
     $login = $this->postJson('/api/v1/auth/login', [
-        'email' => 'ada@example.com',
+        'email'    => 'ada@example.com',
         'password' => 'difference-engine',
     ]);
 
@@ -95,7 +97,7 @@ it('recovers an account from a forgotten password', function (): void {
 it('answers a password reset identically for an unknown address', function (): void {
     Notification::fake();
 
-    $known = $this->postJson('/api/v1/auth/password/forgot', ['email' => 'ada@example.com']);
+    $known   = $this->postJson('/api/v1/auth/password/forgot', ['email' => 'ada@example.com']);
     $unknown = $this->postJson('/api/v1/auth/password/forgot', ['email' => 'nobody@example.com']);
 
     $known->assertStatus(202);
@@ -116,12 +118,12 @@ it('spends a reset link once', function (): void {
     $token = rawResetToken();
 
     $this->postJson('/api/v1/auth/password/reset', [
-        'token' => $token,
+        'token'    => $token,
         'password' => 'difference-engine',
     ])->assertOk();
 
     $replay = $this->postJson('/api/v1/auth/password/reset', [
-        'token' => $token,
+        'token'    => $token,
         'password' => 'analytical-engine',
     ]);
 
@@ -129,19 +131,19 @@ it('spends a reset link once', function (): void {
 
     // The replay did not put the first password back.
     $this->postJson('/api/v1/auth/login', [
-        'email' => 'ada@example.com',
+        'email'    => 'ada@example.com',
         'password' => 'difference-engine',
     ])->assertOk();
 });
 
 it('keeps the caller signed in on their own device when they change the password', function (): void {
     $laptop = test()->postJson('/api/v1/auth/login', [
-        'email' => 'ada@example.com',
+        'email'    => 'ada@example.com',
         'password' => 'analytical-engine',
     ])->assertOk()->getCookie(sessionCookieName(), decrypt: false)->getValue();
 
     $phone = test()->postJson('/api/v1/auth/login', [
-        'email' => 'ada@example.com',
+        'email'    => 'ada@example.com',
         'password' => 'analytical-engine',
     ])->assertOk()->getCookie(sessionCookieName(), decrypt: false)->getValue();
 
@@ -150,7 +152,7 @@ it('keeps the caller signed in on their own device when they change the password
 
     $this->postJson('/api/v1/auth/password/change', [
         'currentPassword' => 'analytical-engine',
-        'password' => 'difference-engine',
+        'password'        => 'difference-engine',
     ], ['X-CSRF-Token' => $session->json('csrfToken')])
         ->assertNoContent();
 
@@ -165,7 +167,7 @@ it('keeps the caller signed in on their own device when they change the password
 
     // The new password is the one that works.
     $this->postJson('/api/v1/auth/login', [
-        'email' => 'ada@example.com',
+        'email'    => 'ada@example.com',
         'password' => 'difference-engine',
     ])->assertOk();
 });
@@ -174,7 +176,7 @@ it('refuses a password change from a passwordless account and recovers nothing',
     Notification::fake();
 
     $google = User::factory()->create([
-        'email' => 'grace@example.com',
+        'email'    => 'grace@example.com',
         'password' => null,
         'provider' => AuthIdentity::PROVIDER_GOOGLE,
     ]);
@@ -186,7 +188,7 @@ it('refuses a password change from a passwordless account and recovers nothing',
 
     $this->postJson('/api/v1/auth/password/change', [
         'currentPassword' => 'anything at all',
-        'password' => 'difference-engine',
+        'password'        => 'difference-engine',
     ], ['X-CSRF-Token' => csrfFor($session)])
         ->assertStatus(400)
         ->assertJsonPath('error.code', 'password_not_supported');

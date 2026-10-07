@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\AccountToken;
 use App\Models\AuthIdentity;
 use App\Models\Session;
@@ -13,7 +15,7 @@ beforeEach(function (): void {
     $this->withCredentials();
 
     $this->owner = User::factory()->create([
-        'email' => 'ada@example.com',
+        'email'    => 'ada@example.com',
         'password' => Hash::make('analytical-engine'),
     ]);
 });
@@ -29,7 +31,7 @@ function deleteAccount(
 ) {
     return test()->deleteJson('/api/v1/auth/account', [
         'password' => $password,
-        'confirm' => $confirm,
+        'confirm'  => $confirm,
     ], $csrf === null ? [] : ['X-CSRF-Token' => $csrf]);
 }
 
@@ -39,15 +41,15 @@ it('deletes the account and everything hanging off it', function (): void {
     // One row of each kind that cascades, so the delete is proven to cascade
     // rather than to leave rows pointing at nothing.
     AccountToken::query()->create([
-        'user_id' => $this->owner->getKey(),
-        'purpose' => AccountToken::PURPOSE_EMAIL_VERIFICATION,
+        'user_id'    => $this->owner->getKey(),
+        'purpose'    => AccountToken::PURPOSE_EMAIL_VERIFICATION,
         'token_hash' => hash('sha256', 'a-verification-token'),
         'expires_at' => now()->addHour(),
     ]);
 
     AuthIdentity::query()->create([
-        'user_id' => $this->owner->getKey(),
-        'provider' => AuthIdentity::PROVIDER_GOOGLE,
+        'user_id'     => $this->owner->getKey(),
+        'provider'    => AuthIdentity::PROVIDER_GOOGLE,
         'provider_id' => '1234567890',
     ]);
 
@@ -112,7 +114,7 @@ it('requires the confirmation to match the stored address', function (): void {
 
 it('refuses an account with no password', function (): void {
     $google = User::factory()->create([
-        'email' => 'grace@example.com',
+        'email'    => 'grace@example.com',
         'password' => null,
         'provider' => AuthIdentity::PROVIDER_GOOGLE,
     ]);
@@ -133,7 +135,7 @@ it('refuses an account with no password', function (): void {
 it('needs a session', function (): void {
     $this->deleteJson('/api/v1/auth/account', [
         'password' => 'analytical-engine',
-        'confirm' => 'ada@example.com',
+        'confirm'  => 'ada@example.com',
     ])
         ->assertStatus(401)
         ->assertJsonPath('error.code', 'unauthenticated');
@@ -162,7 +164,7 @@ it('validates the payload and keeps the account', function (): void {
 
     test()->deleteJson('/api/v1/auth/account', [
         'password' => 'analytical-engine',
-        'confirm' => 'not-an-email',
+        'confirm'  => 'not-an-email',
     ], ['X-CSRF-Token' => csrfFor($session)])
         ->assertStatus(422)
         ->assertJsonStructure(['error' => ['details' => ['confirm']]]);

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Auth\Notifications\ResetPasswordNotification;
 use App\Auth\Services\SecureToken;
 use App\Models\AccountToken;
@@ -12,7 +14,7 @@ beforeEach(function (): void {
     Notification::fake();
 
     $this->owner = User::factory()->create([
-        'email' => 'ada@example.com',
+        'email'    => 'ada@example.com',
         'password' => Hash::make('analytical-engine'),
     ]);
 });
@@ -71,7 +73,7 @@ it('queues a reset email for an address on file', function (): void {
 });
 
 it('answers an unknown address with the same body as a known one', function (): void {
-    $known = $this->postJson('/api/v1/auth/password/forgot', ['email' => 'ada@example.com']);
+    $known   = $this->postJson('/api/v1/auth/password/forgot', ['email' => 'ada@example.com']);
     $unknown = $this->postJson('/api/v1/auth/password/forgot', ['email' => 'nobody@example.com']);
 
     $known->assertStatus(202);
@@ -83,14 +85,14 @@ it('answers an unknown address with the same body as a known one', function (): 
 
 it('sends nothing to an account with no password', function (): void {
     $google = User::factory()->create([
-        'email' => 'grace@example.com',
+        'email'    => 'grace@example.com',
         'password' => null,
         'provider' => AuthIdentity::PROVIDER_GOOGLE,
     ]);
 
     AuthIdentity::query()->create([
-        'user_id' => $google->getKey(),
-        'provider' => AuthIdentity::PROVIDER_GOOGLE,
+        'user_id'          => $google->getKey(),
+        'provider'         => AuthIdentity::PROVIDER_GOOGLE,
         'provider_user_id' => '108765432109876543210',
     ]);
 
