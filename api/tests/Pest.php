@@ -44,7 +44,7 @@ pest()->extend(TestCase::class)
 |
 */
 
-expect()->extend('toBeOne', fn () => $this->toBe(1));
+expect()->extend('toBeOne', fn() => $this->toBe(1));
 
 /*
 |--------------------------------------------------------------------------
@@ -157,7 +157,7 @@ function csrfFor(Session $session): string
 function queuedSessionToken(): string
 {
     $queued = collect(Cookie::getQueuedCookies())
-        ->first(fn (SymfonyCookie $cookie): bool => $cookie->getName() === sessionCookieName());
+        ->first(fn(SymfonyCookie $cookie): bool => $cookie->getName() === sessionCookieName());
 
     expect($queued)->not->toBeNull();
 
@@ -189,7 +189,7 @@ function catchVerificationNotification(): VerifyEmailNotification
         },
     );
 
-    return $notification;
+    return $notification ?? throw new LogicException('Verification notification was not captured.');
 }
 
 /**
