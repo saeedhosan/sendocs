@@ -4,7 +4,6 @@ use App\Models\Session;
 use App\Models\User;
 use Illuminate\Hashing\HashManager;
 use Illuminate\Support\Facades\Hash;
-use Mockery;
 
 function loginOwner(array $attributes = [])
 {
