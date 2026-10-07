@@ -46,7 +46,7 @@ jobs:
 
       - name: Lint
         working-directory: api
-        run: composer test:lint
+        run: composer lint
 
       - name: Test
         working-directory: api
