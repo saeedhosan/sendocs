@@ -80,7 +80,7 @@
             "pint --parallel --test",
             "rector --dry-run"
         ],
-        "test:unit": "pest --parallel",
+        "test:unit": "pest",
         "test:types": "phpstan",
         "test": [
             "@test:lint",
