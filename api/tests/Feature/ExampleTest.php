@@ -1,7 +1,7 @@
 <?php
 
-test('the application returns a successful response', function () {
-    $response = $this->get('/');
+test('the OpenAPI document is available', function (): void {
+    $response = $this->get('/docs/openapi.yaml');
 
-    $response->assertStatus(200);
+    $response->assertOk();
 });
