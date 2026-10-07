@@ -3,6 +3,7 @@
 namespace App\Auth\Resources;
 
 use App\Models\User;
+use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -23,11 +24,15 @@ class UserResource extends JsonResource
         /** @var User $user */
         $user = $this->resource;
 
+        $emailVerifiedAt = $user->getRawOriginal('email_verified_at');
+
         return [
             'id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,
-            'emailVerifiedAt' => $user->email_verified_at?->toIso8601String(),
+            'emailVerifiedAt' => is_string($emailVerifiedAt)
+                ? Carbon::parse($emailVerifiedAt)->toIso8601String()
+                : null,
         ];
     }
 }
