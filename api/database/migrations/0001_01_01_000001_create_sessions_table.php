@@ -10,10 +10,19 @@ return new class extends Migration
     {
         Schema::create('sessions', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('user_id')->constrained()->cascadeOnDelete();
+
+            $table->string('id')->primary();
+            $table->foreignId('user_id')->nullable()->index();
+            $table->string('ip_address', 45)->nullable();
+            $table->text('user_agent')->nullable();
+            $table->longText('payload')->nullable();
+            $table->integer('last_activity')->nullable()->index();
+            
             $table->char('token_hash', 64)->unique();
             $table->timestampTz('expires_at')->index();
             $table->timestampTz('created_at')->useCurrent();
+
+           
         });
     }
 
