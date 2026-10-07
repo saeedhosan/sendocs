@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * An issued owner session. Only the SHA-256 hash of the cookie value is stored.
+ *
+ * @property \Illuminate\Support\Carbon $expires_at
  */
 #[Fillable(['user_id', 'token_hash', 'expires_at'])]
 class Session extends Model
@@ -27,11 +29,6 @@ class Session extends Model
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
