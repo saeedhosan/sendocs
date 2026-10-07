@@ -15,6 +15,7 @@
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
+        "larastan/larastan": "*",
         "laravel/boost": "^2.2",
         "laravel/pail": "^1.2.5",
         "laravel/pao": "^1.0.6",
@@ -22,7 +23,9 @@
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
         "pestphp/pest": "^5.3",
-        "pestphp/pest-plugin-laravel": "^5.0"
+        "pestphp/pest-plugin-laravel": "^5.0",
+        "pestphp/pest-plugin-type-coverage": "*",
+        "rector/rector": "*"
     },
     "autoload": {
         "psr-4": {
@@ -49,13 +52,6 @@
             "Composer\\Config::disableProcessTimeout",
             "@php artisan dev"
         ],
-        "test": [
-            "@php artisan config:clear --ansi @no_additional_args",
-            "@php artisan test"
-        ],
-        "lint": [
-            "@php vendor/bin/pint --test"
-        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
@@ -74,6 +70,23 @@
         ],
         "pre-package-uninstall": [
             "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
+        ],
+        "lint": [
+            "rector",
+            "pint --parallel"
+        ],
+        "test:coverage": "pest --type-coverage --min=100",
+        "test:lint": [
+            "pint --parallel --test",
+            "rector --dry-run"
+        ],
+        "test:unit": "pest --parallel --coverage --exactly=100.0",
+        "test:types": "phpstan",
+        "test": [
+            "@test:lint",
+            "@test:types",
+            "@test:coverage",
+            "@test:unit"
         ]
     },
     "extra": {
