@@ -5,6 +5,7 @@ use App\Models\AuthIdentity;
 use App\Models\Session;
 use App\Models\User;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\Request as ClientRequest;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Testing\TestResponse;
@@ -101,7 +102,7 @@ it('sends the pkce verifier and client secret when exchanging the code', functio
 
     googleCallback(['state' => $state])->assertOk();
 
-    Http::assertSent(function ($request): bool {
+    Http::assertSent(function (ClientRequest $request): bool {
         return $request->url() === 'https://oauth2.googleapis.com/token'
             && $request['code_verifier'] !== ''
             && $request['client_secret'] === 'test-client-secret'
