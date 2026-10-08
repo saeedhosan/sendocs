@@ -5,23 +5,26 @@ declare(strict_types=1);
 namespace App\DocumentRequests\Resources;
 
 use App\Models\DocumentRequest;
-use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 
 class RequestDetailResource extends JsonResource
 {
-    /**
-     * @property Carbon $created_at
-     * @property Carbon $expires_at
-     * @property Carbon|null $revoked_at
-     */
     /** @return array<string, mixed> */
     public function toArray(Request $request): array
     {
         /** @var DocumentRequest $model */
         $model = $this->resource;
         $items = $model->items;
+
+        $createdAt = $model->getAttributeValue('created_at');
+        $expiresAt = $model->getAttributeValue('expires_at');
+        $revokedAt = $model->getAttributeValue('revoked_at');
+
+        assert($createdAt instanceof Carbon);
+        assert($expiresAt instanceof Carbon);
+        assert($revokedAt === null || $revokedAt instanceof Carbon);
 
         return [
             'id' => $model->getKey(),
@@ -30,9 +33,9 @@ class RequestDetailResource extends JsonResource
             'uploaded' => 0,
             'total' => count($items),
             'lastActivityAt' => null,
-            'createdAt' => $model->created_at->toIso8601String(),
-            'expiresAt' => $model->expires_at->toIso8601String(),
-            'revokedAt' => $model->revoked_at?->toIso8601String(),
+            'createdAt' => $createdAt->toIso8601String(),
+            'expiresAt' => $expiresAt->toIso8601String(),
+            'revokedAt' => $revokedAt?->toIso8601String(),
             'items' => array_map(static fn ($item): array => [
                 'id' => $item->getKey(),
                 'label' => $item->label,
