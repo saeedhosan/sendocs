@@ -70,11 +70,11 @@ test('uploads one file and returns the updated portal view', function (): void {
     expect($document->storage_key)
         ->toStartWith($request->getKey().'/')
         ->and($document->sha256)
-        ->toBe(hash_file('sha256', $document->storage_key) ?: $document->sha256);
+        ->toBe(hash('sha256', Storage::disk('s3')->get($document->storage_key)));
 });
 
 test('rejects a second upload for the same item and keeps the first file', function (): void {
-    [, $items, $token] = portalUploadFixture();
+    [$request, $items, $token] = portalUploadFixture();
 
     uploadPortal($token, $items[0]->getKey(), validPdf('first.pdf'))->assertOk();
 
@@ -88,7 +88,7 @@ test('rejects a second upload for the same item and keeps the first file', funct
         ]);
 
     expect(Document::query()->where('request_item_id', $items[0]->getKey())->count())->toBe(1);
-    Storage::disk('s3')->assertCount($items[0]->getKey() ? $items[0]->request_id : '', 1);
+    Storage::disk('s3')->assertCount($request->getKey(), 1);
 });
 
 test('returns 404 when the item is not on the resolved request', function (): void {
