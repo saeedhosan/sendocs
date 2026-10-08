@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\DocumentRequests\Resources;
 
+use App\DocumentRequests\Services\DocumentDownloadUrl;
 use App\Models\DocumentRequest;
 use App\Models\RequestItem;
 use Illuminate\Http\Request;
@@ -18,6 +19,7 @@ class RequestDetailResource extends JsonResource
         /** @var DocumentRequest $model */
         $model = $this->resource;
         $items = $model->items;
+        $downloadUrls = app(DocumentDownloadUrl::class);
 
         $createdAt = $model->getAttributeValue('created_at');
         $expiresAt = $model->getAttributeValue('expires_at');
@@ -56,7 +58,7 @@ class RequestDetailResource extends JsonResource
             'createdAt' => $createdAt->toIso8601String(),
             'expiresAt' => $expiresAt->toIso8601String(),
             'revokedAt' => $revokedAt?->toIso8601String(),
-            'items' => array_map(static function (RequestItem $item): array {
+            'items' => array_map(static function (RequestItem $item) use ($downloadUrls): array {
                 $document = $item->document;
 
                 if ($document === null) {
@@ -83,7 +85,7 @@ class RequestDetailResource extends JsonResource
                         'mimeType' => $document->mime_type,
                         'sizeBytes' => $document->size_bytes,
                         'uploadedAt' => $uploadedAt->toIso8601String(),
-                        'downloadUrl' => null,
+                        'downloadUrl' => $downloadUrls->for($document),
                     ],
                 ];
             }, $items->all()),
