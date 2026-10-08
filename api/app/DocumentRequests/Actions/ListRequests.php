@@ -38,7 +38,7 @@ final readonly class ListRequests
 
         return DocumentRequest::query()
             ->where('owner_id', $owner->getKey())
-            ->with('items')
+            ->with('items.document')
             ->orderByDesc('created_at')
             ->orderByDesc('id')
             ->cursorPaginate($limit, ['*'], 'cursor', $cursor);
