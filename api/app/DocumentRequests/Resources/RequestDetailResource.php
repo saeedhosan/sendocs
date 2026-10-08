@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\DocumentRequests\Resources;
 
 use App\Models\DocumentRequest;
+use App\Models\RequestItem;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Carbon;
@@ -36,7 +37,7 @@ class RequestDetailResource extends JsonResource
             'createdAt' => $createdAt->toIso8601String(),
             'expiresAt' => $expiresAt->toIso8601String(),
             'revokedAt' => $revokedAt?->toIso8601String(),
-            'items' => array_map(static fn ($item): array => [
+            'items' => array_map(static fn (RequestItem $item): array => [
                 'id' => $item->getKey(),
                 'label' => $item->label,
                 'position' => $item->position,
