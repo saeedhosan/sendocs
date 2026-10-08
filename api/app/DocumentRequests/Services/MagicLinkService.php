@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\DocumentRequests\Services;
 
 use App\Auth\Services\SecureToken;
-use App\Models\DocumentRequest;
 
 final readonly class MagicLinkService
 {
