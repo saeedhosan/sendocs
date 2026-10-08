@@ -66,6 +66,14 @@ test('returns 404 when the item belongs to another request', function (): void {
     $request = makeDeleteDocumentRequest($owner, 'Mine', 1);
     $otherRequest = makeDeleteDocumentRequest($otherOwner, 'Other', 1);
     $item = $otherRequest->items()->firstOrFail();
+    $item->document()->create([
+        'storage_key' => 'requests/other/file.pdf',
+        'original_name' => 'other.pdf',
+        'mime_type' => 'application/pdf',
+        'size_bytes' => 3,
+        'sha256' => hash('sha256', 'pdf'),
+        'uploaded_at' => now(),
+    ]);
 
     deleteDocumentRequest($owner, $request->getKey(), $item->getKey())
         ->assertStatus(404)
