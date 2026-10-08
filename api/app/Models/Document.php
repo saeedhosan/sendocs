@@ -9,10 +9,10 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['request_item_id', 'storage_key', 'original_name', 'mime_type', 'size_bytes', 'sha256', 'uploaded_at'])]
 /**
  * @property \Illuminate\Support\Carbon $uploaded_at
  */
+#[Fillable(['request_item_id', 'storage_key', 'original_name', 'mime_type', 'size_bytes', 'sha256', 'uploaded_at'])]
 class Document extends Model
 {
     use HasUuids;
