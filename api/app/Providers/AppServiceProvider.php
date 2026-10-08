@@ -84,6 +84,9 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('auth.logout', fn (Request $request) => Limit::perMinute(120)
             ->by($request->user()?->getKey() ?? $request->ip()));
 
+        RateLimiter::for('document-requests.write', fn (Request $request) => Limit::perMinute(120)
+            ->by($request->user()?->getKey() ?? $request->ip()));
+
         // The owner guard reads the opaque cookie from the sessions table.
         Auth::viaRequest('owner', function (Request $request) {
             $session = app(SessionService::class)->resolveFromRequest($request);
