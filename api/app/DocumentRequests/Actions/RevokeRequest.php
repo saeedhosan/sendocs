@@ -7,7 +7,6 @@ namespace App\DocumentRequests\Actions;
 use App\Exceptions\ApiException;
 use App\Models\DocumentRequest;
 use App\Models\User;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 final readonly class RevokeRequest
@@ -26,7 +25,7 @@ final readonly class RevokeRequest
             }
 
             if ($request->revoked_at === null) {
-                $request->revoked_at = Carbon::now()->toDateTimeString();
+                $request->revoked_at = now()->toDateTimeString();
                 $request->save();
             }
 
