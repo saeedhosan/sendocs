@@ -26,7 +26,7 @@ final readonly class RevokeRequest
             }
 
             if ($request->revoked_at === null) {
-                $request->revoked_at = Carbon::now();
+                $request->revoked_at = Carbon::now()->toDateTimeString();
                 $request->save();
             }
 
