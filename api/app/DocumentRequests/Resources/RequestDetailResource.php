@@ -5,11 +5,17 @@ declare(strict_types=1);
 namespace App\DocumentRequests\Resources;
 
 use App\Models\DocumentRequest;
+use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class RequestDetailResource extends JsonResource
 {
+    /**
+     * @property Carbon $created_at
+     * @property Carbon $expires_at
+     * @property Carbon|null $revoked_at
+     */
     /** @return array<string, mixed> */
     public function toArray(Request $request): array
     {
