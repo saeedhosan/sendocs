@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 use App\Models\DocumentRequest;
 use App\Models\User;
+use App\Auth\Services\CsrfTokenService;
 use App\Auth\Services\SessionService;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Testing\TestResponse;
 
 function makeDeleteDocumentRequest(User $owner, string $title, int $itemCount): DocumentRequest
 {
@@ -113,7 +115,7 @@ test('rate limits document deletion', function (): void {
     app(SessionService::class)->issue($owner);
     test()->withCredentials();
     useDevice(queuedSessionToken());
-    test()->withHeader('X-CSRF-Token', csrfToken());
+    test()->withHeader('X-CSRF-Token', app(CsrfTokenService::class)->derive(app(SessionService::class)->current()->getKey()));
 
     for ($i = 0; $i < 120; $i++) {
         test()->deleteJson("/api/v1/requests/{$request->getKey()}/items/{$item->getKey()}/document")
