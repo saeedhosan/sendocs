@@ -5,12 +5,10 @@ declare(strict_types=1);
 namespace App\Portal\Controllers;
 
 use App\DocumentRequests\Actions\UploadDocument;
-use App\Exceptions\ApiException;
 use App\Models\DocumentRequest;
 use App\Portal\Resources\PortalViewResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\UploadedFile;
 use LogicException;
 
 final class PortalController
@@ -22,14 +20,13 @@ final class PortalController
 
     public function upload(
         Request $request,
-        string $itemId,
         UploadDocument $uploadDocument,
     ): JsonResponse {
         $portalRequest = $this->portalRequest($request);
 
         $uploadDocument->handle(
             $portalRequest,
-            $itemId,
+            (string) $request->route('itemId'),
             $request->file('file'),
         );
 
