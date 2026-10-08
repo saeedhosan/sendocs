@@ -87,6 +87,9 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('portal.read', fn (Request $request) => Limit::perMinute(60)
             ->by($request->ip()));
 
+        RateLimiter::for('portal.upload', fn (Request $request) => Limit::perHour(30)
+            ->by($request->ip()));
+
         RateLimiter::for('document-requests.read', fn (Request $request) => Limit::perMinute(120)
             ->by($request->user()?->getKey() ?? $request->ip()));
 

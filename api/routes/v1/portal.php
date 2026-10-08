@@ -6,9 +6,17 @@ use App\Portal\Controllers\PortalController;
 use App\Portal\Middleware\ResolveMagicLink;
 use Illuminate\Support\Facades\Route;
 
-Route::get('portal/{token}', [PortalController::class, 'show'])
+Route::middleware([
+    'throttle:portal.read',
+    ResolveMagicLink::class,
+])->group(function (): void {
+    Route::get('portal/{token}', [PortalController::class, 'show'])
+        ->name('portal.show');
+});
+
+Route::post('portal/{token}/items/{itemId}/file', [PortalController::class, 'upload'])
     ->middleware([
-        'throttle:portal.read',
+        'throttle:portal.upload',
         ResolveMagicLink::class,
     ])
-    ->name('portal.show');
+    ->name('portal.items.file.store');

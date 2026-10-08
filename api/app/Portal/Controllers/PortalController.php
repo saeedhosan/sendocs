@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Portal\Controllers;
 
+use App\DocumentRequests\Actions\UploadDocument;
 use App\Models\DocumentRequest;
 use App\Portal\Resources\PortalViewResource;
 use Illuminate\Http\JsonResponse;
@@ -14,16 +15,44 @@ final class PortalController
 {
     public function show(Request $request): JsonResponse
     {
+        return $this->view($request);
+    }
+
+    public function upload(
+        Request $request,
+        UploadDocument $uploadDocument,
+    ): JsonResponse {
+        $portalRequest = $this->portalRequest($request);
+
+        $uploadDocument->handle(
+            $portalRequest,
+            (string) $request->route('itemId'),
+            $request->file('file'),
+        );
+
+        $portalRequest->load('items.document');
+
+        return $this->view($request);
+    }
+
+    private function view(Request $request): JsonResponse
+    {
+        $portalRequest = $this->portalRequest($request);
+        $portalRequest->load('items.document');
+
+        return response()->json(
+            PortalViewResource::make($portalRequest)->resolve($request),
+        );
+    }
+
+    private function portalRequest(Request $request): DocumentRequest
+    {
         $portalRequest = $request->attributes->get('portal.request');
 
         if (! $portalRequest instanceof DocumentRequest) {
             throw new LogicException('Portal request was not resolved by middleware.');
         }
 
-        $portalRequest->load('items');
-
-        return response()->json(
-            PortalViewResource::make($portalRequest)->resolve($request),
-        );
+        return $portalRequest;
     }
 }

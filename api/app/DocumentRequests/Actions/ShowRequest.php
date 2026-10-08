@@ -15,7 +15,7 @@ final readonly class ShowRequest
         $request = DocumentRequest::query()
             ->whereKey($requestId)
             ->where('owner_id', $owner->getKey())
-            ->with('items')
+            ->with('items.document')
             ->first();
 
         if ($request === null) {

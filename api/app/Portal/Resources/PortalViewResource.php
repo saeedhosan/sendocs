@@ -22,21 +22,60 @@ final class PortalViewResource extends JsonResource
         assert($expiresAt instanceof Carbon);
 
         $items = $model->items;
+        $uploaded = 0;
+        $lastActivityAt = null;
+
+        foreach ($items as $item) {
+            $document = $item->document;
+
+            if ($document === null) {
+                continue;
+            }
+
+            $uploaded++;
+            $uploadedAt = $document->getAttributeValue('uploaded_at');
+            assert($uploadedAt instanceof Carbon);
+
+            if ($lastActivityAt === null || $uploadedAt->greaterThan($lastActivityAt)) {
+                $lastActivityAt = $uploadedAt;
+            }
+        }
 
         return [
             'title' => $model->title,
-            'status' => 'waiting',
-            'uploaded' => 0,
-            'total' => count($items),
-            'lastActivityAt' => null,
+            'status' => $uploaded === $items->count() ? 'complete' : 'waiting',
+            'uploaded' => $uploaded,
+            'total' => $items->count(),
+            'lastActivityAt' => $lastActivityAt?->toIso8601String(),
             'expiresAt' => $expiresAt->toIso8601String(),
-            'items' => array_map(static fn (RequestItem $item): array => [
-                'id' => $item->getKey(),
-                'label' => $item->label,
-                'position' => $item->position,
-                'state' => 'waiting',
-                'file' => null,
-            ], $items->all()),
+            'items' => array_map(static function (RequestItem $item): array {
+                $document = $item->document;
+
+                if ($document === null) {
+                    return [
+                        'id' => $item->getKey(),
+                        'label' => $item->label,
+                        'position' => $item->position,
+                        'state' => 'waiting',
+                        'file' => null,
+                    ];
+                }
+
+                $uploadedAt = $document->getAttributeValue('uploaded_at');
+                assert($uploadedAt instanceof Carbon);
+
+                return [
+                    'id' => $item->getKey(),
+                    'label' => $item->label,
+                    'position' => $item->position,
+                    'state' => 'uploaded',
+                    'file' => [
+                        'originalName' => $document->original_name,
+                        'sizeBytes' => $document->size_bytes,
+                        'uploadedAt' => $uploadedAt->toIso8601String(),
+                    ],
+                ];
+            }, $items->all()),
         ];
     }
 }
