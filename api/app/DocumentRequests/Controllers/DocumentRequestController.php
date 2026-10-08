@@ -61,7 +61,7 @@ class DocumentRequestController
         string $itemId,
         DeleteDocument $delete,
         Request $request,
-    ): \Illuminate\\Http\\Response {
+    ): \Illuminate\Http\Response {
         $documentRequest = app(ShowRequest::class)->handle($request->user(), $requestId);
         $delete->execute($documentRequest, $itemId);
 
