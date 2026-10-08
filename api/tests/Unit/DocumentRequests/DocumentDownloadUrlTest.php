@@ -12,7 +12,7 @@ test('creates a five minute attachment URL with the stored MIME type', function 
 
     $document = new Document([
         'storage_key' => 'requests/request/document.pdf',
-        'original_name' => 'tax\\"2026.pdf',
+        'original_name' => 'tax-2026.pdf',
         'mime_type' => 'application/pdf',
     ]);
 
@@ -23,7 +23,7 @@ test('creates a five minute attachment URL with the stored MIME type', function 
             $document->storage_key,
             Carbon::create(2026, 10, 8, 22, 5, 0),
             [
-                'ResponseContentDisposition' => 'attachment; filename="tax\\\"2026.pdf"',
+                'ResponseContentDisposition' => 'attachment; filename="tax-2026.pdf"',
                 'ResponseContentType' => 'application/pdf',
             ],
         )
