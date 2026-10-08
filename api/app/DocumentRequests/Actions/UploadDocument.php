@@ -42,9 +42,8 @@ final readonly class UploadDocument
             );
         }
 
-        $item = RequestItem::query()
+        $item = $portalRequest->items()
             ->whereKey($itemId)
-            ->where('request_id', $portalRequest->getKey())
             ->first();
 
         if ($item === null) {
