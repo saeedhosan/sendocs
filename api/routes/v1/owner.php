@@ -14,6 +14,10 @@ Route::post('requests', [DocumentRequestController::class, 'store'])
     ->middleware([VerifyCsrfToken::class, 'throttle:document-requests.write'])
     ->name('requests.store');
 
+Route::post('requests/{requestId}/revoke', [DocumentRequestController::class, 'revoke'])
+    ->middleware([VerifyCsrfToken::class, 'throttle:document-requests.write'])
+    ->name('requests.revoke');
+
 Route::get('requests/{requestId}', [DocumentRequestController::class, 'show'])
     ->middleware('throttle:document-requests.read')
     ->name('requests.show');
