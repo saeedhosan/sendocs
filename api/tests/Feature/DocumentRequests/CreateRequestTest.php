@@ -11,9 +11,7 @@ function createRequestAsOwner(array $attributes = [])
 {
     $owner = User::factory()->create();
     $session = app(SessionService::class)->issue($owner);
-
-    test()->withUnencryptedCookie(sessionCookieName(), collect(Cookie::getQueuedCookies())->last()->getValue());
-    Auth::forgetGuards();
+    useDevice(queuedSessionToken());
 
     return [
         'response' => test()->postJson(
@@ -53,7 +51,7 @@ test('creates a request with ordered items and returns the magic link once', fun
         ->assertJsonPath('request.items.1.position', 2)
         ->assertJsonPath('request.items.0.state', 'waiting')
         ->assertJsonPath('request.items.0.document', null)
-        ->assertJsonPath('link.expiresAt', fn ($value) => is_string($value))
+        ->assertJsonPath('link.expiresAt', $response->json('request.expiresAt'))
         ->assertJsonStructure([
             'request' => ['id', 'title', 'status', 'uploaded', 'total', 'createdAt', 'expiresAt', 'revokedAt', 'items'],
             'link' => ['url', 'expiresAt'],
@@ -80,8 +78,7 @@ test('requires an authenticated owner and csrf token', function (): void {
 
     $owner = User::factory()->create();
     $session = app(SessionService::class)->issue($owner);
-    test()->withUnencryptedCookie(sessionCookieName(), collect(Cookie::getQueuedCookies())->last()->getValue());
-    Auth::forgetGuards();
+    useDevice(queuedSessionToken());
 
     test()->postJson('/api/v1/requests', [
         'title' => 'Tax Documents',
@@ -141,8 +138,7 @@ test('rolls back the request and items when an item insert fails', function (): 
 test('rate limits request creation to 120 attempts per minute per owner', function (): void {
     $owner = User::factory()->create();
     $session = app(SessionService::class)->issue($owner);
-    test()->withUnencryptedCookie(sessionCookieName(), collect(Cookie::getQueuedCookies())->last()->getValue());
-    Auth::forgetGuards();
+    useDevice(queuedSessionToken());
     $csrf = app(CsrfTokenService::class)->derive($session->getKey());
 
     foreach (range(1, 120) as $number) {
