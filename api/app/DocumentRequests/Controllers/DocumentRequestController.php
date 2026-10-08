@@ -73,6 +73,7 @@ class DocumentRequestController
         string $requestId,
         string $itemId,
         DeleteDocument $delete,
+        ShowRequest $show,
         Request $request,
     ): \Illuminate\Http\Response {
         $documentRequest = $show->handle($request->user(), $requestId);
