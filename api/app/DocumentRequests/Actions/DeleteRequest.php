@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\DocumentRequests\Actions;
 
 use App\Models\DocumentRequest;
+use App\Models\RequestItem;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -15,7 +16,7 @@ final readonly class DeleteRequest
         $request->loadMissing('items.document');
 
         $storageKeys = $request->items
-            ->map(static fn ($item): ?string => $item->document?->storage_key)
+            ->map(static fn (RequestItem $item): ?string => $item->document?->storage_key)
             ->filter()
             ->values()
             ->all();
