@@ -112,10 +112,10 @@ test('rate limits document deletion', function (): void {
     $request = makeDeleteDocumentRequest($owner, 'Tax Documents', 1);
     $item = $request->items()->firstOrFail();
 
-    app(SessionService::class)->issue($owner);
+    $session = app(SessionService::class)->issue($owner);
     test()->withCredentials();
     useDevice(queuedSessionToken());
-    test()->withHeader('X-CSRF-Token', app(CsrfTokenService::class)->derive(app(SessionService::class)->current()->getKey()));
+    test()->withHeader('X-CSRF-Token', app(CsrfTokenService::class)->derive($session->getKey()));
 
     for ($i = 0; $i < 120; $i++) {
         test()->deleteJson("/api/v1/requests/{$request->getKey()}/items/{$item->getKey()}/document")
