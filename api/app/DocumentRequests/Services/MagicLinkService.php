@@ -25,6 +25,7 @@ final readonly class MagicLinkService
 
     public function link(string $token): string
     {
+        //We will use the route name instead of a hardcoded URL when the portal route is defined
         return rtrim((string) config('app.url'), '/').'/portal/'.$token;
     }
 }
