@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Auth\Services\SessionService;
 use App\DocumentRequests\Services\DocumentDownloadUrl;
+use Illuminate\Support\Facades\Storage;
 use App\Models\DocumentRequest;
 use App\Models\User;
 use Illuminate\Testing\TestResponse;
@@ -163,12 +164,15 @@ test('includes a signed download URL for uploaded documents', function (): void 
         'uploaded_at' => now(),
     ]);
 
-    $downloadUrls = Mockery::mock(DocumentDownloadUrl::class);
-    $downloadUrls->shouldReceive('for')
+    $disk = Mockery::mock();
+    $disk->shouldReceive('temporaryUrl')
         ->once()
         ->andReturn('https://storage.example.test/signed');
 
-    app()->instance(DocumentDownloadUrl::class, $downloadUrls);
+    Storage::shouldReceive('disk')
+        ->once()
+        ->with('s3')
+        ->andReturn($disk);
 
     app(SessionService::class)->issue($owner);
     test()->withCredentials();
