@@ -5,13 +5,28 @@ declare(strict_types=1);
 namespace App\DocumentRequests\Controllers;
 
 use App\DocumentRequests\Actions\CreateRequest;
+use App\DocumentRequests\Actions\ListRequests;
+use App\DocumentRequests\Actions\ShowRequest;
 use App\DocumentRequests\Requests\CreateRequest as CreateRequestInput;
+use App\DocumentRequests\Requests\ListRequests as ListRequestsInput;
 use App\DocumentRequests\Resources\CreatedRequestResource;
+use App\DocumentRequests\Resources\RequestDetailResource;
+use App\DocumentRequests\Resources\RequestSummaryResource;
 use App\DocumentRequests\Services\MagicLinkService;
 use Illuminate\Http\JsonResponse;
 
 class DocumentRequestController
 {
+    public function index(ListRequestsInput $request, ListRequests $list): JsonResponse
+    {
+        $paginator = $list->handle($request->user(), $request->limit(), $request->cursor());
+
+        return response()->json([
+            'data' => RequestSummaryResource::collection($paginator->items())->resolve($request),
+            'nextCursor' => $paginator->nextCursor()?->encode(),
+        ]);
+    }
+
     public function store(
         CreateRequestInput $request,
         CreateRequest $create,
@@ -25,6 +40,16 @@ class DocumentRequestController
                 'url' => $links->link($result['token']),
             ])->resolve($request),
             201,
+        );
+    }
+
+    public function show(
+        string $requestId,
+        ShowRequest $show,
+        \Illuminate\Http\Request $request,
+    ): JsonResponse {
+        return response()->json(
+            RequestDetailResource::make($show->handle($request->user(), $requestId))->resolve($request),
         );
     }
 }
