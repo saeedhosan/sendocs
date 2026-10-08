@@ -7,6 +7,25 @@ use App\Models\User;
 use App\Auth\Services\SessionService;
 use Illuminate\Support\Facades\Storage;
 
+function makeDocumentRequest(User $owner, string $title, int $itemCount): DocumentRequest
+{
+    $request = DocumentRequest::create([
+        'owner_id' => $owner->getKey(),
+        'title' => $title,
+        'token_hash' => hash('sha256', uniqid('', true)),
+        'expires_at' => now()->addDays(14),
+    ]);
+
+    for ($position = 1; $position <= $itemCount; $position++) {
+        $request->items()->create([
+            'label' => "Document {$position}",
+            'position' => $position,
+        ]);
+    }
+
+    return $request->load('items');
+}
+
 function deleteDocumentRequest(User $owner, string $requestId, string $itemId): TestResponse
 {
     app(SessionService::class)->issue($owner);
