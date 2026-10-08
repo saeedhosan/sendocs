@@ -10,6 +10,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+/**
+ * @property-read Document|null $document
+ */
 #[Fillable(['request_id', 'label', 'position'])]
 class RequestItem extends Model
 {
