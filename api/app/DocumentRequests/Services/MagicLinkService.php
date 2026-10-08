@@ -9,11 +9,6 @@ use App\Models\DocumentRequest;
 
 final readonly class MagicLinkService
 {
-    public function issue(DocumentRequest $request): string
-    {
-        return $this->link($request->token_hash, $request->expires_at);
-    }
-
     public function generate(): string
     {
         return SecureToken::generate();
@@ -29,9 +24,8 @@ final readonly class MagicLinkService
         return now()->addDays(14);
     }
 
-    private function link(string $hash, \Illuminate\Support\Carbon $expiresAt): string
+    public function link(string $token): string
     {
-        // The raw token is intentionally supplied by create() only after commit.
-        return rtrim((string) config('app.url'), '/').'/portal/'.$hash;
+        return rtrim((string) config('app.url'), '/').'/portal/'.$token;
     }
 }
