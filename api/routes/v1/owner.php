@@ -21,3 +21,8 @@ Route::post('requests/{requestId}/revoke', [DocumentRequestController::class, 'r
 Route::get('requests/{requestId}', [DocumentRequestController::class, 'show'])
     ->middleware('throttle:document-requests.read')
     ->name('requests.show');
+
+
+Route::delete('requests/{requestId}/items/{itemId}/document', [DocumentRequestController::class, 'destroyDocument'])
+    ->middleware([VerifyCsrfToken::class, 'throttle:document-requests.write'])
+    ->name('requests.items.document.destroy');
