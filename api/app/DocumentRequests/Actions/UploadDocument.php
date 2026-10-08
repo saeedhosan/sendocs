@@ -9,6 +9,7 @@ use App\Exceptions\ApiException;
 use App\Models\Document;
 use App\Models\DocumentRequest;
 use App\Models\RequestItem;
+use App\Models\RequestItem;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -44,7 +45,7 @@ final readonly class UploadDocument
 
         $portalRequest->loadMissing('items');
         $item = $portalRequest->items->first(
-            static fn ($requestItem): bool => $requestItem->getKey() === $itemId,
+            static fn (RequestItem $requestItem): bool => $requestItem->getKey() === $itemId,
         );
 
         if ($item === null) {
