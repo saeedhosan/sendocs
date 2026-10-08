@@ -22,30 +22,60 @@ final class PortalViewResource extends JsonResource
         assert($expiresAt instanceof Carbon);
 
         $items = $model->items;
-        $uploaded = $items->filter(static fn (RequestItem $item): bool => $item->document !== null)->count();
-        $lastActivityAt = $items
-            ->map(fn (RequestItem $item) => $item->document?->uploaded_at)
-            ->filter()
-            ->max();
+        $uploaded = 0;
+        $lastActivityAt = null;
+
+        foreach ($items as $item) {
+            $document = $item->document;
+
+            if ($document === null) {
+                continue;
+            }
+
+            $uploaded++;
+            $uploadedAt = $document->getAttributeValue('uploaded_at');
+            assert($uploadedAt instanceof Carbon);
+
+            if ($lastActivityAt === null || $uploadedAt->greaterThan($lastActivityAt)) {
+                $lastActivityAt = $uploadedAt;
+            }
+        }
 
         return [
             'title' => $model->title,
             'status' => $uploaded === $items->count() ? 'complete' : 'waiting',
             'uploaded' => $uploaded,
             'total' => $items->count(),
-            'lastActivityAt' => $lastActivityAt instanceof Carbon ? $lastActivityAt->toIso8601String() : null,
+            'lastActivityAt' => $lastActivityAt?->toIso8601String(),
             'expiresAt' => $expiresAt->toIso8601String(),
-            'items' => array_map(static fn (RequestItem $item): array => [
-                'id' => $item->getKey(),
-                'label' => $item->label,
-                'position' => $item->position,
-                'state' => $item->document !== null ? 'uploaded' : 'waiting',
-                'file' => $item->document === null ? null : [
-                    'originalName' => $item->document->original_name,
-                    'sizeBytes' => $item->document->size_bytes,
-                    'uploadedAt' => $item->document->uploaded_at->toIso8601String(),
-                ],
-            ], $items->all()),
+            'items' => array_map(static function (RequestItem $item): array {
+                $document = $item->document;
+
+                if ($document === null) {
+                    return [
+                        'id' => $item->getKey(),
+                        'label' => $item->label,
+                        'position' => $item->position,
+                        'state' => 'waiting',
+                        'file' => null,
+                    ];
+                }
+
+                $uploadedAt = $document->getAttributeValue('uploaded_at');
+                assert($uploadedAt instanceof Carbon);
+
+                return [
+                    'id' => $item->getKey(),
+                    'label' => $item->label,
+                    'position' => $item->position,
+                    'state' => 'uploaded',
+                    'file' => [
+                        'originalName' => $document->original_name,
+                        'sizeBytes' => $document->size_bytes,
+                        'uploadedAt' => $uploadedAt->toIso8601String(),
+                    ],
+                ];
+            }, $items->all()),
         ];
     }
 }
