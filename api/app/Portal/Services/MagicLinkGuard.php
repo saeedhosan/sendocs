@@ -19,11 +19,14 @@ final readonly class MagicLinkGuard
             ->where('token_hash', hash('sha256', $token))
             ->first();
 
-        if (
-            $request === null
-            || $request->revoked_at !== null
-            || $request->expires_at->isPast()
-        ) {
+        if ($request === null) {
+            throw $this->invalidLink();
+        }
+
+        $expiresAt = $request->getAttributeValue('expires_at');
+        assert($expiresAt instanceof \Illuminate\Support\Carbon);
+
+        if ($request->revoked_at !== null || $expiresAt->isPast()) {
             throw $this->invalidLink();
         }
 
