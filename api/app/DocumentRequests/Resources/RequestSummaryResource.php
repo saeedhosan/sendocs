@@ -25,13 +25,20 @@ class RequestSummaryResource extends JsonResource
         assert($expiresAt instanceof Carbon);
         assert($revokedAt === null || $revokedAt instanceof Carbon);
 
+        $items = $model->items;
+        $uploaded = $items->filter(static fn ($item): bool => $item->document !== null)->count();
+        $lastActivityAt = $items
+            ->map(fn ($item) => $item->document?->uploaded_at)
+            ->filter()
+            ->max();
+
         return [
             'id' => $model->getKey(),
             'title' => $model->title,
-            'status' => 'waiting',
-            'uploaded' => 0,
-            'total' => $model->items->count(),
-            'lastActivityAt' => null,
+            'status' => $uploaded === $items->count() ? 'complete' : 'waiting',
+            'uploaded' => $uploaded,
+            'total' => $items->count(),
+            'lastActivityAt' => $lastActivityAt instanceof Carbon ? $lastActivityAt->toIso8601String() : null,
             'createdAt' => $createdAt->toIso8601String(),
             'expiresAt' => $expiresAt->toIso8601String(),
             'revokedAt' => $revokedAt?->toIso8601String(),
