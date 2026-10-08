@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Auth\Services\SessionService;
+use App\DocumentRequests\Services\DocumentDownloadUrl;
 use App\Models\DocumentRequest;
 use App\Models\User;
 use Illuminate\Testing\TestResponse;
@@ -145,4 +146,35 @@ test('returns not found for an unknown request', function (): void {
     test()->getJson('/api/v1/requests/00000000-0000-0000-0000-000000000000')
         ->assertStatus(404)
         ->assertJsonPath('error.code', 'not_found');
+});
+
+
+test('includes a signed download URL for uploaded documents', function (): void {
+    $owner = User::factory()->create();
+    $request = makeDocumentRequest($owner, 'Tax Documents', 1);
+    $item = $request->items()->firstOrFail();
+
+    $item->document()->create([
+        'storage_key' => 'requests/'.$request->getKey().'/document.pdf',
+        'original_name' => 'tax-2026.pdf',
+        'mime_type' => 'application/pdf',
+        'size_bytes' => 1024,
+        'sha256' => hash('sha256', 'pdf'),
+        'uploaded_at' => now(),
+    ]);
+
+    $downloadUrls = Mockery::mock(DocumentDownloadUrl::class);
+    $downloadUrls->shouldReceive('for')
+        ->once()
+        ->andReturn('https://storage.example.test/signed');
+
+    app()->instance(DocumentDownloadUrl::class, $downloadUrls);
+
+    app(SessionService::class)->issue($owner);
+    test()->withCredentials();
+    useDevice(queuedSessionToken());
+
+    test()->getJson("/api/v1/requests/{$request->getKey()}")
+        ->assertOk()
+        ->assertJsonPath('items.0.document.downloadUrl', 'https://storage.example.test/signed');
 });
