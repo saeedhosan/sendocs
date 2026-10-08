@@ -26,11 +26,24 @@ class RequestSummaryResource extends JsonResource
         assert($revokedAt === null || $revokedAt instanceof Carbon);
 
         $items = $model->items;
-        $uploaded = $items->filter(static fn ($item): bool => $item->document !== null)->count();
-        $lastActivityAt = $items
-            ->map(fn ($item) => $item->document?->uploaded_at)
-            ->filter()
-            ->max();
+        $uploaded = 0;
+        $lastActivityAt = null;
+
+        foreach ($items as $item) {
+            $document = $item->document;
+
+            if ($document === null) {
+                continue;
+            }
+
+            $uploaded++;
+            $uploadedAt = $document->getAttributeValue('uploaded_at');
+            assert($uploadedAt instanceof Carbon);
+
+            if ($lastActivityAt === null || $uploadedAt->greaterThan($lastActivityAt)) {
+                $lastActivityAt = $uploadedAt;
+            }
+        }
 
         return [
             'id' => $model->getKey(),
@@ -38,7 +51,7 @@ class RequestSummaryResource extends JsonResource
             'status' => $uploaded === $items->count() ? 'complete' : 'waiting',
             'uploaded' => $uploaded,
             'total' => $items->count(),
-            'lastActivityAt' => $lastActivityAt instanceof Carbon ? $lastActivityAt->toIso8601String() : null,
+            'lastActivityAt' => $lastActivityAt?->toIso8601String(),
             'createdAt' => $createdAt->toIso8601String(),
             'expiresAt' => $expiresAt->toIso8601String(),
             'revokedAt' => $revokedAt?->toIso8601String(),
