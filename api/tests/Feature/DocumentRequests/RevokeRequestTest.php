@@ -7,6 +7,7 @@ use App\Auth\Services\SessionService;
 use App\Models\DocumentRequest;
 use App\Models\User;
 use Illuminate\Support\Carbon;
+use Illuminate\Testing\TestResponse;
 
 function revokeRequestFixture(User $owner): DocumentRequest
 {
@@ -27,7 +28,7 @@ function revokeRequestFixture(User $owner): DocumentRequest
     return $request;
 }
 
-function revokeRequestAsOwner(User $owner, string $requestId, bool $withCsrf = true): \Illuminate\Testing\TestResponse
+function revokeRequestAsOwner(User $owner, string $requestId, bool $withCsrf = true): TestResponse
 {
     $session = app(SessionService::class)->issue($owner);
     test()->withCredentials();
