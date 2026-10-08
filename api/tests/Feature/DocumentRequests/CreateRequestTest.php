@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 use App\Auth\Services\CsrfTokenService;
 use App\Auth\Services\SessionService;
+use App\Models\DocumentRequest;
 use App\Models\RequestItem;
 use App\Models\User;
 
-function createRequestAsOwner(array $attributes = [])
+function createRequestAsOwner(array $attributes = []): array
 {
     $owner = User::factory()->create();
     $session = app(SessionService::class)->issue($owner);
+    test()->withCredentials();
     useDevice(queuedSessionToken());
 
     return [
@@ -63,7 +65,7 @@ test('creates a request with ordered items and returns the magic link once', fun
         ->toMatch('/^[A-Za-z0-9_-]{43}$/')
         ->and($response->json('link.url'))->toStartWith(rtrim((string) config('app.url'), '/').'/portal/');
 
-    $request = \App\Models\DocumentRequest::query()->sole();
+    $request = DocumentRequest::query()->sole();
     expect($request->owner_id)->toBe($result['owner']->getKey())
         ->and($request->token_hash)->toBe(hash('sha256', $token))
         ->and($request->token_hash)->not->toBe($token)
@@ -78,6 +80,7 @@ test('requires an authenticated owner and csrf token', function (): void {
 
     $owner = User::factory()->create();
     $session = app(SessionService::class)->issue($owner);
+    test()->withCredentials();
     useDevice(queuedSessionToken());
 
     test()->postJson('/api/v1/requests', [
@@ -131,13 +134,14 @@ test('rolls back the request and items when an item insert fails', function (): 
     $result = createRequestAsOwner();
     $result['response']->assertStatus(500);
 
-    expect(\App\Models\DocumentRequest::query()->count())->toBe(0)
+    expect(DocumentRequest::query()->count())->toBe(0)
         ->and(RequestItem::query()->count())->toBe(0);
 });
 
 test('rate limits request creation to 120 attempts per minute per owner', function (): void {
     $owner = User::factory()->create();
     $session = app(SessionService::class)->issue($owner);
+    test()->withCredentials();
     useDevice(queuedSessionToken());
     $csrf = app(CsrfTokenService::class)->derive($session->getKey());
 
