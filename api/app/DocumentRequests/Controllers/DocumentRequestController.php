@@ -6,6 +6,7 @@ namespace App\DocumentRequests\Controllers;
 
 use App\DocumentRequests\Actions\CreateRequest;
 use App\DocumentRequests\Actions\ListRequests;
+use App\DocumentRequests\Actions\RevokeRequest;
 use App\DocumentRequests\Actions\ShowRequest;
 use App\DocumentRequests\Requests\CreateRequest as CreateRequestInput;
 use App\DocumentRequests\Requests\ListRequests as ListRequestsInput;
@@ -40,6 +41,16 @@ class DocumentRequestController
                 'url' => $links->link($result['token']),
             ])->resolve($request),
             201,
+        );
+    }
+
+    public function revoke(
+        string $requestId,
+        RevokeRequest $revoke,
+        \Illuminate\Http\Request $request,
+    ): JsonResponse {
+        return response()->json(
+            RequestDetailResource::make($revoke->handle($request->user(), $requestId))->resolve($request),
         );
     }
 
