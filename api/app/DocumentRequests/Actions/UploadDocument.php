@@ -42,9 +42,10 @@ final readonly class UploadDocument
             );
         }
 
-        $item = $portalRequest->items()
-            ->whereKey($itemId)
-            ->first();
+        $portalRequest->loadMissing('items');
+        $item = $portalRequest->items->first(
+            static fn ($requestItem): bool => $requestItem->getKey() === $itemId,
+        );
 
         if ($item === null) {
             throw new ApiException('not_found', 'Not found.', 404);
