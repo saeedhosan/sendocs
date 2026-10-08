@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Auth\Services\SessionService;
-use App\DocumentRequests\Services\DocumentDownloadUrl;
 use Illuminate\Support\Facades\Storage;
 use App\Models\DocumentRequest;
 use App\Models\User;
