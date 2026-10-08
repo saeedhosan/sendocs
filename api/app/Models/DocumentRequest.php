@@ -11,6 +11,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable(['owner_id', 'title', 'token_hash', 'expires_at', 'revoked_at'])]
+/**
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $expires_at
+ * @property \Illuminate\Support\Carbon|null $revoked_at
+ */
 class DocumentRequest extends Model
 {
     use HasUuids;
