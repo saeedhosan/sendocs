@@ -18,7 +18,7 @@ function createRequestAsOwner(array $attributes = []): array
     return [
         'response' => test()->postJson(
             '/api/v1/requests',
-            array_replace_recursive([
+            array_replace([
                 'title' => 'Tax Documents',
                 'items' => [
                     ['label' => 'Passport'],
@@ -109,8 +109,12 @@ test('accepts one and ten items and preserves submitted order', function (): voi
 
     $result['response']->assertCreated();
 
-    expect(RequestItem::query()->orderBy('position')->pluck('position')->all())->toBe(range(1, 10))
-        ->and(RequestItem::query()->orderBy('position')->pluck('label')->all())->toBe(array_column($items, 'label'));
+    $requestId = $result['response']->json('request.id');
+
+    expect(RequestItem::query()->where('request_id', $requestId)->orderBy('position')->pluck('position')->all())
+        ->toBe(range(1, 10))
+        ->and(RequestItem::query()->where('request_id', $requestId)->orderBy('position')->pluck('label')->all())
+        ->toBe(array_column($items, 'label'));
 });
 
 test('allows duplicate labels', function (): void {
@@ -123,7 +127,10 @@ test('allows duplicate labels', function (): void {
 
     $result['response']->assertCreated();
 
-    expect(RequestItem::query()->pluck('label')->all())->toBe(['Document', 'Document']);
+    $requestId = $result['response']->json('request.id');
+
+    expect(RequestItem::query()->where('request_id', $requestId)->pluck('label')->all())
+        ->toBe(['Document', 'Document']);
 });
 
 test('rolls back the request and items when an item insert fails', function (): void {
