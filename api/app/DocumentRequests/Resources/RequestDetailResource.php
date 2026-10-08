@@ -27,13 +27,23 @@ class RequestDetailResource extends JsonResource
         assert($expiresAt instanceof Carbon);
         assert($revokedAt === null || $revokedAt instanceof Carbon);
 
+        $documents = $items
+            ->map(fn (RequestItem $item) => $item->document)
+            ->filter()
+            ->values();
+
+        $uploaded = $documents->count();
+        $lastActivityAt = $documents->max(
+            fn ($document) => $document->getAttributeValue('uploaded_at'),
+        );
+
         return [
             'id' => $model->getKey(),
             'title' => $model->title,
-            'status' => 'waiting',
-            'uploaded' => 0,
+            'status' => $uploaded === $items->count() ? 'complete' : 'waiting',
+            'uploaded' => $uploaded,
             'total' => count($items),
-            'lastActivityAt' => null,
+            'lastActivityAt' => $lastActivityAt instanceof Carbon ? $lastActivityAt->toIso8601String() : null,
             'createdAt' => $createdAt->toIso8601String(),
             'expiresAt' => $expiresAt->toIso8601String(),
             'revokedAt' => $revokedAt?->toIso8601String(),
@@ -41,8 +51,15 @@ class RequestDetailResource extends JsonResource
                 'id' => $item->getKey(),
                 'label' => $item->label,
                 'position' => $item->position,
-                'state' => 'waiting',
-                'document' => null,
+                'state' => $item->document !== null ? 'uploaded' : 'waiting',
+                'document' => $item->document === null ? null : [
+                    'id' => $item->document->getKey(),
+                    'originalName' => $item->document->original_name,
+                    'mimeType' => $item->document->mime_type,
+                    'sizeBytes' => $item->document->size_bytes,
+                    'uploadedAt' => $item->document->uploaded_at->toIso8601String(),
+                    'downloadUrl' => null,
+                ],
             ], $items->all()),
         ];
     }
