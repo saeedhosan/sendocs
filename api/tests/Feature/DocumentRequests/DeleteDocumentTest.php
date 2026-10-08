@@ -7,7 +7,7 @@ use App\Models\User;
 use App\Auth\Services\SessionService;
 use Illuminate\Support\Facades\Storage;
 
-function makeDocumentRequest(User $owner, string $title, int $itemCount): DocumentRequest
+function makeDeleteDocumentRequest(User $owner, string $title, int $itemCount): DocumentRequest
 {
     $request = DocumentRequest::create([
         'owner_id' => $owner->getKey(),
@@ -39,7 +39,7 @@ test('deletes an uploaded document and returns no content', function (): void {
     Storage::fake('s3');
 
     $owner = User::factory()->create();
-    $request = makeDocumentRequest($owner, 'Tax Documents', 1);
+    $request = makeDeleteDocumentRequest($owner, 'Tax Documents', 1);
     $item = $request->items()->firstOrFail();
     Storage::disk('s3')->put('requests/file.pdf', 'pdf');
     $item->document()->create([
@@ -61,8 +61,8 @@ test('deletes an uploaded document and returns no content', function (): void {
 test('returns 404 when the item belongs to another request', function (): void {
     $owner = User::factory()->create();
     $otherOwner = User::factory()->create();
-    $request = makeDocumentRequest($owner, 'Mine', 1);
-    $otherRequest = makeDocumentRequest($otherOwner, 'Other', 1);
+    $request = makeDeleteDocumentRequest($owner, 'Mine', 1);
+    $otherRequest = makeDeleteDocumentRequest($otherOwner, 'Other', 1);
     $item = $otherRequest->items()->firstOrFail();
 
     deleteDocumentRequest($owner, $request->getKey(), $item->getKey())
@@ -74,7 +74,7 @@ test('returns 404 when the item belongs to another request', function (): void {
 
 test('returns 404 when the item has no document', function (): void {
     $owner = User::factory()->create();
-    $request = makeDocumentRequest($owner, 'Tax Documents', 1);
+    $request = makeDeleteDocumentRequest($owner, 'Tax Documents', 1);
     $item = $request->items()->firstOrFail();
 
     deleteDocumentRequest($owner, $request->getKey(), $item->getKey())
@@ -84,7 +84,7 @@ test('returns 404 when the item has no document', function (): void {
 
 test('requires csrf and authentication', function (): void {
     $owner = User::factory()->create();
-    $request = makeDocumentRequest($owner, 'Tax Documents', 1);
+    $request = makeDeleteDocumentRequest($owner, 'Tax Documents', 1);
     $item = $request->items()->firstOrFail();
 
     test()->deleteJson("/api/v1/requests/{$request->getKey()}/items/{$item->getKey()}/document")
@@ -93,7 +93,7 @@ test('requires csrf and authentication', function (): void {
 
 test('rejects missing csrf token for an authenticated owner', function (): void {
     $owner = User::factory()->create();
-    $request = makeDocumentRequest($owner, 'Tax Documents', 1);
+    $request = makeDeleteDocumentRequest($owner, 'Tax Documents', 1);
     $item = $request->items()->firstOrFail();
 
     app(SessionService::class)->issue($owner);
@@ -107,7 +107,7 @@ test('rejects missing csrf token for an authenticated owner', function (): void 
 
 test('rate limits document deletion', function (): void {
     $owner = User::factory()->create();
-    $request = makeDocumentRequest($owner, 'Tax Documents', 1);
+    $request = makeDeleteDocumentRequest($owner, 'Tax Documents', 1);
     $item = $request->items()->firstOrFail();
 
     app(SessionService::class)->issue($owner);
