@@ -30,11 +30,11 @@ function makeDeleteDocumentRequest(User $owner, string $title, int $itemCount): 
 
 function deleteDocumentRequest(User $owner, string $requestId, string $itemId): TestResponse
 {
-    app(SessionService::class)->issue($owner);
+    $session = app(SessionService::class)->issue($owner);
     test()->withCredentials();
     useDevice(queuedSessionToken());
 
-    return test()->deleteJson("/api/v1/requests/{$requestId}/items/{$itemId}/document");
+    return test()->deleteJson("/api/v1/requests/{$requestId}/items/{$itemId}/document", [], ['X-CSRF-Token' => app(CsrfTokenService::class)->derive($session->getKey())]);
 }
 
 test('deletes an uploaded document and returns no content', function (): void {
