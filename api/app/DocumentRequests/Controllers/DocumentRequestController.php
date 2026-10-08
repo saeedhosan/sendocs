@@ -15,6 +15,7 @@ use App\DocumentRequests\Resources\RequestDetailResource;
 use App\DocumentRequests\Resources\RequestSummaryResource;
 use App\DocumentRequests\Services\MagicLinkService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class DocumentRequestController
 {
@@ -47,7 +48,7 @@ class DocumentRequestController
     public function revoke(
         string $requestId,
         RevokeRequest $revoke,
-        \Illuminate\Http\Request $request,
+        Request $request,
     ): JsonResponse {
         return response()->json(
             RequestDetailResource::make($revoke->handle($request->user(), $requestId))->resolve($request),
