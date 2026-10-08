@@ -45,6 +45,16 @@ function validPdf(string $name = 'document.pdf'): UploadedFile
     );
 }
 
+function sizedPdf(int $bytes): UploadedFile
+{
+    $header = "%PDF-1.7\n1 0 obj\n<< /Type /Catalog >>\nendobj\n%%EOF\n";
+
+    return UploadedFile::fake()->createWithContent(
+        'large.pdf',
+        $header.str_repeat('0', $bytes - strlen($header)),
+    );
+}
+
 beforeEach(function (): void {
     Storage::fake('s3');
 });
@@ -120,11 +130,7 @@ test('returns 404 when the item is not on the resolved request', function (): vo
 test('rejects a file over the 25 MB cap', function (): void {
     [, $items, $token] = portalUploadFixture();
 
-    $file = UploadedFile::fake()->create(
-        'large.pdf',
-        25 * 1024 + 1,
-        'application/pdf',
-    );
+    $file = sizedPdf(25 * 1024 * 1024 + 1);
 
     uploadPortal($token, $items[0]->getKey(), $file)
         ->assertStatus(413)
@@ -142,11 +148,7 @@ test('rejects a file over the 25 MB cap', function (): void {
 test('accepts a file at the 25 MB cap', function (): void {
     [, $items, $token] = portalUploadFixture();
 
-    $file = UploadedFile::fake()->create(
-        'large.pdf',
-        25 * 1024,
-        'application/pdf',
-    );
+    $file = sizedPdf(25 * 1024 * 1024);
 
     uploadPortal($token, $items[0]->getKey(), $file)->assertOk();
 
