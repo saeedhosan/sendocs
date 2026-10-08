@@ -21,7 +21,10 @@ test('creates a five minute attachment URL with the stored MIME type', function 
         ->once()
         ->with(
             $document->storage_key,
-            Carbon::create(2026, 10, 8, 22, 5, 0),
+            Mockery::on(static fn ($expiresAt): bool =>
+                $expiresAt instanceof Carbon
+                && $expiresAt->equalTo(Carbon::create(2026, 10, 8, 22, 5, 0))
+            ),
             [
                 'ResponseContentDisposition' => 'attachment; filename="tax-2026.pdf"',
                 'ResponseContentType' => 'application/pdf',
