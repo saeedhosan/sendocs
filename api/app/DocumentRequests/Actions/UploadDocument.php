@@ -28,6 +28,17 @@ final readonly class UploadDocument
 
     public function handle(DocumentRequest $portalRequest, string $itemId, ?UploadedFile $file): void
     {
+        if ($file instanceof UploadedFile && in_array($file->getError(), [
+            UPLOAD_ERR_INI_SIZE,
+            UPLOAD_ERR_FORM_SIZE,
+        ], true)) {
+            throw new ApiException(
+                'file_too_large',
+                'The file is larger than 25 MB.',
+                413,
+            );
+        }
+
         if (! $file instanceof UploadedFile || ! $file->isValid()) {
             throw ApiException::validationFailed([
                 'file' => ['A file is required.'],
