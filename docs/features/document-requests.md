@@ -239,10 +239,10 @@ Owner Reads, Downloads, Revokes, or Deletes
 - `delete(string $key): void`
 - `deleteMany(array $keys): void`
 
-**RequestCleanup** — Retry stored-object deletion after the database is committed.
+**StorageDeletionOutbox** — Persist storage cleanup intent in PostgreSQL and retry it outside the request path.
 
-- `handle(): void` — drains the queue of pending object deletions
-- `enqueue(array $storageKeys): void`
+- `enqueue(array $storageKeys): void` — inserts keys in the caller's transaction
+- `processBatch(): int` — attempts up to 100 pending deletions and keeps failures for retry
 
 ## Low-Level Design
 
@@ -323,15 +323,15 @@ Owner Reads, Downloads, Revokes, or Deletes
 - Deleting a document returns the item to waiting.
 - Item must belong to caller's request; foreign itemId returns 404.
 - No document returns 404.
-- Key collected, metadata deleted, object deleted after commit.
+- Key and metadata deletion are recorded in one database transaction; the scheduled outbox processor deletes the object after commit.
 - Progress moves backwards (derived).
 
 **Request Deletion**
 
 - Metadata deleted first in a cascading statement.
 - Storage keys collected before deletion.
-- Objects deleted after commit; failures queued.
-- Owner gets 204 once DB clean; cleanup retried.
+- Cleanup keys are inserted into the outbox in the same transaction as the cascading metadata delete.
+- Owner gets 204 once the database transaction commits; cleanup retries independently.
 - Deletion is not reversible (UI confirms).
 
 **Pagination**
@@ -444,7 +444,7 @@ Owner Reads, Downloads, Revokes, or Deletes
 **Deletion**
 
 - Request deletion removes metadata in one statement and stored objects behind it.
-- Object deletion is retried, so a partial failure does not leave paid storage behind.
+- Object deletion is retried by the scheduled outbox processor; persistent failures remain visible for operational follow-up.
 - Nothing is recoverable by design, which is why the UI confirms before deleting.
 
 ## Performance
@@ -513,8 +513,8 @@ belong to the portal surface, defined in secure-magic-link.md.
 
 **Deletion and Cleanup**
 
-- Metadata is deleted first, so storage outages cannot leave orphan rows.
-- Object deletion failure is queued and logged, not returned to the owner.
+- Metadata is deleted and cleanup intent is recorded atomically, so storage outages cannot leave orphan rows.
+- Object deletion failure remains in the durable outbox and is reported, not returned to the owner.
 - Owner gets 204 once the database is clean.
 - Deleting a document twice returns 404, not 204.
 
