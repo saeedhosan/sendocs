@@ -22,6 +22,7 @@ final readonly class DeleteRequest
             ->all();
 
         DB::transaction(static function () use ($request): void {
+            //we will add more delete operations 
             $request->delete();
         });
 
