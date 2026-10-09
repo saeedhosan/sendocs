@@ -1,0 +1,235 @@
+<!DOCTYPE html><html lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<meta content="web_standard" name="shell-type">
+<title>New Document Request - Sendocs</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=Geist+Mono:wght@400..600&amp;display=swap" rel="stylesheet">
+<style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+    }
+    ::-webkit-scrollbar { display: none; }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-surface": "#18181b",
+            "surface-muted": "#f4f4f5",
+            "surface": "#ffffff",
+            "surface-container-low": "#fafafa",
+            "surface-container": "#f4f4f6",
+            "surface-container-high": "#e4e4e7",
+            "text-primary": "#18181b",
+            "text-secondary": "#71717a",
+            "border-subtle": "#e4e4e7",
+            "border-strong": "#d4d4d8",
+            "primary": "#18181b",
+            "primary-hover": "#27272a",
+            "brand-accent": "#2563eb"
+          },
+          fontFamily: {
+            sans: ["Geist", "sans-serif"],
+            mono: ["Geist Mono", "monospace"]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-[#fafafa] font-sans text-on-surface antialiased min-h-screen flex flex-col justify-between">
+<!-- Minimal Header -->
+<header class="w-full bg-white border-b border-border-subtle sticky top-0 z-40 py-3.5">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6 flex items-center justify-between">
+    <a href="#" class="font-semibold text-[15px] tracking-tight text-on-surface">Sendocs</a>
+    <div class="relative group">
+      <button type="button" class="flex items-center gap-1 text-[13px] font-medium text-text-secondary hover:text-on-surface transition-colors focus:outline-none min-h-[44px] py-2">
+        <span class="">Account</span>
+        <span class="material-symbols-outlined text-[16px]">expand_more</span>
+      </button>
+      <div class="hidden group-hover:block hover:block absolute right-0 top-full pt-1.5 z-50">
+        <div class="w-40 bg-white border border-border-subtle rounded-[10px] shadow-sm py-1">
+          <a href="#" class="block px-3 py-2 text-[13px] text-text-secondary hover:text-on-surface hover:bg-[#fafafa] transition-colors">Change password</a>
+          <a href="#" class="block px-3 py-2 text-[13px] text-text-secondary hover:text-on-surface hover:bg-[#fafafa] transition-colors border-t border-border-subtle">Sign out</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+<!-- Main Content: Single Column Minimal Form -->
+<main class="w-full max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-10 flex-1">
+<!-- Title Area -->
+<div class="mb-6 sm:mb-8">
+<h1 class="text-[20px] sm:text-[22px] font-semibold text-on-surface tracking-tight">New document request</h1>
+</div>
+<!-- Request Creation Form -->
+<form class="bg-white border border-border-subtle rounded-[10px] p-4 sm:p-6 space-y-6 shadow-sm" id="createRequestForm" onsubmit="event.preventDefault(); window.showRevealModal();">
+<!-- Field 1: Request Title -->
+<div>
+<label class="block text-[13px] font-medium text-on-surface mb-2" for="reqTitle">
+          Title
+        </label>
+<input class="w-full min-h-[44px] h-11 px-3 rounded-[10px] bg-white border border-[#e2e8f0] text-on-surface text-[14px] placeholder:text-text-secondary/60 focus:outline-none focus:border-[#4f46e5] focus:ring-1 focus:ring-[#4f46e5] transition-colors" id="reqTitle" placeholder="e.g. 2024 Corporate Tax Return — Acme Corp" required="" type="text" value="2024 Corporate Tax Return — Acme Corp">
+</div>
+<!-- Field 2: Required Documents (Strict 1 to 10) -->
+<div>
+<div class="flex items-center justify-between mb-2">
+<label class="text-[13px] font-medium text-on-surface">
+            Required documents
+          </label>
+<span class="text-[12px] text-text-secondary font-mono" id="counterIndicator">3/10</span>
+</div>
+<div class="space-y-2.5 sm:space-y-2" id="itemsContainer"><div class="doc-item flex items-center gap-2"><span class="item-num w-6 text-center text-[13px] text-text-secondary font-mono shrink-0">1.</span><input class="flex-1 min-h-[44px] h-11 px-3 rounded-[10px] bg-white border border-[#e2e8f0] text-on-surface text-[14px] placeholder:text-text-secondary/60 focus:outline-none focus:border-[#4f46e5] focus:ring-1 focus:ring-[#4f46e5] transition-colors min-w-0" placeholder="e.g. Government-issued photo ID" required="" type="text" value="Government-issued photo ID"><div class="flex items-center gap-0.5 shrink-0"><button class="w-9 sm:w-8 h-11 sm:h-9 flex items-center justify-center text-text-secondary hover:text-on-surface rounded-[6px] transition-colors" type="button" title="Move up"><span class="material-symbols-outlined text-[18px]">keyboard_arrow_up</span></button><button class="w-9 sm:w-8 h-11 sm:h-9 flex items-center justify-center text-text-secondary hover:text-on-surface rounded-[6px] transition-colors" type="button" title="Move down"><span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span></button><button class="remove-btn w-11 h-11 flex items-center justify-center text-text-secondary hover:text-red-600 rounded-[6px] transition-colors" onclick="window.removeItem(this)" title="Remove" type="button"><span class="material-symbols-outlined text-[18px]">close</span></button></div></div><div class="doc-item flex items-center gap-2"><span class="item-num w-6 text-center text-[13px] text-text-secondary font-mono shrink-0">2.</span><input class="flex-1 min-h-[44px] h-11 px-3 rounded-[10px] bg-white border border-[#e2e8f0] text-on-surface text-[14px] placeholder:text-text-secondary/60 focus:outline-none focus:border-[#4f46e5] focus:ring-1 focus:ring-[#4f46e5] transition-colors min-w-0" placeholder="e.g. W-2 / 1099 Tax Documents" required="" type="text" value="W-2 / 1099 Forms or Profit &amp; Loss Statement"><div class="flex items-center gap-0.5 shrink-0"><button class="w-9 sm:w-8 h-11 sm:h-9 flex items-center justify-center text-text-secondary hover:text-on-surface rounded-[6px] transition-colors" type="button" title="Move up"><span class="material-symbols-outlined text-[18px]">keyboard_arrow_up</span></button><button class="w-9 sm:w-8 h-11 sm:h-9 flex items-center justify-center text-text-secondary hover:text-on-surface rounded-[6px] transition-colors" type="button" title="Move down"><span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span></button><button class="remove-btn w-11 h-11 flex items-center justify-center text-text-secondary hover:text-red-600 rounded-[6px] transition-colors" onclick="window.removeItem(this)" title="Remove" type="button"><span class="material-symbols-outlined text-[18px]">close</span></button></div></div><div class="doc-item flex items-center gap-2"><span class="item-num w-6 text-center text-[13px] text-text-secondary font-mono shrink-0">3.</span><input class="flex-1 min-h-[44px] h-11 px-3 rounded-[10px] bg-white border border-[#e2e8f0] text-on-surface text-[14px] placeholder:text-text-secondary/60 focus:outline-none focus:border-[#4f46e5] focus:ring-1 focus:ring-[#4f46e5] transition-colors min-w-0" placeholder="e.g. Voided business check" required="" type="text" value="Articles of Incorporation &amp; Proof of Address"><div class="flex items-center gap-0.5 shrink-0"><button class="w-9 sm:w-8 h-11 sm:h-9 flex items-center justify-center text-text-secondary hover:text-on-surface rounded-[6px] transition-colors" type="button" title="Move up"><span class="material-symbols-outlined text-[18px]">keyboard_arrow_up</span></button><button class="w-9 sm:w-8 h-11 sm:h-9 flex items-center justify-center text-text-secondary hover:text-on-surface rounded-[6px] transition-colors" type="button" title="Move down"><span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span></button><button class="remove-btn w-11 h-11 flex items-center justify-center text-text-secondary hover:text-red-600 rounded-[6px] transition-colors" onclick="window.removeItem(this)" title="Remove" type="button"><span class="material-symbols-outlined text-[18px]">close</span></button></div></div></div>
+<!-- Add Item Button -->
+<button class="mt-3 inline-flex items-center gap-1.5 text-[13px] font-medium text-text-secondary hover:text-on-surface min-h-[44px] py-2 px-1 transition-colors" id="addItemBtn" onclick="window.addItem()" type="button">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span class="">Add item</span>
+</button>
+</div>
+<!-- Action Footer -->
+<div class="pt-4 border-t border-border-subtle flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3">
+<a class="min-h-[44px] flex items-center justify-center px-4 rounded-[10px] text-[13px] text-text-secondary hover:text-on-surface transition-colors text-center" href="#">
+          Cancel
+        </a>
+<button class="min-h-[44px] h-11 px-5 rounded-[10px] bg-[#4f46e5] hover:bg-[#4338ca] text-white text-[14px] font-medium transition-colors w-full sm:w-auto shadow-sm" type="submit">Create request</button>
+</div>
+</form>
+</main>
+<!-- Immediate Post-Creation Success Reveal Modal / Overlay -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/40 backdrop-blur-[2px] overflow-y-auto" id="revealSuccessModal">
+<div class="w-full max-w-lg bg-white border border-border-subtle rounded-[10px] p-5 sm:p-6 shadow-xl space-y-5 animate-in fade-in duration-150 my-auto">
+  <div>
+    <h2 class="text-[17px] sm:text-[18px] font-semibold text-on-surface tracking-tight">Your request is ready.</h2>
+    <p class="text-[13px] text-text-secondary mt-1 leading-normal">Copy this link and send it to your client. The raw link is shown once only.</p>
+  </div>
+  <div class="space-y-2">
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+      <input class="flex-1 min-h-[44px] h-11 px-3 rounded-[10px] bg-[#f4f4f6] border border-border-subtle text-on-surface font-mono text-[13px] select-all focus:outline-none min-w-0 truncate" id="clientLinkInput" readonly="" type="text" value="https://sendocs.app/portal/3b8f9e29a7c414d8eb11e9f420b87a">
+      <button class="min-h-[44px] h-11 px-4 rounded-[10px] bg-[#4f46e5] hover:bg-[#4338ca] text-white text-[13px] font-medium transition-all shrink-0 flex items-center justify-center gap-1.5 w-full sm:w-auto" id="copyBtn" onclick="window.copyLink()" type="button">
+        <span class="material-symbols-outlined text-[16px]" id="copyBtnIcon">content_copy</span>
+        <span id="copyBtnText" class="">Copy link</span>
+      </button>
+    </div>
+    <p class="text-[12px] text-text-secondary">This link is shown only once.</p>
+  </div>
+  <div class="pt-2 flex flex-col sm:flex-row justify-end">
+    <button class="min-h-[44px] h-11 px-6 rounded-[10px] bg-white border border-[#e2e8f0] hover:bg-[#f8fafc] text-[#334155] text-[13px] font-medium transition-colors w-full sm:w-auto" onclick="window.closeRevealModal()" type="button">Done</button>
+  </div>
+</div>
+</div>
+<!-- Minimal Footer -->
+<footer class="w-full border-t border-border-subtle py-4 bg-white">
+<div class="max-w-2xl mx-auto px-4 sm:px-6 flex items-center justify-between text-[12px] text-text-secondary">
+<span class="">Sendocs</span>
+<span class="">Direct client document intake</span>
+</div>
+</footer>
+<!-- Clean Interactive Logic -->
+<script>
+    (function() {
+      const container = document.getElementById('itemsContainer');
+      const addBtn = document.getElementById('addItemBtn');
+      const counter = document.getElementById('counterIndicator');
+      const modal = document.getElementById('revealSuccessModal');
+
+      function updateIndices() {
+        const items = container.querySelectorAll('.doc-item');
+        const count = items.length;
+
+        counter.textContent = `${count}/10`;
+
+        items.forEach((item, index) => {
+          const numSpan = item.querySelector('.item-num');
+          const removeBtn = item.querySelector('.remove-btn');
+          numSpan.textContent = `${index + 1}.`;
+
+          if (count === 1) {
+            removeBtn.classList.add('opacity-20', 'pointer-events-none');
+          } else {
+            removeBtn.classList.remove('opacity-20', 'pointer-events-none');
+          }
+        });
+
+        if (count >= 10) {
+          addBtn.classList.add('hidden');
+        } else {
+          addBtn.classList.remove('hidden');
+        }
+      }
+
+      window.addItem = function() {
+        const count = container.querySelectorAll('.doc-item').length;
+        if (count >= 10) return;
+
+        const row = document.createElement('div');
+        row.className = 'doc-item flex items-center gap-2';
+        row.innerHTML = `
+          <span class="item-num w-6 text-center text-[13px] text-text-secondary font-mono">${count + 1}.</span>
+          <input 
+            type="text" 
+            required 
+            placeholder="e.g. Proof of address" 
+            class="flex-1 h-10 px-3 rounded-[10px] bg-white border border-border-subtle text-on-surface text-[14px] placeholder:text-text-secondary/60 focus:outline-none focus:border-on-surface focus:ring-0 transition-colors"
+          />
+          <button 
+            type="button" 
+            onclick="window.removeItem(this)" 
+            class="remove-btn p-2 text-text-secondary hover:text-red-600 rounded-[10px] transition-colors"
+            title="Remove"
+          >
+            <span class="material-symbols-outlined text-[18px]">close</span>
+          </button>
+        `;
+        container.appendChild(row);
+        updateIndices();
+        const input = row.querySelector('input');
+        if (input) input.focus();
+      };
+
+      window.removeItem = function(btn) {
+        const row = btn.closest('.doc-item');
+        if (row && container.querySelectorAll('.doc-item').length > 1) {
+          row.remove();
+          updateIndices();
+        }
+      };
+
+      window.showRevealModal = function() {
+        if (modal) modal.classList.remove('hidden');
+      };
+
+      window.closeRevealModal = function() {
+        if (modal) modal.classList.add('hidden');
+      };
+
+      window.copyLink = function() {
+        const input = document.getElementById('clientLinkInput');
+        const btnText = document.getElementById('copyBtnText');
+        const btnIcon = document.getElementById('copyBtnIcon');
+
+        input.select();
+        navigator.clipboard.writeText(input.value).then(() => {
+          btnText.textContent = 'Copied';
+          btnIcon.textContent = 'check';
+          setTimeout(() => {
+            btnText.textContent = 'Copy link';
+            btnIcon.textContent = 'content_copy';
+          }, 2000);
+        });
+      };
+
+      updateIndices();
+    })();
+  </script>
+
+
+
+
+
+
+</body></html>

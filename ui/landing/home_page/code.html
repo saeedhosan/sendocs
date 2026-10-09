@@ -1,0 +1,248 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<meta content="web_standard" name="shell-type">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+      main > :first-child { margin-top: 0 !important; }
+      main > :last-child { margin-bottom: 0 !important; }
+    }
+    ::-webkit-scrollbar { display: none; }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface": "#ffffff",
+            "surface-subtle": "#f8fafc",
+            "surface-muted": "#f1f5f9",
+            "surface-container": "#f1ecef",
+            "border-subtle": "#e2e8f0",
+            "border-strong": "#cbd5e1",
+            "text-primary": "#0f172a",
+            "text-secondary": "#475569",
+            "text-muted": "#64748b",
+            "primary": "#4f46e5",
+            "primary-container": "#4338ca",
+            "on-primary": "#ffffff",
+            "accent-focus": "rgba(79, 70, 229, 0.25)",
+            "tertiary": "#16a34a",
+            "success-subtle": "#f0fdf4"
+          },
+          borderRadius: {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          fontFamily: {
+            "geist": ["Geist", "sans-serif"],
+            "mono": ["Geist Mono", "monospace"]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-surface font-geist text-text-primary min-h-screen flex flex-col antialiased selection:bg-primary/10 selection:text-primary">
+<!-- MINIMAL PUBLIC HEADER -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-surface/90 backdrop-blur-md border-b border-border-subtle">
+<div class="h-14 max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<a class="flex items-center gap-2.5 group" data-path="home" href="#">
+<span class="flex items-center justify-center w-7 h-7 rounded-[8px] bg-primary text-on-primary text-[14px] font-semibold select-none shadow-sm">S</span>
+<span class="text-[15px] font-semibold tracking-tight text-text-primary group-hover:text-primary transition-colors">Sendocs</span>
+</a>
+</div>
+<div class="flex items-center gap-3">
+<a class="text-[13px] font-medium text-text-secondary hover:text-text-primary px-3 py-1.5 transition-colors" data-path="login" href="#">Log in</a>
+<a class="inline-flex items-center justify-center h-[34px] px-3.5 rounded-[10px] bg-primary text-on-primary text-[13px] font-medium hover:bg-primary-container focus:outline-none focus:ring-2 focus:ring-accent-focus transition-all shadow-sm" data-path="register" href="#">Get started</a>
+</div>
+</div>
+</header>
+<!-- MAIN CONTENT CONTAINER -->
+<main class="flex-1 w-full pt-14 bg-surface max-w-6xl mx-auto px-4 sm:px-6">
+<div class="flex flex-col w-full py-10 md:py-16 gap-16 md:gap-24">
+<!-- 1. HERO SECTION -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+<!-- Left Copy Column -->
+<div class="lg:col-span-6 flex flex-col gap-6">
+<div class="inline-flex items-center gap-2 self-start px-2.5 py-1 rounded-[10px] bg-surface-subtle border border-border-subtle text-text-secondary text-[12px] font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="">Document collection, made simple</span>
+</div>
+<div class="flex flex-col gap-3.5">
+<h1 class="text-[32px] sm:text-[38px] leading-[1.18] font-semibold text-text-primary tracking-tight">
+              Collect client documents without the back-and-forth.
+            </h1>
+<p class="text-[15px] leading-relaxed text-text-secondary font-normal">
+              Create a document request, share one secure link, and track what your clients upload. Clients can submit documents without creating an account.
+            </p>
+</div>
+<div class="flex flex-wrap items-center gap-3 pt-1">
+<a class="inline-flex items-center justify-center min-h-[44px] px-5 rounded-[10px] bg-primary text-on-primary text-[13px] font-medium hover:bg-primary-container focus:outline-none focus:ring-2 focus:ring-accent-focus transition-colors shadow-sm" data-path="register" href="#">
+              Get started
+            </a>
+
+</div>
+
+</div>
+<!-- Right Realistic Product Preview Column -->
+<div class="lg:col-span-6">
+<div class="bg-surface rounded-[10px] border border-border-subtle shadow-sm overflow-hidden">
+<!-- Window Title Bar -->
+<div class="bg-surface-subtle border-b border-border-subtle px-4 py-3 flex items-center justify-between">
+<div class="flex items-center gap-2 min-w-0">
+<span class="w-2.5 h-2.5 rounded-full bg-border-strong"></span>
+<span class="text-[14px] font-semibold text-text-primary truncate">2024 Corporate Tax Return — Acme Corp</span>
+</div>
+<div class="flex items-center gap-2 flex-shrink-0">
+<span class="px-2 py-0.5 rounded-[4px] bg-success-subtle text-tertiary border border-tertiary/20 text-[11px] font-medium">
+                  Active
+                </span>
+
+</div>
+</div>
+<div class="p-4 sm:p-5 flex flex-col gap-4">
+<!-- Progress & Meta -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between text-[12px] font-medium">
+<span class="text-text-secondary">3 of 5 uploaded</span>
+
+</div>
+<div class="w-full h-1.5 bg-surface-muted rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full transition-all duration-300" style="width: 60%;"></div>
+</div>
+</div>
+<!-- Magic Link Bar -->
+
+<!-- Document Items List -->
+<div class="flex flex-col rounded-[10px] border border-border-subtle overflow-hidden divide-y divide-border-subtle">
+<!-- Item 1: Uploaded -->
+<div class="p-3 bg-surface flex items-center justify-between gap-3">
+<div class="flex items-start gap-2.5 min-w-0">
+<span class="material-symbols-outlined text-[18px] text-tertiary flex-shrink-0 mt-0.5">check_circle</span>
+<div class="min-w-0">
+<p class="text-[13px] font-medium text-text-primary truncate">1. 2023 Form 1120-S Federal Return</p>
+<p class="font-mono text-[11px] text-text-muted truncate">Uploaded · 2023_1120S.pdf (3.4 MB)</p>
+</div>
+</div>
+<button class="flex-shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-[6px] border border-border-subtle text-text-secondary hover:text-text-primary hover:bg-surface-subtle text-[12px] font-medium transition-colors" type="button">
+<span class="material-symbols-outlined text-[14px]">download</span>
+<span class="hidden sm:inline">Download</span>
+</button>
+</div>
+<!-- Item 2: Uploaded -->
+<div class="p-3 bg-surface flex items-center justify-between gap-3">
+<div class="flex items-start gap-2.5 min-w-0">
+<span class="material-symbols-outlined text-[18px] text-tertiary flex-shrink-0 mt-0.5">check_circle</span>
+<div class="min-w-0">
+<p class="text-[13px] font-medium text-text-primary truncate">2. Year-End Balance Sheet &amp; P&amp;L</p>
+<p class="font-mono text-[11px] text-text-muted truncate">Uploaded · Acme_Q4.xlsx (1.8 MB)</p>
+</div>
+</div>
+<button class="flex-shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-[6px] border border-border-subtle text-text-secondary hover:text-text-primary hover:bg-surface-subtle text-[12px] font-medium transition-colors" type="button">
+<span class="material-symbols-outlined text-[14px]">download</span>
+<span class="hidden sm:inline">Download</span>
+</button>
+</div>
+<!-- Item 3: Uploaded -->
+<div class="p-3 bg-surface flex items-center justify-between gap-3">
+<div class="flex items-start gap-2.5 min-w-0">
+<span class="material-symbols-outlined text-[18px] text-tertiary flex-shrink-0 mt-0.5">check_circle</span>
+<div class="min-w-0">
+<p class="text-[13px] font-medium text-text-primary truncate">3. Articles of Incorporation</p>
+<p class="font-mono text-[11px] text-text-muted truncate">Uploaded · Articles_State.pdf (840 KB)</p>
+</div>
+</div>
+<button class="flex-shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-[6px] border border-border-subtle text-text-secondary hover:text-text-primary hover:bg-surface-subtle text-[12px] font-medium transition-colors" type="button">
+<span class="material-symbols-outlined text-[14px]">download</span>
+<span class="hidden sm:inline">Download</span>
+</button>
+</div>
+<!-- Item 4: Waiting -->
+<div class="p-3 bg-surface-subtle flex items-center justify-between gap-3">
+<div class="flex items-start gap-2.5 min-w-0">
+<span class="material-symbols-outlined text-[18px] text-text-muted flex-shrink-0 mt-0.5">pending</span>
+<div class="min-w-0">
+<p class="text-[13px] font-medium text-text-primary truncate">4. State Tax Exemption Certificate</p>
+<p class="font-mono text-[11px] text-text-muted truncate">Waiting on Acme Corp</p>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded-[4px] bg-surface-muted text-text-secondary border border-border-subtle text-[11px] font-medium flex-shrink-0">
+                    Waiting
+                  </span>
+</div>
+<!-- Item 5: Waiting -->
+<div class="p-3 bg-surface-subtle flex items-center justify-between gap-3">
+<div class="flex items-start gap-2.5 min-w-0">
+<span class="material-symbols-outlined text-[18px] text-text-muted flex-shrink-0 mt-0.5">pending</span>
+<div class="min-w-0">
+<p class="text-[13px] font-medium text-text-primary truncate">5. Shareholder Ownership Schedule</p>
+<p class="font-mono text-[11px] text-text-muted truncate">Waiting on Acme Corp</p>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded-[4px] bg-surface-muted text-text-secondary border border-border-subtle text-[11px] font-medium flex-shrink-0">
+                    Waiting
+                  </span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 2. CORE FEATURES SECTION (6 Features + Private File Storage) -->
+<section class="flex flex-col gap-8"><div class="flex flex-col gap-2 max-w-xl"><h2 class="text-[24px] sm:text-[26px] font-semibold text-text-primary tracking-tight">Everything you need to collect documents.</h2><p class="text-[14px] text-text-secondary leading-relaxed">From creating a request to receiving private files, keep the document collection process in one place.</p></div><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"><div class="rounded-[10px] bg-surface border border-border-subtle p-5 flex flex-col gap-2 shadow-[0_1px_2px_rgba(0,0,0,0.02)]"><div class="w-8 h-8 rounded-[8px] bg-surface-subtle border border-border-subtle flex items-center justify-center mb-1"><span class="material-symbols-outlined text-[18px] text-primary">shield_person</span></div><h3 class="text-[15px] font-semibold text-text-primary">Authentication and access</h3><p class="text-[13px] text-text-secondary leading-relaxed">Secure owner accounts to manage document requests.</p></div><div class="rounded-[10px] bg-surface border border-border-subtle p-5 flex flex-col gap-2 shadow-[0_1px_2px_rgba(0,0,0,0.02)]"><div class="w-8 h-8 rounded-[8px] bg-surface-subtle border border-border-subtle flex items-center justify-center mb-1"><span class="material-symbols-outlined text-[18px] text-primary">rule</span></div><h3 class="text-[15px] font-semibold text-text-primary">Document requests</h3><p class="text-[13px] text-text-secondary leading-relaxed">Request 1–10 specific documents from each client.</p></div><div class="rounded-[10px] bg-surface border border-border-subtle p-5 flex flex-col gap-2 shadow-[0_1px_2px_rgba(0,0,0,0.02)]"><div class="w-8 h-8 rounded-[8px] bg-surface-subtle border border-border-subtle flex items-center justify-center mb-1"><span class="material-symbols-outlined text-[18px] text-primary">key</span></div><h3 class="text-[15px] font-semibold text-text-primary">Secure magic links</h3><p class="text-[13px] text-text-secondary leading-relaxed">Give clients time-limited access through a revocable link.</p></div><div class="rounded-[10px] bg-surface border border-border-subtle p-5 flex flex-col gap-2 shadow-[0_1px_2px_rgba(0,0,0,0.02)]"><div class="w-8 h-8 rounded-[8px] bg-surface-subtle border border-border-subtle flex items-center justify-center mb-1"><span class="material-symbols-outlined text-[18px] text-primary">trending_up</span></div><h3 class="text-[15px] font-semibold text-text-primary">Progress tracking</h3><p class="text-[13px] text-text-secondary leading-relaxed">See which documents have arrived and which are still missing.</p></div><div class="rounded-[10px] bg-surface border border-border-subtle p-5 flex flex-col gap-2 shadow-[0_1px_2px_rgba(0,0,0,0.02)]"><div class="w-8 h-8 rounded-[8px] bg-surface-subtle border border-border-subtle flex items-center justify-center mb-1"><span class="material-symbols-outlined text-[18px] text-primary">table_chart</span></div><h3 class="text-[15px] font-semibold text-text-primary">Owner dashboard</h3><p class="text-[13px] text-text-secondary leading-relaxed">Review requests, manage links, and download collected files.</p></div><div class="rounded-[10px] bg-surface border border-border-subtle p-5 flex flex-col gap-2 shadow-[0_1px_2px_rgba(0,0,0,0.02)]"><div class="w-8 h-8 rounded-[8px] bg-surface-subtle border border-border-subtle flex items-center justify-center mb-1"><span class="material-symbols-outlined text-[18px] text-primary">devices</span></div><h3 class="text-[15px] font-semibold text-text-primary">Client portal</h3><p class="text-[13px] text-text-secondary leading-relaxed">Let clients upload documents without creating an account.</p></div></div><div class="rounded-[10px] bg-surface-subtle border border-border-subtle p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"><div class="flex items-start gap-3.5 max-w-2xl"><div class="w-9 h-9 rounded-[8px] bg-surface border border-border-subtle flex items-center justify-center flex-shrink-0 mt-0.5"><span class="material-symbols-outlined text-[20px] text-primary">lock</span></div><div class="flex flex-col gap-1"><h3 class="text-[15px] font-semibold text-text-primary">Private file storage</h3><p class="text-[13px] text-text-secondary leading-relaxed">Validate uploads and keep files private with controlled downloads.</p></div></div><div class="flex items-center gap-1.5 text-[12px] text-text-muted font-mono flex-shrink-0"><span class="material-symbols-outlined text-[15px] text-tertiary">verified_user</span><span class="">Zero public buckets</span></div></div></section>
+<!-- 3. WORKFLOW (How It Works) -->
+<section class="flex flex-col gap-8"><div class="flex flex-col gap-2 max-w-xl"><h2 class="text-[24px] sm:text-[26px] font-semibold text-text-primary tracking-tight">How it works</h2><p class="text-[14px] text-text-secondary leading-relaxed">A straightforward workflow designed for independent professionals.</p></div><div class="grid grid-cols-1 md:grid-cols-3 gap-6"><div class="bg-surface rounded-[10px] border border-border-subtle p-5 flex flex-col gap-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)]"><div class="text-[12px] font-mono font-medium text-text-muted uppercase tracking-wider">01 — Create a request</div><h3 class="text-[15px] font-semibold text-text-primary">Choose a title and list the required documents</h3><p class="text-[13px] text-text-secondary leading-relaxed">Specify the items you need and provide clear instructions for each file.</p></div><div class="bg-surface rounded-[10px] border border-border-subtle p-5 flex flex-col gap-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)]"><div class="text-[12px] font-mono font-medium text-text-muted uppercase tracking-wider">02 — Share the link</div><h3 class="text-[15px] font-semibold text-text-primary">Send your client a secure link</h3><p class="text-[13px] text-text-secondary leading-relaxed">Clients open the portal and submit documents without creating an account.</p></div><div class="bg-surface rounded-[10px] border border-border-subtle p-5 flex flex-col gap-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)]"><div class="text-[12px] font-mono font-medium text-text-muted uppercase tracking-wider">03 — Collect documents</div><h3 class="text-[15px] font-semibold text-text-primary">Track uploads and download the files</h3><p class="text-[13px] text-text-secondary leading-relaxed">Monitor progress in real time and download received files securely.</p></div></div></section>
+<!-- 4. REALISTIC CLIENT EXPERIENCE PREVIEW -->
+
+<!-- 5. FINAL CALL TO ACTION -->
+<section class="rounded-[10px] bg-surface-subtle border border-border-subtle p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+<div class="flex flex-col gap-1 max-w-lg">
+<h2 class="text-[20px] sm:text-[22px] font-semibold text-text-primary tracking-tight">
+            Ready to simplify document collection?
+          </h2>
+<p class="text-[14px] text-text-secondary">
+            Create a request, share one link, and keep track of the documents you receive.
+          </p>
+</div>
+<div class="flex-shrink-0">
+<a class="inline-flex items-center justify-center min-h-[44px] px-6 rounded-[10px] bg-primary text-on-primary text-[13px] font-medium hover:bg-primary-container transition-colors shadow-sm" data-path="register" href="#">
+            Get started
+          </a>
+</div>
+</section>
+</div>
+<!-- Micro-interaction JS -->
+<script>
+      const copyBtn = document.getElementById('copy-btn');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', () => {
+          const originalText = copyBtn.innerHTML;
+          copyBtn.innerHTML = '<span class="material-symbols-outlined text-[14px] text-tertiary">check</span><span class="text-tertiary">Copied</span>';
+          setTimeout(() => {
+            copyBtn.innerHTML = originalText;
+          }, 2000);
+        });
+      }
+    </script>
+</main>
+<!-- 6. MINIMAL PUBLIC FOOTER -->
+<footer class="w-full border-t border-border-subtle bg-surface-subtle mt-auto">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-center text-text-muted text-[13px]">
+<div class="">
+        © 2026 Sendocs · <a class="hover:text-text-primary transition-colors" data-path="terms-of-service" href="#">Terms</a> · <a class="hover:text-text-primary transition-colors" data-path="privacy-policy" href="#">Privacy</a>
+</div>
+</div>
+</footer>
+
+
+</body></html>
