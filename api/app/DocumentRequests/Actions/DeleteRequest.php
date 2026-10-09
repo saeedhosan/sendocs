@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\\DocumentRequests\\Actions;
+namespace App\DocumentRequests\Actions;
 
-use App\\Models\\DocumentRequest;
-use App\\Models\\RequestItem;
-use App\\Storage\\StorageDeletionOutbox;
-use Illuminate\\Support\\Facades\\DB;
+use App\Models\DocumentRequest;
+use App\Models\RequestItem;
+use App\Storage\StorageDeletionOutbox;
+use Illuminate\Support\Facades\DB;
 
 final readonly class DeleteRequest
 {
