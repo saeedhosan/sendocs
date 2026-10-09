@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { api, clearSession, getSession, login, logout, register, type ApiError, type CreatedRequest, type RequestPage, type RequestSummary, type Session } from './api'
 import './App.css'
 
@@ -112,7 +112,7 @@ export default function App() {
     </main><footer className="app-footer"><span>© {new Date().getFullYear()} Sendocs</span><span>Private document collection, made simple.</span></footer></div>
 }
 
-function Alert({ children, error, success, onClose }: { children: React.ReactNode; error?: boolean; success?: boolean; onClose?: () => void }) {
+function Alert({ children, error, success, onClose }: { children: ReactNode; error?: boolean; success?: boolean; onClose?: () => void }) {
   return <div className={'alert ' + (error ? 'alert-error' : success ? 'alert-success' : '')} role={error ? 'alert' : 'status'}>{children}{onClose && <button aria-label="Dismiss message" onClick={onClose}>×</button>}</div>
 }
 function Stat({ label, value, caption }: { label: string; value: string | number; caption: string }) {
