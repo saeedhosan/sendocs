@@ -6,10 +6,13 @@ use App\Models\AccountToken;
 use App\Models\AuthIdentity;
 use App\Models\Session;
 use App\Models\User;
+use App\Models\DocumentRequest;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Cache\RateLimiter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 beforeEach(function (): void {
     $this->withCredentials();
@@ -60,6 +63,39 @@ it('deletes the account and everything hanging off it', function (): void {
         ->and(Session::query()->count())->toBe(0)
         ->and(AccountToken::query()->count())->toBe(0)
         ->and(AuthIdentity::query()->count())->toBe(0);
+});
+
+it('queues owned file cleanup when deleting an account', function (): void {
+    Storage::fake('s3');
+    [$session] = signInAndKeepToken();
+
+    $request = DocumentRequest::create([
+        'owner_id' => $this->owner->getKey(),
+        'title' => 'Tax Documents',
+        'token_hash' => hash('sha256', 'account-deletion-token'),
+        'expires_at' => now()->addDays(14),
+    ]);
+    $item = $request->items()->create([
+        'label' => 'Tax return',
+        'position' => 1,
+    ]);
+    Storage::disk('s3')->put('account/file.pdf', 'pdf');
+    $item->document()->create([
+        'storage_key' => 'account/file.pdf',
+        'original_name' => 'file.pdf',
+        'mime_type' => 'application/pdf',
+        'size_bytes' => 3,
+        'sha256' => hash('sha256', 'pdf'),
+        'uploaded_at' => now(),
+    ]);
+
+    deleteAccount('analytical-engine', 'ada@example.com', csrfFor($session))
+        ->assertNoContent();
+
+    expect(DB::table('storage_deletion_outbox')->where('storage_key', 'account/file.pdf')->exists())->toBeTrue();
+
+    test()->artisan('storage:cleanup')->assertExitCode(0);
+    Storage::disk('s3')->assertMissing('account/file.pdf');
 });
 
 it('expires the session cookie so the browser stops sending it', function (): void {
