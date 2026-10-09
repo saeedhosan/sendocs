@@ -7,6 +7,7 @@ namespace App\Auth\Actions;
 use App\Auth\Services\SessionService;
 use App\Exceptions\ApiException;
 use App\Models\User;
+use App\Storage\StorageDeletionOutbox;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -14,6 +15,7 @@ final readonly class DeleteAccount
 {
     public function __construct(
         private SessionService $sessions,
+        private StorageDeletionOutbox $storageDeletionOutbox,
     ) {}
 
     public function handle(User $user, array $attributes): void
