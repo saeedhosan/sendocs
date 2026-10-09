@@ -41,7 +41,7 @@ jobs:
             - name: Commit Changes
               uses: stefanzweifel/git-auto-commit-action@v7
               with:
-                  commit_message: "style(api): apply lint fixes"
+                  commit_message: "style: apply lint fixes"
                   file_pattern: "api/**"
 
     web:
@@ -69,5 +69,5 @@ jobs:
             - name: Commit Changes
               uses: stefanzweifel/git-auto-commit-action@v7
               with:
-                  commit_message: "style(web): apply lint fixes"
+                  commit_message: "style: apply lint fixes"
                   file_pattern: "web/**"
