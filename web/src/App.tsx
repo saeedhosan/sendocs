@@ -60,7 +60,7 @@ export default function App() {
     if (!session && page !== 'login' && page !== 'register') go('/login')
     if (session && (page === 'login' || page === 'register')) go('/dashboard')
   }, [boot, page, session])
-  useEffect(() => { if (session && !boot && page === 'dashboard') void load() }, [session, boot, page, load])
+  useEffect(() => { if (session && !boot && page === 'dashboard') void Promise.resolve().then(() => load()) }, [session, boot, page, load])
 
   async function auth(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault(); setBusy(true); setError('')
