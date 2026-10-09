@@ -21,6 +21,7 @@ final class StorageDeletionOutbox
             DB::table('storage_deletion_outbox')->insertOrIgnore([
                 'storage_key' => $storageKey,
                 'created_at' => now(),
+                'available_at' => now(),
             ]);
         }
     }
@@ -31,6 +32,8 @@ final class StorageDeletionOutbox
     public function processBatch(): int
     {
         $entries = DB::table('storage_deletion_outbox')
+            ->where('available_at', '<=', now())
+            ->orderBy('available_at')
             ->orderBy('id')
             ->limit(100)
             ->get();
@@ -54,6 +57,7 @@ final class StorageDeletionOutbox
                     ->update([
                         'attempts' => DB::raw('attempts + 1'),
                         'last_attempted_at' => now(),
+                        'available_at' => now()->addSeconds(min(3600, 60 * (2 ** min((int) $entry->attempts, 6)))),
                     ]);
 
                 report($exception);
