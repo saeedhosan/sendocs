@@ -85,3 +85,18 @@ jobs:
       - name: Lint
         working-directory: web
         run: bun run lint
+
+  production-images:
+    name: Production images
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Build API production image
+        run: docker build --target prod -t sendocs-api-ci ./api
+
+      - name: Build web production image
+        run: docker build --target prod -t sendocs-web-ci ./web
