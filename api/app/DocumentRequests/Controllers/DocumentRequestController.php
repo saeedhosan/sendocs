@@ -6,6 +6,7 @@ namespace App\DocumentRequests\Controllers;
 
 use App\DocumentRequests\Actions\CreateRequest;
 use App\DocumentRequests\Actions\DeleteDocument;
+use App\DocumentRequests\Actions\DeleteRequest;
 use App\DocumentRequests\Actions\ListRequests;
 use App\DocumentRequests\Actions\RevokeRequest;
 use App\DocumentRequests\Actions\ShowRequest;
@@ -56,13 +57,26 @@ class DocumentRequestController
         );
     }
 
+    public function destroy(
+        string $requestId,
+        DeleteRequest $delete,
+        ShowRequest $show,
+        Request $request,
+    ): \Illuminate\Http\Response {
+        $documentRequest = $show->handle($request->user(), $requestId);
+        $delete->execute($documentRequest);
+
+        return response()->noContent();
+    }
+
     public function destroyDocument(
         string $requestId,
         string $itemId,
         DeleteDocument $delete,
+        ShowRequest $show,
         Request $request,
     ): \Illuminate\Http\Response {
-        $documentRequest = app(ShowRequest::class)->handle($request->user(), $requestId);
+        $documentRequest = $show->handle($request->user(), $requestId);
         $delete->execute($documentRequest, $itemId);
 
         return response()->noContent();
