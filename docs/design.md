@@ -400,7 +400,8 @@ Enforced server-side:
 - **API** — auth, authorization, and business rules, exposed as a versioned API.
 - **Relational Database** — users, sessions, requests, items, and file metadata.
 - **Object Storage** — private S3-compatible bucket (MinIO in development).
-- **Queue Worker** — sends emails and process background tasks.
+- **Queue Worker** — sends account emails.
+- **Cleanup Scheduler** — drains the PostgreSQL storage-deletion outbox on a one-minute schedule.
 
 ### High-Level Design
 
@@ -502,14 +503,14 @@ progress is derived, so a client can return later and finish the rest.
 
 **File consistency**
 
-Remove the stored file if database persistence fails.
+Remove the stored file if database persistence fails; if cleanup fails, persist its key in the storage-deletion outbox when the database is available.
 **File downloads**
 
 Authorize through the API, then return a 5-minute signed URL with attachment and nosniff.
 
 **Deletion**
 
-Remove database metadata and stored files together.
+Delete metadata and record storage keys in one database transaction. A scheduled outbox processor removes stored objects after commit and retries failures.
 
 **Progress**
 
@@ -575,6 +576,12 @@ Hold no auth state in the app, so instances scale horizontally. Sessions, rate l
 - Cost: a worker to run, and a job that can be lost on restart.
 - The token is stored before dispatch, so a lost job is recoverable by resend.
 - No cache is needed.
+
+**Durable Storage Cleanup**
+
+- Benefit: cleanup intent is committed with metadata deletion and survives restarts.
+- Cost: a separate scheduler and outbox table, plus brief orphan-object retention while retries run.
+- S3 deletion is retried every minute; failures are reported and remain pending.
 
 ## Bottlenecks
 
