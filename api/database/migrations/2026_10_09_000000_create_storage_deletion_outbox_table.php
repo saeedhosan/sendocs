@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('storage_key')->unique();
             $table->unsignedInteger('attempts')->default(0);
             $table->timestampTz('last_attempted_at')->nullable();
+            $table->timestampTz('available_at')->useCurrent();
             $table->timestampTz('created_at')->useCurrent();
         });
     }
