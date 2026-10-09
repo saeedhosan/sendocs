@@ -1,6 +1,16 @@
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vitest/config'
 
+/*
+ * Where `/api` and `/health` are proxied in dev.
+ *
+ * Defaults to the host-published API (`bun run dev` alongside
+ * `php artisan serve`). The Compose web service overrides this with
+ * `VITE_API_PROXY=http://api:8000` so container-to-container traffic stays
+ * on the compose network.
+ */
+const apiProxyTarget = process.env.VITE_API_PROXY ?? 'http://127.0.0.1:8000'
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
@@ -10,11 +20,11 @@ export default defineConfig({
     strictPort: true,
     proxy: {
       '/api': {
-        target: 'http://api:8000',
+        target: apiProxyTarget,
         changeOrigin: true,
       },
       '/health': {
-        target: 'http://api:8000',
+        target: apiProxyTarget,
         changeOrigin: true,
       },
     },

@@ -64,6 +64,8 @@ services:
         env_file:
             - .env
             - web/.env
+        environment:
+            VITE_API_PROXY: http://api:8000
         ports:
             - "${WEB_BIND:-127.0.0.1}:${WEB_PORT:-3000}:3000"
         volumes:
