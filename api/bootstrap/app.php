@@ -12,6 +12,7 @@ use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -65,5 +66,19 @@ return Application::configure(basePath: dirname(__DIR__))
                 429,
                 headers: $e->getHeaders(),
             )->render($request);
+        });
+
+        $exceptions->render(function (HttpExceptionInterface $e, Request $request): ?JsonResponse {
+            if (! $request->is('api/*')) {
+                return null;
+            }
+
+            $exception = match ($e->getStatusCode()) {
+                404 => new ApiException('not_found', 'Not found.', 404),
+                405 => new ApiException('method_not_allowed', 'Method not allowed.', 405),
+                default => null,
+            };
+
+            return $exception?->render($request);
         });
     })->create();
