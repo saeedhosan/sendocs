@@ -18,13 +18,6 @@ class RequestItem extends Model
 {
     use HasUuids;
 
-    protected function casts(): array
-    {
-        return [
-            'position' => 'integer',
-        ];
-    }
-
     /** @return BelongsTo<DocumentRequest, $this> */
     public function request(): BelongsTo
     {
@@ -35,5 +28,12 @@ class RequestItem extends Model
     public function document(): HasOne
     {
         return $this->hasOne(Document::class, 'request_item_id');
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'position' => 'integer',
+        ];
     }
 }

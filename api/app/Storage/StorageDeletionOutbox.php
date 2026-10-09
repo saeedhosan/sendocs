@@ -6,6 +6,7 @@ namespace App\Storage;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use RuntimeException;
 use Throwable;
 
 final class StorageDeletionOutbox
@@ -19,8 +20,8 @@ final class StorageDeletionOutbox
     {
         foreach (array_unique($storageKeys) as $storageKey) {
             DB::table('storage_deletion_outbox')->insertOrIgnore([
-                'storage_key' => $storageKey,
-                'created_at' => now(),
+                'storage_key'  => $storageKey,
+                'created_at'   => now(),
                 'available_at' => now(),
             ]);
         }
@@ -43,7 +44,7 @@ final class StorageDeletionOutbox
         foreach ($entries as $entry) {
             try {
                 if (! Storage::disk('s3')->delete($entry->storage_key)) {
-                    throw new \RuntimeException('The stored object could not be deleted.');
+                    throw new RuntimeException('The stored object could not be deleted.');
                 }
 
                 DB::table('storage_deletion_outbox')
@@ -55,9 +56,9 @@ final class StorageDeletionOutbox
                 DB::table('storage_deletion_outbox')
                     ->where('id', $entry->id)
                     ->update([
-                        'attempts' => DB::raw('attempts + 1'),
+                        'attempts'          => DB::raw('attempts + 1'),
                         'last_attempted_at' => now(),
-                        'available_at' => now()->addSeconds(min(3600, 60 * (2 ** min((int) $entry->attempts, 6)))),
+                        'available_at'      => now()->addSeconds(min(3600, 60 * (2 ** min((int) $entry->attempts, 6)))),
                     ]);
 
                 report($exception);

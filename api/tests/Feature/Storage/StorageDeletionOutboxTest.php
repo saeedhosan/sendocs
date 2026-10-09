@@ -11,7 +11,7 @@ test('deletes pending storage objects and removes completed outbox entries', fun
 
     DB::table('storage_deletion_outbox')->insert([
         'storage_key' => 'requests/pending.pdf',
-        'created_at' => now(),
+        'created_at'  => now(),
     ]);
 
     test()->artisan('storage:cleanup')->assertExitCode(0);
@@ -24,7 +24,7 @@ test('keeps failed storage deletions queued for a later retry', function (): voi
     $key = 'requests/retry.pdf';
     DB::table('storage_deletion_outbox')->insert([
         'storage_key' => $key,
-        'created_at' => now(),
+        'created_at'  => now(),
     ]);
 
     $disk = Mockery::mock();

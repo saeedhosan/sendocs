@@ -14,8 +14,7 @@ final readonly class DeleteDocument
 {
     public function __construct(
         private StorageDeletionOutbox $storageDeletionOutbox,
-    ) {
-    }
+    ) {}
 
     public function execute(DocumentRequest $request, string $itemId): void
     {

@@ -13,8 +13,7 @@ final readonly class ResolveMagicLink
 {
     public function __construct(
         private MagicLinkGuard $guard,
-    ) {
-    }
+    ) {}
 
     public function handle(Request $request, Closure $next): Response
     {

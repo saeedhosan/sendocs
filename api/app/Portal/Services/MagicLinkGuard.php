@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace App\Portal\Services;
 
-use App\Models\DocumentRequest;
 use App\Exceptions\ApiException;
+use App\Models\DocumentRequest;
+use Illuminate\Support\Carbon;
 
 final readonly class MagicLinkGuard
 {
     public function resolve(string $token): DocumentRequest
     {
-        if (!preg_match('/^[A-Za-z0-9_-]{43}$/', $token)) {
+        if (! preg_match('/^[A-Za-z0-9_-]{43}$/', $token)) {
             throw $this->invalidLink();
         }
 
@@ -24,7 +25,7 @@ final readonly class MagicLinkGuard
         }
 
         $expiresAt = $request->getAttributeValue('expires_at');
-        assert($expiresAt instanceof \Illuminate\Support\Carbon);
+        assert($expiresAt instanceof Carbon);
 
         if ($request->revoked_at !== null || $expiresAt->isPast()) {
             throw $this->invalidLink();

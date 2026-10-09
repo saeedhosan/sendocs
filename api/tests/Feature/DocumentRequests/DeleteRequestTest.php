@@ -12,15 +12,15 @@ use Illuminate\Testing\TestResponse;
 function makeDeleteRequest(User $owner, string $title, int $itemCount): DocumentRequest
 {
     $request = DocumentRequest::create([
-        'owner_id' => $owner->getKey(),
-        'title' => $title,
+        'owner_id'   => $owner->getKey(),
+        'title'      => $title,
         'token_hash' => hash('sha256', uniqid('', true)),
         'expires_at' => now()->addDays(14),
     ]);
 
     for ($position = 1; $position <= $itemCount; $position++) {
         $request->items()->create([
-            'label' => "Document {$position}",
+            'label'    => "Document {$position}",
             'position' => $position,
         ]);
     }
@@ -46,19 +46,19 @@ function addDeleteRequestDocument($item, string $storageKey): void
     Storage::disk('s3')->put($storageKey, 'pdf');
 
     $item->document()->create([
-        'storage_key' => $storageKey,
+        'storage_key'   => $storageKey,
         'original_name' => basename($storageKey),
-        'mime_type' => 'application/pdf',
-        'size_bytes' => 3,
-        'sha256' => hash('sha256', 'pdf'),
-        'uploaded_at' => now(),
+        'mime_type'     => 'application/pdf',
+        'size_bytes'    => 3,
+        'sha256'        => hash('sha256', 'pdf'),
+        'uploaded_at'   => now(),
     ]);
 }
 
 test('deletes a request, its items, documents, and stored files', function (): void {
     Storage::fake('s3');
 
-    $owner = User::factory()->create();
+    $owner   = User::factory()->create();
     $request = makeDeleteRequest($owner, 'Tax Documents', 3);
 
     foreach ($request->items as $index => $item) {
@@ -85,10 +85,10 @@ test('deletes a request, its items, documents, and stored files', function (): v
 test('returns 404 for another owners request and preserves it', function (): void {
     Storage::fake('s3');
 
-    $owner = User::factory()->create();
+    $owner      = User::factory()->create();
     $otherOwner = User::factory()->create();
-    $request = makeDeleteRequest($otherOwner, 'Other Documents', 1);
-    $item = $request->items()->firstOrFail();
+    $request    = makeDeleteRequest($otherOwner, 'Other Documents', 1);
+    $item       = $request->items()->firstOrFail();
     addDeleteRequestDocument($item, "requests/{$request->getKey()}/file.pdf");
 
     deleteRequest($owner, $request->getKey())
@@ -109,7 +109,7 @@ test('returns 404 for an unknown request', function (): void {
 });
 
 test('requires authentication and csrf', function (): void {
-    $owner = User::factory()->create();
+    $owner   = User::factory()->create();
     $request = makeDeleteRequest($owner, 'Tax Documents', 1);
 
     test()->deleteJson("/api/v1/requests/{$request->getKey()}")
@@ -125,7 +125,7 @@ test('requires authentication and csrf', function (): void {
 });
 
 test('rate limits request deletion', function (): void {
-    $owner = User::factory()->create();
+    $owner   = User::factory()->create();
     $request = makeDeleteRequest($owner, 'Tax Documents', 1);
 
     $session = app(SessionService::class)->issue($owner);

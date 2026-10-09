@@ -20,14 +20,6 @@ class DocumentRequest extends Model
 {
     use HasUuids;
 
-    protected function casts(): array
-    {
-        return [
-            'expires_at' => 'datetime',
-            'revoked_at' => 'datetime',
-        ];
-    }
-
     /** @return BelongsTo<User, $this> */
     public function owner(): BelongsTo
     {
@@ -38,5 +30,13 @@ class DocumentRequest extends Model
     public function items(): HasMany
     {
         return $this->hasMany(RequestItem::class, 'request_id')->orderBy('position');
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'expires_at' => 'datetime',
+            'revoked_at' => 'datetime',
+        ];
     }
 }

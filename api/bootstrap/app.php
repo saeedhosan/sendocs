@@ -74,8 +74,8 @@ return Application::configure(basePath: dirname(__DIR__))
             }
 
             $exception = match ($e->getStatusCode()) {
-                404 => new ApiException('not_found', 'Not found.', 404),
-                405 => new ApiException('method_not_allowed', 'Method not allowed.', 405),
+                404     => new ApiException('not_found', 'Not found.', 404),
+                405     => new ApiException('method_not_allowed', 'Method not allowed.', 405),
                 default => null,
             };
 

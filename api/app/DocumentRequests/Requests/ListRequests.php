@@ -17,7 +17,7 @@ class ListRequests extends FormRequest
     public function rules(): array
     {
         return [
-            'limit' => ['sometimes', 'integer', 'min:1', 'max:100'],
+            'limit'  => ['sometimes', 'integer', 'min:1', 'max:100'],
             'cursor' => ['sometimes', 'nullable', 'string'],
         ];
     }

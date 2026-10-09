@@ -14,6 +14,7 @@ use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use RuntimeException;
 use Throwable;
 
 final readonly class UploadDocument
@@ -23,8 +24,7 @@ final readonly class UploadDocument
     public function __construct(
         private DocumentTypeDetector $typeDetector,
         private StorageDeletionOutbox $storageDeletionOutbox,
-    ) {
-    }
+    ) {}
 
     public function handle(DocumentRequest $portalRequest, string $itemId, ?UploadedFile $file): void
     {
@@ -75,7 +75,7 @@ final readonly class UploadDocument
         }
 
         $storageKey = $portalRequest->getKey().'/'.Str::random(64);
-        $stored = null;
+        $stored     = null;
 
         try {
             $storedKey = Storage::disk('s3')->putFileAs(
@@ -85,7 +85,7 @@ final readonly class UploadDocument
             );
 
             if (! is_string($storedKey) || $storedKey === '') {
-                throw new \RuntimeException('The document could not be stored.');
+                throw new RuntimeException('The document could not be stored.');
             }
 
             $stored = $storedKey;
@@ -93,23 +93,23 @@ final readonly class UploadDocument
             $realPath = $file->getRealPath();
 
             if (! is_string($realPath)) {
-                throw new \RuntimeException('The uploaded file path is unavailable.');
+                throw new RuntimeException('The uploaded file path is unavailable.');
             }
 
             $sha256 = hash_file('sha256', $realPath);
 
             if (! is_string($sha256)) {
-                throw new \RuntimeException('The document hash could not be calculated.');
+                throw new RuntimeException('The document hash could not be calculated.');
             }
 
             $document = new Document([
                 'request_item_id' => $item->getKey(),
-                'storage_key' => $stored,
-                'original_name' => $this->sanitizeOriginalName($file->getClientOriginalName()),
-                'mime_type' => $detected['mimeType'],
-                'size_bytes' => $size,
-                'sha256' => $sha256,
-                'uploaded_at' => now(),
+                'storage_key'     => $stored,
+                'original_name'   => $this->sanitizeOriginalName($file->getClientOriginalName()),
+                'mime_type'       => $detected['mimeType'],
+                'size_bytes'      => $size,
+                'sha256'          => $sha256,
+                'uploaded_at'     => now(),
             ]);
 
             $document->save();
@@ -153,14 +153,14 @@ final readonly class UploadDocument
             if (Storage::disk('s3')->delete($storageKey)) {
                 return;
             }
-        } catch (Throwable $exception) {
-            report($exception);
+        } catch (Throwable $throwable) {
+            report($throwable);
         }
 
         try {
             $this->storageDeletionOutbox->enqueue([$storageKey]);
-        } catch (Throwable $exception) {
-            report($exception);
+        } catch (Throwable $throwable) {
+            report($throwable);
         }
     }
 }

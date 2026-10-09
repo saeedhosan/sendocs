@@ -1,21 +1,7 @@
 <?php
 
 declare(strict_types=1);
-
-use App\Auth\Notifications\VerifyEmailNotification;
-use App\Auth\Services\CsrfTokenService;
-use App\Auth\Services\SecureToken;
-use App\Auth\Services\SessionService;
-use App\Models\Session;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Notification;
-use Illuminate\Testing\TestResponse;
-use Symfony\Component\HttpFoundation\Cookie as SymfonyCookie;
-use Tests\Support\GoogleToken;
 use Tests\TestCase;
 
 /*
@@ -44,7 +30,7 @@ pest()->extend(TestCase::class)
 |
 */
 
-expect()->extend('toBeOne', fn() => $this->toBe(1));
+expect()->extend('toBeOne', fn () => $this->toBe(1));
 
 /*
 |--------------------------------------------------------------------------
@@ -56,4 +42,3 @@ expect()->extend('toBeOne', fn() => $this->toBe(1));
 | global functions to help you to reduce the number of lines of code in your test files.
 |
 */
-

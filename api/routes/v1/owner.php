@@ -22,7 +22,6 @@ Route::get('requests/{requestId}', [DocumentRequestController::class, 'show'])
     ->middleware('throttle:document-requests.read')
     ->name('requests.show');
 
-
 Route::delete('requests/{requestId}', [DocumentRequestController::class, 'destroy'])
     ->middleware([VerifyCsrfToken::class, 'throttle:document-requests.write'])
     ->name('requests.destroy');

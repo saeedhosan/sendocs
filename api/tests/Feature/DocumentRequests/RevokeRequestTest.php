@@ -12,8 +12,8 @@ use Illuminate\Testing\TestResponse;
 function revokeRequestFixture(User $owner): DocumentRequest
 {
     $request = new DocumentRequest([
-        'owner_id' => $owner->getKey(),
-        'title' => 'Tax Documents',
+        'owner_id'   => $owner->getKey(),
+        'title'      => 'Tax Documents',
         'token_hash' => hash('sha256', bin2hex(random_bytes(32))),
         'expires_at' => now()->addDays(14),
     ]);
@@ -21,7 +21,7 @@ function revokeRequestFixture(User $owner): DocumentRequest
     $request->save();
 
     $request->items()->create([
-        'label' => 'Passport',
+        'label'    => 'Passport',
         'position' => 1,
     ]);
 
@@ -48,7 +48,7 @@ test('requires an authenticated owner and csrf token', function (): void {
         ->assertStatus(401)
         ->assertJsonPath('error.code', 'unauthenticated');
 
-    $owner = User::factory()->create();
+    $owner   = User::factory()->create();
     $session = app(SessionService::class)->issue($owner);
     test()->withCredentials();
     useDevice(queuedSessionToken());
@@ -59,7 +59,7 @@ test('requires an authenticated owner and csrf token', function (): void {
 });
 
 test('revokes an owned request and returns its detail', function (): void {
-    $owner = User::factory()->create();
+    $owner   = User::factory()->create();
     $request = revokeRequestFixture($owner);
 
     $response = revokeRequestAsOwner($owner, $request->getKey());
@@ -76,10 +76,10 @@ test('revokes an owned request and returns its detail', function (): void {
 });
 
 test('revocation is idempotent and preserves the original timestamp', function (): void {
-    $owner = User::factory()->create();
+    $owner   = User::factory()->create();
     $request = revokeRequestFixture($owner);
 
-    $first = revokeRequestAsOwner($owner, $request->getKey());
+    $first     = revokeRequestAsOwner($owner, $request->getKey());
     $revokedAt = $first->json('revokedAt');
 
     expect($revokedAt)->toBeString();
@@ -94,8 +94,8 @@ test('revocation is idempotent and preserves the original timestamp', function (
 });
 
 test('does not reveal another owners request', function (): void {
-    $owner = User::factory()->create();
-    $other = User::factory()->create();
+    $owner   = User::factory()->create();
+    $other   = User::factory()->create();
     $request = revokeRequestFixture($other);
 
     revokeRequestAsOwner($owner, $request->getKey())
@@ -116,8 +116,8 @@ test('returns not found for an unknown request', function (): void {
 });
 
 test('can revoke an expired request because revocation is an owner action', function (): void {
-    $owner = User::factory()->create();
-    $request = revokeRequestFixture($owner);
+    $owner               = User::factory()->create();
+    $request             = revokeRequestFixture($owner);
     $request->expires_at = now()->subMinute();
     $request->save();
 

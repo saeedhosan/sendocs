@@ -7,7 +7,7 @@ it('returns the standard error envelope for an unknown API route', function (): 
         ->assertNotFound()
         ->assertExactJson([
             'error' => [
-                'code' => 'not_found',
+                'code'    => 'not_found',
                 'message' => 'Not found.',
             ],
         ]);
@@ -18,7 +18,7 @@ it('returns the standard error envelope when an API method is not allowed', func
         ->assertStatus(405)
         ->assertExactJson([
             'error' => [
-                'code' => 'method_not_allowed',
+                'code'    => 'method_not_allowed',
                 'message' => 'Method not allowed.',
             ],
         ]);

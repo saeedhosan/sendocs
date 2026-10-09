@@ -25,8 +25,8 @@ class RequestSummaryResource extends JsonResource
         assert($expiresAt instanceof Carbon);
         assert($revokedAt === null || $revokedAt instanceof Carbon);
 
-        $items = $model->items;
-        $uploaded = 0;
+        $items          = $model->items;
+        $uploaded       = 0;
         $lastActivityAt = null;
 
         foreach ($items as $item) {
@@ -40,21 +40,21 @@ class RequestSummaryResource extends JsonResource
             $uploadedAt = $document->getAttributeValue('uploaded_at');
             assert($uploadedAt instanceof Carbon);
 
-            if ($lastActivityAt === null || $uploadedAt->greaterThan($lastActivityAt)) {
+            if (! $lastActivityAt instanceof Carbon || $uploadedAt->greaterThan($lastActivityAt)) {
                 $lastActivityAt = $uploadedAt;
             }
         }
 
         return [
-            'id' => $model->getKey(),
-            'title' => $model->title,
-            'status' => $uploaded === $items->count() ? 'complete' : 'waiting',
-            'uploaded' => $uploaded,
-            'total' => $items->count(),
+            'id'             => $model->getKey(),
+            'title'          => $model->title,
+            'status'         => $uploaded === $items->count() ? 'complete' : 'waiting',
+            'uploaded'       => $uploaded,
+            'total'          => $items->count(),
             'lastActivityAt' => $lastActivityAt?->toIso8601String(),
-            'createdAt' => $createdAt->toIso8601String(),
-            'expiresAt' => $expiresAt->toIso8601String(),
-            'revokedAt' => $revokedAt?->toIso8601String(),
+            'createdAt'      => $createdAt->toIso8601String(),
+            'expiresAt'      => $expiresAt->toIso8601String(),
+            'revokedAt'      => $revokedAt?->toIso8601String(),
         ];
     }
 }

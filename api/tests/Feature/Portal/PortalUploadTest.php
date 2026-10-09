@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use App\Models\Document;
 use App\Models\DocumentRequest;
-use App\Models\RequestItem;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -15,8 +14,8 @@ function portalUploadFixture(): array
     $owner = User::factory()->create();
 
     $request = DocumentRequest::create([
-        'owner_id' => $owner->getKey(),
-        'title' => 'Tax Documents',
+        'owner_id'   => $owner->getKey(),
+        'title'      => 'Tax Documents',
         'token_hash' => hash('sha256', $token),
         'expires_at' => now()->addDays(14),
     ]);
@@ -92,7 +91,7 @@ test('rejects a second upload for the same item and keeps the first file', funct
         ->assertStatus(409)
         ->assertExactJson([
             'error' => [
-                'code' => 'duplicate_upload',
+                'code'    => 'duplicate_upload',
                 'message' => 'A file has already been uploaded for this item.',
             ],
         ]);
@@ -105,13 +104,13 @@ test('returns 404 when the item is not on the resolved request', function (): vo
     [$request, $items, $token] = portalUploadFixture();
 
     $otherRequest = DocumentRequest::create([
-        'owner_id' => $request->owner_id,
-        'title' => 'Other',
+        'owner_id'   => $request->owner_id,
+        'title'      => 'Other',
         'token_hash' => hash('sha256', rtrim(strtr(base64_encode(random_bytes(32)), '+/', '-_'), '=')),
         'expires_at' => now()->addDays(14),
     ]);
     $otherItem = $otherRequest->items()->create([
-        'label' => 'Other file',
+        'label'    => 'Other file',
         'position' => 1,
     ]);
 
@@ -119,7 +118,7 @@ test('returns 404 when the item is not on the resolved request', function (): vo
         ->assertStatus(404)
         ->assertExactJson([
             'error' => [
-                'code' => 'not_found',
+                'code'    => 'not_found',
                 'message' => 'Not found.',
             ],
         ]);
@@ -136,7 +135,7 @@ test('rejects a file over the 25 MB cap', function (): void {
         ->assertStatus(413)
         ->assertExactJson([
             'error' => [
-                'code' => 'file_too_large',
+                'code'    => 'file_too_large',
                 'message' => 'The file is larger than 25 MB.',
             ],
         ]);
@@ -148,7 +147,7 @@ test('rejects a file over the 25 MB cap', function (): void {
 test('returns the file size error when PHP rejects a file above its upload limit', function (): void {
     [, $items, $token] = portalUploadFixture();
 
-    $file = validPdf();
+    $file                = validPdf();
     $fileWithUploadError = new UploadedFile(
         $file->getPathname(),
         'large.pdf',
@@ -161,7 +160,7 @@ test('returns the file size error when PHP rejects a file above its upload limit
         ->assertStatus(413)
         ->assertExactJson([
             'error' => [
-                'code' => 'file_too_large',
+                'code'    => 'file_too_large',
                 'message' => 'The file is larger than 25 MB.',
             ],
         ]);
@@ -191,7 +190,7 @@ test('rejects a renamed file when its content type disagrees with its extension'
         ->assertStatus(415)
         ->assertExactJson([
             'error' => [
-                'code' => 'unsupported_type',
+                'code'    => 'unsupported_type',
                 'message' => 'That file type is not accepted.',
             ],
         ]);
@@ -213,7 +212,7 @@ test('returns the same invalid link response for upload requests', function (): 
         ->assertStatus(410)
         ->assertExactJson([
             'error' => [
-                'code' => 'invalid_link',
+                'code'    => 'invalid_link',
                 'message' => 'This link is no longer valid.',
             ],
         ]);
@@ -254,7 +253,7 @@ test('returns a consistent internal error when object storage rejects an upload'
         ->assertStatus(500)
         ->assertExactJson([
             'error' => [
-                'code' => 'internal_error',
+                'code'    => 'internal_error',
                 'message' => 'Something went wrong. Try again.',
             ],
         ]);

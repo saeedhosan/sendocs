@@ -17,8 +17,8 @@ class RequestDetailResource extends JsonResource
     public function toArray(Request $request): array
     {
         /** @var DocumentRequest $model */
-        $model = $this->resource;
-        $items = $model->items;
+        $model        = $this->resource;
+        $items        = $model->items;
         $downloadUrls = app(DocumentDownloadUrl::class);
 
         $createdAt = $model->getAttributeValue('created_at');
@@ -29,7 +29,7 @@ class RequestDetailResource extends JsonResource
         assert($expiresAt instanceof Carbon);
         assert($revokedAt === null || $revokedAt instanceof Carbon);
 
-        $uploaded = 0;
+        $uploaded       = 0;
         $lastActivityAt = null;
 
         foreach ($items as $item) {
@@ -43,30 +43,30 @@ class RequestDetailResource extends JsonResource
             $uploadedAt = $document->getAttributeValue('uploaded_at');
             assert($uploadedAt instanceof Carbon);
 
-            if ($lastActivityAt === null || $uploadedAt->greaterThan($lastActivityAt)) {
+            if (! $lastActivityAt instanceof Carbon || $uploadedAt->greaterThan($lastActivityAt)) {
                 $lastActivityAt = $uploadedAt;
             }
         }
 
         return [
-            'id' => $model->getKey(),
-            'title' => $model->title,
-            'status' => $uploaded === $items->count() ? 'complete' : 'waiting',
-            'uploaded' => $uploaded,
-            'total' => $items->count(),
+            'id'             => $model->getKey(),
+            'title'          => $model->title,
+            'status'         => $uploaded === $items->count() ? 'complete' : 'waiting',
+            'uploaded'       => $uploaded,
+            'total'          => $items->count(),
             'lastActivityAt' => $lastActivityAt?->toIso8601String(),
-            'createdAt' => $createdAt->toIso8601String(),
-            'expiresAt' => $expiresAt->toIso8601String(),
-            'revokedAt' => $revokedAt?->toIso8601String(),
-            'items' => array_map(static function (RequestItem $item) use ($downloadUrls): array {
+            'createdAt'      => $createdAt->toIso8601String(),
+            'expiresAt'      => $expiresAt->toIso8601String(),
+            'revokedAt'      => $revokedAt?->toIso8601String(),
+            'items'          => array_map(static function (RequestItem $item) use ($downloadUrls): array {
                 $document = $item->document;
 
                 if ($document === null) {
                     return [
-                        'id' => $item->getKey(),
-                        'label' => $item->label,
+                        'id'       => $item->getKey(),
+                        'label'    => $item->label,
                         'position' => $item->position,
-                        'state' => 'waiting',
+                        'state'    => 'waiting',
                         'document' => null,
                     ];
                 }
@@ -75,17 +75,17 @@ class RequestDetailResource extends JsonResource
                 assert($uploadedAt instanceof Carbon);
 
                 return [
-                    'id' => $item->getKey(),
-                    'label' => $item->label,
+                    'id'       => $item->getKey(),
+                    'label'    => $item->label,
                     'position' => $item->position,
-                    'state' => 'uploaded',
+                    'state'    => 'uploaded',
                     'document' => [
-                        'id' => $document->getKey(),
+                        'id'           => $document->getKey(),
                         'originalName' => $document->original_name,
-                        'mimeType' => $document->mime_type,
-                        'sizeBytes' => $document->size_bytes,
-                        'uploadedAt' => $uploadedAt->toIso8601String(),
-                        'downloadUrl' => $downloadUrls->for($document),
+                        'mimeType'     => $document->mime_type,
+                        'sizeBytes'    => $document->size_bytes,
+                        'uploadedAt'   => $uploadedAt->toIso8601String(),
+                        'downloadUrl'  => $downloadUrls->for($document),
                     ],
                 ];
             }, $items->all()),

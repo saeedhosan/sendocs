@@ -3,21 +3,21 @@
 declare(strict_types=1);
 
 use App\Auth\Services\SessionService;
-use Illuminate\Support\Facades\Storage;
 use App\Models\DocumentRequest;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Testing\TestResponse;
 
-function makeDocumentRequest(User $owner, string $title, int $items = 1, ?\DateTimeInterface $createdAt = null): DocumentRequest
+function makeDocumentRequest(User $owner, string $title, int $items = 1, ?DateTimeInterface $createdAt = null): DocumentRequest
 {
     $request = new DocumentRequest([
-        'owner_id' => $owner->getKey(),
-        'title' => $title,
+        'owner_id'   => $owner->getKey(),
+        'title'      => $title,
         'token_hash' => hash('sha256', bin2hex(random_bytes(32))),
         'expires_at' => now()->addDays(14),
     ]);
 
-    if ($createdAt !== null) {
+    if ($createdAt instanceof DateTimeInterface) {
         $request->created_at = $createdAt;
     }
 
@@ -25,7 +25,7 @@ function makeDocumentRequest(User $owner, string $title, int $items = 1, ?\DateT
 
     foreach (range(1, $items) as $position) {
         $request->items()->create([
-            'label' => "Item {$position}",
+            'label'    => "Item {$position}",
             'position' => $position,
         ]);
     }
@@ -102,7 +102,7 @@ test('validates list pagination inputs', function (): void {
 });
 
 test('shows a request with its ordered items', function (): void {
-    $owner = User::factory()->create();
+    $owner   = User::factory()->create();
     $request = makeDocumentRequest($owner, 'Tax Documents', 2);
 
     app(SessionService::class)->issue($owner);
@@ -123,8 +123,8 @@ test('shows a request with its ordered items', function (): void {
 });
 
 test('does not reveal another owners request', function (): void {
-    $owner = User::factory()->create();
-    $other = User::factory()->create();
+    $owner   = User::factory()->create();
+    $other   = User::factory()->create();
     $request = makeDocumentRequest($other, 'Private request');
 
     app(SessionService::class)->issue($owner);
@@ -148,19 +148,18 @@ test('returns not found for an unknown request', function (): void {
         ->assertJsonPath('error.code', 'not_found');
 });
 
-
 test('includes a signed download URL for uploaded documents', function (): void {
-    $owner = User::factory()->create();
+    $owner   = User::factory()->create();
     $request = makeDocumentRequest($owner, 'Tax Documents', 1);
-    $item = $request->items()->firstOrFail();
+    $item    = $request->items()->firstOrFail();
 
     $item->document()->create([
-        'storage_key' => 'requests/'.$request->getKey().'/document.pdf',
+        'storage_key'   => 'requests/'.$request->getKey().'/document.pdf',
         'original_name' => 'tax-2026.pdf',
-        'mime_type' => 'application/pdf',
-        'size_bytes' => 1024,
-        'sha256' => hash('sha256', 'pdf'),
-        'uploaded_at' => now(),
+        'mime_type'     => 'application/pdf',
+        'size_bytes'    => 1024,
+        'sha256'        => hash('sha256', 'pdf'),
+        'uploaded_at'   => now(),
     ]);
 
     $disk = Mockery::mock();

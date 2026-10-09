@@ -21,8 +21,8 @@ final class PortalViewResource extends JsonResource
         $expiresAt = $model->getAttributeValue('expires_at');
         assert($expiresAt instanceof Carbon);
 
-        $items = $model->items;
-        $uploaded = 0;
+        $items          = $model->items;
+        $uploaded       = 0;
         $lastActivityAt = null;
 
         foreach ($items as $item) {
@@ -36,28 +36,28 @@ final class PortalViewResource extends JsonResource
             $uploadedAt = $document->getAttributeValue('uploaded_at');
             assert($uploadedAt instanceof Carbon);
 
-            if ($lastActivityAt === null || $uploadedAt->greaterThan($lastActivityAt)) {
+            if (! $lastActivityAt instanceof Carbon || $uploadedAt->greaterThan($lastActivityAt)) {
                 $lastActivityAt = $uploadedAt;
             }
         }
 
         return [
-            'title' => $model->title,
-            'status' => $uploaded === $items->count() ? 'complete' : 'waiting',
-            'uploaded' => $uploaded,
-            'total' => $items->count(),
+            'title'          => $model->title,
+            'status'         => $uploaded === $items->count() ? 'complete' : 'waiting',
+            'uploaded'       => $uploaded,
+            'total'          => $items->count(),
             'lastActivityAt' => $lastActivityAt?->toIso8601String(),
-            'expiresAt' => $expiresAt->toIso8601String(),
-            'items' => array_map(static function (RequestItem $item): array {
+            'expiresAt'      => $expiresAt->toIso8601String(),
+            'items'          => array_map(static function (RequestItem $item): array {
                 $document = $item->document;
 
                 if ($document === null) {
                     return [
-                        'id' => $item->getKey(),
-                        'label' => $item->label,
+                        'id'       => $item->getKey(),
+                        'label'    => $item->label,
                         'position' => $item->position,
-                        'state' => 'waiting',
-                        'file' => null,
+                        'state'    => 'waiting',
+                        'file'     => null,
                     ];
                 }
 
@@ -65,14 +65,14 @@ final class PortalViewResource extends JsonResource
                 assert($uploadedAt instanceof Carbon);
 
                 return [
-                    'id' => $item->getKey(),
-                    'label' => $item->label,
+                    'id'       => $item->getKey(),
+                    'label'    => $item->label,
                     'position' => $item->position,
-                    'state' => 'uploaded',
-                    'file' => [
+                    'state'    => 'uploaded',
+                    'file'     => [
                         'originalName' => $document->original_name,
-                        'sizeBytes' => $document->size_bytes,
-                        'uploadedAt' => $uploadedAt->toIso8601String(),
+                        'sizeBytes'    => $document->size_bytes,
+                        'uploadedAt'   => $uploadedAt->toIso8601String(),
                     ],
                 ];
             }, $items->all()),

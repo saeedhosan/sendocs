@@ -18,6 +18,7 @@ use App\DocumentRequests\Resources\RequestSummaryResource;
 use App\DocumentRequests\Services\MagicLinkService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class DocumentRequestController
 {
@@ -26,7 +27,7 @@ class DocumentRequestController
         $paginator = $list->handle($request->user(), $request->limit(), $request->cursor());
 
         return response()->json([
-            'data' => RequestSummaryResource::collection($paginator->items())->resolve($request),
+            'data'       => RequestSummaryResource::collection($paginator->items())->resolve($request),
             'nextCursor' => $paginator->nextCursor()?->encode(),
         ]);
     }
@@ -41,7 +42,7 @@ class DocumentRequestController
         return response()->json(
             CreatedRequestResource::make([
                 'request' => $result['request'],
-                'url' => $links->link($result['token']),
+                'url'     => $links->link($result['token']),
             ])->resolve($request),
             201,
         );
@@ -62,7 +63,7 @@ class DocumentRequestController
         DeleteRequest $delete,
         ShowRequest $show,
         Request $request,
-    ): \Illuminate\Http\Response {
+    ): Response {
         $documentRequest = $show->handle($request->user(), $requestId);
         $delete->execute($documentRequest);
 
@@ -75,7 +76,7 @@ class DocumentRequestController
         DeleteDocument $delete,
         ShowRequest $show,
         Request $request,
-    ): \Illuminate\Http\Response {
+    ): Response {
         $documentRequest = $show->handle($request->user(), $requestId);
         $delete->execute($documentRequest, $itemId);
 
@@ -85,7 +86,7 @@ class DocumentRequestController
     public function show(
         string $requestId,
         ShowRequest $show,
-        \Illuminate\Http\Request $request,
+        Request $request,
     ): JsonResponse {
         return response()->json(
             RequestDetailResource::make($show->handle($request->user(), $requestId))->resolve($request),

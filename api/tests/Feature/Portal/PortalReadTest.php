@@ -11,8 +11,8 @@ function portalRequestFixture(User $owner, ?string $token = null): array
     $token ??= rtrim(strtr(base64_encode(random_bytes(32)), '+/', '-_'), '=');
 
     $request = new DocumentRequest([
-        'owner_id' => $owner->getKey(),
-        'title' => 'Tax Documents',
+        'owner_id'   => $owner->getKey(),
+        'title'      => 'Tax Documents',
         'token_hash' => hash('sha256', $token),
         'expires_at' => now()->addDays(14),
     ]);
@@ -56,17 +56,19 @@ test('returns the portal view for a valid token', function (): void {
 test('returns the same 410 error for malformed unknown expired and revoked tokens', function (): void {
     [$request, $token] = portalRequestFixture(User::factory()->create());
 
-    $valid = getPortal($token);
+    $valid     = getPortal($token);
     $malformed = getPortal('not-a-valid-token');
-    $unknown = getPortal(rtrim(strtr(base64_encode(random_bytes(32)), '+/', '-_'), '='));
+    $unknown   = getPortal(rtrim(strtr(base64_encode(random_bytes(32)), '+/', '-_'), '='));
 
     $request->expires_at = now()->subMinute();
     $request->save();
+
     $expired = getPortal($token);
 
     $request->expires_at = now()->addDays(14);
     $request->revoked_at = now();
     $request->save();
+
     $revoked = getPortal($token);
 
     foreach ([$malformed, $unknown, $expired, $revoked] as $response) {
@@ -74,7 +76,7 @@ test('returns the same 410 error for malformed unknown expired and revoked token
             ->assertStatus(410)
             ->assertExactJson([
                 'error' => [
-                    'code' => 'invalid_link',
+                    'code'    => 'invalid_link',
                     'message' => 'This link is no longer valid.',
                 ],
             ]);

@@ -11,18 +11,6 @@ use Illuminate\Validation\Rule;
 class RegisterRequest extends FormRequest
 {
     /**
-     * Normalize email identity before validation and lookup.
-     */
-    protected function prepareForValidation(): void
-    {
-        $email = $this->input('email');
-
-        if (is_string($email)) {
-            $this->merge(['email' => mb_strtolower(trim($email))]);
-        }
-    }
-
-    /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
@@ -42,5 +30,17 @@ class RegisterRequest extends FormRequest
             'email'    => ['required', 'string', Rule::email()->strict(), 'max:254'],
             'password' => ['required', 'string', 'min:12', 'max:200'],
         ];
+    }
+
+    /**
+     * Normalize email identity before validation and lookup.
+     */
+    protected function prepareForValidation(): void
+    {
+        $email = $this->input('email');
+
+        if (is_string($email)) {
+            $this->merge(['email' => mb_strtolower(trim($email))]);
+        }
     }
 }

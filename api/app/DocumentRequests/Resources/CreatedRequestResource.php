@@ -16,8 +16,8 @@ class CreatedRequestResource extends JsonResource
 
         return [
             'request' => RequestDetailResource::make($value['request'])->resolve($request),
-            'link' => [
-                'url' => $value['url'],
+            'link'    => [
+                'url'       => $value['url'],
                 'expiresAt' => $value['request']->expires_at->toIso8601String(),
             ],
         ];

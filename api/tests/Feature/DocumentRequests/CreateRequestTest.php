@@ -10,7 +10,7 @@ use App\Models\User;
 
 function createRequestAsOwner(array $attributes = []): array
 {
-    $owner = User::factory()->create();
+    $owner   = User::factory()->create();
     $session = app(SessionService::class)->issue($owner);
     test()->withCredentials();
     useDevice(queuedSessionToken());
@@ -56,7 +56,7 @@ test('creates a request with ordered items and returns the magic link once', fun
         ->assertJsonPath('link.expiresAt', $response->json('request.expiresAt'))
         ->assertJsonStructure([
             'request' => ['id', 'title', 'status', 'uploaded', 'total', 'createdAt', 'expiresAt', 'revokedAt', 'items'],
-            'link' => ['url', 'expiresAt'],
+            'link'    => ['url', 'expiresAt'],
         ]);
 
     $token = basename((string) $response->json('link.url'));
@@ -78,7 +78,7 @@ test('requires an authenticated owner and csrf token', function (): void {
         'items' => [['label' => 'Passport']],
     ])->assertStatus(401)->assertJsonPath('error.code', 'unauthenticated');
 
-    $owner = User::factory()->create();
+    $owner   = User::factory()->create();
     $session = app(SessionService::class)->issue($owner);
     test()->withCredentials();
     useDevice(queuedSessionToken());
@@ -104,7 +104,7 @@ test('rejects invalid titles and item counts', function (): void {
 test('accepts one and ten items and preserves submitted order', function (): void {
     createRequestAsOwner(['items' => [['label' => 'Only item']]])['response']->assertCreated();
 
-    $items = array_map(fn (int $number): array => ['label' => "Item {$number}"], range(1, 10));
+    $items  = array_map(fn (int $number): array => ['label' => "Item {$number}"], range(1, 10));
     $result = createRequestAsOwner(['items' => $items]);
 
     $result['response']->assertCreated();
@@ -146,7 +146,7 @@ test('rolls back the request and items when an item insert fails', function (): 
 });
 
 test('rate limits request creation to 120 attempts per minute per owner', function (): void {
-    $owner = User::factory()->create();
+    $owner   = User::factory()->create();
     $session = app(SessionService::class)->issue($owner);
     test()->withCredentials();
     useDevice(queuedSessionToken());

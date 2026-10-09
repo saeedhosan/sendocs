@@ -13,6 +13,16 @@ class CreateRequest extends FormRequest
         return true;
     }
 
+    public function rules(): array
+    {
+        return [
+            'title'         => ['required', 'string', 'min:1', 'max:200'],
+            'items'         => ['required', 'array', 'min:1', 'max:10'],
+            'items.*'       => ['required', 'array'],
+            'items.*.label' => ['required', 'string', 'min:1', 'max:200'],
+        ];
+    }
+
     protected function prepareForValidation(): void
     {
         $title = $this->input('title');
@@ -37,15 +47,5 @@ class CreateRequest extends FormRequest
                 ),
             ]);
         }
-    }
-
-    public function rules(): array
-    {
-        return [
-            'title' => ['required', 'string', 'min:1', 'max:200'],
-            'items' => ['required', 'array', 'min:1', 'max:10'],
-            'items.*' => ['required', 'array'],
-            'items.*.label' => ['required', 'string', 'min:1', 'max:200'],
-        ];
     }
 }

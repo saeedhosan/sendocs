@@ -116,7 +116,7 @@ function csrfFor(Session $session): string
 function queuedSessionToken(): string
 {
     $queued = collect(Cookie::getQueuedCookies())
-        ->first(fn(SymfonyCookie $cookie): bool => $cookie->getName() === sessionCookieName());
+        ->first(fn (SymfonyCookie $cookie): bool => $cookie->getName() === sessionCookieName());
 
     expect($queued)->not->toBeNull();
 

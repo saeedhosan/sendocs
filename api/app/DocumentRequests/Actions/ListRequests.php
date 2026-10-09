@@ -15,7 +15,7 @@ final readonly class ListRequests
     public function handle(User $owner, int $limit, ?string $cursor): CursorPaginator
     {
         if ($cursor !== null) {
-            $decoded = Cursor::fromEncoded($cursor);
+            $decoded    = Cursor::fromEncoded($cursor);
             $parameters = $decoded?->toArray();
 
             if (
