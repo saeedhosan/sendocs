@@ -8,6 +8,7 @@ import { VerifyEmailPage } from '../features/auth/pages/VerifyEmailPage'
 import { NewRequestPage } from '../features/requests/pages/NewRequestPage'
 import { RequestDetailPage } from '../features/requests/pages/RequestDetailPage'
 import { RequestsPage } from '../features/requests/pages/RequestsPage'
+import { PortalPage } from '../features/portal/pages/PortalPage'
 import { OwnerLayout } from '../layouts/OwnerLayout'
 import { GuestOnly } from './guards/GuestOnly'
 import { RequireAuth } from './guards/RequireAuth'
@@ -26,6 +27,7 @@ export const router = createBrowserRouter([
     ],
   },
   { path: 'verify-email', element: <VerifyEmailPage /> },
+  { path: 'portal/:token', element: <PortalPage /> },
   {
     element: <RequireAuth />,
     children: [

@@ -1,6 +1,6 @@
 import { getCsrfToken } from './csrf'
 
-const API_BASE = '/api/v1'
+export const API_BASE = '/api/v1'
 
 export type ApiErrorCode = string
 
