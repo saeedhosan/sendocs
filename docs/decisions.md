@@ -383,7 +383,7 @@ PostgreSQL metadata and S3 objects cannot participate in one atomic transaction.
 
 ### Decision
 
-Use a PostgreSQL-backed cleanup outbox. In the same database transaction that deletes document metadata, insert each affected storage key into `storage_deletion_outbox`. A scheduled command attempts pending deletions in bounded batches and removes an outbox row only after S3 confirms deletion. Failed attempts remain stored, increment an attempt counter, and are retried on the next scheduled run.
+Use a PostgreSQL-backed cleanup outbox. In the same database transaction that deletes document metadata, insert each affected storage key into `storage_deletion_outbox`. A scheduled command attempts pending deletions in bounded batches and removes an outbox row only after S3 confirms deletion. Failed attempts remain stored, increment an attempt counter, and are retried with exponential backoff capped at one hour.
 
 The API does not wait for object deletion. Account deletion, request deletion, document deletion, and failed-upload cleanup use the same outbox. The queue worker remains dedicated to account email; a separate scheduler runs the cleanup command every minute.
 
