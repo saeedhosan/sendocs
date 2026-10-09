@@ -370,3 +370,34 @@ Sessions also make expiry and revocation simple.
 - State-changing requests need CSRF protection.
 - CLI clients cannot use the browser session directly.
 - API testing needs a session cookie.
+
+
+## TD-008 - Durable Object Cleanup
+
+**Status:** Accepted  
+**Date:** 2026-10-09
+
+### Context
+
+PostgreSQL metadata and S3 objects cannot participate in one atomic transaction. Deleting objects first can leave database references to missing files if the transaction rolls back; deleting objects after commit can leave orphaned objects when storage is unavailable.
+
+### Decision
+
+Use a PostgreSQL-backed cleanup outbox. In the same database transaction that deletes document metadata, insert each affected storage key into `storage_deletion_outbox`. A scheduled command attempts pending deletions in bounded batches and removes an outbox row only after S3 confirms deletion. Failed attempts remain stored, increment an attempt counter, and are retried on the next scheduled run.
+
+The API does not wait for object deletion. Account deletion, request deletion, document deletion, and failed-upload cleanup use the same outbox. The queue worker remains dedicated to account email; a separate scheduler runs the cleanup command every minute.
+
+### Consequences
+
+**Positive**
+
+- Metadata deletion and cleanup intent commit or roll back together.
+- Storage outages do not block deletion responses.
+- Failed cleanup survives process restarts and is retried automatically.
+- Repeating deletion is safe for the same object key.
+
+**Negative**
+
+- Objects may remain in private storage briefly after metadata is deleted.
+- The scheduler and outbox table must be monitored.
+- Persistent failures require operational follow-up; retries do not make a permanently unavailable bucket recover.
