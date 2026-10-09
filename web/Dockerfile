@@ -30,6 +30,7 @@ FROM nginx:1-alpine AS prod
 
 ENV PORT=80
 
+COPY docker/log-format.conf /etc/nginx/conf.d/00-log-format.conf
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist /usr/share/nginx/html
 
