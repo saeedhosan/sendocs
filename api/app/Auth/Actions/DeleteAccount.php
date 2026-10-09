@@ -32,7 +32,18 @@ final readonly class DeleteAccount
             ]);
         }
 
-        DB::transaction(fn () => $user->delete());
+        DB::transaction(function () use ($user): void {
+            $storageKeys = DB::table('documents')
+                ->join('request_items', 'request_items.id', '=', 'documents.request_item_id')
+                ->join('document_requests', 'document_requests.id', '=', 'request_items.request_id')
+                ->where('document_requests.owner_id', $user->getKey())
+                ->pluck('documents.storage_key')
+                ->all();
+
+            $this->storageDeletionOutbox->enqueue($storageKeys);
+
+            $user->delete();
+        });
 
         $this->sessions->forgetCookie();
     }
