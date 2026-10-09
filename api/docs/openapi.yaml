@@ -980,27 +980,36 @@ components:
   schemas:
     Error:
       type: object
-      required: [code, message]
+      required: [error]
       properties:
-        code:
-          type: string
-          description: Stable, machine-readable error code.
-        message:
-          type: string
-          description: Human-readable summary.
-        details:
+        error:
           type: object
-          additionalProperties: true
-          description: Present only on validation failures, keyed by field name.
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              description: Stable, machine-readable error code.
+            message:
+              type: string
+              description: Human-readable summary.
+            details:
+              type: object
+              additionalProperties: true
+              description: Present only on validation failures, keyed by field name.
 
     ValidationError:
       allOf:
         - $ref: "#/components/schemas/Error"
         - type: object
+          required: [error]
           properties:
-            details:
+            error:
               type: object
-              additionalProperties: true
+              required: [details]
+              properties:
+                details:
+                  type: object
+                  additionalProperties: true
 
     Health:
       type: object
