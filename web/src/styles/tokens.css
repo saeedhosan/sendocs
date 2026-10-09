@@ -1,0 +1,47 @@
+:root {
+  color-scheme: light;
+
+  --color-primary: #304fcf;
+  --color-primary-hover: #263fb5;
+  --color-primary-soft: #eef1ff;
+  --color-success: #15803d;
+  --color-success-soft: #f0fdf4;
+  --color-danger: #dc2626;
+  --color-danger-soft: #fef2f2;
+
+  --color-text: #121113;
+  --color-text-secondary: #52525b;
+  --color-text-muted: #71717a;
+  --color-surface: #ffffff;
+  --color-surface-subtle: #fafafa;
+  --color-surface-muted: #f4f4f5;
+  --color-border: #e4e4e7;
+  --color-border-strong: #d4d4d8;
+  --color-focus-ring: rgba(98, 126, 255, 0.25);
+
+  --font-sans: Geist, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-md: 0.875rem;
+  --text-lg: 0.9375rem;
+  --heading-sm: 1.125rem;
+  --heading-md: 1.5rem;
+  --heading-lg: 2rem;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+
+  --radius-control: 5px;
+  --radius-card: 8px;
+  --radius-dialog: 8px;
+  --content-width: 1280px;
+
+  --shadow-menu: 0 1px 3px rgba(18, 17, 19, 0.06), 0 1px 2px rgba(18, 17, 19, 0.04);
+}
