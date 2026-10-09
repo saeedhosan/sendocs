@@ -38,6 +38,25 @@ services:
                 condition: service_healthy
         restart: unless-stopped
 
+    scheduler:
+        build:
+            context: ./api
+            target: ${API_TARGET:-dev}
+        command:
+            - php
+            - artisan
+            - schedule:work
+        env_file:
+            - .env
+            - api/.env
+        volumes:
+            - ./api:/var/www/html
+            - /var/www/html/vendor
+        depends_on:
+            db:
+                condition: service_healthy
+        restart: unless-stopped
+
     web:
         build:
             context: ./web

@@ -40,7 +40,7 @@ The stack is settled in `docs/decisions.md`: Laravel on PHP 8.4 and React for bo
 - **PostgreSQL** — users, sessions, requests, items, and file metadata.
 - **Laravel on PHP 8.4** — sessions, CSRF, migrations, and queues.
 - **React** — both surfaces render as single-page apps.
-- **Queue worker** — account emails only; never used by requests or uploads.
+- **Queue worker** — account emails. A separate scheduler retries durable object-cleanup tasks.
 - **Docker Compose** — app and PostgreSQL locally.
 
 ## Requirements
@@ -62,7 +62,7 @@ The root `package.json` is the command surface for the repository.
 | `npm run lint`  | Run all linters and static checks  |
 | `npm run build` | Build all applications             |
 
-`dev` starts the API, the web UI, the queue worker, and PostgreSQL. The application is served at `http://localhost:3000`, which also proxies `/api` and `/health`, so the browser only ever sees one origin; the API is published separately on `http://localhost:8000` for command-line clients. Containers run from built images rather than mounted source, so run `npm run build` again to see an application change.
+`dev` starts the API, the web UI, the account-email queue worker, the cleanup scheduler, and PostgreSQL. The application is served at `http://localhost:3000`, which also proxies `/api` and `/health`, so the browser only ever sees one origin; the API is published separately on `http://localhost:8000` for command-line clients. Containers run from built images rather than mounted source, so run `npm run build` again to see an application change.
 
 ## Local Development
 

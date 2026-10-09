@@ -57,6 +57,7 @@ test('deletes an uploaded document and returns no content', function (): void {
         ->assertNoContent();
 
     expect($item->fresh()->document)->toBeNull();
+    test()->artisan('storage:cleanup')->assertExitCode(0);
     Storage::disk('s3')->assertMissing('requests/file.pdf');
 });
 

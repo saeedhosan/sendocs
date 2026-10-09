@@ -71,10 +71,11 @@ One Compose file, `compose.yaml` at the repository root, defines every service. 
 | :------- | :------------------------------------------------------------------- |
 | `api`    | Laravel API, as a development server or as PHP-FPM                   |
 | `worker` | Laravel queue worker for account email                               |
+| `scheduler` | Laravel scheduler; retries durable object cleanup every minute      |
 | `web`    | Vite development server, or the built assets behind nginx             |
 | `db`     | PostgreSQL, the only stateful service                                 |
 
-Every service runs in every environment. The API and the web service wait on `db` being healthy before they start; `web` waits only for the API container to exist, and Vite or nginx retries the first request until Laravel answers. Object storage is not part of this Compose file; the application uses local disk until the storage feature lands. Production runs the same file, so a deployment that uses managed PostgreSQL removes `db` from its copy of the file.
+Every service runs in every environment. The API, worker, and scheduler wait on `db` being healthy before they start; `web` waits only for the API container to exist, and Vite or nginx retries the first request until Laravel answers. Object storage is not part of this Compose file; the application uses local disk until the storage feature lands. Production runs the same file, so a deployment that uses managed PostgreSQL removes `db` from its copy of the file.
 
 Source is never bind-mounted, so the image is the only copy of the code. `npm run dev` starts the services from the images `npm run build` produced, and an edit to application code needs that build to run again before it is visible. `env_file` hands every container the root `.env` as environment variables. The application key is handled by the API image rather than by a root command. `.env.example` ships a fixed development key, so `cp -n .env.example .env` gives every developer a working key without a generation step, and that key never changes while the file exists. The `dev` entrypoint covers a key that is missing or blank: it generates one, writes it to the image's own `.env`, and reuses it on later starts instead of generating again. Production takes `APP_KEY` from the deployment environment and never generates one, so recreating a container cannot invalidate encrypted data.
 
@@ -150,7 +151,7 @@ The root `package.json` is the command surface for the whole repository. It orch
 
 | Command         | Purpose                            | Runs                                                    |
 | :-------------- | :--------------------------------- | :------------------------------------------------------ |
-| `npm run dev`   | Start every service                | The API, the web UI, the queue worker, and PostgreSQL         |
+| `npm run dev`   | Start every service                | The API, the web UI, the queue worker, the cleanup scheduler, and PostgreSQL         |
 | `npm run test`  | Run all API and web tests          | Pest for the API, the web suite for the UI               |
 | `npm run lint`  | Run all linters and static checks  | Pint for the API, ESLint and TypeScript for the UI       |
 | `npm run build` | Build all applications             | The images named in `.env`, which carry Composer dependencies and built assets |

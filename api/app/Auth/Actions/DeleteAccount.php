@@ -7,6 +7,7 @@ namespace App\Auth\Actions;
 use App\Auth\Services\SessionService;
 use App\Exceptions\ApiException;
 use App\Models\User;
+use App\Storage\StorageDeletionOutbox;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -14,6 +15,7 @@ final readonly class DeleteAccount
 {
     public function __construct(
         private SessionService $sessions,
+        private StorageDeletionOutbox $storageDeletionOutbox,
     ) {}
 
     public function handle(User $user, array $attributes): void
@@ -32,7 +34,18 @@ final readonly class DeleteAccount
             ]);
         }
 
-        DB::transaction(fn () => $user->delete());
+        DB::transaction(function () use ($user): void {
+            $storageKeys = DB::table('documents')
+                ->join('request_items', 'request_items.id', '=', 'documents.request_item_id')
+                ->join('document_requests', 'document_requests.id', '=', 'request_items.request_id')
+                ->where('document_requests.owner_id', $user->getKey())
+                ->pluck('documents.storage_key')
+                ->all();
+
+            $this->storageDeletionOutbox->enqueue($storageKeys);
+
+            $user->delete();
+        });
 
         $this->sessions->forgetCookie();
     }
