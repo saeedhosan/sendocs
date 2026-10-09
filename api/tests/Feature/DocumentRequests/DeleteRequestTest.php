@@ -75,6 +75,8 @@ test('deletes a request, its items, documents, and stored files', function (): v
         expect($item->document)->toBeNull();
     }
 
+    test()->artisan('storage:cleanup')->assertExitCode(0);
+
     foreach ($request->items as $index => $item) {
         Storage::disk('s3')->assertMissing("requests/{$request->getKey()}/file-{$index}.pdf");
     }
