@@ -2,15 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\DocumentRequests\Actions;
+namespace App\\DocumentRequests\\Actions;
 
-use App\Models\DocumentRequest;
-use App\Models\RequestItem;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+use App\\Models\\DocumentRequest;
+use App\\Models\\RequestItem;
+use App\\Storage\\StorageDeletionOutbox;
+use Illuminate\\Support\\Facades\\DB;
 
 final readonly class DeleteRequest
 {
+    public function __construct(
+        private StorageDeletionOutbox $storageDeletionOutbox,
+    ) {
+    }
+
     public function execute(DocumentRequest $request): void
     {
         $request->loadMissing('items.document');
@@ -21,17 +26,10 @@ final readonly class DeleteRequest
             ->values()
             ->all();
 
-        DB::transaction(static function () use ($request): void {
-            //we will add more delete operations 
+        DB::transaction(function () use ($request, $storageKeys): void {
+            $this->storageDeletionOutbox->enqueue($storageKeys);
+
             $request->delete();
         });
-
-        foreach ($storageKeys as $storageKey) {
-            try {
-                Storage::disk('s3')->delete($storageKey);
-            } catch (\Throwable $exception) {
-                report($exception);
-            }
-        }
     }
 }
