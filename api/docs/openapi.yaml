@@ -965,7 +965,7 @@ components:
               code: rate_limited
               message: Too many requests. Try again shortly.
     InternalError:
-      description: Unexpected failure. Returns a correlation id and never any internals.
+      description: Unexpected failure. The response never includes internal details.
       content:
         application/json:
           schema:
@@ -974,33 +974,40 @@ components:
             error:
               code: internal_error
               message: Something went wrong. Please try again.
-              details:
-                correlationId: 0f1c2d3e-4a5b-6c7d-8e9f-0a1b2c3d4e5f
 
   schemas:
     Error:
       type: object
-      required: [code, message]
+      required: [error]
       properties:
-        code:
-          type: string
-          description: Stable, machine-readable error code.
-        message:
-          type: string
-          description: Human-readable summary.
-        details:
+        error:
           type: object
-          additionalProperties: true
-          description: Present only on validation failures, keyed by field name.
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              description: Stable, machine-readable error code.
+            message:
+              type: string
+              description: Human-readable summary.
+            details:
+              type: object
+              additionalProperties: true
+              description: Present only on validation failures, keyed by field name.
 
     ValidationError:
       allOf:
         - $ref: "#/components/schemas/Error"
         - type: object
+          required: [error]
           properties:
-            details:
+            error:
               type: object
-              additionalProperties: true
+              required: [details]
+              properties:
+                details:
+                  type: object
+                  additionalProperties: true
 
     Health:
       type: object
