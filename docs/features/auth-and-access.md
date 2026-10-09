@@ -774,15 +774,11 @@ Only the guard boundary is noted here; the endpoint itself is defined in secure-
 - Option: allow it when the session was issued by an identity provider, and keep
   requiring the password otherwise.
 
-**Deletion Cleanup Job**
+**Deletion Cleanup**
 
-- The contract says stored objects are removed afterwards by a cleanup job, retried
-  and logged rather than surfaced as an error.
-- There is nothing to clean yet: `document_requests` and `documents` are not part of
-  the API, so the only rows a delete touches are `sessions`, `account_tokens`, and
-  `auth_identities`, all of which cascade from the one delete.
-- Implemented as: the cascading delete only. The job belongs with the feature that
-  uploads the objects, not before it.
+- Account deletion records owned document storage keys in the same transaction as account deletion.
+- Stored-object cleanup is handled by the durable outbox documented in `document-requests.md`.
+- Failed cleanup remains queued and is retried by the scheduler; it does not reverse account deletion.
 
 **bcrypt Work Factor**
 
