@@ -67,15 +67,17 @@ final readonly class UploadDocument
         $stored = null;
 
         try {
-            $stored = Storage::disk('s3')->putFileAs(
+            $storedKey = Storage::disk('s3')->putFileAs(
                 $portalRequest->getKey(),
                 $file,
                 basename($storageKey),
             );
 
-            if ($stored === false) {
+            if (! is_string($storedKey) || $storedKey === '') {
                 throw new \RuntimeException('The document could not be stored.');
             }
+
+            $stored = $storedKey;
 
             $realPath = $file->getRealPath();
 
