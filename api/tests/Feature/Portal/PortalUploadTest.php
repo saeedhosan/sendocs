@@ -127,12 +127,19 @@ test('returns 404 when the item is not on the resolved request', function (): vo
     expect(Document::query()->count())->toBe(0);
 });
 
-test('rejects a file over the 25 MB cap', function (): void {
+test('returns the file size error when PHP rejects a file above its upload limit', function (): void {
     [, $items, $token] = portalUploadFixture();
 
-    $file = sizedPdf(25 * 1024 * 1024 + 1);
+    $file = validPdf();
+    $fileWithUploadError = new UploadedFile(
+        $file->getPathname(),
+        'large.pdf',
+        'application/pdf',
+        UPLOAD_ERR_INI_SIZE,
+        true,
+    );
 
-    uploadPortal($token, $items[0]->getKey(), $file)
+    uploadPortal($token, $items[0]->getKey(), $fileWithUploadError)
         ->assertStatus(413)
         ->assertExactJson([
             'error' => [
