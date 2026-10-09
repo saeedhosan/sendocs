@@ -145,6 +145,31 @@ test('rejects a file over the 25 MB cap', function (): void {
     Storage::disk('s3')->assertEmpty();
 });
 
+test('returns the file size error when PHP rejects a file above its upload limit', function (): void {
+    [, $items, $token] = portalUploadFixture();
+
+    $file = validPdf();
+    $fileWithUploadError = new UploadedFile(
+        $file->getPathname(),
+        'large.pdf',
+        'application/pdf',
+        UPLOAD_ERR_INI_SIZE,
+        true,
+    );
+
+    uploadPortal($token, $items[0]->getKey(), $fileWithUploadError)
+        ->assertStatus(413)
+        ->assertExactJson([
+            'error' => [
+                'code' => 'file_too_large',
+                'message' => 'The file is larger than 25 MB.',
+            ],
+        ]);
+
+    expect(Document::query()->count())->toBe(0);
+    Storage::disk('s3')->assertEmpty();
+});
+
 test('accepts a file at the 25 MB cap', function (): void {
     [, $items, $token] = portalUploadFixture();
 
