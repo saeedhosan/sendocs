@@ -969,7 +969,7 @@ components:
               code: rate_limited
               message: Too many requests. Try again shortly.
     InternalError:
-      description: Unexpected failure. Returns a correlation id and never any internals.
+      description: Unexpected failure. The response never includes internal details.
       content:
         application/json:
           schema:
@@ -978,8 +978,6 @@ components:
             error:
               code: internal_error
               message: Something went wrong. Please try again.
-              details:
-                correlationId: 0f1c2d3e-4a5b-6c7d-8e9f-0a1b2c3d4e5f
 
   schemas:
     Error:
