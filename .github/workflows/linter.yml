@@ -4,7 +4,7 @@ on:
     workflow_dispatch:
 
 permissions:
-    contents: read
+    contents: write
 
 concurrency:
     group: ci-${{ github.ref }}
@@ -38,6 +38,12 @@ jobs:
               working-directory: api
               run: composer lint
 
+            - name: Commit Changes
+              uses: stefanzweifel/git-auto-commit-action@v7
+              with:
+                  commit_message: "style(api): apply lint fixes"
+                  file_pattern: "api/**"
+
     web:
         name: Web
         runs-on: ubuntu-latest
@@ -52,14 +58,6 @@ jobs:
               with:
                   bun-version: 1.x
 
-            - name: Cache Bun
-              uses: actions/cache@v4
-              with:
-                  path: ~/.bun/install/cache
-                  key: bun-${{ runner.os }}-${{ hashFiles('web/bun.lock') }}
-                  restore-keys: |
-                      bun-${{ runner.os }}-
-
             - name: Install dependencies
               working-directory: web
               run: bun install --frozen-lockfile
@@ -67,3 +65,9 @@ jobs:
             - name: Lint
               working-directory: web
               run: bun run lint
+
+            - name: Commit Changes
+              uses: stefanzweifel/git-auto-commit-action@v7
+              with:
+                  commit_message: "style(web): apply lint fixes"
+                  file_pattern: "web/**"
