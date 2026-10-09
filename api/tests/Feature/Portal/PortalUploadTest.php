@@ -217,3 +217,23 @@ test('rate limits uploads to 30 attempts per hour per ip', function (): void {
         ->assertStatus(429)
         ->assertJsonPath('error.code', 'rate_limited');
 });
+
+test('returns a consistent internal error when object storage rejects an upload', function (): void {
+    [$request, $items, $token] = portalUploadFixture();
+
+    $disk = Mockery::mock();
+    $disk->shouldReceive('putFileAs')->once()->andReturn(false);
+    Storage::shouldReceive('disk')->once()->with('s3')->andReturn($disk);
+
+    uploadPortal($token, $items[0]->getKey(), validPdf())
+        ->assertStatus(500)
+        ->assertExactJson([
+            'error' => [
+                'code' => 'internal_error',
+                'message' => 'Something went wrong. Try again.',
+            ],
+        ]);
+
+    expect(Document::query()->count())->toBe(0)
+        ->and($request->fresh())->not->toBeNull();
+});
