@@ -59,10 +59,11 @@ test('login still verifies a password when the address is unknown, so timing can
     $hash->shouldHaveReceived('check')->once();
 });
 
-test('login does not normalize the address before the lookup', function (): void {
+test('login normalizes email before the lookup', function (): void {
     User::factory()->create(['email' => 'ada@example.com', 'password' => Hash::make('analytical-engine')]);
 
-    loginOwner(['email' => '  ADA@Example.COM  '])->assertStatus(401);
+    loginOwner(['email' => '  ADA@Example.COM  '])->assertOk()
+        ->assertJsonPath('user.email', 'ada@example.com');
 });
 
 test('login fails a malformed address with a validation error', function (): void {
