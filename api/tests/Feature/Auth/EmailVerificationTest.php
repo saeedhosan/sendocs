@@ -118,7 +118,7 @@ it('verifies an address registered through the api', function (): void {
         'password' => 'analytical-engine',
     ])->assertCreated();
 
-    $registered = User::query()->where('email', 'Grace@Example.com')->sole();
+    $registered = User::query()->where('email', 'grace@example.com')->sole();
     $row        = AccountToken::query()->where('user_id', $registered->getKey())->sole();
 
     expect($registered->email_verified_at)->toBeNull()

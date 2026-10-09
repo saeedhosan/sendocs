@@ -21,7 +21,7 @@ test('register creates the account, signs it in, and returns no password', funct
     $response = registerOwner();
 
     $response->assertCreated()
-        ->assertJsonPath('user.email', 'Ada@Example.com')
+        ->assertJsonPath('user.email', 'ada@example.com')
         ->assertJsonPath('user.name', 'Ada Lovelace')
         ->assertJsonPath('user.emailVerifiedAt', null)
         ->assertJsonMissingPath('user.password')
@@ -29,7 +29,7 @@ test('register creates the account, signs it in, and returns no password', funct
 
     $user = User::query()->sole();
 
-    expect($user->email)->toBe('Ada@Example.com')
+    expect($user->email)->toBe('ada@example.com')
         ->and($user->provider)->toBe('custom')
         ->and($user->email_verified_at)->toBeNull()
         ->and(Hash::check('analytical-engine', $user->password))->toBeTrue();
@@ -111,12 +111,12 @@ test('register rejects an address that is already registered, with the same body
         ->and(User::query()->count())->toBe(1);
 });
 
-test('register allows a case variant of an existing address', function (): void {
+test('register normalizes email and rejects a case variant of an existing address', function (): void {
     User::factory()->create(['email' => 'ada@example.com']);
 
-    registerOwner(['email' => '  ADA@Example.COM  '])->assertCreated();
+    registerOwner(['email' => '  ADA@Example.COM  '])->assertConflict();
 
-    expect(User::query()->count())->toBe(2);
+    expect(User::query()->count())->toBe(1);
 });
 
 test('register fails validation with one details entry per field', function (): void {

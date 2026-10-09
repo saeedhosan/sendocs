@@ -118,13 +118,13 @@ it('supersedes an earlier reset token', function (): void {
         ->and(AccountToken::query()->sole()->getKey())->not->toBe($first->getKey());
 });
 
-it('does not normalize the address before lookup', function (): void {
+it('normalizes email before looking up the account', function (): void {
     $this->postJson('/api/v1/auth/password/forgot', ['email' => '  ADA@Example.com  '])
         ->assertStatus(202);
 
-    Notification::assertNothingSent();
+    Notification::assertSentOnDemand(ResetPasswordNotification::class);
 
-    expect(AccountToken::query()->count())->toBe(0);
+    expect(AccountToken::query()->sole()->user_id)->toBe($this->owner->getKey());
 });
 
 it('rejects a missing, malformed, or oversized address', function (): void {
