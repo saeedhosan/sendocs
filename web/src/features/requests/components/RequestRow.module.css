@@ -1,0 +1,128 @@
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-bottom: 1px solid var(--color-border-subtle);
+  transition: background-color 0.15s ease;
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.row:hover {
+  background-color: var(--color-canvas-muted);
+}
+
+.titleCell {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.statusCell {
+  display: none;
+}
+
+.title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--color-text);
+  word-break: break-word;
+}
+
+.title:hover {
+  color: var(--color-primary);
+}
+
+.progressCell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+@media (min-width: 768px) {
+  .statusCell {
+    display: block;
+  }
+}
+
+.progressTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.activityCell {
+  display: flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.actionCell {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.open {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+  min-height: 2.75rem;
+  padding: 0.375rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-primary);
+}
+
+.open:hover {
+  background-color: var(--color-surface-muted);
+}
+
+.statusCell,
+.percentMobile {
+  display: none;
+}
+
+@media (min-width: 48rem) {
+  .row {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) 2fr 3fr 2fr 4.5rem;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+  }
+
+  .titleCell {
+    display: block;
+  }
+
+  .mobileStatus {
+    display: none;
+  }
+
+  .statusCell {
+    display: block;
+  }
+
+  .activityCell {
+    justify-content: flex-start;
+  }
+
+  .actionCell {
+    padding-top: 0;
+    border-top: none;
+  }
+}

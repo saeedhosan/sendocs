@@ -1,11 +1,14 @@
 import { createBrowserRouter } from 'react-router-dom'
 import { ChangePasswordPage } from '../features/auth/pages/ChangePasswordPage'
-import { DashboardPage } from '../features/auth/pages/DashboardPage'
 import { ForgotPasswordPage } from '../features/auth/pages/ForgotPasswordPage'
 import { LoginPage } from '../features/auth/pages/LoginPage'
 import { RegisterPage } from '../features/auth/pages/RegisterPage'
 import { ResetPasswordPage } from '../features/auth/pages/ResetPasswordPage'
 import { VerifyEmailPage } from '../features/auth/pages/VerifyEmailPage'
+import { NewRequestPage } from '../features/requests/pages/NewRequestPage'
+import { RequestDetailPage } from '../features/requests/pages/RequestDetailPage'
+import { RequestsPage } from '../features/requests/pages/RequestsPage'
+import { OwnerLayout } from '../layouts/OwnerLayout'
 import { GuestOnly } from './guards/GuestOnly'
 import { RequireAuth } from './guards/RequireAuth'
 import { RootRedirect } from './guards/RootRedirect'
@@ -26,8 +29,15 @@ export const router = createBrowserRouter([
   {
     element: <RequireAuth />,
     children: [
-      { path: 'dashboard', element: <DashboardPage /> },
-      { path: 'settings/password', element: <ChangePasswordPage /> },
+      {
+        element: <OwnerLayout />,
+        children: [
+          { path: 'dashboard', element: <RequestsPage /> },
+          { path: 'requests/new', element: <NewRequestPage /> },
+          { path: 'requests/:id', element: <RequestDetailPage /> },
+          { path: 'settings/password', element: <ChangePasswordPage /> },
+        ],
+      },
     ],
   },
   { path: '*', element: <NotFoundPage /> },

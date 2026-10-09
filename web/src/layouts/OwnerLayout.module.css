@@ -1,0 +1,30 @@
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--color-canvas-muted);
+}
+
+.main {
+  flex: 1;
+  width: 100%;
+  max-width: var(--layout-max);
+  margin-inline: auto;
+  padding: 1.5rem;
+}
+
+.footer {
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+}
+
+.footerInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: var(--layout-max);
+  margin-inline: auto;
+  padding: 1rem 1.5rem;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}

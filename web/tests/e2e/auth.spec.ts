@@ -95,6 +95,9 @@ test.describe('authenticated shell', () => {
     await page.route('**/api/v1/auth/login', (route) =>
       route.fulfill(json(200, sessionPayload)),
     )
+    await page.route(/\/api\/v1\/requests(\?.*)?$/, (route) =>
+      route.fulfill(json(200, { data: [], nextCursor: null })),
+    )
 
     await page.goto('/login')
 
@@ -104,7 +107,7 @@ test.describe('authenticated shell', () => {
 
     await expect(page).toHaveURL(/\/dashboard$/)
     await expect(
-      page.getByRole('heading', { name: 'Your account' }),
+      page.getByText('No document requests yet'),
     ).toBeVisible()
   })
 })
