@@ -9,6 +9,7 @@ use App\Exceptions\ApiException;
 use App\Models\Document;
 use App\Models\DocumentRequest;
 use App\Models\RequestItem;
+use App\Storage\StorageDeletionOutbox;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -21,6 +22,7 @@ final readonly class UploadDocument
 
     public function __construct(
         private DocumentTypeDetector $typeDetector,
+        private StorageDeletionOutbox $storageDeletionOutbox,
     ) {
     }
 
@@ -130,8 +132,22 @@ final readonly class UploadDocument
 
     private function deleteStoredFile(?string $storageKey): void
     {
-        if ($storageKey !== null) {
-            Storage::disk('s3')->delete($storageKey);
+        if ($storageKey === null) {
+            return;
+        }
+
+        try {
+            if (Storage::disk('s3')->delete($storageKey)) {
+                return;
+            }
+        } catch (Throwable $exception) {
+            report($exception);
+        }
+
+        try {
+            $this->storageDeletionOutbox->enqueue([$storageKey]);
+        } catch (Throwable $exception) {
+            report($exception);
         }
     }
 }
