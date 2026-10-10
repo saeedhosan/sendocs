@@ -22,12 +22,13 @@ export function PublicHeader() {
   const { pathname } = useLocation()
   const { status } = useAuth()
   const isAuthenticated = status === 'authenticated'
+  const isLanding = pathname === '/'
   const isDocument = documentLinks.some((link) => link.to === pathname)
 
   return (
-    <header className={styles.header}>
-      <div className={styles.inner}>
-        <Logo />
+    <header className={cn(styles.header, isLanding && styles.homeHeader)}>
+      <div className={cn(styles.inner, isLanding && styles.homeInner)}>
+        <Logo letterMark={isLanding} compact={isLanding} />
 
         {isDocument ? (
           <nav className={styles.nav} aria-label="Legal">
