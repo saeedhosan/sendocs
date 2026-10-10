@@ -182,7 +182,7 @@ test('returns the file size error when PHP rejects the whole POST body', functio
         [],
         [
             'CONTENT_LENGTH' => (string) ($postMaxBytes + 1),
-            'CONTENT_TYPE' => 'multipart/form-data; boundary=sendocs-test',
+            'CONTENT_TYPE'   => 'multipart/form-data; boundary=sendocs-test',
         ],
     );
 
