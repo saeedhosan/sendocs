@@ -45,6 +45,7 @@ export function RequestRow({ request }: RequestRowProps) {
       </div>
 
       <div className={styles.activityCell}>
+        <span className={styles.mobileActivityLabel}>Activity:</span>
         {request.lastActivityAt ? (
           <time
             dateTime={request.lastActivityAt}
