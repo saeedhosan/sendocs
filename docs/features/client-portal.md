@@ -415,7 +415,7 @@ The portal adds nothing to the server schema. Every value it shows comes from th
 ## Performance
 
 - **First load** — one static shell, then one portal request; no other third-party bytes.
-- **Per upload** — one multipart request, streamed straight to storage with a hard cap.
+- **Per upload** — one multipart request; PHP writes the upload to a temporary file, then the API validates it and streams it to private storage.
 - **Concurrency** — at most two transfers, so a phone's connection is not fragmented.
 - **Validation** — the local pre-check avoids a doomed transfer entirely; server sniffing reads only the first bytes.
 - **Refetch** — on focus and after each upload, never on a timer.
@@ -440,7 +440,7 @@ The portal adds nothing to the server schema. Every value it shows comes from th
 
 - `{ "error": { "code", "message", "details" } }`, the same shape as every other endpoint.
 - A type failure names the detected type, never the client-declared header value.
-- A size failure arrives without the body being buffered, so the connection closes cleanly.
+- A size failure returns the standard `413` envelope. PHP or the proxy may already have received or buffered request bytes before Laravel responds.
 
 **Local Rejections**
 
