@@ -84,7 +84,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Unexpected application failures must not leak exception messages or
         // fall back to Laravel's different default JSON error shape.
-        $exceptions->render(function (\Throwable $e, Request $request): ?JsonResponse {
+        $exceptions->render(function (Throwable $e, Request $request): ?JsonResponse {
             if (! $request->is('api/*')) {
                 return null;
             }
