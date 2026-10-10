@@ -261,6 +261,7 @@ describe('PortalPage', () => {
 
   it('never writes the token to storage or a cookie', async () => {
     viewMock.mockResolvedValue(makeView())
+    uploadMock.mockResolvedValue(uploadedView())
     const user = userEvent.setup()
     renderPortal()
 
