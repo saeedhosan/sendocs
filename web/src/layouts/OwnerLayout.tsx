@@ -11,12 +11,6 @@ export function OwnerLayout() {
         <VerifyEmailBanner />
         <Outlet />
       </main>
-      <footer className={styles.footer}>
-        <div className={styles.footerInner}>
-          <span>Sendocs</span>
-          <span>Direct client document intake</span>
-        </div>
-      </footer>
     </div>
   )
 }
