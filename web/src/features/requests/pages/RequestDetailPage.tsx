@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { useAuth } from '../../../app/providers/useAuth'
 import { Badge, Button, ProgressBar } from '../../../components/ui'
 import { ErrorState, LoadingState } from '../../../components/feedback'
 import {
@@ -46,7 +45,6 @@ function expiresLabel(iso: string, now: number = Date.now()): string {
 export function RequestDetailPage() {
   const { id = '' } = useParams()
   const navigate = useNavigate()
-  const { logout } = useAuth()
   const [request, setRequest] = useState<RequestDetail | null>(null)
   const [status, setStatus] = useState<'loading' | 'ready' | 'error' | 'notfound'>(
     'loading',
@@ -64,20 +62,21 @@ export function RequestDetailPage() {
           setStatus('ready')
         })
         .catch((error) => {
-          if (error instanceof ApiError && error.status === 404) {
-            setStatus('notfound')
+          // A rejected session is handled centrally: the shell clears it and
+          // the route guard returns to sign-in.
+          if (error instanceof ApiError && error.code === 'unauthenticated') {
             return
           }
 
-          if (error instanceof ApiError && error.status === 401) {
-            void logout().then(() => navigate('/login', { replace: true }))
+          if (error instanceof ApiError && error.status === 404) {
+            setStatus('notfound')
             return
           }
 
           setStatus('error')
         })
     },
-    [logout, navigate],
+    [],
   )
 
   useEffect(() => {
@@ -89,11 +88,13 @@ export function RequestDetailPage() {
 
     try {
       await action()
+      // The dialog closes only once the action succeeds; failures surface the
+      // error and keep the confirmation open to retry.
+      setConfirm(null)
     } catch (error) {
       setNotice({ tone: 'error', message: errorMessage(error) })
     } finally {
       setBusy(false)
-      setConfirm(null)
     }
   }
 

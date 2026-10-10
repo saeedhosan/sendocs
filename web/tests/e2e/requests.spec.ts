@@ -71,6 +71,24 @@ test.describe('owner requests', () => {
     ).toBeVisible()
   })
 
+  test('a session that expires mid-request returns the owner to sign in', async ({
+    page,
+  }) => {
+    await stubAuthenticatedOwner(page)
+    await page.route(/\/api\/v1\/requests(\?.*)?$/, (route) =>
+      route.fulfill(
+        json(401, {
+          error: { code: 'unauthenticated', message: 'Unauthenticated.' },
+        }),
+      ),
+    )
+
+    await page.goto('/dashboard')
+
+    await expect(page).toHaveURL(/\/login$/)
+    await expect(page.getByRole('heading', { name: 'Sign in' })).toBeVisible()
+  })
+
   test('creating a request reveals the one-time client link', async ({ page }) => {
     await stubAuthenticatedOwner(page)
     await page.route(/\/api\/v1\/requests(\?.*)?$/, (route) =>

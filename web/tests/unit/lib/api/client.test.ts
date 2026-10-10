@@ -1,5 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { ApiError, apiRequest } from '../../../../src/lib/api/client'
+import {
+  ApiError,
+  apiRequest,
+  setSessionInvalidHandler,
+} from '../../../../src/lib/api/client'
 import { clearCsrfToken, setCsrfToken } from '../../../../src/lib/api/csrf'
 
 function jsonResponse(body: unknown, init: ResponseInit = {}): Response {
@@ -14,6 +18,7 @@ const fetchMock = vi.fn()
 
 beforeEach(() => {
   clearCsrfToken()
+  setSessionInvalidHandler(null)
   fetchMock.mockReset()
   vi.stubGlobal('fetch', fetchMock)
 })
@@ -95,6 +100,54 @@ describe('apiRequest', () => {
       code: 'internal_error',
       status: 500,
     })
+  })
+
+  it('captures Retry-After as whole seconds on a rate-limited response', async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(
+        { error: { code: 'rate_limited', message: 'Too many requests.' } },
+        { status: 429, headers: { 'Content-Type': 'application/json', 'Retry-After': '30' } },
+      ),
+    )
+
+    await expect(apiRequest('/auth/register', { method: 'POST' })).rejects.toMatchObject({
+      code: 'rate_limited',
+      status: 429,
+      retryAfter: 30,
+    })
+  })
+
+  it('notifies the shell when a 401 reports the session is gone', async () => {
+    const onSessionInvalid = vi.fn()
+    setSessionInvalidHandler(onSessionInvalid)
+    fetchMock.mockResolvedValue(
+      jsonResponse(
+        { error: { code: 'unauthenticated', message: 'Unauthenticated.' } },
+        { status: 401 },
+      ),
+    )
+
+    await expect(apiRequest('/auth/session')).rejects.toMatchObject({
+      code: 'unauthenticated',
+    })
+    expect(onSessionInvalid).toHaveBeenCalledOnce()
+  })
+
+  it('does not notify the shell for a 401 that reports bad credentials', async () => {
+    const onInvalid = vi.fn()
+    setSessionInvalidHandler(onInvalid)
+
+    fetchMock.mockResolvedValue(
+      jsonResponse(
+        { error: { code: 'invalid_credentials', message: 'Wrong password.' } },
+        { status: 401 },
+      ),
+    )
+
+    await expect(
+      apiRequest('/auth/login', { method: 'POST', body: {} }),
+    ).rejects.toMatchObject({ code: 'invalid_credentials' })
+    expect(onInvalid).not.toHaveBeenCalled()
   })
 
   it('maps a transport failure to network_error', async () => {

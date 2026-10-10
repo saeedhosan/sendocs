@@ -10,6 +10,7 @@ import type {
   SessionPayload,
 } from '../../features/auth/types'
 import { clearCsrfToken, setCsrfToken } from '../../lib/api/csrf'
+import { setSessionInvalidHandler } from '../../lib/api/client'
 import { AuthContext } from './auth-context'
 import type { AuthContextValue, AuthStatus } from './auth-context'
 
@@ -31,6 +32,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setExpiresAt(null)
     setStatus('unauthenticated')
   }, [])
+
+  // Any request that reports the session is gone (401 unauthenticated, or a
+  // CSRF refresh that fails twice) drops the session so guards return to sign in.
+  useEffect(() => {
+    setSessionInvalidHandler(clearSession)
+
+    return () => setSessionInvalidHandler(null)
+  }, [clearSession])
 
   // Resolve the session once on boot, per docs/frontend.md.
   useEffect(() => {
