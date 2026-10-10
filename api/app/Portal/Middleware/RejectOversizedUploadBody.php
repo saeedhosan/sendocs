@@ -14,7 +14,7 @@ final class RejectOversizedUploadBody
     public function handle(Request $request, Closure $next): Response
     {
         $contentLength = $request->server('CONTENT_LENGTH');
-        $postMaxSize = ini_get('post_max_size');
+        $postMaxSize   = ini_get('post_max_size');
 
         if (
             is_string($contentLength)
