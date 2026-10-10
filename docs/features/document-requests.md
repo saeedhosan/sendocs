@@ -287,8 +287,8 @@ Owner Reads, Downloads, Revokes, or Deletes
 
 **Upload Validation**
 
-- Size cap enforced while streaming.
-- Over 25 MB returns 413; connection closed.
+- The API checks the 25 MiB file cap after PHP parses the multipart upload; it does not load the full file into application memory.
+- Over 25 MiB returns the standard `413` envelope. PHP `post_max_size` overflow is mapped to the same response; the proxy retains a separate outer body-size ceiling.
 - MIME type sniffed from content bytes, not Content-Type header.
 - Sniffed type must be in allowlist and match file extension.
 - Allowed: PDF, JPEG, PNG, DOCX, XLSX, CSV, TXT.
@@ -463,7 +463,7 @@ Owner Reads, Downloads, Revokes, or Deletes
 
 **Uploads**
 
-- Streamed to storage with a hard cap; never buffered in memory.
+- Size and content are validated before storage; the API then streams the PHP temporary file to private storage without loading the full file into application memory.
 
 **Sniffing**
 
@@ -490,7 +490,7 @@ Owner Reads, Downloads, Revokes, or Deletes
 | `403`  | `csrf_failed`       | Valid session, missing or mismatched token.                    |
 | `404`  | `not_found`         | Request, item, or document missing, or owned by another owner. |
 | `409`  | `duplicate_upload`  | The item already has a file.                                   |
-| `413`  | `file_too_large`    | Over 25 MB, rejected before buffering.                         |
+| `413`  | `file_too_large`    | Over 25 MiB or PHP request-size limit exceeded.                |
 | `415`  | `unsupported_type`  | Sniffed type not allowed, or extension mismatch.               |
 | `422`  | `validation_failed` | Title, item count, or cursor out of range.                     |
 | `429`  | `rate_limited`      | Bucket exhausted; includes Retry-After.                        |
@@ -506,7 +506,7 @@ belong to the portal surface, defined in secure-magic-link.md.
 
 **Uploads**
 
-- Size failure returns 413; body is not buffered and connection closes.
+- Size failure returns `413`; PHP or the proxy may already have received or buffered request bytes before Laravel responds.
 - Type failure returns 415 with the detected type, not the client header.
 - Lost race returns 409; the losing object is deleted after response.
 - Object store failure returns 500; no metadata is written.
