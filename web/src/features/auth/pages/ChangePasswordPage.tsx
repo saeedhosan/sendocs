@@ -97,12 +97,21 @@ export function ChangePasswordPage() {
         </p>
       </div>
 
-      <div className={styles.infoBox}>
-        <div className={styles.infoBoxTitle}>
-          <InfoIcon size={16} aria-hidden="true" /> Updating your password will
-          automatically terminate all active sessions on other devices.
+      <div className={styles.changeInfoBox}>
+        <InfoIcon
+          size={18}
+          aria-hidden="true"
+          className={styles.changeInfoIcon}
+        />
+        <div className={styles.changeInfoBoxText}>
+          <p>
+            Updating your password will automatically terminate all active
+            sessions on other devices.
+          </p>
+          <span className={styles.infoBoxNote}>
+            SOC2 compliant session termination
+          </span>
         </div>
-        <span className={styles.infoBoxNote}>SOC2 compliant session termination</span>
       </div>
 
       {success ? (
@@ -117,7 +126,11 @@ export function ChangePasswordPage() {
         </Alert>
       ) : null}
 
-      <form className={styles.form} onSubmit={handleSubmit} noValidate>
+      <form
+        className={`${styles.form} ${styles.changePasswordForm}`}
+        onSubmit={handleSubmit}
+        noValidate
+      >
         <FormField
           label="Current password"
           error={errors.currentPassword}
@@ -144,7 +157,7 @@ export function ChangePasswordPage() {
             <PasswordInput
               name="newPassword"
               autoComplete="new-password"
-              placeholder="Enter new password"
+              placeholder="Enter new secure password"
               value={password}
               onChange={(event) => {
                 setPassword(event.target.value)
@@ -181,14 +194,14 @@ export function ChangePasswordPage() {
           ) : null}
         </div>
 
-        <PasswordRequirementsList rules={rules} />
+        <PasswordRequirementsList rules={rules} panel title="Requirements" />
 
         <div className={styles.actions}>
           <Button
             type="submit"
             fullWidth
             loading={submitting}
-            iconRight={<ArrowForwardIcon size={16} />}
+            iconRight={<ArrowForwardIcon size={18} />}
           >
             Save new password
           </Button>
