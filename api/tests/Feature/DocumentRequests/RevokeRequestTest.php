@@ -98,9 +98,26 @@ test('does not reveal another owners request', function (): void {
     $other   = User::factory()->create();
     $request = revokeRequestFixture($other);
 
-    revokeRequestAsOwner($owner, $request->getKey())
-        ->assertStatus(404)
-        ->assertJsonPath('error.code', 'not_found');
+    $otherOwnerResponse = revokeRequestAsOwner($owner, $request->getKey())
+        ->assertNotFound()
+        ->assertExactJson([
+            'error' => [
+                'code' => 'not_found',
+                'message' => 'Not found.',
+            ],
+        ]);
+
+    $unknownRequestResponse = revokeRequestAsOwner(
+        $owner,
+        '00000000-0000-0000-0000-000000000000',
+    )->assertNotFound()->assertExactJson([
+        'error' => [
+            'code' => 'not_found',
+            'message' => 'Not found.',
+        ],
+    ]);
+
+    expect($otherOwnerResponse->content())->toBe($unknownRequestResponse->content());
 
     $request->refresh();
 
