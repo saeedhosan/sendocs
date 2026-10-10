@@ -89,6 +89,10 @@
   margin-top: 0.5rem;
 }
 
+.changePasswordForm .actions {
+  margin-top: 0;
+}
+
 .successIcon {
   display: inline-flex;
   align-items: center;
@@ -128,6 +132,35 @@
   font-family: var(--font-mono);
   font-size: 0.6875rem;
   color: var(--color-text-muted);
+}
+
+.changeInfoBox {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  margin-bottom: 1.25rem;
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface-muted);
+  font-size: 0.75rem;
+  line-height: 1.125rem;
+  color: var(--color-text-secondary);
+}
+
+.changeInfoIcon {
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+  color: var(--color-primary);
+}
+
+.changeInfoBoxText {
+  flex: 1;
+  line-height: 1.5;
+}
+
+.changeInfoBoxText p {
+  color: var(--color-text-secondary);
 }
 
 .dangerBox {
@@ -174,6 +207,21 @@
   margin-top: 0.375rem;
   font-size: 0.75rem;
   color: var(--color-success-text);
+}
+
+.confirmPasswordInput {
+  position: relative;
+}
+
+.confirmPasswordField {
+  padding-right: 2.5rem;
+}
+
+.confirmPasswordCheck {
+  position: absolute;
+  right: 0.625rem;
+  color: var(--color-success);
+  pointer-events: none;
 }
 
 .cancelRow {
