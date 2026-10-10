@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Illuminate\\Support\\Facades\\Route;
+use Illuminate\Support\Facades\Route;
 use RuntimeException;
 
 it('returns the standard error envelope for an unknown API route', function (): void {
