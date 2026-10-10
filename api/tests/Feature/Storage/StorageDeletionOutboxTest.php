@@ -49,8 +49,8 @@ test('defers failed storage deletions until their retry time', function (): void
 
     try {
         DB::table('storage_deletion_outbox')->insert([
-            'storage_key' => 'requests/not-yet-due.pdf',
-            'created_at' => now(),
+            'storage_key'  => 'requests/not-yet-due.pdf',
+            'created_at'   => now(),
             'available_at' => now()->addMinute(),
         ]);
 
@@ -71,9 +71,9 @@ test('caps storage deletion retry backoff at one hour', function (): void {
         $key = 'requests/retry-cap.pdf';
 
         DB::table('storage_deletion_outbox')->insert([
-            'storage_key' => $key,
-            'attempts' => 6,
-            'created_at' => now(),
+            'storage_key'  => $key,
+            'attempts'     => 6,
+            'created_at'   => now(),
             'available_at' => now(),
         ]);
 
