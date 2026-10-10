@@ -86,3 +86,24 @@
     flex-direction: column;
   }
 }
+
+.confirmPasswordInput {
+  position: relative;
+}
+
+.confirmPasswordField {
+  padding-right: 2.5rem;
+}
+
+.confirmPasswordCheck {
+  position: absolute;
+  right: 0.625rem;
+  color: var(--color-success);
+  pointer-events: none;
+}
+
+@media (max-width: 639px) {
+  .insetMain {
+    padding-inline: 2rem;
+  }
+}
