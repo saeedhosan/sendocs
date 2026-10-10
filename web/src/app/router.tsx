@@ -5,6 +5,7 @@ import { LoginPage } from '../features/auth/pages/LoginPage'
 import { RegisterPage } from '../features/auth/pages/RegisterPage'
 import { ResetPasswordPage } from '../features/auth/pages/ResetPasswordPage'
 import { VerifyEmailPage } from '../features/auth/pages/VerifyEmailPage'
+import { LandingPage } from '../features/landing/pages/LandingPage'
 import { PrivacyPolicyPage } from '../features/landing/pages/PrivacyPolicyPage'
 import { TermsOfServicePage } from '../features/landing/pages/TermsOfServicePage'
 import { NewRequestPage } from '../features/requests/pages/NewRequestPage'
@@ -14,7 +15,6 @@ import { PortalPage } from '../features/portal/pages/PortalPage'
 import { OwnerLayout } from '../layouts/OwnerLayout'
 import { PublicLayout } from '../layouts/PublicLayout'
 import { GuestOnly } from './guards/GuestOnly'
-import { HomeRoute } from './guards/HomeRoute'
 import { RequireAuth } from './guards/RequireAuth'
 import { NotFoundPage } from './NotFoundPage'
 
@@ -22,7 +22,7 @@ export const router = createBrowserRouter([
   {
     element: <PublicLayout />,
     children: [
-      { index: true, element: <HomeRoute /> },
+      { index: true, element: <LandingPage /> },
       { path: 'privacy', element: <PrivacyPolicyPage /> },
       { path: 'terms', element: <TermsOfServicePage /> },
     ],
