@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useAuth } from '../../../app/providers/useAuth'
 import { Button } from '../../../components/ui'
 import { EmptyState, ErrorState, LoadingState } from '../../../components/feedback'
 import {
@@ -17,7 +16,6 @@ import styles from './RequestsPage.module.css'
 
 export function RequestsPage() {
   const navigate = useNavigate()
-  const { logout } = useAuth()
   const [searchParams, setSearchParams] = useSearchParams()
   const cursor = searchParams.get('cursor')
 
@@ -42,15 +40,16 @@ export function RequestsPage() {
           setStatus('ready')
         })
         .catch((error) => {
-          if (error instanceof ApiError && error.status === 401) {
-            void logout().then(() => navigate('/login', { replace: true }))
+          // A rejected session is handled centrally: the shell clears it and
+          // the route guard returns to sign-in.
+          if (error instanceof ApiError && error.code === 'unauthenticated') {
             return
           }
 
           setStatus('error')
         })
     },
-    [logout, navigate],
+    [],
   )
 
   useEffect(() => {
