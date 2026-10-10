@@ -131,7 +131,7 @@ test('does not reveal another owners request', function (): void {
     test()->withCredentials();
     useDevice(queuedSessionToken());
 
-    $otherOwnerResponse = test()->getJson("/api/v1/requests/{$request->getKey()}")
+    $otherOwnerResponse     = test()->getJson("/api/v1/requests/{$request->getKey()}")
         ->assertNotFound()
         ->assertExactJson([
             'error' => [
