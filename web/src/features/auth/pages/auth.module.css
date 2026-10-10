@@ -180,3 +180,11 @@
   margin-top: 0.75rem;
   text-align: center;
 }
+
+.resetForm {
+  gap: 1.25rem;
+}
+
+.resetForm .actions {
+  margin-top: 0;
+}
