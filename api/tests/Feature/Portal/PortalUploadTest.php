@@ -178,10 +178,7 @@ test('returns the standard size error when PHP discards an oversized request bod
         [],
         [],
         [],
-        [
-            'CONTENT_LENGTH' => (string) (33 * 1024 * 1024),
-            'HTTP_ACCEPT'    => 'application/json',
-        ],
+        ['CONTENT_LENGTH' => (string) (33 * 1024 * 1024)],
     )
         ->assertStatus(413)
         ->assertExactJson([
