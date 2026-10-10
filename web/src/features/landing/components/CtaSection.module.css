@@ -28,11 +28,11 @@
   color: var(--color-text-secondary);
 }
 
-.actions {
+.action {
   flex-shrink: 0;
 }
 
-.primaryAction {
+.button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -47,7 +47,7 @@
   transition: background-color 0.15s ease;
 }
 
-.primaryAction:hover {
+.button:hover {
   background-color: var(--color-primary-hover);
 }
 
