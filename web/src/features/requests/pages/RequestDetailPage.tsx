@@ -164,6 +164,7 @@ export function RequestDetailPage() {
           <div className={styles.titleRow}>
             <h1 className={styles.title}>{request.title}</h1>
             <Badge
+              className={styles.linkStateBadge}
               variant={
                 linkState(request) === 'active'
                   ? 'success'
