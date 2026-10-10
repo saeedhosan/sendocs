@@ -98,7 +98,7 @@ test('does not reveal another owners request', function (): void {
     $other   = User::factory()->create();
     $request = revokeRequestFixture($other);
 
-    $otherOwnerResponse = revokeRequestAsOwner($owner, $request->getKey())
+    $otherOwnerResponse     = revokeRequestAsOwner($owner, $request->getKey())
         ->assertNotFound()
         ->assertExactJson([
             'error' => [
