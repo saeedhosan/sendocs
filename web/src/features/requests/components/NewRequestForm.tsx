@@ -237,7 +237,11 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
             Cancel
           </Link>
         )}
-        <Button type="submit" loading={busy}>
+        <Button
+          type="submit"
+          loading={busy}
+          className={styles.submitButton}
+        >
           Create request
         </Button>
       </div>
