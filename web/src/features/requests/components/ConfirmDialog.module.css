@@ -1,0 +1,26 @@
+.confirmButton {
+  min-height: 2.75rem;
+}
+
+.confirmDanger {
+  min-height: 2.75rem;
+  border-color: #e11d48;
+  background-color: #e11d48;
+  color: #ffffff;
+}
+
+.confirmDanger:hover:not(:disabled) {
+  border-color: #be123c;
+  background-color: #be123c;
+  color: #ffffff;
+}
+
+@media (min-width: 640px) {
+  .confirmButton,
+  .confirmDanger {
+    height: 2rem;
+    min-height: 2rem;
+    padding-inline: 0.75rem;
+    font-size: 0.75rem;
+  }
+}
