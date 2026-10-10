@@ -221,6 +221,13 @@ export function PortalPage() {
             />
           ))}
         </ul>
+
+        {complete ? (
+          <p className={styles.completeNote}>
+            No further action is required. You may safely close this browser
+            window.
+          </p>
+        ) : null}
       </main>
 
       <footer className={styles.footer}>
