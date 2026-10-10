@@ -14,9 +14,9 @@ test('queues documents added after the request relation was loaded', function ()
     $owner = User::factory()->create();
     $request = DocumentRequest::create([
         'owner_id'   => $owner->getKey(),
-        'title'       => 'Tax Documents',
-        'token_hash'  => hash('sha256', bin2hex(random_bytes(32))),
-        'expires_at'  => now()->addDays(14),
+        'title'      => 'Tax Documents',
+        'token_hash' => hash('sha256', bin2hex(random_bytes(32))),
+        'expires_at' => now()->addDays(14),
     ]);
     $item = $request->items()->create([
         'label' => 'Passport',
