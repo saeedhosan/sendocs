@@ -322,7 +322,7 @@ We defined the core limits we need for the design and rest live at docs/features
 Enforced server-side:
 
 - **Names:** The original filename is stored for display only; rest server-generated.
-- **Maximum size:** `25 MB` per file, rejected with `413` before the body is buffered.
+- **Maximum size:** `25 MiB` per file. Laravel validates the uploaded file after PHP parses multipart data; uploads above PHP's `post_max_size` are mapped to the same `413` response using the request length. Nginx keeps a separate `32 MiB` outer request-body ceiling.
 - **Allowed types:** PDF, JPEG, PNG, DOCX, XLSX, CSV, TXT.
 - **Validation:**
     - The type is sniffed from content, never from the Content-Type header.
@@ -484,7 +484,7 @@ Scope every owner resource query by `owner_id`.
 
 **File uploads**
 
-Enforce the size cap while streaming, sniff the MIME type from content, and require it to match both the allowlist and the extension before storing under a random private key.
+Validate the file size and sniff the MIME type from content before writing to object storage. PHP parses multipart uploads into temporary files; Laravel then streams the validated temporary file to private storage under a random key. The reverse proxy keeps a separate outer request-body ceiling.
 
 **Upload races**
 
