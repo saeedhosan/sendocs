@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -38,4 +39,58 @@ test('keeps failed storage deletions queued for a later retry', function (): voi
     expect($entry)->not->toBeNull()
         ->and($entry->attempts)->toBe(1)
         ->and($entry->last_attempted_at)->not->toBeNull();
+});
+
+
+test('defers failed storage deletions until their retry time', function (): void {
+    Storage::fake('s3');
+
+    $now = now()->startOfSecond();
+    Carbon::setTestNow($now);
+
+    try {
+        DB::table('storage_deletion_outbox')->insert([
+            'storage_key' => 'requests/not-yet-due.pdf',
+            'created_at' => now(),
+            'available_at' => now()->addMinute(),
+        ]);
+
+        test()->artisan('storage:cleanup')->assertExitCode(0);
+
+        expect(DB::table('storage_deletion_outbox')->count())->toBe(1);
+        Storage::disk('s3')->assertMissing('requests/not-yet-due.pdf');
+    } finally {
+        Carbon::setTestNow();
+    }
+});
+
+test('caps storage deletion retry backoff at one hour', function (): void {
+    $now = now()->startOfSecond();
+    Carbon::setTestNow($now);
+
+    try {
+        $key = 'requests/retry-cap.pdf';
+
+        DB::table('storage_deletion_outbox')->insert([
+            'storage_key' => $key,
+            'attempts' => 6,
+            'created_at' => now(),
+            'available_at' => now(),
+        ]);
+
+        $disk = Mockery::mock();
+        $disk->shouldReceive('delete')->once()->with($key)
+            ->andThrow(new RuntimeException('Storage unavailable.'));
+        Storage::shouldReceive('disk')->once()->with('s3')->andReturn($disk);
+
+        test()->artisan('storage:cleanup')->assertExitCode(0);
+
+        $entry = DB::table('storage_deletion_outbox')->where('storage_key', $key)->first();
+
+        expect($entry->attempts)->toBe(7)
+            ->and(Carbon::parse($entry->available_at)->timestamp)
+            ->toBe($now->copy()->addHour()->timestamp);
+    } finally {
+        Carbon::setTestNow();
+    }
 });
