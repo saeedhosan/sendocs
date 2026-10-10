@@ -131,9 +131,25 @@ test('does not reveal another owners request', function (): void {
     test()->withCredentials();
     useDevice(queuedSessionToken());
 
-    test()->getJson("/api/v1/requests/{$request->getKey()}")
-        ->assertStatus(404)
-        ->assertJsonPath('error.code', 'not_found');
+    $otherOwnerResponse = test()->getJson("/api/v1/requests/{$request->getKey()}")
+        ->assertNotFound()
+        ->assertExactJson([
+            'error' => [
+                'code' => 'not_found',
+                'message' => 'Not found.',
+            ],
+        ]);
+
+    $unknownRequestResponse = test()->getJson('/api/v1/requests/00000000-0000-0000-0000-000000000000')
+        ->assertNotFound()
+        ->assertExactJson([
+            'error' => [
+                'code' => 'not_found',
+                'message' => 'Not found.',
+            ],
+        ]);
+
+    expect($otherOwnerResponse->content())->toBe($unknownRequestResponse->content());
 });
 
 test('returns not found for an unknown request', function (): void {
@@ -144,7 +160,7 @@ test('returns not found for an unknown request', function (): void {
     useDevice(queuedSessionToken());
 
     test()->getJson('/api/v1/requests/00000000-0000-0000-0000-000000000000')
-        ->assertStatus(404)
+        ->assertNotFound()
         ->assertJsonPath('error.code', 'not_found');
 });
 
