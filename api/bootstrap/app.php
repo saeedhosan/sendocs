@@ -73,6 +73,18 @@ return Application::configure(basePath: dirname(__DIR__))
                 return null;
             }
 
+            if (
+                $e->getStatusCode() === 413
+                && $request->isMethod('POST')
+                && $request->is('api/v1/portal/*/items/*/file')
+            ) {
+                return new ApiException(
+                    'file_too_large',
+                    'The file is larger than 25 MB.',
+                    413,
+                )->render($request);
+            }
+
             $exception = match ($e->getStatusCode()) {
                 404     => new ApiException('not_found', 'Not found.', 404),
                 405     => new ApiException('method_not_allowed', 'Method not allowed.', 405),
