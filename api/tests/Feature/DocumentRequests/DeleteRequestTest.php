@@ -91,7 +91,7 @@ test('returns 404 for another owners request and preserves it', function (): voi
     $item       = $request->items()->firstOrFail();
     addDeleteRequestDocument($item, "requests/{$request->getKey()}/file.pdf");
 
-    $otherOwnerResponse = deleteRequest($owner, $request->getKey())
+    $otherOwnerResponse     = deleteRequest($owner, $request->getKey())
         ->assertNotFound()
         ->assertExactJson([
             'error' => [
