@@ -81,6 +81,10 @@ describe('LandingPage', () => {
         'href',
         '/privacy',
       )
+      expect(screen.getByRole('link', { name: 'Contact' })).toHaveAttribute(
+        'href',
+        '/contact',
+      )
     })
   })
 

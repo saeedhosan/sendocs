@@ -78,6 +78,17 @@ test.describe('public landing', () => {
     ).toBeVisible()
   })
 
+  test('a guest can reach the contact page from the footer', async ({ page }) => {
+    await page.goto('/')
+
+    await page.getByRole('link', { name: 'Contact' }).click()
+    await expect(page).toHaveURL(/\/contact$/)
+    await expect(page.getByRole('heading', { name: 'Contact' })).toBeVisible()
+    await expect(
+      page.getByRole('link', { name: 'privacy@sendocs.internal' }),
+    ).toHaveAttribute('href', 'mailto:privacy@sendocs.internal')
+  })
+
   test('a signed-in owner can still reach the landing page', async ({ page }) => {
     await page.route('**/api/v1/auth/session', (route) =>
       route.fulfill(json(200, sessionPayload)),
