@@ -249,6 +249,7 @@ test('returns the same invalid link response for upload requests', function (): 
 
 test('rejects an invalid link before checking an oversized request body', function (): void {
     [, $items] = portalUploadFixture();
+
     $token = rtrim(strtr(base64_encode(random_bytes(32)), '+/', '-_'), '=');
 
     test()->call(
