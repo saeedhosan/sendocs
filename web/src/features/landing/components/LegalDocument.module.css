@@ -41,7 +41,7 @@
   margin-bottom: 1rem;
   font-size: 0.875rem;
   line-height: 1.625;
-  color: var(--color-text-secondary);
+  color: var(--color-text-body);
 }
 
 .list {
@@ -53,18 +53,18 @@
   list-style: disc inside;
   font-size: 0.875rem;
   line-height: 1.625;
-  color: var(--color-text-secondary);
+  color: var(--color-text-body);
 }
 
 .listItem {
   font-size: 0.875rem;
   line-height: 1.625;
-  color: var(--color-text-secondary);
+  color: var(--color-text-body);
 }
 
 .lead {
   font-weight: 600;
-  color: var(--color-text-secondary);
+  color: var(--color-text-emphasis);
 }
 
 .noteWrap {
@@ -76,7 +76,7 @@
 .note {
   font-size: 0.875rem;
   line-height: 1.625;
-  color: var(--color-text-secondary);
+  color: var(--color-text-body);
 }
 
 .noteLink {
