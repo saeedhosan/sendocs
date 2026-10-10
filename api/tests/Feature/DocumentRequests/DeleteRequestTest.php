@@ -89,8 +89,7 @@ test('queues a document created after the request was loaded', function (): void
 
     $owner         = User::factory()->create();
     $request       = makeDeleteRequest($owner, 'Tax Documents', 1);
-    $loadedRequest = app(ShowRequest::class)
-        ->handle($owner, (string) $request->getKey());
+    $loadedRequest = app(ShowRequest::class)->handle($owner, (string) $request->getKey());
     $item          = $request->items()->firstOrFail();
     $storageKey    = "requests/{$request->getKey()}/late-upload.pdf";
     addDeleteRequestDocument($item, $storageKey);
