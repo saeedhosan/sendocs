@@ -75,6 +75,21 @@ export const changePasswordSchema = z
     path: ['password'],
   })
 
+export function deleteAccountSchema(email: string) {
+  return z
+    .object({
+      password: z
+        .string()
+        .min(1, 'Enter your password.')
+        .max(200, 'Password must be 200 characters or fewer.'),
+      confirm: emailSchema,
+    })
+    .refine((values) => values.confirm === email, {
+      message: 'Enter your account email exactly to confirm.',
+      path: ['confirm'],
+    })
+}
+
 export type FieldErrors = Record<string, string>
 
 /** Flatten a Zod error into the first message per top-level field. */

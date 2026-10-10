@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../app/providers/useAuth'
 import { Logo } from '../../components/navigation/Logo'
-import { ChevronDownIcon, LockIcon, LogoutIcon } from '../../components/icons'
+import { ChevronDownIcon, LockIcon, LogoutIcon, TrashIcon } from '../../components/icons'
 import styles from './OwnerHeader.module.css'
 
 function initials(name: string): string {
@@ -86,6 +86,15 @@ export function OwnerHeader() {
               >
                 <LockIcon size={16} />
                 Change password
+              </Link>
+              <Link
+                to="/settings/delete"
+                role="menuitem"
+                className={styles.item}
+                onClick={() => setOpen(false)}
+              >
+                <TrashIcon size={16} />
+                Delete account
               </Link>
               <button
                 type="button"
