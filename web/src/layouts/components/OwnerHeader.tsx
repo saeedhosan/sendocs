@@ -60,7 +60,7 @@ export function OwnerHeader() {
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
-        <Logo />
+        <Logo className={styles.logo} />
         <div className={styles.menuWrap} ref={menuRef}>
           <button
             type="button"
@@ -72,7 +72,7 @@ export function OwnerHeader() {
             <span className={styles.avatar} aria-hidden="true">
               {initials(displayName)}
             </span>
-            <span>{displayName}</span>
+            <span>Account</span>
             <ChevronDownIcon size={16} />
           </button>
           {open ? (
