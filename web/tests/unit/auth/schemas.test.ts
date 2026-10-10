@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
     changePasswordSchema,
+    deleteAccountSchema,
     fieldErrors,
     loginSchema,
     registerSchema,
@@ -95,6 +96,38 @@ describe("changePasswordSchema", () => {
                 confirmPassword: "anotherlongpassword",
             }).success,
         ).toBe(true);
+    });
+});
+
+describe("deleteAccountSchema", () => {
+    const schema = deleteAccountSchema("alex@example.com");
+
+    it("accepts the account email typed as confirmation", () => {
+        expect(
+            schema.safeParse({ password: validPassword, confirm: "alex@example.com" })
+                .success,
+        ).toBe(true);
+    });
+
+    it("rejects a different email on the confirm field", () => {
+        const result = schema.safeParse({
+            password: validPassword,
+            confirm: "someone@example.com",
+        });
+
+        expect(result.success).toBe(false);
+        if (!result.success) {
+            expect(fieldErrors(result.error).confirm).toMatch(/exactly/);
+        }
+    });
+
+    it("requires a password", () => {
+        const result = schema.safeParse({ password: "", confirm: "alex@example.com" });
+
+        expect(result.success).toBe(false);
+        if (!result.success) {
+            expect(fieldErrors(result.error).password).toMatch(/Enter your password/);
+        }
     });
 });
 

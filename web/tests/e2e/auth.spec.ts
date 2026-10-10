@@ -110,4 +110,28 @@ test.describe('authenticated shell', () => {
       page.getByText('No document requests yet'),
     ).toBeVisible()
   })
+
+  test('an owner can delete their account', async ({ page }) => {
+    await page.route('**/api/v1/auth/session', (route) =>
+      route.fulfill(json(200, sessionPayload)),
+    )
+    await page.route('**/api/v1/auth/account', (route) =>
+      route.fulfill({ status: 204 }),
+    )
+
+    await page.goto('/settings/delete')
+
+    await expect(
+      page.getByRole('heading', { name: 'Delete account' }),
+    ).toBeVisible()
+
+    await page.getByLabel('Password', { exact: true }).fill('correcthorsebattery')
+    await page.getByLabel('Confirm your email').fill(sessionPayload.user.email)
+    await page.getByRole('button', { name: /^delete account$/i }).click()
+
+    await expect(page).toHaveURL(/\/login$/)
+    await expect(
+      page.getByRole('heading', { name: 'Sign in' }),
+    ).toBeVisible()
+  })
 })
