@@ -109,9 +109,26 @@ test('returns 404 for another owners request and preserves it', function (): voi
     $item       = $request->items()->firstOrFail();
     addDeleteRequestDocument($item, "requests/{$request->getKey()}/file.pdf");
 
-    deleteRequest($owner, $request->getKey())
-        ->assertStatus(404)
-        ->assertJsonPath('error.code', 'not_found');
+    $otherOwnerResponse = deleteRequest($owner, $request->getKey())
+        ->assertNotFound()
+        ->assertExactJson([
+            'error' => [
+                'code'    => 'not_found',
+                'message' => 'Not found.',
+            ],
+        ]);
+
+    $unknownRequestResponse = deleteRequest(
+        $owner,
+        '00000000-0000-0000-0000-000000000000',
+    )->assertNotFound()->assertExactJson([
+        'error' => [
+            'code'    => 'not_found',
+            'message' => 'Not found.',
+        ],
+    ]);
+
+    expect($otherOwnerResponse->content())->toBe($unknownRequestResponse->content());
 
     expect($request->fresh())->not->toBeNull();
     expect($item->fresh()->document)->not->toBeNull();
