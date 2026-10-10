@@ -19,7 +19,7 @@ test('queues documents added after the request relation was loaded', function ()
         'expires_at' => now()->addDays(14),
     ]);
     $item = $request->items()->create([
-        'label' => 'Passport',
+        'label'    => 'Passport',
         'position' => 1,
     ]);
 
