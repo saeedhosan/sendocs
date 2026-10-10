@@ -116,7 +116,9 @@ export function ResetPasswordPage() {
           <FormField
             label="New password"
             error={errors.password}
-            labelAction={<PasswordStrengthMeter value={password} variant="inline" />}
+            labelAction={
+              <PasswordStrengthMeter value={password} variant="inline" />
+            }
           >
             <PasswordInput
               name="password"
