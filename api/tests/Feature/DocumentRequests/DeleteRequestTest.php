@@ -82,6 +82,24 @@ test('deletes a request, its items, documents, and stored files', function (): v
     }
 });
 
+test('queues a document created after the request was loaded', function (): void {
+    Storage::fake('s3');
+
+    $owner = User::factory()->create();
+    $request = makeDeleteRequest($owner, 'Tax Documents', 1);
+    $loadedRequest = app(\App\DocumentRequests\Actions\ShowRequest::class)
+        ->handle($owner, (string) $request->getKey());
+
+    $item = $request->items()->firstOrFail();
+    $storageKey = "requests/{$request->getKey()}/late-upload.pdf";
+    addDeleteRequestDocument($item, $storageKey);
+
+    app(\App\DocumentRequests\Actions\DeleteRequest::class)->execute($loadedRequest);
+
+    test()->artisan('storage:cleanup')->assertExitCode(0);
+    Storage::disk('s3')->assertMissing($storageKey);
+});
+
 test('returns 404 for another owners request and preserves it', function (): void {
     Storage::fake('s3');
 
