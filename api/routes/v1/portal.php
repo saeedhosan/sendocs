@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Portal\Controllers\PortalController;
-use App\Portal\Middleware\RejectOversizedUploadBody;
 use App\Portal\Middleware\ResolveMagicLink;
 use Illuminate\Support\Facades\Route;
 
@@ -19,6 +18,5 @@ Route::post('portal/{token}/items/{itemId}/file', [PortalController::class, 'upl
     ->middleware([
         'throttle:portal.upload',
         ResolveMagicLink::class,
-        RejectOversizedUploadBody::class,
     ])
     ->name('portal.items.file.store');
