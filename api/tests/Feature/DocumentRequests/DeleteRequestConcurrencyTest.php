@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-use App\\DocumentRequests\\Actions\\DeleteRequest;
-use App\\Models\\DocumentRequest;
-use App\\Models\\User;
-use Illuminate\\Support\\Facades\\DB;
-use Illuminate\\Support\\Facades\\Storage;
+use App\DocumentRequests\Actions\DeleteRequest;
+use App\Models\DocumentRequest;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 test('queues documents added after the request relation was loaded', function (): void {
     Storage::fake('s3');
 
     $owner = User::factory()->create();
     $request = DocumentRequest::create([
-        'owner_id' => $owner->getKey(),
-        'title' => 'Tax Documents',
-        'token_hash' => hash('sha256', bin2hex(random_bytes(32))),
-        'expires_at' => now()->addDays(14),
+        'owner_id'   => $owner->getKey(),
+        'title'       => 'Tax Documents',
+        'token_hash'  => hash('sha256', bin2hex(random_bytes(32))),
+        'expires_at'  => now()->addDays(14),
     ]);
     $item = $request->items()->create([
         'label' => 'Passport',
@@ -31,12 +31,12 @@ test('queues documents added after the request relation was loaded', function ()
     Storage::disk('s3')->put($storageKey, 'pdf');
 
     $item->document()->create([
-        'storage_key' => $storageKey,
+        'storage_key'   => $storageKey,
         'original_name' => 'passport.pdf',
-        'mime_type' => 'application/pdf',
-        'size_bytes' => 3,
-        'sha256' => hash('sha256', 'pdf'),
-        'uploaded_at' => now(),
+        'mime_type'     => 'application/pdf',
+        'size_bytes'    => 3,
+        'sha256'        => hash('sha256', 'pdf'),
+        'uploaded_at'   => now(),
     ]);
 
     app(DeleteRequest::class)->execute($request);
