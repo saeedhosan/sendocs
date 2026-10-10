@@ -95,7 +95,7 @@ test('returns 404 for another owners request and preserves it', function (): voi
         ->assertNotFound()
         ->assertExactJson([
             'error' => [
-                'code' => 'not_found',
+                'code'    => 'not_found',
                 'message' => 'Not found.',
             ],
         ]);
@@ -105,7 +105,7 @@ test('returns 404 for another owners request and preserves it', function (): voi
         '00000000-0000-0000-0000-000000000000',
     )->assertNotFound()->assertExactJson([
         'error' => [
-            'code' => 'not_found',
+            'code'    => 'not_found',
             'message' => 'Not found.',
         ],
     ]);
