@@ -25,6 +25,7 @@
 }
 
 .newRequestButton {
+  width: 100%;
   min-height: 2.75rem;
 }
 
