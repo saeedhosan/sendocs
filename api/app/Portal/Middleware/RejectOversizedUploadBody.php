@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\\Portal\\Middleware;
+namespace App\Portal\Middleware;
 
-use App\\Exceptions\\ApiException;
+use App\Exceptions\ApiException;
 use Closure;
-use Illuminate\\Http\\Request;
-use Symfony\\Component\\HttpFoundation\\Response;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 final class RejectOversizedUploadBody
 {
