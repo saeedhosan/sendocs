@@ -169,6 +169,32 @@ test('returns the file size error when PHP rejects a file above its upload limit
     Storage::disk('s3')->assertEmpty();
 });
 
+test('returns the standard size error when PHP discards an oversized request body', function (): void {
+    [, $items, $token] = portalUploadFixture();
+
+    $this->call(
+        'POST',
+        "/api/v1/portal/{$token}/items/{$items[0]->getKey()}/file",
+        [],
+        [],
+        [],
+        [
+            'CONTENT_LENGTH' => (string) (33 * 1024 * 1024),
+            'HTTP_ACCEPT' => 'application/json',
+        ],
+    )
+        ->assertStatus(413)
+        ->assertExactJson([
+            'error' => [
+                'code' => 'file_too_large',
+                'message' => 'The file is larger than 25 MB.',
+            ],
+        ]);
+
+    expect(Document::query()->count())->toBe(0);
+    Storage::disk('s3')->assertEmpty();
+});
+
 test('accepts a file at the 25 MB cap', function (): void {
     [, $items, $token] = portalUploadFixture();
 
