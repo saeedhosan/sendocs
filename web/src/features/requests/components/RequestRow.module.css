@@ -59,6 +59,10 @@
   color: var(--color-text-secondary);
 }
 
+.percent {
+  color: var(--color-text-muted);
+}
+
 .activityCell {
   display: flex;
   align-items: center;
@@ -71,8 +75,9 @@
 .actionCell {
   display: flex;
   justify-content: flex-end;
-  padding-top: 0.75rem;
+  padding-top: 0.5rem;
   border-top: 1px solid var(--color-border-subtle);
+  margin-top: 0.25rem;
 }
 
 .open {
@@ -96,13 +101,24 @@
   display: none;
 }
 
+.mobileActivityLabel {
+  margin-right: 0.25rem;
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  color: var(--color-text-secondary);
+}
+
 @media (min-width: 48rem) {
   .row {
     display: grid;
     grid-template-columns: minmax(0, 5fr) 2fr 3fr 2fr 4.5rem;
     align-items: center;
     gap: 0.75rem;
-    padding: 0.875rem 1rem;
+    padding: 0.875rem 1.25rem;
+  }
+
+  .percent {
+    display: none;
   }
 
   .titleCell {
@@ -119,6 +135,10 @@
 
   .activityCell {
     justify-content: flex-start;
+  }
+
+  .mobileActivityLabel {
+    display: none;
   }
 
   .actionCell {
