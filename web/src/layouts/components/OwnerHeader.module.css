@@ -141,3 +141,14 @@
 .signOut:hover {
   background-color: var(--color-danger-surface);
 }
+
+.wordmarkOnly {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: var(--color-text);
+}
+
+.wordmarkOnly:hover {
+  color: var(--color-primary);
+}
