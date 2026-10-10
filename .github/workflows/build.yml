@@ -1,6 +1,20 @@
 name: Build
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'api/**'
+      - 'web/**'
+      - '.github/workflows/build.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'api/**'
+      - 'web/**'
+      - '.github/workflows/build.yml'
   workflow_dispatch:
 
 permissions:
