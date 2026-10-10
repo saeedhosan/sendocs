@@ -80,7 +80,7 @@ test('returns 404 when the item belongs to another request', function (): void {
         ->assertNotFound()
         ->assertExactJson([
             'error' => [
-                'code' => 'not_found',
+                'code'    => 'not_found',
                 'message' => 'Not found.',
             ],
         ]);
@@ -91,7 +91,7 @@ test('returns 404 when the item belongs to another request', function (): void {
         '00000000-0000-0000-0000-000000000000',
     )->assertNotFound()->assertExactJson([
         'error' => [
-            'code' => 'not_found',
+            'code'    => 'not_found',
             'message' => 'Not found.',
         ],
     ]);
