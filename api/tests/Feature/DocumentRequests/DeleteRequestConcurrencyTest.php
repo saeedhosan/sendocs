@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 test('queues documents added after the request relation was loaded', function (): void {
     Storage::fake('s3');
 
-    $owner = User::factory()->create();
+    $owner   = User::factory()->create();
     $request = DocumentRequest::create([
         'owner_id'   => $owner->getKey(),
         'title'      => 'Tax Documents',
