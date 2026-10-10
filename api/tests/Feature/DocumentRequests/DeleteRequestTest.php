@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use App\Auth\Services\CsrfTokenService;
 use App\Auth\Services\SessionService;
+use App\DocumentRequests\Actions\DeleteRequest;
+use App\DocumentRequests\Actions\ShowRequest;
 use App\Models\DocumentRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
@@ -87,14 +89,14 @@ test('queues a document created after the request was loaded', function (): void
 
     $owner = User::factory()->create();
     $request = makeDeleteRequest($owner, 'Tax Documents', 1);
-    $loadedRequest = app(\App\DocumentRequests\Actions\ShowRequest::class)
+    $loadedRequest = app(ShowRequest::class)
         ->handle($owner, (string) $request->getKey());
 
     $item = $request->items()->firstOrFail();
     $storageKey = "requests/{$request->getKey()}/late-upload.pdf";
     addDeleteRequestDocument($item, $storageKey);
 
-    app(\App\DocumentRequests\Actions\DeleteRequest::class)->execute($loadedRequest);
+    app(DeleteRequest::class)->execute($loadedRequest);
 
     test()->artisan('storage:cleanup')->assertExitCode(0);
     Storage::disk('s3')->assertMissing($storageKey);
