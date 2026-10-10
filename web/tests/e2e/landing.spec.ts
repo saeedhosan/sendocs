@@ -13,6 +13,17 @@ const unauthEnvelope = {
   error: { code: 'unauthenticated', message: 'Not signed in.' },
 }
 
+const sessionPayload = {
+  user: {
+    id: '1',
+    name: 'Alex Morgan',
+    email: 'alex@example.com',
+    emailVerifiedAt: null,
+  },
+  csrfToken: 'csrf-123',
+  expiresAt: '2099-01-01T00:00:00Z',
+}
+
 function json(status: number, body: unknown): {
   status: number
   contentType: string
@@ -65,5 +76,20 @@ test.describe('public landing', () => {
     await expect(
       page.getByRole('heading', { name: 'Privacy Policy' }),
     ).toBeVisible()
+  })
+
+  test('a signed-in owner can still reach the landing page', async ({ page }) => {
+    await page.route('**/api/v1/auth/session', (route) =>
+      route.fulfill(json(200, sessionPayload)),
+    )
+
+    await page.goto('/')
+
+    await expect(
+      page.getByRole('heading', {
+        name: 'Collect client documents without the back-and-forth.',
+      }),
+    ).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Dashboard' })).toBeVisible()
   })
 })

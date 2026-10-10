@@ -1,22 +1,34 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
-import { describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { AuthProvider } from '../../../src/app/providers/AuthProvider'
 import { PrivacyPolicyPage } from '../../../src/features/landing/pages/PrivacyPolicyPage'
 import { TermsOfServicePage } from '../../../src/features/landing/pages/TermsOfServicePage'
 import { PublicLayout } from '../../../src/layouts/PublicLayout'
+import { stubSession } from '../../helpers/auth'
 
 function renderAt(path: string) {
   return render(
     <MemoryRouter initialEntries={[path]}>
-      <Routes>
-        <Route element={<PublicLayout />}>
-          <Route path="terms" element={<TermsOfServicePage />} />
-          <Route path="privacy" element={<PrivacyPolicyPage />} />
-        </Route>
-      </Routes>
+      <AuthProvider>
+        <Routes>
+          <Route element={<PublicLayout />}>
+            <Route path="terms" element={<TermsOfServicePage />} />
+            <Route path="privacy" element={<PrivacyPolicyPage />} />
+          </Route>
+        </Routes>
+      </AuthProvider>
     </MemoryRouter>,
   )
 }
+
+beforeEach(() => {
+  stubSession(false)
+})
+
+afterEach(() => {
+  vi.unstubAllGlobals()
+})
 
 describe('Terms of Service page', () => {
   it('renders the transcribed document and the legal navigation', () => {

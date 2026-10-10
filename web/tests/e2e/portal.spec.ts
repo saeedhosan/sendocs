@@ -87,7 +87,7 @@ test('a client uploads a required document', async ({ page }) => {
       buffer: Buffer.from('content'),
     })
 
-  await expect(page.getByText('Uploaded')).toBeVisible()
+  await expect(page.getByText('Uploaded', { exact: true })).toBeVisible()
   await expect(page.getByText('All documents received')).toBeVisible()
 })
 
