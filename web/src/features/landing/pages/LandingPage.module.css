@@ -1,0 +1,22 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+  width: 100%;
+  max-width: var(--layout-max-public);
+  margin-inline: auto;
+  padding: 2.5rem 1.5rem;
+}
+
+@media (max-width: 480px) {
+  .page {
+    padding-inline: 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .page {
+    gap: 6rem;
+    padding-block: 4rem;
+  }
+}

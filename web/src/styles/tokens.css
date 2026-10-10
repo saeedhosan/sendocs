@@ -74,5 +74,8 @@
 
   /* Layout */
   --layout-max: 64rem;
+  --layout-max-public: 72rem;
+  --layout-max-document: 56rem;
   --layout-header-height: 4rem;
+  --layout-header-height-public: 3.5rem;
 }

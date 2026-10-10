@@ -1,0 +1,92 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  width: 100%;
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  max-width: var(--layout-max-public);
+  min-height: var(--layout-header-height-public);
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.loginLink {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  transition: color 0.15s ease;
+}
+
+.loginLink:hover {
+  color: var(--color-text);
+}
+
+.getStarted {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.125rem;
+  padding-inline: 0.875rem;
+  border-radius: var(--radius-md);
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  box-shadow: var(--shadow-sm);
+  transition: background-color 0.15s ease;
+}
+
+.getStarted:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.navLink {
+  color: var(--color-text-secondary);
+  transition: color 0.15s ease;
+}
+
+.navLink:hover {
+  color: var(--color-text);
+}
+
+.navLinkActive {
+  color: var(--color-primary);
+}
+
+.navSignIn {
+  color: var(--color-primary);
+}
+
+@media (max-width: 480px) {
+  .inner {
+    padding-inline: 1rem;
+  }
+
+  .nav {
+    gap: 1rem;
+  }
+}

@@ -1,0 +1,61 @@
+import { Link, NavLink, useLocation } from 'react-router-dom'
+import { Logo } from '../../components/navigation/Logo'
+import { cn } from '../../lib/cn'
+import styles from './PublicHeader.module.css'
+
+const documentLinks = [
+  { label: 'Terms', to: '/terms' },
+  { label: 'Privacy', to: '/privacy' },
+]
+
+/**
+ * The minimal public header shared by the landing and legal pages.
+ *
+ * The marketing home shows the two conversion actions; the legal documents
+ * show a small anchor navigation with the current page highlighted.
+ */
+export function PublicHeader() {
+  const { pathname } = useLocation()
+  const isDocument = documentLinks.some((link) => link.to === pathname)
+
+  return (
+    <header className={styles.header}>
+      <div className={styles.inner}>
+        <Logo />
+
+        {isDocument ? (
+          <nav className={styles.nav} aria-label="Legal">
+            {documentLinks.map((link) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                className={({ isActive }) =>
+                  cn(styles.navLink, isActive && styles.navLinkActive)
+                }
+              >
+                {link.label}
+              </NavLink>
+            ))}
+            <NavLink
+              to="/login"
+              className={({ isActive }) =>
+                cn(styles.navLink, styles.navSignIn, isActive && styles.navLinkActive)
+              }
+            >
+              Sign in
+            </NavLink>
+          </nav>
+        ) : (
+          <div className={styles.actions}>
+            <Link to="/login" className={styles.loginLink}>
+              Log in
+            </Link>
+            <Link to="/register" className={styles.getStarted}>
+              Get started
+            </Link>
+          </div>
+        )}
+      </div>
+    </header>
+  )
+}

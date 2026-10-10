@@ -242,6 +242,70 @@ export function LogoutIcon(props: IconProps) {
   )
 }
 
+export function ShieldIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M12 1 3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11z" />
+    </Icon>
+  )
+}
+
+export function ChecklistIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M22 7h-9v2h9zm0 8h-9v2h9zM10 6.5 8 4.5 4.5 8 2 5.5 1 6.5 4.5 10zm-1.5 5L7 10l-3.5 3.5L1 11l-1 1 4.5 4.5L10 12.5z" />
+    </Icon>
+  )
+}
+
+export function KeyIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M21 10h-8.35A5.99 5.99 0 0 0 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6a5.99 5.99 0 0 0 5.65-4H13l2 2 2-2 2 2 4-4.04zM7 15c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3" />
+    </Icon>
+  )
+}
+
+export function TrendingUpIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="m16 6 2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.59-6.59L22 12V6z" />
+    </Icon>
+  )
+}
+
+export function TableChartIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M10 10.02h5V21h-5zM17 21h3a2 2 0 0 0 2-2v-9h-5zm3-18H4a2 2 0 0 0-2 2v3h18V5a2 2 0 0 0-2-2M4 21h11v-9H2v7a2 2 0 0 0 2 2" />
+    </Icon>
+  )
+}
+
+export function DevicesIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M4 6h18V4H4a2 2 0 0 0-2 2v11H0v3h14v-3H4zm19 2h-6a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1m-1 9h-4v-7h4z" />
+    </Icon>
+  )
+}
+
+export function ClockIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20a8 8 0 1 1 0-16 8 8 0 0 1 0 16m.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
+    </Icon>
+  )
+}
+
+export function ShieldCheckIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M12 1 3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5zm-2 16-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9z" />
+    </Icon>
+  )
+}
+
 export function GoogleIcon({ size = 16, ...props }: IconProps) {
   return (
     <svg
