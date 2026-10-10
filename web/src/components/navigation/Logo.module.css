@@ -31,3 +31,16 @@
   font-weight: 600;
   letter-spacing: -0.025em;
 }
+
+.markLetter {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.wordmarkCompact {
+  font-size: 0.9375rem;
+}
