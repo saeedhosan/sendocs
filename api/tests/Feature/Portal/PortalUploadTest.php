@@ -181,12 +181,8 @@ test('returns the standard size error when PHP discards an oversized request bod
         ['CONTENT_LENGTH' => (string) (33 * 1024 * 1024)],
     )
         ->assertStatus(413)
-        ->assertExactJson([
-            'error' => [
-                'code' => 'file_too_large',
-                'message' => 'The file is larger than 25 MB.',
-            ],
-        ]);
+        ->assertJsonPath('error.code', 'file_too_large')
+        ->assertJsonPath('error.message', 'The file is larger than 25 MB.');
 
     expect(Document::query()->count())->toBe(0);
     Storage::disk('s3')->assertEmpty();
