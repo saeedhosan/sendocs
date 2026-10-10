@@ -20,6 +20,9 @@ info:
     `code` is stable and machine-readable. `message` is human-readable. `details`
     appears only on validation failures.
 
+    The reverse proxy has a separate 32 MiB request-body safety ceiling. Requests
+    rejected by that outer limit never reach Laravel and are outside the API error-envelope guarantee.
+
     ## Published limits
 
     This document is the single source for the numbers a client is allowed to check
@@ -30,7 +33,7 @@ info:
     | Items per request | 1 to 10 |
     | Request title | 200 characters |
     | Item label | 200 characters |
-    | File size | 25 MB, enforced while streaming |
+    | File size | 25 MiB per file, validated by the API |
     | Accepted types | PDF, JPEG, PNG, DOCX, XLSX, CSV, TXT |
     | Page size | `limit` defaults to 20, capped at 100 |
     | Magic-link expiry | 14 days default, 90 days maximum |
@@ -684,12 +687,15 @@ paths:
       operationId: uploadPortalFile
       summary: Upload one file for one required item.
       description: |
-        Authorization is settled before a single body byte is read, so a dead link
-        cannot probe the upload path or the size limit.
+        The magic link is resolved before upload middleware and controller handling.
+        Unknown, expired, and revoked links return the same `410` envelope and never
+        write a file to object storage. PHP or the proxy may already have received or
+        buffered request bytes before Laravel resolves the link.
 
         One file per item: a second upload to the same item is `409`, and the first
-        file is kept. The size cap is enforced while streaming, so an oversized body is
-        rejected before it is buffered.
+        file is kept. The API validates the 25 MiB file cap after PHP parses multipart
+        data, then streams the validated temporary file to private object storage. A
+        request exceeding PHP's `post_max_size` is mapped to the same `413` envelope.
 
         Uploads are not resumable. A transfer that fails must start again from zero.
       security: []
@@ -924,7 +930,7 @@ components:
               code: duplicate_upload
               message: A file has already been uploaded for this item.
     FileTooLarge:
-      description: Over the 25 MB cap, rejected before the body was buffered.
+      description: The uploaded file exceeds 25 MiB or the request exceeds PHP's post_max_size.
       content:
         application/json:
           schema:
