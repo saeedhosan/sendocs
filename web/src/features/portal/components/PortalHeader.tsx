@@ -10,7 +10,7 @@ export function PortalHeader() {
     <header className={styles.header}>
       <div className={styles.inner}>
         <span className={styles.brand}>
-          <DescriptionIcon size={18} className={styles.brandMark} />
+          <DescriptionIcon size={16} className={styles.brandMark} />
           <span className={styles.wordmark}>Sendocs</span>
         </span>
         <span className={styles.private}>
