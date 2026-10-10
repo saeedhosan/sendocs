@@ -125,6 +125,10 @@
     display: block;
   }
 
+  .title {
+    font-size: 0.8125rem;
+  }
+
   .mobileStatus {
     display: none;
   }
