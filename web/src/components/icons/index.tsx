@@ -226,6 +226,14 @@ export function DescriptionIcon(props: IconProps) {
   )
 }
 
+export function UploadIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M11 16V7.83l-2.59 2.58L7 9l5-5 5 5-1.41 1.41L13 7.83V16zM5 18h14v2H5z" />
+    </Icon>
+  )
+}
+
 export function LogoutIcon(props: IconProps) {
   return (
     <Icon {...props}>
