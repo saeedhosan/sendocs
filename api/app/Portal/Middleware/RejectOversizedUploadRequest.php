@@ -14,22 +14,26 @@ final class RejectOversizedUploadRequest
     public function handle(Request $request, Closure $next): Response
     {
         $contentLength = $request->server('CONTENT_LENGTH');
-        $postMaxBytes  = $this->postMaxSizeBytes();
 
-        if (
-            (is_string($contentLength) || is_int($contentLength))
-            && ctype_digit((string) $contentLength)
-            && $postMaxBytes > 0
-            && (int) $contentLength > $postMaxBytes
-        ) {
-            throw new ApiException(
-                'file_too_large',
-                'The file is larger than 25 MB.',
-                413,
-            );
+        if (! is_string($contentLength) && ! is_int($contentLength)) {
+            return $next($request);
         }
 
-        return $next($request);
+        if (! ctype_digit((string) $contentLength)) {
+            return $next($request);
+        }
+
+        $postMaxBytes = $this->postMaxSizeBytes();
+
+        if ($postMaxBytes === 0 || (int) $contentLength <= $postMaxBytes) {
+            return $next($request);
+        }
+
+        throw new ApiException(
+            'file_too_large',
+            'The file is larger than 25 MB.',
+            413,
+        );
     }
 
     private function postMaxSizeBytes(): int
