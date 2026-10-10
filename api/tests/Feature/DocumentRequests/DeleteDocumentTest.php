@@ -85,7 +85,7 @@ test('returns 404 when the item belongs to another request', function (): void {
             ],
         ]);
 
-    $unknownItemResponse      = deleteDocumentRequest(
+    $unknownItemResponse = deleteDocumentRequest(
         $owner,
         $request->getKey(),
         '00000000-0000-0000-0000-000000000000',
