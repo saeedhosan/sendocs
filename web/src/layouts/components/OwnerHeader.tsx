@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../app/providers/useAuth'
 import { Logo } from '../../components/navigation/Logo'
 import { ChevronDownIcon, LockIcon, LogoutIcon, TrashIcon } from '../../components/icons'
@@ -21,6 +21,7 @@ function initials(name: string): string {
 export function OwnerHeader() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const isDashboard = useLocation().pathname === '/dashboard'
   const [open, setOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
@@ -60,7 +61,13 @@ export function OwnerHeader() {
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
-        <Logo className={styles.logo} />
+        {isDashboard ? (
+          <Logo className={styles.logo} />
+        ) : (
+          <Link to="/dashboard" className={styles.wordmarkOnly}>
+            Sendocs
+          </Link>
+        )}
         <div className={styles.menuWrap} ref={menuRef}>
           <button
             type="button"
@@ -69,9 +76,11 @@ export function OwnerHeader() {
             aria-expanded={open}
             onClick={() => setOpen((value) => !value)}
           >
-            <span className={styles.avatar} aria-hidden="true">
-              {initials(displayName)}
-            </span>
+            {isDashboard ? (
+              <span className={styles.avatar} aria-hidden="true">
+                {initials(displayName)}
+              </span>
+            ) : null}
             <span>Account</span>
             <ChevronDownIcon size={16} />
           </button>
