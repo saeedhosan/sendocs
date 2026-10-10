@@ -28,7 +28,7 @@ it('returns the standard error envelope when an API method is not allowed', func
 
 it('returns the standard internal error envelope for unexpected API exceptions', function (): void {
     Route::get('/api/v1/test-unexpected-error', function (): void {
-        throw new \\RuntimeException('Sensitive database connection details.');
+        throw new \RuntimeException('Sensitive database connection details.');
     });
 
     $response = $this->getJson('/api/v1/test-unexpected-error');
