@@ -5,18 +5,30 @@ import { LoginPage } from '../features/auth/pages/LoginPage'
 import { RegisterPage } from '../features/auth/pages/RegisterPage'
 import { ResetPasswordPage } from '../features/auth/pages/ResetPasswordPage'
 import { VerifyEmailPage } from '../features/auth/pages/VerifyEmailPage'
+import { ContactPage } from '../features/landing/pages/ContactPage'
+import { LandingPage } from '../features/landing/pages/LandingPage'
+import { PrivacyPolicyPage } from '../features/landing/pages/PrivacyPolicyPage'
+import { TermsOfServicePage } from '../features/landing/pages/TermsOfServicePage'
 import { NewRequestPage } from '../features/requests/pages/NewRequestPage'
 import { RequestDetailPage } from '../features/requests/pages/RequestDetailPage'
 import { RequestsPage } from '../features/requests/pages/RequestsPage'
 import { PortalPage } from '../features/portal/pages/PortalPage'
 import { OwnerLayout } from '../layouts/OwnerLayout'
+import { PublicLayout } from '../layouts/PublicLayout'
 import { GuestOnly } from './guards/GuestOnly'
 import { RequireAuth } from './guards/RequireAuth'
-import { RootRedirect } from './guards/RootRedirect'
 import { NotFoundPage } from './NotFoundPage'
 
 export const router = createBrowserRouter([
-  { path: '/', element: <RootRedirect /> },
+  {
+    element: <PublicLayout />,
+    children: [
+      { index: true, element: <LandingPage /> },
+      { path: 'privacy', element: <PrivacyPolicyPage /> },
+      { path: 'terms', element: <TermsOfServicePage /> },
+      { path: 'contact', element: <ContactPage /> },
+    ],
+  },
   {
     element: <GuestOnly />,
     children: [
