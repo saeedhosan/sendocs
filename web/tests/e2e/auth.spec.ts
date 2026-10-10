@@ -134,4 +134,22 @@ test.describe('authenticated shell', () => {
       page.getByRole('heading', { name: 'Sign in' }),
     ).toBeVisible()
   })
+
+  test('an unverified owner can resend the verification email', async ({ page }) => {
+    await page.route('**/api/v1/auth/session', (route) =>
+      route.fulfill(json(200, sessionPayload)),
+    )
+    await page.route(/\/api\/v1\/requests(\?.*)?$/, (route) =>
+      route.fulfill(json(200, { data: [], nextCursor: null })),
+    )
+    await page.route('**/api/v1/auth/email/resend', (route) =>
+      route.fulfill(json(202, {})),
+    )
+
+    await page.goto('/dashboard')
+
+    await expect(page.getByText('Verify your email address')).toBeVisible()
+    await page.getByRole('button', { name: /resend email/i }).click()
+    await expect(page.getByText(/verification email sent/i)).toBeVisible()
+  })
 })

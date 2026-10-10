@@ -96,7 +96,9 @@ export function VerifyEmailPage() {
         <p className={styles.subtitle}>{message}</p>
       </div>
       <Alert variant="error" className={styles.formError}>
-        You can request a new verification email from your account settings.
+        {status === 'authenticated'
+          ? 'You can send a new verification email from your dashboard.'
+          : 'Sign in to send a new verification email from your dashboard.'}
       </Alert>
       <div className={styles.buttonStack}>
         <Button
