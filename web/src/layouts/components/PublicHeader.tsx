@@ -7,6 +7,7 @@ import styles from './PublicHeader.module.css'
 const documentLinks = [
   { label: 'Terms', to: '/terms' },
   { label: 'Privacy', to: '/privacy' },
+  { label: 'Contact', to: '/contact' },
 ]
 
 /**

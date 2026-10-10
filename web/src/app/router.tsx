@@ -5,6 +5,7 @@ import { LoginPage } from '../features/auth/pages/LoginPage'
 import { RegisterPage } from '../features/auth/pages/RegisterPage'
 import { ResetPasswordPage } from '../features/auth/pages/ResetPasswordPage'
 import { VerifyEmailPage } from '../features/auth/pages/VerifyEmailPage'
+import { ContactPage } from '../features/landing/pages/ContactPage'
 import { LandingPage } from '../features/landing/pages/LandingPage'
 import { PrivacyPolicyPage } from '../features/landing/pages/PrivacyPolicyPage'
 import { TermsOfServicePage } from '../features/landing/pages/TermsOfServicePage'
@@ -25,6 +26,7 @@ export const router = createBrowserRouter([
       { index: true, element: <LandingPage /> },
       { path: 'privacy', element: <PrivacyPolicyPage /> },
       { path: 'terms', element: <TermsOfServicePage /> },
+      { path: 'contact', element: <ContactPage /> },
     ],
   },
   {

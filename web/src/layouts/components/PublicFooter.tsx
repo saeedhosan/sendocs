@@ -5,6 +5,7 @@ import styles from './PublicFooter.module.css'
 const links = [
   { label: 'Terms', to: '/terms' },
   { label: 'Privacy', to: '/privacy' },
+  { label: 'Contact', to: '/contact' },
 ]
 
 /** The minimal public footer shared by the landing and legal pages. */
