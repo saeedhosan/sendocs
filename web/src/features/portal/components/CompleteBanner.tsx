@@ -20,6 +20,9 @@ export function CompleteBanner({ uploaded, total }: CompleteBannerProps) {
         You have uploaded all {total} requested documents. The request owner has
         been notified and can now review your files.
       </p>
+      <p className={styles.note}>
+        No further action is required. You may safely close this browser window.
+      </p>
       <span className={styles.chip}>
         {uploaded} of {total} uploaded · Complete
       </span>
