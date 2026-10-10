@@ -40,7 +40,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Every API error leaves as the one published envelope.
         $exceptions->render(function (ValidationException $e, Request $request): ?JsonResponse {
-            if (! $request->is('api/*')) {
+            if ($request->is('api/*') === false) {
                 return null;
             }
 
