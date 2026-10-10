@@ -983,7 +983,7 @@ components:
           example:
             error:
               code: internal_error
-              message: Something went wrong. Please try again.
+              message: Something went wrong. Try again.
 
   schemas:
     Error:
