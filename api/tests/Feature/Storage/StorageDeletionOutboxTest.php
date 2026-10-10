@@ -41,7 +41,6 @@ test('keeps failed storage deletions queued for a later retry', function (): voi
         ->and($entry->last_attempted_at)->not->toBeNull();
 });
 
-
 test('defers failed storage deletions until their retry time', function (): void {
     Storage::fake('s3');
 
