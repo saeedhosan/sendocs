@@ -80,3 +80,9 @@
 .footerLink:hover {
   color: var(--color-text-secondary);
 }
+
+@media (max-width: 639px) {
+  .footerInner {
+    flex-direction: column;
+  }
+}
