@@ -67,7 +67,10 @@ export function ResetPasswordPage() {
 
   if (token === '' || invalidLink) {
     return (
-      <AuthLayout headerAction={{ label: 'Help', to: '/help' }}>
+      <AuthLayout
+        headerAction={{ label: 'Help', to: '/contact' }}
+        footerVariant="reset-password"
+      >
         <div className={styles.heading}>
           <h1 className={styles.title}>Reset link unavailable</h1>
           <p className={styles.subtitle}>
@@ -87,7 +90,10 @@ export function ResetPasswordPage() {
   }
 
   return (
-    <AuthLayout headerAction={{ label: 'Help', to: '/help' }}>
+    <AuthLayout
+      headerAction={{ label: 'Help', to: '/contact' }}
+      footerVariant="reset-password"
+    >
       <div className={styles.heading}>
         <h1 className={styles.title}>Create a new password</h1>
         <p className={styles.subtitle}>
@@ -101,9 +107,17 @@ export function ResetPasswordPage() {
         </Alert>
       ) : null}
 
-      <form className={styles.form} onSubmit={handleSubmit} noValidate>
+      <form
+        className={`${styles.form} ${styles.resetForm}`}
+        onSubmit={handleSubmit}
+        noValidate
+      >
         <div>
-          <FormField label="New password" error={errors.password}>
+          <FormField
+            label="New password"
+            error={errors.password}
+            labelAction={<PasswordStrengthMeter value={password} variant="inline" />}
+          >
             <PasswordInput
               name="password"
               autoComplete="new-password"
@@ -115,7 +129,6 @@ export function ResetPasswordPage() {
               }}
             />
           </FormField>
-          <PasswordStrengthMeter value={password} />
         </div>
 
         <FormField label="Confirm new password" error={errors.confirmPassword}>
