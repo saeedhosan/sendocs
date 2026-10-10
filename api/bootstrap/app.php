@@ -12,6 +12,7 @@ use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -80,5 +81,19 @@ return Application::configure(basePath: dirname(__DIR__))
             };
 
             return $exception?->render($request);
+        });
+
+        // Unexpected application failures must not leak exception messages or
+        // fall back to Laravel's different default JSON error shape.
+        $exceptions->render(function (Throwable $e, Request $request): ?JsonResponse {
+            if (! $request->is('api/*') || $e instanceof HttpExceptionInterface) {
+                return null;
+            }
+
+            return new ApiException(
+                'internal_error',
+                'Something went wrong. Try again.',
+                500,
+            )->render($request);
         });
     })->create();
