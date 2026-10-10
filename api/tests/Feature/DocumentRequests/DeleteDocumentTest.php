@@ -76,9 +76,27 @@ test('returns 404 when the item belongs to another request', function (): void {
         'uploaded_at'   => now(),
     ]);
 
-    deleteDocumentRequest($owner, $request->getKey(), $item->getKey())
-        ->assertStatus(404)
-        ->assertJsonPath('error.code', 'not_found');
+    $otherRequestItemResponse = deleteDocumentRequest($owner, $request->getKey(), $item->getKey())
+        ->assertNotFound()
+        ->assertExactJson([
+            'error' => [
+                'code' => 'not_found',
+                'message' => 'Not found.',
+            ],
+        ]);
+
+    $unknownItemResponse = deleteDocumentRequest(
+        $owner,
+        $request->getKey(),
+        '00000000-0000-0000-0000-000000000000',
+    )->assertNotFound()->assertExactJson([
+        'error' => [
+            'code' => 'not_found',
+            'message' => 'Not found.',
+        ],
+    ]);
+
+    expect($otherRequestItemResponse->content())->toBe($unknownItemResponse->content());
 
     expect($item->fresh()->document)->not->toBeNull();
 });
