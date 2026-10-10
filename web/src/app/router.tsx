@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom'
 import { ChangePasswordPage } from '../features/auth/pages/ChangePasswordPage'
+import { DeleteAccountPage } from '../features/auth/pages/DeleteAccountPage'
 import { ForgotPasswordPage } from '../features/auth/pages/ForgotPasswordPage'
 import { LoginPage } from '../features/auth/pages/LoginPage'
 import { RegisterPage } from '../features/auth/pages/RegisterPage'
@@ -43,13 +44,14 @@ export const router = createBrowserRouter([
   {
     element: <RequireAuth />,
     children: [
+      { path: 'settings/password', element: <ChangePasswordPage /> },
+      { path: 'settings/delete', element: <DeleteAccountPage /> },
       {
         element: <OwnerLayout />,
         children: [
           { path: 'dashboard', element: <RequestsPage /> },
           { path: 'requests/new', element: <NewRequestPage /> },
           { path: 'requests/:id', element: <RequestDetailPage /> },
-          { path: 'settings/password', element: <ChangePasswordPage /> },
         ],
       },
     ],

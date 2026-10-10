@@ -4,6 +4,7 @@ import { authApi } from '../../features/auth/api'
 import type {
   AuthUser,
   ChangePasswordInput,
+  DeleteAccountInput,
   LoginInput,
   RegisterInput,
   SessionPayload,
@@ -92,6 +93,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await authApi.changePassword(input)
   }, [])
 
+  const deleteAccount = useCallback(
+    async (input: DeleteAccountInput) => {
+      await authApi.deleteAccount(input)
+      clearSession()
+    },
+    [clearSession],
+  )
+
   const refresh = useCallback(async () => {
     const payload = await authApi.session()
     setSession(payload)
@@ -106,10 +115,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       register,
       logout,
       changePassword,
+      deleteAccount,
       refresh,
       setSession,
     }),
-    [status, user, expiresAt, login, register, logout, changePassword, refresh, setSession],
+    [
+      status,
+      user,
+      expiresAt,
+      login,
+      register,
+      logout,
+      changePassword,
+      deleteAccount,
+      refresh,
+      setSession,
+    ],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
