@@ -87,13 +87,12 @@ test('deletes a request, its items, documents, and stored files', function (): v
 test('queues a document created after the request was loaded', function (): void {
     Storage::fake('s3');
 
-    $owner = User::factory()->create();
-    $request = makeDeleteRequest($owner, 'Tax Documents', 1);
+    $owner         = User::factory()->create();
+    $request       = makeDeleteRequest($owner, 'Tax Documents', 1);
     $loadedRequest = app(ShowRequest::class)
         ->handle($owner, (string) $request->getKey());
-
-    $item = $request->items()->firstOrFail();
-    $storageKey = "requests/{$request->getKey()}/late-upload.pdf";
+    $item          = $request->items()->firstOrFail();
+    $storageKey    = "requests/{$request->getKey()}/late-upload.pdf";
     addDeleteRequestDocument($item, $storageKey);
 
     app(DeleteRequest::class)->execute($loadedRequest);
