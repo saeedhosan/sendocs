@@ -37,7 +37,7 @@ export function Logo({
   )
 
   return (
-    <Link to={to} className={cn(styles.logo, className)} aria-label="Sendocs home">
+    <Link to={to} className={cn(styles.logo, compact && styles.logoCompact, className)} aria-label="Sendocs home">
       {content}
     </Link>
   )
