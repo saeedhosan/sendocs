@@ -13,16 +13,15 @@ export function CompleteBanner({ uploaded, total }: CompleteBannerProps) {
       <span className={styles.icon}>
         <CheckCircleIcon size={22} />
       </span>
-      <h2 id="portal-complete-title" className={styles.title}>
-        All documents received
-      </h2>
-      <p className={styles.message}>
-        You have uploaded all {total} requested documents. The request owner has
-        been notified and can now review your files.
-      </p>
-      <p className={styles.note}>
-        No further action is required. You may safely close this browser window.
-      </p>
+      <div className={styles.copy}>
+        <h2 id="portal-complete-title" className={styles.title}>
+          All documents received
+        </h2>
+        <p className={styles.message}>
+          You have uploaded all {total} requested documents. The request owner
+          has been notified and can now review your files.
+        </p>
+      </div>
       <span className={styles.chip}>
         {uploaded} of {total} uploaded · Complete
       </span>
