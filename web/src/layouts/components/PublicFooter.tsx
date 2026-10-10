@@ -13,7 +13,7 @@ export function PublicFooter() {
   return (
     <footer className={styles.footer}>
       <div className={styles.inner}>
-        <span>© 2026 Sendocs</span>
+        <span>© 2025 Sendocs Inc.</span>
         {links.map((link) => (
           <Fragment key={link.to}>
             <span aria-hidden="true">·</span>
