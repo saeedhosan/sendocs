@@ -1,7 +1,6 @@
 import { Fragment, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { Logo } from '../components/navigation/Logo'
-import { cn } from '../lib/cn'
 import styles from './AuthLayout.module.css'
 
 export type AuthLayoutProps = {
@@ -39,7 +38,7 @@ export function AuthLayout({
         </div>
       </header>
 
-      <main className={cn(styles.main, insetCard && styles.insetMain)}>
+      <main className={styles.main}>
         <div className={styles.card}>{children}</div>
       </main>
 
