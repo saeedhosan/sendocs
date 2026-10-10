@@ -40,7 +40,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Every API error leaves as the one published envelope.
         $exceptions->render(function (ValidationException $e, Request $request): ?JsonResponse {
-            if ($request->is('api/*') === false) {
+            if (! $request->is('api/*')) {
                 return null;
             }
 
@@ -85,7 +85,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Unexpected application failures must not leak exception messages or
         // fall back to Laravel's different default JSON error shape.
         $exceptions->render(function (Throwable $e, Request $request): ?JsonResponse {
-            if (! $request->is('api/*')) {
+            if ($request->is('api/*') === false) {
                 return null;
             }
 
