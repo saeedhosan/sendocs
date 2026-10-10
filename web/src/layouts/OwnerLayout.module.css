@@ -18,3 +18,25 @@
     padding: 2rem 1.5rem;
   }
 }
+
+.footer {
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+}
+
+.footerInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: var(--layout-max);
+  margin-inline: auto;
+  padding: 1rem 1rem;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+@media (min-width: 640px) {
+  .footerInner {
+    padding-inline: 1.5rem;
+  }
+}
