@@ -102,7 +102,7 @@ test('does not reveal another owners request', function (): void {
         ->assertNotFound()
         ->assertExactJson([
             'error' => [
-                'code' => 'not_found',
+                'code'    => 'not_found',
                 'message' => 'Not found.',
             ],
         ]);
@@ -112,7 +112,7 @@ test('does not reveal another owners request', function (): void {
         '00000000-0000-0000-0000-000000000000',
     )->assertNotFound()->assertExactJson([
         'error' => [
-            'code' => 'not_found',
+            'code'    => 'not_found',
             'message' => 'Not found.',
         ],
     ]);
