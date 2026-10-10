@@ -8,15 +8,31 @@ export type LogoProps = {
   boxed?: boolean
   to?: string
   className?: string
+  letterMark?: boolean
+  compact?: boolean
 }
 
-export function Logo({ boxed = true, to = '/', className }: LogoProps) {
+export function Logo({
+  boxed = true,
+  to = '/',
+  className,
+  letterMark = false,
+  compact = false,
+}: LogoProps) {
   const content = (
     <>
-      <span className={cn(styles.mark, !boxed && styles.markPlain)}>
-        <LockIcon size={boxed ? 18 : 20} />
+      <span
+        className={cn(
+          styles.mark,
+          !boxed && styles.markPlain,
+          letterMark && styles.markLetter,
+        )}
+      >
+        {letterMark ? 'S' : <LockIcon size={boxed ? 18 : 20} />}
       </span>
-      <span className={styles.wordmark}>Sendocs</span>
+      <span className={cn(styles.wordmark, compact && styles.wordmarkCompact)}>
+        Sendocs
+      </span>
     </>
   )
 
