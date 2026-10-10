@@ -687,10 +687,12 @@ paths:
       operationId: uploadPortalFile
       summary: Upload one file for one required item.
       description: |
-        The magic link is resolved before upload middleware and controller handling.
-        Unknown, expired, and revoked links return the same `410` envelope and never
-        write a file to object storage. PHP or the proxy may already have received or
-        buffered request bytes before Laravel resolves the link.
+        For requests that reach routing, the magic link is resolved before the
+        upload controller handles the file. Unknown, expired, and revoked links
+        return the same `410` envelope and never write a file to object storage.
+        PHP or the proxy may receive or buffer request bytes before Laravel resolves
+        the link; requests rejected by PHP or proxy size ceilings can be rejected
+        before link resolution.
 
         One file per item: a second upload to the same item is `409`, and the first
         file is kept. The API validates the 25 MiB file cap after PHP parses multipart
