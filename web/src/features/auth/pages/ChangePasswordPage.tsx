@@ -5,7 +5,7 @@ import { useAuth } from '../../../app/providers/useAuth'
 import { FormField } from '../../../components/forms/FormField'
 import { FormError } from '../../../components/forms/FormError'
 import { ArrowForwardIcon, CheckCircleIcon, InfoIcon } from '../../../components/icons'
-import { Alert, Button, PasswordInput } from '../../../components/ui'
+import { Alert, Button, Input, PasswordInput } from '../../../components/ui'
 import { AuthLayout } from '../../../layouts/AuthLayout'
 import { ApiError } from '../../../lib/api/client'
 import { errorMessage, validationErrors } from '../../../lib/api/errors'
@@ -89,7 +89,10 @@ export function ChangePasswordPage() {
   }
 
   return (
-    <AuthLayout headerAction={{ label: 'Back to account', to: '/dashboard' }}>
+    <AuthLayout
+      headerAction={{ label: 'Back to account', to: '/dashboard' }}
+      insetCard
+    >
       <div className={styles.heading}>
         <h1 className={styles.title}>Change password</h1>
         <p className={styles.subtitle}>
@@ -171,24 +174,29 @@ export function ChangePasswordPage() {
 
         <div>
           <FormField label="Confirm new password" error={errors.confirmPassword}>
-            <PasswordInput
-              name="confirmPassword"
-              autoComplete="new-password"
-              placeholder="Re-enter new password"
-              value={confirmPassword}
-              onChange={(event) => {
-                setConfirmPassword(event.target.value)
-                setErrors({})
-                setSuccess(false)
-              }}
-            />
+            <div className={styles.confirmPasswordInput}>
+              <Input
+                type="password"
+                name="confirmPassword"
+                autoComplete="new-password"
+                placeholder="Re-enter new password"
+                value={confirmPassword}
+                className={styles.confirmPasswordField}
+                onChange={(event) => {
+                  setConfirmPassword(event.target.value)
+                  setErrors({})
+                  setSuccess(false)
+                }}
+              />
+              {passwordsMatch ? (
+                <CheckCircleIcon
+                  size={18}
+                  aria-hidden="true"
+                  className={styles.confirmPasswordCheck}
+                />
+              ) : null}
+            </div>
           </FormField>
-          {passwordsMatch ? (
-            <p className={styles.matchOk}>
-              <CheckCircleIcon size={15} aria-hidden="true" />
-              Passwords match
-            </p>
-          ) : null}
           {passwordsMismatch ? (
             <FormError>Passwords do not match</FormError>
           ) : null}
