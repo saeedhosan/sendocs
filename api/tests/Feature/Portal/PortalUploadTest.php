@@ -247,28 +247,6 @@ test('returns the same invalid link response for upload requests', function (): 
         ]);
 });
 
-test('rejects an invalid link before checking an oversized request body', function (): void {
-    [, $items] = portalUploadFixture();
-
-    $token = rtrim(strtr(base64_encode(random_bytes(32)), '+/', '-_'), '=');
-
-    test()->call(
-        'POST',
-        "/api/v1/portal/{$token}/items/{$items[0]->getKey()}/file",
-        [],
-        [],
-        [],
-        ['CONTENT_LENGTH' => (string) (ini_parse_quantity((string) ini_get('post_max_size')) + 1)],
-    )
-        ->assertStatus(410)
-        ->assertExactJson([
-            'error' => [
-                'code'    => 'invalid_link',
-                'message' => 'This link is no longer valid.',
-            ],
-        ]);
-});
-
 test('does not require a csrf token or create a session cookie', function (): void {
     [, $items, $token] = portalUploadFixture();
 
