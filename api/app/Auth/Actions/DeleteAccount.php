@@ -6,6 +6,7 @@ namespace App\Auth\Actions;
 
 use App\Auth\Services\SessionService;
 use App\Exceptions\ApiException;
+use App\Models\RequestItem;
 use App\Models\User;
 use App\Storage\StorageDeletionOutbox;
 use Illuminate\Support\Facades\DB;
@@ -35,16 +36,34 @@ final readonly class DeleteAccount
         }
 
         DB::transaction(function () use ($user): void {
-            $storageKeys = DB::table('documents')
-                ->join('request_items', 'request_items.id', '=', 'documents.request_item_id')
+            // Serialize account deletion with creation of new owned requests.
+            $lockedUser = User::query()
+                ->whereKey($user->getKey())
+                ->lockForUpdate()
+                ->first();
+
+            if (! $lockedUser instanceof User) {
+                return;
+            }
+
+            // Lock every item, including empty ones, so an upload cannot insert
+            // metadata after the cleanup keys have been collected.
+            $itemIds = RequestItem::query()
                 ->join('document_requests', 'document_requests.id', '=', 'request_items.request_id')
-                ->where('document_requests.owner_id', $user->getKey())
-                ->pluck('documents.storage_key')
+                ->where('document_requests.owner_id', $lockedUser->getKey())
+                ->orderBy('request_items.id')
+                ->lockForUpdate()
+                ->pluck('request_items.id')
+                ->all();
+
+            $storageKeys = DB::table('documents')
+                ->whereIn('request_item_id', $itemIds)
+                ->pluck('storage_key')
                 ->all();
 
             $this->storageDeletionOutbox->enqueue($storageKeys);
 
-            $user->delete();
+            $lockedUser->delete();
         });
 
         $this->sessions->forgetCookie();
