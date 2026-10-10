@@ -169,6 +169,35 @@ test('returns the file size error when PHP rejects a file above its upload limit
     Storage::disk('s3')->assertEmpty();
 });
 
+test('returns the file size error when PHP rejects the whole POST body', function (): void {
+    [, $items, $token] = portalUploadFixture();
+
+    $postMaxBytes = ini_parse_quantity((string) ini_get('post_max_size'));
+
+    $response = test()->call(
+        'POST',
+        "/api/v1/portal/{$token}/items/{$items[0]->getKey()}/file",
+        [],
+        [],
+        [],
+        [
+            'CONTENT_LENGTH' => (string) ($postMaxBytes + 1),
+            'CONTENT_TYPE' => 'multipart/form-data; boundary=sendocs-test',
+        ],
+    );
+
+    $response
+        ->assertStatus(413)
+        ->assertExactJson([
+            'error' => [
+                'code'    => 'file_too_large',
+                'message' => 'The file is larger than 25 MB.',
+            ],
+        ]);
+
+    expect(Document::query()->count())->toBe(0);
+});
+
 test('accepts a file at the 25 MB cap', function (): void {
     [, $items, $token] = portalUploadFixture();
 
