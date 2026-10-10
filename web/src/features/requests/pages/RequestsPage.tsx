@@ -100,7 +100,6 @@ export function RequestsPage() {
         </div>
         <Button
           iconLeft={<PlusIcon size={18} />}
-          fullWidth
           className={styles.newRequestButton}
           onClick={() => navigate('/requests/new')}
         >
