@@ -6,6 +6,10 @@
   gap: 2.5rem;
 }
 
+.preview {
+  min-width: 0;
+}
+
 .copy {
   display: flex;
   min-width: 0;
