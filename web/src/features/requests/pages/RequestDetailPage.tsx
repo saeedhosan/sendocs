@@ -216,14 +216,7 @@ export function RequestDetailPage() {
       </div>
 
       <section className={styles.linkPanel}>
-        <div>
-          <p className={styles.linkTitle}>Client portal link</p>
-          <p className={styles.linkMeta}>
-            {linkState(request) === 'active'
-              ? expiresLabel(request.expiresAt)
-              : linkStateLabel(linkState(request))}
-          </p>
-        </div>
+        <p className={styles.linkTitle}>Client portal link</p>
         <span className={styles.linkNote}>Shown once at creation</span>
       </section>
 
