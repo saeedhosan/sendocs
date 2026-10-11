@@ -354,7 +354,7 @@ async function stubApi(page: Page, isAuthenticated: () => boolean) {
 async function waitForFonts(page: Page) {
   await page
     .waitForFunction(() => document.fonts.status === 'loaded', undefined, {
-      timeout: 5000,
+      timeout: 3000,
     })
     .catch(() => {})
 }
