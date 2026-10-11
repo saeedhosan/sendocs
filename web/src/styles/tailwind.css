@@ -1,1 +1,94 @@
 @import 'tailwindcss';
+@import './tokens.css';
+
+/*
+ * Bridge the design tokens in tokens.css into Tailwind's theme.
+ *
+ * `inline` keeps the utilities pointing at the CSS variables instead of inlining
+ * their resolved values, so tokens.css stays the single source of truth and any
+ * runtime override of a token still flows through.
+ */
+@theme inline {
+  /* Surfaces */
+  --color-canvas: var(--color-canvas);
+  --color-canvas-muted: var(--color-canvas-muted);
+  --color-surface: var(--color-surface);
+  --color-surface-muted: var(--color-surface-muted);
+  --color-surface-sunken: var(--color-surface-sunken);
+
+  /* Text */
+  --color-ink: var(--color-text);
+  --color-ink-secondary: var(--color-text-secondary);
+  --color-ink-body: var(--color-text-body);
+  --color-ink-emphasis: var(--color-text-emphasis);
+  --color-ink-muted: var(--color-text-muted);
+  --color-ink-placeholder: var(--color-text-placeholder);
+
+  /* Borders */
+  --color-border: var(--color-border);
+  --color-border-strong: var(--color-border-strong);
+  --color-border-subtle: var(--color-border-subtle);
+
+  /* Primary action */
+  --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
+  --color-primary-active: var(--color-primary-active);
+  --color-primary-soft: var(--color-primary-soft);
+  --color-on-primary: var(--color-on-primary);
+
+  /* Feedback */
+  --color-danger: var(--color-danger);
+  --color-danger-strong: var(--color-danger-strong);
+  --color-danger-text: var(--color-danger-text);
+  --color-danger-surface: var(--color-danger-surface);
+  --color-danger-border: var(--color-danger-border);
+  --color-success: var(--color-success);
+  --color-success-text: var(--color-success-text);
+  --color-success-surface: var(--color-success-surface);
+  --color-success-border: var(--color-success-border);
+  --color-warning-text: var(--color-warning-text);
+  --color-warning-surface: var(--color-warning-surface);
+  --color-warning-border: var(--color-warning-border);
+  --color-info-text: var(--color-info-text);
+  --color-info-surface: var(--color-info-surface);
+  --color-info-border: var(--color-info-border);
+
+  /* Focus */
+  --color-focus: var(--color-focus);
+  --color-focus-ring: var(--color-focus-ring);
+
+  /* Marketing */
+  --color-marketing-text-secondary: var(--color-marketing-text-secondary);
+  --color-marketing-success: var(--color-marketing-success);
+  --color-marketing-success-surface: var(--color-marketing-success-surface);
+  --color-marketing-success-border: var(--color-marketing-success-border);
+
+  /* Typography */
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+
+  /* Radii */
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-full: var(--radius-full);
+
+  /* Elevation */
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+}
+
+@theme {
+  --animate-skeleton: skeleton 1.4s ease-in-out infinite;
+
+  @keyframes skeleton {
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.55;
+    }
+  }
+}
