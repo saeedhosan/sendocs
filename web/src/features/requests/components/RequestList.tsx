@@ -1,12 +1,14 @@
+import type { ReactNode } from 'react'
 import { RequestRow } from './RequestRow'
 import type { RequestSummary } from '../types'
 import styles from './RequestList.module.css'
 
 export type RequestListProps = {
   requests: RequestSummary[]
+  footer?: ReactNode
 }
 
-export function RequestList({ requests }: RequestListProps) {
+export function RequestList({ requests, footer }: RequestListProps) {
   return (
     <div className={styles.list}>
       <div className={styles.header} aria-hidden="true">
@@ -19,6 +21,7 @@ export function RequestList({ requests }: RequestListProps) {
       {requests.map((request) => (
         <RequestRow key={request.id} request={request} />
       ))}
+      {footer}
     </div>
   )
 }
