@@ -111,7 +111,7 @@ export function AuthLayout({
       ) : (
         <footer
           className={cn(
-            'w-full border-t border-border py-6',
+            'w-full border-t border-border bg-surface py-6',
             whiteFooters.includes(footerVariant) && 'bg-surface',
           )}
         >
