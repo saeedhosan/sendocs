@@ -1,7 +1,6 @@
 import { Outlet } from 'react-router-dom'
 import { PublicFooter } from './components/PublicFooter'
 import { PublicHeader } from './components/PublicHeader'
-import styles from './PublicLayout.module.css'
 
 /**
  * The shell for every public page: marketing header, content, and footer.
@@ -9,9 +8,9 @@ import styles from './PublicLayout.module.css'
  */
 export function PublicLayout() {
   return (
-    <div className={styles.layout}>
+    <div className="flex flex-col min-h-screen bg-surface">
       <PublicHeader />
-      <main className={styles.main}>
+      <main className="[view-transition-name:page-content] flex-1 w-full">
         <Outlet />
       </main>
       <PublicFooter />
