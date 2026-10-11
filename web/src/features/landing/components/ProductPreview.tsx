@@ -57,7 +57,7 @@ export function ProductPreview() {
             2024 Corporate Tax Return — Acme Corp
           </span>
         </div>
-        <span className="shrink-0 px-2 py-0.5 border border-marketing-success-border rounded-sm bg-marketing-success-surface text-[0.6875rem] font-medium text-marketing-success">
+        <span className="shrink-0 px-2 py-0.5 border border-marketing-success-border rounded-[4px] bg-marketing-success-surface text-[0.6875rem] font-medium text-marketing-success">
           Active
         </span>
       </div>
