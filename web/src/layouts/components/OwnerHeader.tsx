@@ -108,7 +108,7 @@ export function OwnerHeader() {
   const displayName = user?.name ?? 'Account'
 
   return (
-    <header className={HEADER}>
+    <header className={cn(HEADER, isCreateRequest && 'border-border-subtle')}>
       <Container
         className={cn(
           INNER,
