@@ -274,7 +274,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
         <Button
           type="submit"
           loading={busy}
-          className="min-h-11"
+          className="min-h-11 rounded-[10px]"
         >
           Create request
         </Button>
