@@ -49,7 +49,7 @@ export function PortalItemRow({
       <div className={styles.main}>
         {uploaded && item.file ? (
           <>
-            <p className={styles.label}>{item.position}. {item.label}</p>
+            <p className={styles.label}>{`${item.position}. ${item.label}`}</p>
             <p className={styles.meta}>
               <span>Uploaded</span>
               <span aria-hidden="true">·</span>
@@ -59,7 +59,7 @@ export function PortalItemRow({
         ) : uploading ? (
           <>
             <div className={styles.uploadingHeading}>
-              <p className={styles.label}>{item.position}. {item.label}</p>
+              <p className={styles.label}>{`${item.position}. ${item.label}`}</p>
               <span className={styles.transferLabel}>
                 Uploading · {percent}%
               </span>
@@ -73,19 +73,19 @@ export function PortalItemRow({
           </>
         ) : failure ? (
           <>
-            <p className={styles.label}>{item.position}. {item.label}</p>
+            <p className={styles.label}>{`${item.position}. ${item.label}`}</p>
             <p className={styles.error} role="alert">
               Upload failed · {failure.message}
             </p>
           </>
         ) : queued ? (
           <>
-            <p className={styles.label}>{item.position}. {item.label}</p>
+            <p className={styles.label}>{`${item.position}. ${item.label}`}</p>
             <p className={styles.waiting}>Waiting for a free slot…</p>
           </>
         ) : (
           <>
-            <p className={styles.label}>{item.position}. {item.label}</p>
+            <p className={styles.label}>{`${item.position}. ${item.label}`}</p>
             <p className={styles.waiting}>
               Waiting for upload · Max 25 MB · {ACCEPTED_TYPES_LABEL}
             </p>
