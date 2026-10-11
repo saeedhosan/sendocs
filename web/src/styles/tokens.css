@@ -13,8 +13,8 @@
   --color-canvas: #f8f9ff;
   --color-canvas-muted: #f8fafc;
   --color-surface: #ffffff;
-  --color-surface-muted: #f1f5f9
-  --color-surface-subtle: #f8fafc
+  --color-surface-muted: #f1f5f9;
+  --color-surface-subtle: #f8fafc;
   --color-surface-sunken: #f1f5f9;
 
   /* Text */
@@ -28,7 +28,7 @@
   /* Borders */
   --color-border: #e2e8f0;
   --color-border-strong: #cbd5e1;
-  --color-border-subtle: #e2e8f0
+  --color-border-subtle: #e2e8f0;
 
   /* Primary action */
   --color-primary: #4f46e5;
