@@ -11,6 +11,8 @@ export type AuthLayoutProps = {
   boxedLogo?: boolean
   /** Page-specific footer copy/order when a reference differs. */
   footerVariant?: 'default' | 'reset-password'
+  /** Each auth reference has a distinct mobile card alignment. */
+  layoutVariant?: 'default' | 'login' | 'register' | 'change-password' | 'reset-password'
 }
 
 const legalLinks = [
@@ -27,6 +29,7 @@ export function AuthLayout({
   headerAction,
   boxedLogo = true,
   footerVariant = 'default',
+  layoutVariant = 'default',
 }: AuthLayoutProps) {
   const footerLinks =
     footerVariant === 'reset-password'
@@ -41,7 +44,7 @@ export function AuthLayout({
       : '© 2025 Sendocs Inc.'
 
   return (
-    <div className={styles.layout}>
+    <div className={styles.layout} data-layout-variant={layoutVariant}>
       <header className={styles.header}>
         <div className={styles.headerInner}>
           <Logo boxed={boxedLogo} />
