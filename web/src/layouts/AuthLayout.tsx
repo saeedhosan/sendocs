@@ -16,6 +16,7 @@ export type AuthLayoutProps = {
 const legalLinks = [
   { label: 'Terms', to: '/terms' },
   { label: 'Privacy', to: '/privacy' },
+  { label: 'Security', to: '/contact' },
 ]
 
 /**
@@ -31,6 +32,7 @@ export function AuthLayout({
   const footerLinks =
     footerVariant === 'reset-password'
       ? [
+          { label: 'Security', to: '/contact' },
           { label: 'Privacy', to: '/privacy' },
           { label: 'Terms', to: '/terms' },
         ]

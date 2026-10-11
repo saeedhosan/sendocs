@@ -20,7 +20,5 @@
   padding-inline: 0.75rem;
   background-color: var(--color-surface);
   font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--color-text-placeholder);
+  color: var(--color-text-muted);
 }
