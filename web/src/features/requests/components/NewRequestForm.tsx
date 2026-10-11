@@ -26,8 +26,12 @@ export type NewRequestFormProps = {
 }
 
 export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
-  const [title, setTitle] = useState('')
-  const [labels, setLabels] = useState<string[]>([''])
+  const [title, setTitle] = useState('2024 Corporate Tax Return — Acme Corp')
+  const [labels, setLabels] = useState<string[]>([
+    'Government-issued photo ID',
+    'W-2 / 1099 Forms or Profit & Loss Statement',
+    'Articles of Incorporation & Proof of Address',
+  ])
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [formError, setFormError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
