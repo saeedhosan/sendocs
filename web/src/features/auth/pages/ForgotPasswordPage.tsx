@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import { Link } from '../../../components/navigation/AppLink'
 import { FormField } from '../../../components/forms/FormField'
 import { ArrowBackIcon, MailIcon } from '../../../components/icons'
 import { Alert, Button, Input } from '../../../components/ui'

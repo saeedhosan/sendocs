@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
+import { Link } from '../../../components/navigation/AppLink'
 import { Badge, Button, ProgressBar } from '../../../components/ui'
 import { ErrorState, LoadingState } from '../../../components/feedback'
 import {

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
+import { Link } from '../../../components/navigation/AppLink'
 import { ErrorState } from '../../../components/feedback'
 import { ProgressBar, Spinner } from '../../../components/ui'
 import { ApiError } from '../../../lib/api/client'

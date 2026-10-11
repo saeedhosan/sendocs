@@ -1,5 +1,5 @@
 import { Fragment, type ReactNode } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from '../components/navigation/AppLink'
 import { Logo } from '../components/navigation/Logo'
 import styles from './AuthLayout.module.css'
 

@@ -1,4 +1,5 @@
-import { Link, NavLink, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
+import { Link, NavLink } from '../../components/navigation/AppLink'
 import { useAuth } from '../../app/providers/useAuth'
 import { Logo } from '../../components/navigation/Logo'
 import { cn } from '../../lib/cn'

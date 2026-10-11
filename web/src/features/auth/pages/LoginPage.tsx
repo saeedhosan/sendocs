@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { ChangeEvent, FormEvent } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { Link } from '../../../components/navigation/AppLink'
 import { useAuth } from '../../../app/providers/useAuth'
 import { FormField } from '../../../components/forms/FormField'
 import { ArrowForwardIcon } from '../../../components/icons'

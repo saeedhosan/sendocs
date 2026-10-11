@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link } from '../../../components/navigation/AppLink'
 import styles from './CtaSection.module.css'
 
 export function CtaSection() {
