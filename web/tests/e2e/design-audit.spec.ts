@@ -418,6 +418,7 @@ test('captures desktop and mobile pairs for all committed UI references', async 
       // Capture the reference's creation-success modal before hiding the
       // prototype's always-visible preview overlay for the resting-page shot.
       if (item.name === 'new-request') {
+        await page.mouse.move(0, 0)
         typographyAudit.push({
           viewport: viewport.name,
           page: item.name,
@@ -448,6 +449,7 @@ test('captures desktop and mobile pairs for all committed UI references', async 
         side: 'reference',
         elements: await captureTypography(page),
       })
+      await page.mouse.move(0, 0)
       await page.screenshot({
         path: resolve(outputDirectory, `${viewport.name}-${item.name}-reference.png`),
         fullPage: true,
@@ -468,6 +470,7 @@ test('captures desktop and mobile pairs for all committed UI references', async 
           side: 'reference',
           elements: await captureTypography(page),
         })
+        await page.mouse.move(0, 0)
         await page.screenshot({
           path: resolve(outputDirectory, `${viewport.name}-forgot-password-success-reference.png`),
           fullPage: true,
@@ -499,6 +502,7 @@ test('captures desktop and mobile pairs for all committed UI references', async 
           await trigger.first().click()
           await expect(page.locator(dialog.selector)).toBeVisible()
           await page.evaluate(() => window.scrollTo(0, 0))
+          await page.mouse.move(0, 0)
           typographyAudit.push({
             viewport: viewport.name,
             page: `request-detail-${dialog.name}`,
@@ -586,6 +590,7 @@ test('captures desktop and mobile pairs for all committed UI references', async 
         side: 'implementation',
         elements: await captureTypography(page),
       })
+      await page.mouse.move(0, 0)
       await page.screenshot({
         path: resolve(outputDirectory, `${viewport.name}-${item.name}-implementation.png`),
         fullPage: true,
@@ -605,6 +610,7 @@ test('captures desktop and mobile pairs for all committed UI references', async 
           side: 'implementation',
           elements: await captureTypography(page),
         })
+        await page.mouse.move(0, 0)
         await page.screenshot({
           path: resolve(outputDirectory, `${viewport.name}-forgot-password-success-implementation.png`),
           fullPage: true,
@@ -630,6 +636,7 @@ test('captures desktop and mobile pairs for all committed UI references', async 
           side: 'implementation',
           elements: await captureTypography(page),
         })
+        await page.mouse.move(0, 0)
         await page.screenshot({
           path: resolve(outputDirectory, `${viewport.name}-new-request-link-reveal-implementation.png`),
           animations: 'disabled',
@@ -655,6 +662,7 @@ test('captures desktop and mobile pairs for all committed UI references', async 
           const dialog = page.getByRole('dialog')
           await expect(dialog).toBeVisible()
           await page.evaluate(() => window.scrollTo(0, 0))
+          await page.mouse.move(0, 0)
           typographyAudit.push({
             viewport: viewport.name,
             page: `request-detail-${dialogConfig.name}`,
