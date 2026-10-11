@@ -63,6 +63,12 @@ export function AuthLayout({
       <footer className={styles.footer}>
         <div className={styles.footerInner}>
           <span>{copyright}</span>
+          {footerVariant === 'reset-password' ? (
+            <Fragment>
+              <span aria-hidden="true">·</span>
+              <span className={styles.footerLink}>Security</span>
+            </Fragment>
+          ) : null}
           {footerLinks.map((link) => (
             <Fragment key={link.to}>
               <span aria-hidden="true">·</span>
@@ -71,6 +77,12 @@ export function AuthLayout({
               </Link>
             </Fragment>
           ))}
+          {footerVariant !== 'reset-password' ? (
+            <Fragment>
+              <span aria-hidden="true">·</span>
+              <span className={styles.footerLink}>Security</span>
+            </Fragment>
+          ) : null}
         </div>
       </footer>
     </div>
