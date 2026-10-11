@@ -7,9 +7,10 @@ import styles from './ItemRow.module.css'
 export type ItemRowProps = {
   item: RequestItem
   onDelete: (item: RequestItem) => void
+  onDownload: (item: RequestItem) => void
 }
 
-export function ItemRow({ item, onDelete }: ItemRowProps) {
+export function ItemRow({ item, onDelete, onDownload }: ItemRowProps) {
   const file = item.document
 
   return (
@@ -31,6 +32,7 @@ export function ItemRow({ item, onDelete }: ItemRowProps) {
               className={styles.download}
               href={file.downloadUrl}
               download={file.originalName}
+              onClick={() => onDownload(item)}
             >
               <span>Download</span>
             </a>

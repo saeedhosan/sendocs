@@ -124,6 +124,13 @@ export function RequestDetailPage() {
     })
   }
 
+  function downloadDocument(item: RequestItem) {
+    setNotice({
+      tone: 'ok',
+      message: `Downloading ${item.document?.originalName ?? item.label}`,
+    })
+  }
+
   if (status === 'loading') {
     return <LoadingState title="Loading request" />
   }
@@ -237,6 +244,7 @@ export function RequestDetailPage() {
           onDeleteDocument={(item) =>
             setConfirm({ kind: 'delete-document', item })
           }
+          onDownloadDocument={downloadDocument}
         />
       </section>
 
