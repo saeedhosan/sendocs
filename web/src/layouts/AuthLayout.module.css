@@ -132,4 +132,8 @@
     gap: 0.5rem;
     padding-inline: 1rem;
   }
+
+  .layout[data-layout-variant='reset-password'] .footerInner > span:first-child {
+    flex-basis: 100%;
+  }
 }
