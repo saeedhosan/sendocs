@@ -26,6 +26,14 @@ const documentLinks = [
   { label: 'Security', to: '/contact' },
 ]
 
+export type PublicHeaderMode = 'auto' | 'auth'
+
+export type PublicHeaderProps = {
+  mode?: PublicHeaderMode
+  authAction?: { label: string; to: string }
+  authLogoVariant?: 'auth' | 'auth-login' | 'auth-register'
+}
+
 /**
  * The minimal public header shared by the landing and legal pages.
  *
@@ -34,30 +42,46 @@ const documentLinks = [
  * visitors see a dashboard link instead of the sign-up actions, since the
  * public pages stay reachable once authenticated.
  */
-export function PublicHeader() {
+export function PublicHeader({
+  mode = 'auto',
+  authAction,
+  authLogoVariant = 'auth',
+}: PublicHeaderProps) {
   const { pathname } = useLocation()
   const { status } = useAuth()
   const isAuthenticated = status === 'authenticated'
-  const isLanding = pathname === '/'
+  const isAuth = mode === 'auth'
+  const isLanding = pathname === '/' && !isAuth
   const isDocument = documentLinks.some((link) => link.to === pathname)
 
   return (
     <header
       className={cn(
         HEADER,
-        !isLanding && 'sticky',
+        !isLanding && !isAuth && 'sticky',
         isLanding ? HEADER_HOME : 'bg-surface',
       )}
     >
       <Container
         className={cn(
           INNER,
-          isLanding ? cn(INNER_HOME, CONTAINER_HOME) : CONTAINER_DOCUMENT,
+          isLanding
+            ? cn(INNER_HOME, CONTAINER_HOME)
+            : CONTAINER_DOCUMENT,
         )}
       >
-        <Logo variant={isLanding ? 'brand' : 'auth'} />
+        <Logo variant={isLanding ? 'brand' : authLogoVariant} />
 
-        {isDocument ? (
+        {isAuth ? (
+          authAction ? (
+            <Link
+              to={authAction.to}
+              className="text-sm font-medium text-ink-muted transition-colors duration-150 hover:text-ink"
+            >
+              {authAction.label}
+            </Link>
+          ) : null
+        ) : isDocument ? (
           <nav className={NAV} aria-label="Legal">
             {documentLinks.map((link) => (
               <NavLink
