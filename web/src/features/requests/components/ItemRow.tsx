@@ -28,13 +28,18 @@ export function ItemRow({ item, onDelete }: ItemRowProps) {
       {file ? (
         <div className={styles.actions}>
           {file.downloadUrl ? (
-            <a
-              className={styles.download}
-              href={file.downloadUrl}
-              download={file.originalName}
-            >
-              <span>Download</span>
-            </a>
+            <>
+              <a
+                className={styles.download}
+                href={file.downloadUrl}
+                download={file.originalName}
+              >
+                <span>Download</span>
+              </a>
+              <span className={styles.separator} aria-hidden="true">
+                |
+              </span>
+            </>
           ) : null}
           <Button
             variant="ghost"
