@@ -17,6 +17,7 @@ const FOOTER_INNER =
 const FOOTER_RESET_INNER =
   `${AUTH_CONTAINER} flex flex-col items-center justify-center gap-4 text-[0.8125rem] leading-[1.125rem] text-ink-body text-center sm:flex-row`
 const FOOTER_RESET_LINK = 'transition-colors duration-150 hover:text-ink'
+const CHANGE_FOOTER_INNER = `${AUTH_CONTAINER} text-center text-xs text-ink-muted`
 const EXTRA_LINK = 'transition-colors duration-150'
 
 export type FooterVariant =
@@ -33,7 +34,7 @@ export type AuthLayoutProps = {
   /** Page-specific footer copy/order/layout when a reference differs. */
   footerVariant?: FooterVariant
   logoVariant?: 'auth' | 'auth-login' | 'auth-register'
-  layoutVariant?: 'default' | 'login' | 'reset'
+  layoutVariant?: 'default' | 'login' | 'reset' | 'change'
 }
 
 const legalLinks = [
@@ -62,6 +63,7 @@ export function AuthLayout({
   layoutVariant = 'default',
 }: AuthLayoutProps) {
   const isReset = footerVariant === 'reset-password'
+  const isChange = footerVariant === 'change'
   const footerLinks = isReset ? resetLinks : legalLinks
   const copyright = isReset
     ? `© 2025 ${app.name} Technologies Inc.`
@@ -92,6 +94,7 @@ export function AuthLayout({
           className={cn(
             'flex flex-1 items-center justify-center w-full',
             layoutVariant === 'default' && 'px-4',
+            layoutVariant === 'change' && 'max-w-md mt-0 mb-6 px-4 pt-6 sm:px-0',
           )}
         >
           <div
@@ -99,7 +102,9 @@ export function AuthLayout({
               CARD,
               layoutVariant === 'default' || layoutVariant === 'reset'
                 ? 'my-12'
-                : 'mt-0 mb-12',
+                : layoutVariant === 'change'
+                  ? 'my-0'
+                  : 'mt-0 mb-12',
             )}
           >
             {children}
@@ -128,6 +133,22 @@ export function AuthLayout({
                 </Fragment>
               ))}
             </div>
+          </Container>
+        </footer>
+      ) : isChange ? (
+        <footer className="w-full border-t border-border bg-surface py-6">
+          <Container className={CHANGE_FOOTER_INNER}>
+            <p>
+              © 2025 {app.name} Inc. ·{' '}
+              {footerLinks.map((link, index) => (
+                <Fragment key={link.to}>
+                  {index > 0 ? ' · ' : null}
+                  <Link to={link.to} className={linkClass}>
+                    {link.label}
+                  </Link>
+                </Fragment>
+              ))}
+            </p>
           </Container>
         </footer>
       ) : (

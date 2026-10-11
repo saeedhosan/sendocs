@@ -33,7 +33,7 @@ export function PasswordStrengthMeter({
         <span className="font-medium">{label}</span>
       </div>
       <div
-        className="flex gap-1 mt-1.5 p-0.5 bg-surface-sunken rounded-full overflow-hidden"
+        className="flex gap-1 p-0.5 bg-surface-sunken rounded-full overflow-hidden"
         aria-hidden="true"
       >
         {Array.from({ length: barCount }, (_, index) => (
