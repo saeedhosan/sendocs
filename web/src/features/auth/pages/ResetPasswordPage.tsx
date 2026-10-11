@@ -121,7 +121,6 @@ export function ResetPasswordPage() {
               name="password"
               autoComplete="new-password"
               visibilityButtonClassName="right-3 rounded-[10px]"
-              visibilityButtonClassName="right-3 rounded-[10px]"
               placeholder="••••••••••••"
               value={password}
               onChange={(event) => {
