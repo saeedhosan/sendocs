@@ -5,73 +5,131 @@ import { expect, test } from '@playwright/test'
 import type { Page, Route } from '@playwright/test'
 
 const token = 'a'.repeat(43)
-const timestamp = '2026-06-01T10:00:00.000Z'
-const expiresAt = '2099-01-01T00:00:00.000Z'
+const now = Date.now()
+const twoHoursAgo = new Date(now - 2 * 60 * 60 * 1000).toISOString()
+const fiveHoursAgo = new Date(now - 5 * 60 * 60 * 1000).toISOString()
+const eightHoursAgo = new Date(now - 8 * 60 * 60 * 1000).toISOString()
+const yesterday = new Date(now - 24 * 60 * 60 * 1000).toISOString()
+const threeDaysAgo = new Date(now - 3 * 24 * 60 * 60 * 1000).toISOString()
+const expiresAt = new Date(now + 11 * 24 * 60 * 60 * 1000).toISOString()
+const sessionExpiresAt = new Date(now + 7 * 24 * 60 * 60 * 1000).toISOString()
 
 const sessionPayload = {
   user: {
     id: 'owner-audit',
     name: 'Alex Morgan',
     email: 'alex@example.com',
-    emailVerifiedAt: timestamp,
+    emailVerifiedAt: twoHoursAgo,
   },
   csrfToken: 'csrf-audit',
-  expiresAt,
+  expiresAt: sessionExpiresAt,
 }
 
-const items = [
+const requestItems = [
   {
-    id: 'item-1',
-    label: 'Passport or Government ID',
+    id: 'detail-item-1',
+    label: '2023 Form 1120-S Federal Return',
     position: 1,
     state: 'uploaded' as const,
     document: {
-      id: 'document-1',
-      originalName: 'passport_scan_2024.pdf',
+      id: 'detail-document-1',
+      originalName: '2023_1120S_Signed.pdf',
       mimeType: 'application/pdf',
       sizeBytes: 3565158,
-      uploadedAt: timestamp,
-      downloadUrl: 'https://example.invalid/passport.pdf',
+      uploadedAt: twoHoursAgo,
+      downloadUrl: 'https://example.invalid/2023_1120S_Signed.pdf',
     },
   },
   {
-    id: 'item-2',
-    label: 'Certificate of Incorporation',
+    id: 'detail-item-2',
+    label: 'Year-End Balance Sheet & P&L',
     position: 2,
     state: 'uploaded' as const,
     document: {
-      id: 'document-2',
-      originalName: 'incorporation_cert_final.pdf',
-      mimeType: 'application/pdf',
-      sizeBytes: 1843200,
-      uploadedAt: timestamp,
-      downloadUrl: 'https://example.invalid/incorporation.pdf',
+      id: 'detail-document-2',
+      originalName: 'Acme_Q4_Financials.xlsx',
+      mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      sizeBytes: 1887437,
+      uploadedAt: twoHoursAgo,
+      downloadUrl: 'https://example.invalid/Acme_Q4_Financials.xlsx',
     },
   },
   {
-    id: 'item-3',
-    label: 'Recent Bank Statement (Last 3 Months)',
+    id: 'detail-item-3',
+    label: 'Articles of Incorporation',
     position: 3,
     state: 'uploaded' as const,
     document: {
-      id: 'document-3',
-      originalName: 'bank_statement.pdf',
+      id: 'detail-document-3',
+      originalName: 'Articles_Inc_State.pdf',
       mimeType: 'application/pdf',
       sizeBytes: 860160,
-      uploadedAt: timestamp,
-      downloadUrl: 'https://example.invalid/bank-statement.pdf',
+      uploadedAt: twoHoursAgo,
+      downloadUrl: 'https://example.invalid/Articles_Inc_State.pdf',
     },
   },
   {
-    id: 'item-4',
-    label: 'Proof of Business Address',
+    id: 'detail-item-4',
+    label: 'State Tax Exemption Certificate',
     position: 4,
     state: 'waiting' as const,
     document: null,
   },
   {
-    id: 'item-5',
-    label: 'Tax Registration Certificate',
+    id: 'detail-item-5',
+    label: 'Shareholder Ownership Schedule',
+    position: 5,
+    state: 'waiting' as const,
+    document: null,
+  },
+]
+
+const portalItems = [
+  {
+    id: 'portal-item-1',
+    label: 'Passport or Government ID',
+    position: 1,
+    state: 'uploaded' as const,
+    document: {
+      id: 'portal-document-1',
+      originalName: 'passport_scan_2024.pdf',
+      mimeType: 'application/pdf',
+      sizeBytes: 3565158,
+      uploadedAt: twoHoursAgo,
+      downloadUrl: 'https://example.invalid/passport.pdf',
+    },
+  },
+  {
+    id: 'portal-item-2',
+    label: 'Certificate of Incorporation',
+    position: 2,
+    state: 'uploaded' as const,
+    document: {
+      id: 'portal-document-2',
+      originalName: 'incorporation_cert_final.pdf',
+      mimeType: 'application/pdf',
+      sizeBytes: 1843200,
+      uploadedAt: twoHoursAgo,
+      downloadUrl: 'https://example.invalid/incorporation.pdf',
+    },
+  },
+  {
+    id: 'portal-item-3',
+    label: 'Recent Bank Statement (Last 3 Months)',
+    position: 3,
+    state: 'waiting' as const,
+    document: null,
+  },
+  {
+    id: 'portal-item-4',
+    label: 'Tax Return (Previous Fiscal Year)',
+    position: 4,
+    state: 'waiting' as const,
+    document: null,
+  },
+  {
+    id: 'portal-item-5',
+    label: 'Utility Bill or Proof of Address',
     position: 5,
     state: 'waiting' as const,
     document: null,
@@ -84,13 +142,13 @@ const summary = {
   status: 'waiting' as const,
   uploaded: 3,
   total: 5,
-  lastActivityAt: timestamp,
-  createdAt: timestamp,
+  lastActivityAt: twoHoursAgo,
+  createdAt: twoHoursAgo,
   expiresAt,
   revokedAt: null,
 }
 
-const requestDetail = { ...summary, items }
+const requestDetail = { ...summary, items: requestItems }
 
 const requestPage = {
   data: [
@@ -98,28 +156,36 @@ const requestPage = {
     {
       ...summary,
       id: 'req_complete',
-      title: 'Client Onboarding — Northstar Ltd.',
+      title: 'Q3 Financial Audit Documents',
       status: 'complete' as const,
       uploaded: 4,
       total: 4,
+      lastActivityAt: yesterday,
     },
     {
       ...summary,
-      id: 'req_waiting',
-      title: 'Annual Accounts — Acme Corp',
-      uploaded: 1,
-    },
-    {
-      ...summary,
-      id: 'req_new',
-      title: 'Quarterly VAT Return',
+      id: 'req_kyc',
+      title: 'KYC & Compliance Verification',
       uploaded: 0,
+      total: 3,
+      lastActivityAt: fiveHoursAgo,
     },
     {
       ...summary,
-      id: 'req_revoked',
-      title: 'Company Registration',
-      revokedAt: timestamp,
+      id: 'req_estate',
+      title: 'Estate Planning Records — Vance Trust',
+      uploaded: 1,
+      total: 4,
+      lastActivityAt: eightHoursAgo,
+    },
+    {
+      ...summary,
+      id: 'req_vendor',
+      title: 'W-9 & Vendor Banking Onboarding',
+      status: 'complete' as const,
+      uploaded: 2,
+      total: 2,
+      lastActivityAt: threeDaysAgo,
     },
   ],
   nextCursor: null,
@@ -128,11 +194,11 @@ const requestPage = {
 const portalView = {
   title: 'Documents for Corporate Onboarding',
   status: 'waiting' as const,
-  uploaded: 3,
+  uploaded: 2,
   total: 5,
-  lastActivityAt: timestamp,
+  lastActivityAt: twoHoursAgo,
   expiresAt,
-  items: items.map((item) => ({
+  items: portalItems.map((item) => ({
     id: item.id,
     label: item.label,
     position: item.position,
