@@ -9,7 +9,7 @@ import { AuthLayout } from '../../../layouts/AuthLayout'
 import { ApiError } from '../../../lib/api/client'
 import { errorMessage, validationErrors } from '../../../lib/api/errors'
 import { deleteAccountSchema, fieldErrors } from '../schemas'
-import styles from './auth.module.css'
+import { authStyles as s } from './authStyles'
 
 /**
  * Account deletion. The API requires the password and the address typed as
@@ -75,32 +75,32 @@ export function DeleteAccountPage() {
 
   return (
     <AuthLayout headerAction={{ label: 'Back to account', to: '/dashboard' }}>
-      <div className={styles.heading}>
-        <h1 className={styles.title}>Delete account</h1>
-        <p className={styles.subtitle}>
+      <div className={s.heading}>
+        <h1 className={s.title}>Delete account</h1>
+        <p className={s.subtitle}>
           Permanently close your Sendocs account.
         </p>
       </div>
 
-      <div className={styles.dangerBox}>
-        <div className={styles.dangerBoxTitle}>
+      <div className={s.dangerBox}>
+        <div className={s.dangerBoxTitle}>
           <AlertIcon size={16} aria-hidden="true" />
           This cannot be undone.
         </div>
         Deleting your account removes the account and everything it owns — every
         document request and uploaded file.
-        <span className={styles.dangerBoxNote}>
+        <span className={s.dangerBoxNote}>
           Stored files are removed afterwards by a cleanup job.
         </span>
       </div>
 
       {formError ? (
-        <Alert variant="error" className={styles.formError}>
+        <Alert variant="error" className={s.formError}>
           {formError}
         </Alert>
       ) : null}
 
-      <form className={styles.form} onSubmit={handleSubmit} noValidate>
+      <form className={s.form} onSubmit={handleSubmit} noValidate>
         <FormField label="Password" error={errors.password}>
           <PasswordInput
             name="password"
@@ -119,7 +119,7 @@ export function DeleteAccountPage() {
           error={errors.confirm}
           hint={
             <>
-              Type <span className={styles.strong}>{accountEmail}</span> to
+              Type <span className={s.strong}>{accountEmail}</span> to
               confirm.
             </>
           }
@@ -137,7 +137,7 @@ export function DeleteAccountPage() {
           />
         </FormField>
 
-        <div className={styles.actions}>
+        <div className={s.actions}>
           <Button
             type="submit"
             variant="danger"
@@ -150,8 +150,8 @@ export function DeleteAccountPage() {
         </div>
       </form>
 
-      <div className={styles.cancelRow}>
-        <Link to="/dashboard" className={styles.link}>
+      <div className={s.cancelRow}>
+        <Link to="/dashboard" className={s.link}>
           Cancel
         </Link>
       </div>
