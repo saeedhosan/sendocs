@@ -446,6 +446,14 @@ test('captures desktop and mobile pairs for all committed UI references', async 
       if (item.name === 'owner-dashboard') {
         await expect(page.getByText(summary.title).first()).toBeVisible()
       }
+
+      // Reference screenshots show the resting state, not keyboard focus left
+      // behind by the test setup that fills forms or selects files.
+      await page.evaluate(() => {
+        if (document.activeElement instanceof HTMLElement) {
+          document.activeElement.blur()
+        }
+      })
       await waitForFonts(page)
       await page.screenshot({
         path: resolve(outputDirectory, `${viewport.name}-${item.name}-implementation.png`),
