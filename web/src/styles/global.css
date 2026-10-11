@@ -79,12 +79,14 @@ select {
 
 ::view-transition-old(page-content) {
   animation: var(--page-transition-out-duration, 160ms)
-    var(--page-transition-easing, ease-out) both route-fade-out;
+    var(--page-transition-easing, ease-out) both
+    var(--page-transition-out-name, route-fade-out);
 }
 
 ::view-transition-new(page-content) {
   animation: var(--page-transition-in-duration, 180ms)
-    var(--page-transition-easing, ease-out) both route-fade-in;
+    var(--page-transition-easing, ease-out) both
+    var(--page-transition-in-name, route-fade-in);
 }
 
 @keyframes route-fade-out {
@@ -96,7 +98,62 @@ select {
 @keyframes route-fade-in {
   from {
     opacity: 0;
+  }
+}
+
+@keyframes route-slide-out-up {
+  to {
+    opacity: 0;
+    transform: translateY(calc(-1 * var(--page-transition-enter-offset, 4px)));
+  }
+}
+
+@keyframes route-slide-in-up {
+  from {
+    opacity: 0;
     transform: translateY(var(--page-transition-enter-offset, 4px));
+  }
+}
+
+@keyframes route-slide-out-down {
+  to {
+    opacity: 0;
+    transform: translateY(var(--page-transition-enter-offset, 4px));
+  }
+}
+
+@keyframes route-slide-in-down {
+  from {
+    opacity: 0;
+    transform: translateY(calc(-1 * var(--page-transition-enter-offset, 4px)));
+  }
+}
+
+@keyframes route-slide-out-left {
+  to {
+    opacity: 0;
+    transform: translateX(calc(-1 * var(--page-transition-enter-offset, 4px)));
+  }
+}
+
+@keyframes route-slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(var(--page-transition-enter-offset, 4px));
+  }
+}
+
+@keyframes route-slide-out-right {
+  to {
+    opacity: 0;
+    transform: translateX(var(--page-transition-enter-offset, 4px));
+  }
+}
+
+@keyframes route-slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(calc(-1 * var(--page-transition-enter-offset, 4px)));
   }
 }
 
