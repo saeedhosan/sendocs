@@ -129,7 +129,7 @@ export function PortalItemRow({
               ref={actionRef}
               className={cn(
                 'w-full min-h-11 px-4 rounded-[10px] ![font-size:0.75rem] sm:w-auto sm:min-h-[2.375rem] sm:![font-size:0.875rem]',
-                failure && '!border-border',
+                failure && '!border-border enabled:hover:bg-surface-muted',
               )}
               variant={failure ? 'secondary' : 'primary'}
               size="sm"
