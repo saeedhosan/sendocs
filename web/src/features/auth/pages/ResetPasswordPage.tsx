@@ -3,7 +3,7 @@ import type { FormEvent } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../../app/providers/useAuth'
 import { FormField } from '../../../components/forms/FormField'
-import { Alert, Button, PasswordInput } from '../../../components/ui'
+import { Alert, Button, Input, PasswordInput } from '../../../components/ui'
 import { AuthLayout } from '../../../layouts/AuthLayout'
 import { ApiError } from '../../../lib/api/client'
 import { errorMessage, validationErrors } from '../../../lib/api/errors'
@@ -136,7 +136,8 @@ export function ResetPasswordPage() {
         </div>
 
         <FormField label="Confirm new password" error={errors.confirmPassword}>
-          <PasswordInput
+          <Input
+            type="password"
             name="confirmPassword"
             autoComplete="new-password"
             placeholder="••••••••••••"
