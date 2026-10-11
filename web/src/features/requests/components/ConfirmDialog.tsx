@@ -37,9 +37,9 @@ export function ConfirmDialog({
       open={open}
       onClose={onCancel}
       title={title}
-      tone={tone}
+      tone="default"
       variant="centered"
-      className="request-detail-theme"
+      className="request-detail-theme shadow-[0_4px_12px_rgba(18,17,19,0.08)]"
       initialFocusRef={cancelRef}
       footer={
         <>
