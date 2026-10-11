@@ -19,7 +19,7 @@ export function RequestRow({ request }: RequestRowProps) {
       <div className="flex items-start justify-between gap-2 md:col-span-5 md:block">
         <Link
           to={href}
-          className="text-[0.8125rem] font-medium leading-[1.35] text-ink break-words hover:text-primary"
+          className="text-[0.8125rem] font-medium text-ink break-words hover:text-primary"
         >
           {request.title}
         </Link>
