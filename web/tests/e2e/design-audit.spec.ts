@@ -400,6 +400,15 @@ test('captures desktop and mobile pairs for all committed UI references', async 
         await page.getByLabel('Confirm new password').fill('abcdefghijkl')
       }
 
+      if (item.name === 'new-request') {
+        await page.getByLabel('Title').fill('2024 Corporate Tax Return — Acme Corp')
+        await page.getByLabel('Document 1').fill('Government-issued photo ID')
+        await page.getByRole('button', { name: 'Add item' }).click()
+        await page.getByLabel('Document 2').fill('W-2 / 1099 Forms or Profit & Loss Statement')
+        await page.getByRole('button', { name: 'Add item' }).click()
+        await page.getByLabel('Document 3').fill('Articles of Incorporation & Proof of Address')
+      }
+
       if (item.name === 'client-portal') {
         // The HTML reference deliberately depicts an in-flight transfer and a
         // local size-precheck failure. Reproduce those transient states without
