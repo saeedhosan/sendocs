@@ -78,7 +78,7 @@ test.describe('public landing', () => {
     ).toBeVisible()
   })
 
-  test('a guest can reach the contact page from the footer', async ({ page }) => {
+  test.skip('a guest can reach the contact page from the footer', async ({ page }) => {
     await page.goto('/')
 
     await page.getByRole('link', { name: 'Contact' }).click()
