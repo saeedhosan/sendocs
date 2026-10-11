@@ -132,10 +132,10 @@ export function RequestsPage() {
     : `${pageNumber} / ${pageNumber}`
 
   return (
-    <Container className="flex flex-col gap-6">
+    <Container className="px-4 sm:px-6 py-6 sm:py-8 min-[576px]:max-w-5xl min-[768px]:max-w-5xl min-[992px]:max-w-5xl min-[1200px]:max-w-5xl min-[1400px]:max-w-5xl flex flex-col gap-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-xl leading-7 font-semibold tracking-[-0.01em] text-ink sm:text-2xl sm:leading-8">
+          <h1 className="text-xl leading-7 font-semibold tracking-tight text-ink sm:text-2xl sm:leading-8">
             Document Requests
           </h1>
           <p className="mt-1 text-sm text-ink-secondary">
@@ -144,7 +144,7 @@ export function RequestsPage() {
         </div>
         <Button
           iconLeft={<PlusIcon size={18} />}
-          className="w-full min-h-11 sm:w-auto sm:h-9 sm:min-h-9"
+          className="w-full min-h-11 rounded-[10px] sm:w-auto sm:h-9 sm:min-h-9"
           onClick={() => navigate('/requests/new')}
         >
           New request
@@ -180,6 +180,7 @@ export function RequestsPage() {
           action={
             <Button
               iconLeft={<PlusIcon size={18} />}
+              className="rounded-[10px]"
               onClick={() => navigate('/requests/new')}
             >
               Create request

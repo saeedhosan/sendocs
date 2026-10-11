@@ -35,7 +35,7 @@ export function RequestFilters({
             className={cn(
               'inline-flex items-center gap-1.5 px-3 py-1.5 border rounded-[8px] bg-surface text-xs font-normal leading-[1.125rem] whitespace-nowrap cursor-pointer transition-colors duration-150 hover:text-ink',
               value === chip.value
-                ? 'border-border-strong text-ink font-medium shadow-sm'
+                ? 'border-border-strong text-ink font-medium shadow-2xs'
                 : 'border-border-subtle text-ink-secondary',
             )}
             aria-pressed={value === chip.value}
@@ -76,7 +76,7 @@ export function RequestFilters({
         />
         <input
           type="search"
-          className="w-full h-9 pr-3 pl-8 border border-border-subtle rounded-[8px] bg-surface text-ink text-xs placeholder:text-ink-placeholder focus:border-primary focus:outline-none focus:shadow-[0_0_0_1px_var(--color-primary)]"
+          className="w-full h-9 pr-3 pl-8 border border-border-subtle rounded-[8px] bg-surface text-ink text-xs placeholder:text-ink-muted focus:border-primary focus:outline-none focus:shadow-[0_0_0_1px_var(--color-primary)]"
           placeholder="Search requests..."
           value={query}
           onChange={(event) => onQueryChange(event.target.value)}

@@ -20,7 +20,7 @@ import {
 import type { CreateRequestInput } from '../types'
 
 const INPUT_CLASS =
-  'w-full min-h-11 px-3 border rounded-md bg-surface text-ink text-sm placeholder:text-ink-placeholder focus:outline-none focus:border-primary focus:shadow-[0_0_0_1px_var(--color-primary)]'
+  'w-full min-h-11 px-3 border rounded-[10px] bg-surface text-ink text-sm placeholder:text-ink-placeholder focus:outline-none focus:border-primary focus:shadow-[0_0_0_1px_var(--color-primary)]'
 
 const ITEM_PLACEHOLDERS = [
   'e.g. Government-issued photo ID',
@@ -130,7 +130,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
 
   return (
     <form
-      className="flex flex-col gap-6 p-4 sm:p-6 border border-border rounded-md bg-surface shadow-sm"
+      className="flex flex-col gap-6 p-4 sm:p-6 border border-border-subtle rounded-[10px] bg-surface shadow-sm"
       onSubmit={handleSubmit}
       noValidate
     >
@@ -209,7 +209,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
               <div className="flex items-center gap-0.5 flex-shrink-0">
                 <button
                   type="button"
-                  className="inline-flex items-center justify-center w-9 h-11 sm:w-8 sm:h-9 border-0 rounded-md bg-transparent text-ink-secondary cursor-pointer transition-colors duration-150 enabled:hover:bg-surface-muted enabled:hover:text-ink disabled:opacity-35 disabled:cursor-not-allowed"
+                  className="inline-flex items-center justify-center w-9 h-11 sm:w-8 sm:h-9 border-0 rounded-md bg-transparent text-ink-secondary cursor-pointer transition-colors duration-150 enabled:hover:bg-surface-subtle enabled:hover:text-ink disabled:opacity-35 disabled:cursor-not-allowed"
                   onClick={() => move(index, -1)}
                   disabled={index === 0}
                   title="Move up"
@@ -274,7 +274,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
         <Button
           type="submit"
           loading={busy}
-          className="min-h-11"
+          className="min-h-11 rounded-[10px]"
         >
           Create request
         </Button>

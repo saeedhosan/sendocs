@@ -165,7 +165,7 @@ export function RequestDetailPage() {
   }
 
   return (
-    <Container className="flex flex-col gap-6">
+    <Container className="request-detail-theme px-4 sm:px-6 py-8 min-[576px]:max-w-4xl min-[768px]:max-w-4xl min-[992px]:max-w-4xl min-[1200px]:max-w-4xl min-[1400px]:max-w-4xl flex flex-col gap-6">
       <Link
         to="/dashboard"
         className="inline-flex items-center gap-1 self-start -mb-2 text-xs text-ink-muted hover:text-ink"
@@ -177,7 +177,7 @@ export function RequestDetailPage() {
       <div className="flex flex-col gap-4 pb-6 border-b border-border sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="flex items-center flex-wrap gap-2.5">
-            <h1 className="text-xl leading-7 font-semibold tracking-[-0.01em] text-ink sm:text-2xl sm:leading-8">
+            <h1 className="text-xl leading-7 font-semibold tracking-tight text-ink sm:text-2xl sm:leading-8">
               {request.title}
             </h1>
             <Badge
@@ -202,6 +202,7 @@ export function RequestDetailPage() {
             variant="secondary"
             size="sm"
             iconLeft={<LinkOffIcon size={16} />}
+            className="rounded-[10px]"
             onClick={() => setConfirm({ kind: 'revoke' })}
             disabled={linkState(request) !== 'active'}
           >
@@ -211,6 +212,7 @@ export function RequestDetailPage() {
             variant="danger"
             size="sm"
             iconLeft={<TrashIcon size={16} />}
+            className="rounded-[10px]"
             onClick={() => setConfirm({ kind: 'delete-request' })}
           >
             Delete request
@@ -220,7 +222,7 @@ export function RequestDetailPage() {
 
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between text-xs">
-          <span className="font-medium text-ink">
+          <span className="font-medium text-neutral-800">
             {progressLabel(request.uploaded, request.total)}
           </span>
           <span className="font-mono text-ink-muted">
@@ -229,12 +231,13 @@ export function RequestDetailPage() {
         </div>
         <ProgressBar
           value={percent(request.uploaded, request.total)}
-          tone={request.status === 'complete' ? 'complete' : 'waiting'}
+          tone="waiting"
+          className="rounded-[10px] [&>span]:bg-[#304fcf]"
           label={progressLabel(request.uploaded, request.total)}
         />
       </div>
 
-      <section className="flex flex-col gap-3 my-2 p-4 border border-border rounded-md bg-surface sm:flex-row sm:items-center sm:justify-between">
+      <section className="flex flex-col gap-3 my-2 p-4 border border-border rounded-[10px] bg-surface sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-xs font-medium text-ink">Client portal link</p>
           <p className="mt-1.5 text-xs text-ink-muted">
