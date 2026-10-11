@@ -55,7 +55,7 @@ export function PublicHeader() {
           isLanding ? cn(INNER_HOME, CONTAINER_HOME) : CONTAINER_DOCUMENT,
         )}
       >
-        <Logo />
+        <Logo variant={isLanding ? 'brand' : 'auth'} />
 
         {isDocument ? (
           <nav className={NAV} aria-label="Legal">
