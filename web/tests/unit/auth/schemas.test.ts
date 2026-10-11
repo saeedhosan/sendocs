@@ -23,7 +23,7 @@ describe("loginSchema", () => {
 });
 
 describe("registerSchema", () => {
-    it("accepts a matching 12+ character password", () => {
+    it("accepts a matching 6+ character password", () => {
         expect(
             registerSchema.safeParse({
                 name: "Alex",
@@ -34,7 +34,7 @@ describe("registerSchema", () => {
         ).toBe(true);
     });
 
-    it("rejects a password under 12 characters", () => {
+    it("rejects a password under 8 characters", () => {
         const result = registerSchema.safeParse({
             name: "Alex",
             email: "alex@example.com",
@@ -44,7 +44,7 @@ describe("registerSchema", () => {
 
         expect(result.success).toBe(false);
         if (!result.success) {
-            expect(fieldErrors(result.error).password).toMatch(/at least 12/);
+            expect(fieldErrors(result.error).password).toMatch(/at least 8/);
         }
     });
 
@@ -64,7 +64,7 @@ describe("registerSchema", () => {
 });
 
 describe("resetPasswordSchema", () => {
-    it("requires a 12+ character password", () => {
+    it("requires a 6+ character password", () => {
         expect(
             resetPasswordSchema.safeParse({
                 password: "short",

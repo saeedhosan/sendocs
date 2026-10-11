@@ -14,7 +14,7 @@ export function evaluatePasswordStrength(value: string): PasswordStrength {
     return { score: 0, label: 'Too short' }
   }
 
-  if (value.length < 12) {
+  if (value.length < 8) {
     return { score: 1, label: 'Too short' }
   }
 
@@ -54,12 +54,12 @@ export type PasswordRequirement = {
 export const passwordRequirements: PasswordRequirement[] = [
   {
     id: 'min-length',
-    label: 'At least 12 characters',
-    test: (value) => value.length >= 12,
+    label: 'At least 8 characters',
+    test: (value) => value.length >= 8,
   },
   {
-    id: 'max-length',
-    label: 'No more than 200 characters',
-    test: (value) => value.length <= 200,
+    id: 'composition',
+    label: 'Contains letter and number/symbol',
+    test: (value) => /[A-Za-z]/.test(value) && /[^A-Za-z]/.test(value),
   },
 ]

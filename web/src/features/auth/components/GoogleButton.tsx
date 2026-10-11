@@ -4,6 +4,7 @@ import { GoogleIcon } from '../../../components/icons'
 import { FormError } from '../../../components/forms/FormError'
 import { authApi } from '../api'
 import { errorMessage } from '../../../lib/api/errors'
+import styles from './GoogleButton.module.css'
 
 export type GoogleButtonProps = {
   label: string
@@ -39,6 +40,7 @@ export function GoogleButton({ label }: GoogleButtonProps) {
         variant="secondary"
         fullWidth
         loading={loading}
+        className={styles.button}
         iconLeft={<GoogleIcon size={16} />}
         onClick={handleClick}
       >

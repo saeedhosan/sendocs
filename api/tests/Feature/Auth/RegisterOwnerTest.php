@@ -120,7 +120,7 @@ test('register normalizes email and rejects a case variant of an existing addres
 });
 
 test('register fails validation with one details entry per field', function (): void {
-    $response = registerOwner(['name' => '', 'email' => 'not-an-email', 'password' => 'too-short']);
+    $response = registerOwner(['name' => '', 'email' => 'not-an-email', 'password' => 'short']);
 
     $response->assertStatus(422)
         ->assertJsonPath('error.code', 'validation_failed')
@@ -131,11 +131,11 @@ test('register fails validation with one details entry per field', function (): 
 });
 
 test('register accepts a password at both ends of the published length range', function (): void {
-    registerOwner(['email' => 'twelve@example.com', 'password' => 'twelvechars!'])->assertCreated();
+    registerOwner(['email' => 'eight@example.com', 'password' => 'abcd1234'])->assertCreated();
     registerOwner(['email' => 'longest@example.com', 'password' => str_repeat('a', 200)])->assertCreated();
 
     registerOwner(['email' => 'longer@example.com', 'password' => str_repeat('a', 201)])->assertStatus(422);
-    registerOwner(['email' => 'shorter@example.com', 'password' => 'elevenchars'])->assertStatus(422);
+    registerOwner(['email' => 'shorter@example.com', 'password' => 'seven77'])->assertStatus(422);
 });
 
 test('register is rate limited to ten attempts a minute per address', function (): void {

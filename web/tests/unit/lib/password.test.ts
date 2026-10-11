@@ -9,13 +9,13 @@ describe('evaluatePasswordStrength', () => {
     })
   })
 
-  it('flags anything under 12 characters as too short', () => {
+  it('flags anything under 8 characters as too short', () => {
     expect(evaluatePasswordStrength('short').score).toBe(1)
-    expect(evaluatePasswordStrength('elevenchars').score).toBe(1)
+    expect(evaluatePasswordStrength('seven77').score).toBe(1)
   })
 
-  it('treats a 12-character password as standard', () => {
-    expect(evaluatePasswordStrength('aaaaaaaaaaaa')).toEqual({
+  it('treats an 8-character password as standard', () => {
+    expect(evaluatePasswordStrength('aaaaaaaa')).toEqual({
       score: 2,
       label: 'Standard',
     })
@@ -38,9 +38,13 @@ describe('passwordRequirements', () => {
   )
 
   it('mirrors the contract length rule', () => {
-    expect(byId['min-length'].test('12345678901')).toBe(false)
-    expect(byId['min-length'].test('123456789012')).toBe(true)
-    expect(byId['max-length'].test('a'.repeat(200))).toBe(true)
-    expect(byId['max-length'].test('a'.repeat(201))).toBe(false)
+    expect(byId['min-length'].test('1234567')).toBe(false)
+    expect(byId['min-length'].test('12345678')).toBe(true)
+  })
+
+  it('requires a letter and a number or symbol', () => {
+    expect(byId['composition'].test('abcdef')).toBe(false)
+    expect(byId['composition'].test('abc123')).toBe(true)
+    expect(byId['composition'].test('abc!')).toBe(true)
   })
 })
