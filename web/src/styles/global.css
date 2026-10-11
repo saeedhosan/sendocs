@@ -78,11 +78,13 @@ select {
 }
 
 ::view-transition-old(page-content) {
-  animation: 160ms ease-out both route-fade-out;
+  animation: var(--page-transition-out-duration, 160ms)
+    var(--page-transition-easing, ease-out) both route-fade-out;
 }
 
 ::view-transition-new(page-content) {
-  animation: 180ms ease-out both route-fade-in;
+  animation: var(--page-transition-in-duration, 180ms)
+    var(--page-transition-easing, ease-out) both route-fade-in;
 }
 
 @keyframes route-fade-out {
@@ -94,7 +96,7 @@ select {
 @keyframes route-fade-in {
   from {
     opacity: 0;
-    transform: translateY(4px);
+    transform: translateY(var(--page-transition-enter-offset, 4px));
   }
 }
 
