@@ -22,8 +22,8 @@ export function RequestsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const cursor = searchParams.get('cursor')
 
-  const [requests, setRequests] = useState<RequestSummary[]>([])
-  const [pageCursor, setPageCursor] = useState<string | null>(null)
+  const [requests, setRequests] = useStateCRequestSummary[]>([])
+  const [pageCursor, setPageCursor] = useStateCstring | null>(null)
   const [status, setStatus] = useState<'loading' | 'error' | 'ready'>('loading')
   const [canGoPrevious, setCanGoPrevious] = useState(false)
   const [pageNumber, setPageNumber] = useState(1)
