@@ -15,11 +15,11 @@ export function RequestRow({ request }: RequestRowProps) {
   const href = `/requests/${request.id}`
 
   return (
-    <div className="flex flex-col gap-3 p-4 border-b border-border-subtle transition-colors duration-150 last:border-b-0 hover:bg-canvas-muted md:grid md:grid-cols-[minmax(0,5fr)_2fr_3fr_2fr_4.5rem] md:items-center md:gap-3 md:px-5 md:py-3.5">
-      <div className="flex items-start justify-between gap-2 md:block">
+    <div className="flex flex-col gap-3 p-4 border-b border-border-subtle transition-colors duration-150 last:border-b-0 hover:bg-[#fbfbfb] md:grid md:grid-cols-12 md:items-center md:gap-3 md:px-5 md:py-3.5">
+      <div className="flex items-start justify-between gap-2 md:col-span-5 md:block">
         <Link
           to={href}
-          className="text-sm font-medium leading-[1.35] text-ink break-words hover:text-primary md:text-[0.8125rem]"
+          className="text-[0.8125rem] font-medium leading-[1.35] text-ink break-words hover:text-primary"
         >
           {request.title}
         </Link>
@@ -28,11 +28,11 @@ export function RequestRow({ request }: RequestRowProps) {
         </span>
       </div>
 
-      <div className="hidden md:block">
+      <div className="hidden md:col-span-2 md:block">
         <StatusBadge request={request} />
       </div>
 
-      <div className="flex flex-col gap-1.5">
+      <div className="flex flex-col gap-1.5 md:col-span-2">
         <div className="flex items-center justify-between font-mono text-xs text-ink-secondary">
           <span>{progressLabel(request.uploaded, request.total)}</span>
           <span className="text-ink-muted md:hidden">{value}%</span>
@@ -44,7 +44,7 @@ export function RequestRow({ request }: RequestRowProps) {
         />
       </div>
 
-      <div className="flex items-center font-mono text-xs text-ink-muted whitespace-nowrap md:justify-start">
+      <div className="flex items-center font-mono text-xs text-ink-muted whitespace-nowrap md:col-span-2 md:justify-start">
         <span className="mr-1 font-sans text-[0.6875rem] text-ink-secondary md:hidden">
           Activity:
         </span>
@@ -60,10 +60,10 @@ export function RequestRow({ request }: RequestRowProps) {
         )}
       </div>
 
-      <div className="flex justify-end pt-2 border-t border-border-subtle mt-1 md:pt-0 md:border-t-0">
+      <div className="flex justify-end pt-2 border-t border-border-subtle mt-1 md:col-span-1 md:pt-0 md:border-t-0">
         <Link
           to={href}
-          className="inline-flex items-center gap-0.5 min-h-11 px-2 py-1.5 rounded-sm text-xs font-medium text-primary hover:bg-surface-muted"
+          className="inline-flex items-center gap-0.5 min-h-11 px-2 py-1.5 rounded-[6px] text-xs font-medium text-primary hover:bg-surface-muted"
         >
           <span>Open</span>
           <ChevronRightIcon size={16} />
