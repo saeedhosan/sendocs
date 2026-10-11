@@ -1,4 +1,4 @@
-import { mkdir } from 'node:fs/promises'
+import { mkdir, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { expect, test } from '@playwright/test'
@@ -347,6 +347,38 @@ async function waitForFonts(page: Page) {
     .catch(() => {})
 }
 
+async function captureTypography(page: Page) {
+  return page.evaluate(() => {
+    const selectors = ['body', 'header', 'main', 'footer', 'h1', 'h2', 'h3', 'p', 'label', 'button', 'input', 'section', 'article']
+    return selectors.flatMap((selector) =>
+      [...document.querySelectorAll<HTMLElement>(selector)].map((element, index) => {
+        const style = getComputedStyle(element)
+        const rect = element.getBoundingClientRect()
+        const text = (element.innerText || element.getAttribute('placeholder') || '')
+          .replace(/\\s+/g, ' ')
+          .trim()
+        return {
+          selector,
+          index,
+          text: text.slice(0, 120),
+          x: Math.round(rect.x * 10) / 10,
+          y: Math.round(rect.y * 10) / 10,
+          width: Math.round(rect.width * 10) / 10,
+          height: Math.round(rect.height * 10) / 10,
+          fontFamily: style.fontFamily,
+          fontSize: style.fontSize,
+          lineHeight: style.lineHeight,
+          fontWeight: style.fontWeight,
+          color: style.color,
+          backgroundColor: style.backgroundColor,
+          padding: style.padding,
+          margin: style.margin,
+        }
+      }),
+    )
+  })
+}
+
 test('captures desktop and mobile pairs for all committed UI references', async ({ page }) => {
   test.setTimeout(420_000)
   const outputDirectory = resolve(process.cwd(), 'test-results/design-audit')
@@ -357,6 +389,7 @@ test('captures desktop and mobile pairs for all committed UI references', async 
     { name: 'mobile', width: 390, height: 844 },
   ]
 
+  const typographyAudit: Array<{ viewport: string; page: string; side: string; elements: unknown[] }> = []
   let authenticated = false
   await stubApi(page, () => authenticated)
 
@@ -382,6 +415,12 @@ test('captures desktop and mobile pairs for all committed UI references', async 
         await page.evaluate(() => document.querySelector('#revealSuccessModal')?.remove())
       }
 
+      typographyAudit.push({
+        viewport: viewport.name,
+        page: item.name,
+        side: 'reference',
+        elements: await captureTypography(page),
+      })
       await page.screenshot({
         path: resolve(outputDirectory, `${viewport.name}-${item.name}-reference.png`),
         fullPage: true,
@@ -455,6 +494,12 @@ test('captures desktop and mobile pairs for all committed UI references', async 
         }
       })
       await waitForFonts(page)
+      typographyAudit.push({
+        viewport: viewport.name,
+        page: item.name,
+        side: 'implementation',
+        elements: await captureTypography(page),
+      })
       await page.screenshot({
         path: resolve(outputDirectory, `${viewport.name}-${item.name}-implementation.png`),
         fullPage: true,
@@ -472,4 +517,9 @@ test('captures desktop and mobile pairs for all committed UI references', async 
       }
     }
   }
+
+  await writeFile(
+    resolve(outputDirectory, 'typography-audit.json'),
+    JSON.stringify(typographyAudit, null, 2),
+  )
 })
