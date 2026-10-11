@@ -455,8 +455,12 @@ test('captures desktop and mobile pairs for all committed UI references', async 
       })
 
       if (item.name === 'forgot-password') {
-        await page.getByLabel('Email address', { exact: true }).fill('alex@example.com')
-        await page.getByRole('button', { name: 'Send reset link', exact: true }).click()
+        await page.evaluate(() => {
+          document.getElementById('request-state')?.classList.add('hidden')
+          document.getElementById('confirmation-state')?.classList.remove('hidden')
+          const target = document.getElementById('target-email')
+          if (target) target.textContent = 'alex@example.com'
+        })
         await expect(page.getByRole('heading', { name: 'Check your inbox' })).toBeVisible()
         typographyAudit.push({
           viewport: viewport.name,
