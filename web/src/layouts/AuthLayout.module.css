@@ -65,6 +65,7 @@
 
 .footerInner {
   display: flex;
+  line-height: 1rem;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
@@ -75,6 +76,10 @@
   font-size: 0.75rem;
   color: var(--color-text-muted);
   text-align: center;
+}
+
+.footerSeparator {
+  display: inline;
 }
 
 .footerLink {
@@ -88,6 +93,10 @@
 @media (max-width: 639px) {
   .footerInner {
     flex-direction: column;
+  }
+
+  .layout[data-layout-variant='forgot-password'] .footerSeparator {
+    display: none;
   }
 }
 
