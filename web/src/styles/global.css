@@ -172,3 +172,32 @@ select {
     animation: none;
   }
 }
+
+
+/* The request-detail mockup uses a neutral palette distinct from the owner dashboard. */
+.request-detail-theme {
+  --color-canvas: #ffffff;
+  --color-canvas-muted: #fafafa;
+  --color-surface: #ffffff;
+  --color-surface-muted: #fafafa;
+  --color-surface-sunken: #e5e5e5;
+  --color-text: #171717;
+  --color-text-secondary: #525252;
+  --color-text-body: #525252;
+  --color-text-emphasis: #262626;
+  --color-text-muted: #737373;
+  --color-text-placeholder: #a3a3a3;
+  --color-border: #e5e5e5;
+  --color-border-strong: #d4d4d4;
+  --color-border-subtle: #f5f5f5;
+  --color-primary: #171717;
+  --color-primary-hover: #262626;
+  --color-primary-active: #404040;
+  --color-primary-soft: #f5f5f5;
+  --color-on-primary: #ffffff;
+  --color-danger: #e11d48;
+  --color-danger-strong: #be123c;
+  --color-danger-text: #be123c;
+  --color-danger-surface: #fff1f2;
+  --color-danger-border: #fecdd3;
+}
