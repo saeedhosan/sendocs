@@ -18,6 +18,6 @@ export const app = {
     description: getEnv('VITE_APP_DESCRIPTION', 'Document request platform'),
     emails: {
         contact: getEnv('VITE_EMAIL_CONTACT', 'privacy@sendocs.internal'),
-        privacy: getEnv('VITE_EMAIL_PRIVACY', 'privacy@sendocs.io'),
+        privacy: getEnv('VITE_EMAIL_PRIVACY', 'privacy@sendocs.internal'),
     },
 } as const;
