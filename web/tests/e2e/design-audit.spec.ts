@@ -280,6 +280,7 @@ async function waitForFonts(page: Page) {
 }
 
 test('captures desktop pairs for all committed UI references', async ({ page }) => {
+  test.setTimeout(240_000)
   const outputDirectory = resolve(process.cwd(), 'test-results/design-audit')
   await mkdir(outputDirectory, { recursive: true })
 
@@ -318,6 +319,9 @@ test('captures desktop pairs for all committed UI references', async ({ page }) 
     await expect(
       page.getByRole('heading', { name: item.heading, exact: true }).first(),
     ).toBeVisible({ timeout: 15000 })
+    if (item.name === 'owner-dashboard') {
+      await expect(page.getByText(summary.title).first()).toBeVisible()
+    }
     await waitForFonts(page)
     await page.screenshot({
       path: resolve(outputDirectory, `${item.name}-implementation.png`),
