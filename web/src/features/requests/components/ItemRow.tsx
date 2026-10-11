@@ -12,7 +12,9 @@ export function ItemRow({ item, onDelete }: ItemRowProps) {
   const file = item.document
 
   return (
-    <li className={styles.row}>
+    <li
+      className={[styles.row, !file ? styles.waitingRow : ''].filter(Boolean).join(' ')}
+    >
       <div className={styles.main}>
         <p className={styles.label}>{item.label}</p>
         {file ? (
@@ -21,9 +23,7 @@ export function ItemRow({ item, onDelete }: ItemRowProps) {
             <span aria-hidden="true">•</span>
             <span>{formatBytes(file.sizeBytes)}</span>
           </p>
-        ) : (
-          <p className={styles.waiting}>Waiting</p>
-        )}
+        ) : null}
       </div>
       {file ? (
         <div className={styles.actions}>
@@ -45,7 +45,9 @@ export function ItemRow({ item, onDelete }: ItemRowProps) {
             Delete
           </Button>
         </div>
-      ) : null}
+      ) : (
+        <span className={styles.waiting}>Waiting</span>
+      )}
     </li>
   )
 }
