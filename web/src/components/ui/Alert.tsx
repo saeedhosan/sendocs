@@ -1,9 +1,18 @@
 import type { ReactNode } from 'react'
 import { cn } from '../../lib/cn'
 import { AlertIcon, CheckCircleIcon, InfoIcon } from '../icons'
-import styles from './Alert.module.css'
 
 export type AlertVariant = 'error' | 'success' | 'info' | 'warning'
+
+const ALERT =
+  'flex items-start gap-2 p-3 border rounded-md text-[0.8125rem] leading-5'
+
+const VARIANTS: Record<AlertVariant, string> = {
+  error: 'bg-danger-surface border-danger-border text-danger-text',
+  success: 'bg-success-surface border-success-border text-success-text',
+  info: 'bg-info-surface border-info-border text-info-text',
+  warning: 'bg-warning-surface border-warning-border text-warning-text',
+}
 
 export type AlertProps = {
   variant?: AlertVariant
@@ -28,13 +37,13 @@ export function Alert({
   return (
     <div
       role={variant === 'error' ? 'alert' : 'status'}
-      className={cn(styles.alert, styles[variant], className)}
+      className={cn(ALERT, VARIANTS[variant], className)}
     >
-      <span className={styles.icon} aria-hidden="true">
+      <span className="shrink-0 mt-px" aria-hidden="true">
         {icons[variant]}
       </span>
-      <div className={styles.body}>
-        {title ? <p className={styles.title}>{title}</p> : null}
+      <div className="flex-1">
+        {title ? <p className="font-medium">{title}</p> : null}
         {children}
       </div>
     </div>
