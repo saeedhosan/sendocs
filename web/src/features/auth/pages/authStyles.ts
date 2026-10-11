@@ -25,7 +25,7 @@ export const authStyles = {
   infoBoxTitle: 'flex items-start gap-1.5 mb-1 font-medium text-ink-secondary',
   infoBoxNote: 'block mt-0.5 font-mono text-[0.6875rem] text-ink-muted',
   changeInfoBox:
-    'flex items-start gap-2.5 mb-5 p-3 border border-border rounded-[10px] bg-surface-muted text-xs leading-[1.125rem] text-ink-secondary',
+    'flex items-start gap-2.5 mb-5 p-3 border border-border rounded-[10px] bg-surface-subtle text-xs leading-[1.125rem] text-ink-secondary',
   changeInfoIcon: 'shrink-0 mt-0.5 text-primary',
   changeInfoBoxText: 'flex-1 leading-normal',
   dangerBox:
