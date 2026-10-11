@@ -2,7 +2,6 @@ import { Link, Outlet, useLocation } from 'react-router-dom'
 import { Container } from '../components/ui'
 import { VerifyEmailBanner } from '../features/auth/components/VerifyEmailBanner'
 import { OwnerHeader } from './components/OwnerHeader'
-import styles from './OwnerLayout.module.css'
 
 export function OwnerLayout() {
   const pathname = useLocation().pathname
@@ -10,20 +9,20 @@ export function OwnerLayout() {
   const isRequestDetail = /^\/requests\/[^/]+$/.test(pathname)
 
   return (
-    <div className={styles.layout}>
+    <div className="flex flex-col min-h-screen bg-canvas">
       <OwnerHeader />
-      <main className={styles.main}>
+      <main className="[view-transition-name:page-content] flex-1 w-full">
         <Container>
           <VerifyEmailBanner />
         </Container>
         <Outlet />
       </main>
       {showFooter ? (
-        <footer className={styles.footer}>
-          <Container className={styles.footerInner}>
+        <footer className="border-t border-border">
+          <Container className="flex items-center justify-between gap-4">
             <span>Sendocs</span>
             {isRequestDetail ? (
-              <div className={styles.footerLinks}>
+              <div className="flex items-center gap-4">
                 <Link to="/contact">Help</Link>
                 <Link to="/privacy">Privacy</Link>
               </div>
