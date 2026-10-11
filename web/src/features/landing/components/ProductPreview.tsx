@@ -4,7 +4,6 @@ import {
   DownloadIcon,
 } from '../../../components/icons'
 import { cn } from '../../../lib/cn'
-import styles from './ProductPreview.module.css'
 
 type PreviewItem = {
   name: string
@@ -47,52 +46,75 @@ const items: PreviewItem[] = [
  */
 export function ProductPreview() {
   return (
-    <div className={styles.window} aria-hidden="true">
-      <div className={styles.titleBar}>
-        <div className={styles.titleGroup}>
-          <span className={styles.dot} />
-          <span className={styles.title}>
+    <div
+      className="overflow-hidden bg-surface border border-border rounded-md shadow-sm"
+      aria-hidden="true"
+    >
+      <div className="flex items-center justify-between gap-3 px-4 py-3 bg-surface-muted border-b border-border">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="shrink-0 size-2.5 rounded-full bg-border-strong" />
+          <span className="text-sm font-semibold text-ink truncate">
             2024 Corporate Tax Return — Acme Corp
           </span>
         </div>
-        <span className={styles.activeBadge}>Active</span>
+        <span className="shrink-0 px-2 py-0.5 border border-marketing-success-border rounded-sm bg-marketing-success-surface text-[0.6875rem] font-medium text-marketing-success">
+          Active
+        </span>
       </div>
 
-      <div className={styles.body}>
-        <div className={styles.progress}>
-          <div className={styles.progressMeta}>
-            <span className={styles.progressLabel}>3 of 5 uploaded</span>
+      <div className="flex flex-col gap-4 p-4 sm:p-5">
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-marketing-text-secondary">
+              3 of 5 uploaded
+            </span>
           </div>
-          <div className={styles.track}>
-            <div className={styles.fill} />
+          <div className="w-full h-1.5 overflow-hidden rounded-full bg-surface-sunken">
+            <div className="w-[60%] h-full rounded-full bg-primary transition-[width] duration-300" />
           </div>
         </div>
 
-        <div className={styles.items}>
-          {items.map((item) => (
+        <div className="flex flex-col overflow-hidden border border-border rounded-md">
+          {items.map((item, index) => (
             <div
               key={item.name}
-              className={cn(styles.item, !item.uploaded && styles.itemWaiting)}
+              className={cn(
+                'flex items-center justify-between gap-3 p-3',
+                item.uploaded ? 'bg-surface' : 'bg-surface-muted',
+                index > 0 && 'border-t border-border',
+              )}
             >
-              <div className={styles.itemMain}>
+              <div className="flex items-start gap-2.5 min-w-0">
                 {item.uploaded ? (
-                  <CheckCircleIcon size={18} className={styles.iconDone} />
+                  <CheckCircleIcon
+                    size={18}
+                    className="shrink-0 mt-0.5 text-marketing-success"
+                  />
                 ) : (
-                  <PendingIcon size={18} className={styles.iconWaiting} />
+                  <PendingIcon
+                    size={18}
+                    className="shrink-0 mt-0.5 text-ink-muted"
+                  />
                 )}
-                <div className={styles.itemText}>
-                  <p className={styles.itemName}>{item.name}</p>
-                  <p className={styles.itemMeta}>{item.meta}</p>
+                <div className="min-w-0">
+                  <p className="text-[0.8125rem] font-medium text-ink truncate">
+                    {item.name}
+                  </p>
+                  <p className="mt-0.5 font-mono text-[0.6875rem] text-ink-muted truncate">
+                    {item.meta}
+                  </p>
                 </div>
               </div>
 
               {item.uploaded ? (
-                <span className={styles.download}>
+                <span className="inline-flex shrink-0 items-center gap-1 px-2.5 py-1 border border-border rounded-sm text-xs font-medium text-marketing-text-secondary">
                   <DownloadIcon size={14} />
-                  <span className={styles.downloadLabel}>Download</span>
+                  <span className="hidden sm:inline">Download</span>
                 </span>
               ) : (
-                <span className={styles.waitingBadge}>Waiting</span>
+                <span className="shrink-0 px-2 py-0.5 border border-border rounded-sm bg-surface-sunken text-[0.6875rem] font-medium text-marketing-text-secondary">
+                  Waiting
+                </span>
               )}
             </div>
           ))}
