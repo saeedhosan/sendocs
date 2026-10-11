@@ -154,7 +154,7 @@ export function OwnerHeader() {
             ) : null}
             <span>Account</span>
             <ChevronDownIcon
-              size={16}
+              size={isRequestDetail ? 12 : 14}
               className={isRequestDetail ? 'text-neutral-400' : 'text-ink-muted'}
             />
           </button>
@@ -178,7 +178,7 @@ export function OwnerHeader() {
                 }
                 onClick={() => setOpen(false)}
               >
-                <LockResetIcon size={16} />
+                <LockResetIcon size={isDashboard ? 16 : 14} />
                 Change password
               </Link>
               {isDashboard ? (
@@ -188,7 +188,7 @@ export function OwnerHeader() {
                   className={ITEM}
                   onClick={() => setOpen(false)}
                 >
-                  <TrashIcon size={16} />
+                  <TrashIcon size={isDashboard ? 16 : 14} />
                   Delete account
                 </Link>
               ) : null}
@@ -204,7 +204,7 @@ export function OwnerHeader() {
                 }
                 onClick={handleSignOut}
               >
-                <LogoutIcon size={16} />
+                <LogoutIcon size={isDashboard ? 16 : 14} />
                 Sign out
               </button>
             </div>
