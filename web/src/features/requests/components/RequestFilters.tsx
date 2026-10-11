@@ -76,7 +76,7 @@ export function RequestFilters({
         />
         <input
           type="search"
-          className="w-full h-9 pr-3 pl-8 border border-border-subtle rounded-[8px] bg-surface text-ink text-xs placeholder:text-ink-placeholder focus:border-primary focus:outline-none focus:shadow-[0_0_0_1px_var(--color-primary)]"
+          className="w-full h-9 pr-3 pl-8 border border-border-subtle rounded-[8px] bg-surface text-ink text-xs placeholder:text-ink-muted focus:border-primary focus:outline-none focus:shadow-[0_0_0_1px_var(--color-primary)]"
           placeholder="Search requests..."
           value={query}
           onChange={(event) => onQueryChange(event.target.value)}
