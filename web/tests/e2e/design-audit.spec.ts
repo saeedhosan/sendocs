@@ -395,6 +395,11 @@ test('captures desktop and mobile pairs for all committed UI references', async 
         page.getByRole('heading', { name: item.heading, exact: true }).first(),
       ).toBeVisible({ timeout: 15000 })
 
+      if (item.name === 'reset-password') {
+        await page.getByLabel('New password').fill('abcdefghijkl')
+        await page.getByLabel('Confirm new password').fill('abcdefghijkl')
+      }
+
       if (item.name === 'client-portal') {
         // The HTML reference deliberately depicts an in-flight transfer and a
         // local size-precheck failure. Reproduce those transient states without
@@ -440,6 +445,16 @@ test('captures desktop and mobile pairs for all committed UI references', async 
         fullPage: true,
         animations: 'disabled',
       })
+
+      if (item.name === 'owner-dashboard') {
+        await page.getByRole('button', { name: /Waiting/ }).click()
+        await expect(page.getByText('KYC & Compliance Verification')).toBeVisible()
+        await expect(page.getByText('Q3 Financial Audit Documents')).toHaveCount(0)
+        const search = page.getByRole('searchbox', { name: 'Search requests' })
+        await search.fill('Estate Planning')
+        await expect(page.getByText('Estate Planning Records — Vance Trust')).toBeVisible()
+        await expect(page.getByText('KYC & Compliance Verification')).toHaveCount(0)
+      }
     }
   }
 })
