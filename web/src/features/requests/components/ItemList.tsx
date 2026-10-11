@@ -13,7 +13,7 @@ export function ItemList({
   onDownloadDocument,
 }: ItemListProps) {
   return (
-    <ul className="overflow-hidden border border-border rounded-md bg-surface list-none">
+    <ul className="overflow-hidden border border-border rounded-[10px] bg-surface list-none">
       {items.map((item) => (
         <ItemRow
           key={item.id}
