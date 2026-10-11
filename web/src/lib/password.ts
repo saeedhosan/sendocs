@@ -60,6 +60,6 @@ export const passwordRequirements: PasswordRequirement[] = [
   {
     id: 'max-length',
     label: 'No more than 200 characters',
-    test: (value) => value.length <= 200,
+    test: (value) => value.length > 0 && value.length <= 200,
   },
 ]
