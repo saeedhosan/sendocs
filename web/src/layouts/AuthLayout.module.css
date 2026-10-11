@@ -86,3 +86,50 @@
     flex-direction: column;
   }
 }
+
+
+@media (max-width: 639px) {
+  .layout[data-layout-variant='login'] .main {
+    align-items: flex-start;
+    padding: 0 1rem;
+  }
+
+  .layout[data-layout-variant='login'] .card {
+    margin-block: 0;
+  }
+
+  .layout[data-layout-variant='register'] .main {
+    align-items: flex-start;
+    padding: 4.5rem 2rem 3rem;
+  }
+
+  .layout[data-layout-variant='register'] .card {
+    margin-block: 0;
+  }
+
+  .layout[data-layout-variant='change-password'] .main {
+    align-items: flex-start;
+    padding: 1.5rem 2rem;
+  }
+
+  .layout[data-layout-variant='change-password'] .card {
+    margin-block: 0;
+  }
+
+  .layout[data-layout-variant='reset-password'] .main {
+    align-items: flex-start;
+    padding: 9.25rem 1rem 3rem;
+  }
+
+  .layout[data-layout-variant='reset-password'] .card {
+    margin-block: 0;
+  }
+
+  .layout[data-layout-variant='register'] .footerInner,
+  .layout[data-layout-variant='change-password'] .footerInner,
+  .layout[data-layout-variant='reset-password'] .footerInner {
+    flex-direction: row;
+    gap: 0.5rem;
+    padding-inline: 1rem;
+  }
+}
