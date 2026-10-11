@@ -19,7 +19,7 @@ export function RequestRow({ request }: RequestRowProps) {
       <div className="flex items-start justify-between gap-2 md:col-span-5 md:block">
         <Link
           to={href}
-          className="text-[0.8125rem] font-medium text-ink break-words hover:text-primary"
+          className="text-[0.8125rem] font-medium text-ink break-words transition-colors duration-150 hover:text-primary"
         >
           {request.title}
         </Link>
@@ -63,10 +63,10 @@ export function RequestRow({ request }: RequestRowProps) {
       <div className="flex justify-end pt-2 border-t border-border-subtle mt-1 md:col-span-1 md:pt-0 md:border-t-0">
         <Link
           to={href}
-          className="inline-flex items-center gap-0.5 min-h-11 px-2 py-1.5 rounded-[6px] text-xs font-medium text-primary hover:bg-surface-muted"
+          className="inline-flex items-center gap-0.5 min-h-11 px-2 py-1.5 rounded-[6px] text-xs font-medium text-primary transition-colors duration-150 hover:bg-surface-muted md:min-h-0 md:border md:border-border-subtle md:px-2.5"
         >
           <span>Open</span>
-          <ChevronRightIcon size={16} />
+          <ChevronRightIcon size={14} />
         </Link>
       </div>
     </div>
