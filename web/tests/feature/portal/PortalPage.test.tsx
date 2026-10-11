@@ -102,7 +102,7 @@ describe('PortalPage', () => {
     ).toBeInTheDocument()
     expect(screen.getByText(/Passport or Government ID/)).toBeInTheDocument()
     expect(screen.getByText(/Certificate of Incorporation/)).toBeInTheDocument()
-    expect(screen.getByText('Recent Bank Statement')).toBeInTheDocument()
+    expect(screen.getByText(/Recent Bank Statement/)).toBeInTheDocument()
     expect(screen.getByText('0 of 3 uploaded')).toBeInTheDocument()
   })
 
