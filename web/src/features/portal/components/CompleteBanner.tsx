@@ -9,7 +9,7 @@ export type CompleteBannerProps = {
 export function CompleteBanner({ uploaded, total }: CompleteBannerProps) {
   return (
     <section
-      className="flex flex-col items-center gap-3 p-6 border border-border rounded-md bg-surface text-center"
+      className="flex flex-col items-center gap-3 p-6 border border-border rounded-[10px] bg-surface text-center"
       aria-labelledby="portal-complete-title"
     >
       <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-[#d1fae5] text-[#047857]">
@@ -18,7 +18,7 @@ export function CompleteBanner({ uploaded, total }: CompleteBannerProps) {
       <div className="flex flex-col items-center gap-1">
         <h1
           id="portal-complete-title"
-          className="text-xl font-semibold leading-7 tracking-[-0.01em] text-ink"
+          className="text-xl font-bold leading-7 tracking-tight text-ink"
         >
           All documents received
         </h1>
