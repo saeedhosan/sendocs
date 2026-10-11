@@ -5,6 +5,7 @@ import { ProgressBar, Spinner } from '../../../components/ui'
 import { ApiError } from '../../../lib/api/client'
 import { portalApi } from '../api'
 import { CompleteBanner } from '../components/CompleteBanner'
+import { CompletedItemsList } from '../components/CompletedItemsList'
 import { DeadLinkScreen } from '../components/DeadLinkScreen'
 import { PortalHeader } from '../components/PortalHeader'
 import { PortalItemRow } from '../components/PortalItemRow'
@@ -177,57 +178,63 @@ export function PortalPage() {
           {announcement}
         </p>
 
-        <section className={styles.intro}>
-          <h1 className={styles.title}>{view.title}</h1>
-          <p className={styles.lede}>Please upload each requested document.</p>
-
-          <div className={styles.progress}>
-            <div className={styles.progressTop}>
-              <h2 className={styles.progressLabel}>
-                {progressLabel(view.uploaded, view.total)}
-              </h2>
-              <span className={styles.remaining}>
-                {remainingLabel(remaining)}
-              </span>
-            </div>
-            <ProgressBar
-              value={uploadPercent(view.uploaded, view.total)}
-              tone={complete ? 'complete' : 'waiting'}
-              label={progressLabel(view.uploaded, view.total)}
-            />
-          </div>
-        </section>
-
         {complete ? (
-          <CompleteBanner uploaded={view.uploaded} total={view.total} />
-        ) : null}
+          <>
+            <CompleteBanner uploaded={view.uploaded} total={view.total} />
 
-        <ul className={styles.list} aria-label="Required documents">
-          {view.items.map((item) => (
-            <PortalItemRow
-              key={item.id}
-              item={item}
-              percent={transfers[item.id]}
-              queued={queued.includes(item.id)}
-              failure={failures[item.id]}
-              onPick={enqueue}
-              actionRef={(node) => {
-                if (node) {
-                  actionRefs.current.set(item.id, node)
-                } else {
-                  actionRefs.current.delete(item.id)
-                }
-              }}
-            />
-          ))}
-        </ul>
+            <CompletedItemsList items={view.items} />
 
-        {complete ? (
-          <p className={styles.completeNote}>
-            No further action is required. You may safely close this browser
-            window.
-          </p>
-        ) : null}
+            <p className={styles.completeNote}>
+              No further action is required. You may safely close this browser
+              window.
+            </p>
+          </>
+        ) : (
+          <>
+            <section className={styles.intro}>
+              <h1 className={styles.title}>{view.title}</h1>
+              <p className={styles.lede}>
+                Please upload each requested document.
+              </p>
+
+              <div className={styles.progress}>
+                <div className={styles.progressTop}>
+                  <h2 className={styles.progressLabel}>
+                    {progressLabel(view.uploaded, view.total)}
+                  </h2>
+                  <span className={styles.remaining}>
+                    {remainingLabel(remaining)}
+                  </span>
+                </div>
+                <ProgressBar
+                  value={uploadPercent(view.uploaded, view.total)}
+                  tone="waiting"
+                  label={progressLabel(view.uploaded, view.total)}
+                />
+              </div>
+            </section>
+
+            <ul className={styles.list} aria-label="Required documents">
+              {view.items.map((item) => (
+                <PortalItemRow
+                  key={item.id}
+                  item={item}
+                  percent={transfers[item.id]}
+                  queued={queued.includes(item.id)}
+                  failure={failures[item.id]}
+                  onPick={enqueue}
+                  actionRef={(node) => {
+                    if (node) {
+                      actionRefs.current.set(item.id, node)
+                    } else {
+                      actionRefs.current.delete(item.id)
+                    }
+                  }}
+                />
+              ))}
+            </ul>
+          </>
+        )}
       </main>
 
       <footer className={styles.footer}>

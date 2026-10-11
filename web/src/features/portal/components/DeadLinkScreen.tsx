@@ -1,4 +1,4 @@
-import { LinkOffIcon } from '../../../components/icons'
+import { LinkIcon } from '../../../components/icons'
 import styles from './DeadLinkScreen.module.css'
 
 /**
@@ -13,7 +13,7 @@ export function DeadLinkScreen() {
     <main className={styles.wrap}>
       <div className={styles.card}>
         <span className={styles.icon}>
-          <LinkOffIcon size={22} />
+          <LinkIcon size={22} />
         </span>
         <h1 className={styles.title}>This link is no longer active</h1>
         <p className={styles.message}>

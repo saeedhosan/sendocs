@@ -14,9 +14,9 @@ export function CompleteBanner({ uploaded, total }: CompleteBannerProps) {
         <CheckCircleIcon size={22} />
       </span>
       <div className={styles.copy}>
-        <h2 id="portal-complete-title" className={styles.title}>
+        <h1 id="portal-complete-title" className={styles.title}>
           All documents received
-        </h2>
+        </h1>
         <p className={styles.message}>
           You have uploaded all {total} requested documents. The request owner
           has been notified and can now review your files.
