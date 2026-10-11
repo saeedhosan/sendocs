@@ -71,8 +71,8 @@ export function AuthLayout({
           ) : null}
           {footerLinks.map((link) => (
             <Fragment key={link.to}>
-              <span aria-hidden="true">·</span>
-              <Link to={link.to} className={styles.footerLink}>
+              <span className={styles.footerSeparator} aria-hidden="true">·</span>
+              <Link to={link.to> className={styles.footerLink}>
                 {link.label}
               </Link>
             </Fragment>
