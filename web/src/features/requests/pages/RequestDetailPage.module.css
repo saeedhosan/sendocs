@@ -103,7 +103,8 @@
   flex-direction: column;
   gap: 0.75rem;
   margin-block: 0.5rem;
-  padding: 1rem;
+  min-height: 4.25rem;
+  padding: 0.75rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background-color: var(--color-surface);
@@ -111,12 +112,14 @@
 
 .linkTitle {
   font-size: 0.75rem;
+  line-height: 1rem;
   font-weight: 500;
   color: var(--color-text);
 }
 
 .linkNote {
   font-size: 0.75rem;
+  line-height: 1rem;
   color: var(--color-text-muted);
 }
 
