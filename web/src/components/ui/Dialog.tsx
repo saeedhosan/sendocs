@@ -2,7 +2,6 @@ import { useEffect, useId, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import type { ReactNode } from 'react'
 import { cn } from '../../lib/cn'
-import styles from './Dialog.module.css'
 
 export type DialogProps = {
   open: boolean
@@ -21,6 +20,15 @@ export type DialogProps = {
 
 const FOCUSABLE =
   'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+
+const OVERLAY_BASE =
+  'fixed inset-0 z-50 flex justify-center p-4 bg-[rgba(18,17,19,0.4)]'
+
+const PANEL_BASE =
+  'w-full p-5 border border-border-strong bg-surface focus:outline-none'
+
+const FOOTER_BASE =
+  'flex flex-col-reverse gap-2 [&>*]:w-full sm:flex-row sm:items-center sm:justify-end sm:[&>*]:w-auto'
 
 /**
  * A modal dialog with a focus trap, Escape-to-close, and focus restoration.
@@ -106,11 +114,40 @@ export function Dialog({
     return null
   }
 
+  const overlayClass = cn(
+    OVERLAY_BASE,
+    'items-center',
+    variant === 'centered'
+      ? 'backdrop-blur-[2px]'
+      : 'max-sm:items-end max-sm:p-0',
+  )
+
+  const panelClass = cn(
+    PANEL_BASE,
+    variant === 'centered'
+      ? 'max-w-lg rounded-[10px] shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)] sm:p-6'
+      : 'max-w-sm rounded-md shadow-md max-sm:max-w-none max-sm:rounded-b-none max-sm:border-b-0',
+    className,
+  )
+
+  const titleClass = cn(
+    'font-semibold text-ink',
+    tone === 'danger' && 'text-danger-text',
+    variant === 'centered'
+      ? 'text-[1.0625rem] leading-6 tracking-[-0.01em] sm:text-lg sm:leading-7'
+      : 'text-sm',
+  )
+
+  const descriptionClass =
+    variant === 'centered'
+      ? 'mt-1 text-[0.8125rem] leading-5 text-ink-secondary'
+      : 'mt-1.5 text-xs leading-[1.5] text-ink-secondary'
+
+  const footerClass =
+    variant === 'centered' ? cn(FOOTER_BASE, 'mt-2') : cn(FOOTER_BASE, 'mt-4')
+
   return createPortal(
-    <div
-      className={cn(styles.overlay, variant === 'centered' && styles.centeredOverlay)}
-      onMouseDown={onClose}
-    >
+    <div className={overlayClass} onMouseDown={onClose}>
       <div
         ref={panelRef}
         role="dialog"
@@ -118,38 +155,21 @@ export function Dialog({
         aria-labelledby={titleId}
         aria-describedby={description ? descriptionId : undefined}
         tabIndex={-1}
-        className={cn(
-          styles.panel,
-          styles[tone],
-          variant === 'centered' && styles.centeredPanel,
-          className,
-        )}
+        className={panelClass}
         onMouseDown={(event) => event.stopPropagation()}
       >
-        <div className={styles.body}>
-          <h2
-            id={titleId}
-            className={cn(
-              styles.title,
-              variant === 'centered' && styles.centeredTitle,
-            )}
-          >
+        <div>
+          <h2 id={titleId} className={titleClass}>
             {title}
           </h2>
           {description ? (
-            <p
-              id={descriptionId}
-              className={cn(
-                styles.description,
-                variant === 'centered' && styles.centeredDescription,
-              )}
-            >
+            <p id={descriptionId} className={descriptionClass}>
               {description}
             </p>
           ) : null}
           {children}
         </div>
-        {footer ? <div className={styles.footer}>{footer}</div> : null}
+        {footer ? <div className={footerClass}>{footer}</div> : null}
       </div>
     </div>,
     document.body,
