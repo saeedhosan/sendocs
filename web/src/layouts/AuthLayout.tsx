@@ -9,9 +9,9 @@ const AUTH_CONTAINER =
   'px-6 min-[576px]:max-w-5xl min-[768px]:max-w-5xl min-[992px]:max-w-5xl min-[1200px]:max-w-5xl min-[1400px]:max-w-5xl'
 const HEADER_INNER = `${AUTH_CONTAINER} flex items-center justify-between gap-4 min-h-16`
 const MAIN =
-  '[view-transition-name:page-content] flex flex-1 flex-col items-center justify-center w-full px-4 py-6'
+  '[view-transition-name:page-content] flex flex-1 flex-col items-center justify-center w-full px-4'
 const CARD =
-  'w-full max-w-md my-12 p-8 bg-surface border border-border rounded-[10px] shadow-sm [&_input:not([type=checkbox]):not([type=radio])]:rounded-[10px] [&_button:not(.absolute)]:rounded-[10px]'
+  'w-full max-w-md mx-auto mt-0 mb-12 p-8 bg-surface border border-border rounded-[10px] shadow-sm [&_input:not([type=checkbox]):not([type=radio])]:rounded-[10px] [&_button:not(.absolute)]:rounded-[10px]'
 const FOOTER_INNER =
   `${AUTH_CONTAINER} flex flex-wrap items-center justify-center gap-2 text-xs text-ink-muted text-center max-sm:flex-col`
 const FOOTER_RESET_INNER =
@@ -86,7 +86,7 @@ export function AuthLayout({
       </header>
 
       <main className={MAIN}>
-        <div className="flex flex-1 items-center justify-center w-full px-4">
+        <div className="flex flex-1 items-center justify-center w-full">
           <div className={CARD}>{children}</div>
         </div>
       </main>

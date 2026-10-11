@@ -140,7 +140,7 @@ export function LoginPage() {
           }}
         />
 
-        <div className={s.actions}>
+        <div className={s.actionsFlush}>
           <Button
             type="submit"
             fullWidth
