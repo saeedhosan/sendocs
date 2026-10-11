@@ -9,13 +9,13 @@ describe('evaluatePasswordStrength', () => {
     })
   })
 
-  it('flags anything under 6 characters as too short', () => {
+  it('flags anything under 8 characters as too short', () => {
     expect(evaluatePasswordStrength('short').score).toBe(1)
-    expect(evaluatePasswordStrength('five!').score).toBe(1)
+    expect(evaluatePasswordStrength('seven77').score).toBe(1)
   })
 
-  it('treats a 6-character password as standard', () => {
-    expect(evaluatePasswordStrength('aaaaaa')).toEqual({
+  it('treats an 8-character password as standard', () => {
+    expect(evaluatePasswordStrength('aaaaaaaa')).toEqual({
       score: 2,
       label: 'Standard',
     })
@@ -38,8 +38,8 @@ describe('passwordRequirements', () => {
   )
 
   it('mirrors the contract length rule', () => {
-    expect(byId['min-length'].test('12345')).toBe(false)
-    expect(byId['min-length'].test('123456')).toBe(true)
+    expect(byId['min-length'].test('1234567')).toBe(false)
+    expect(byId['min-length'].test('12345678')).toBe(true)
   })
 
   it('requires a letter and a number or symbol', () => {

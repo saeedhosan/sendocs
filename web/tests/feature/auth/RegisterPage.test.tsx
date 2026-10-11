@@ -72,7 +72,7 @@ describe('RegisterPage', () => {
     expect(
       await screen.findByRole('heading', { name: 'Create your account' }),
     ).toBeInTheDocument()
-    expect(screen.getByText('At least 6 characters')).toBeInTheDocument()
+    expect(screen.getByText('At least 8 characters')).toBeInTheDocument()
     expect(
       screen.getByRole('button', { name: /sign up with google/i }),
     ).toBeInTheDocument()
@@ -90,7 +90,7 @@ describe('RegisterPage', () => {
     await user.click(screen.getByRole('button', { name: /create account/i }))
 
     expect(
-      await screen.findByText('Password must be at least 6 characters.'),
+      await screen.findByText('Password must be at least 8 characters.'),
     ).toBeInTheDocument()
 
     const registerCalls = fetchMock.mock.calls.filter((call) =>

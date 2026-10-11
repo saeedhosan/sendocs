@@ -32,8 +32,8 @@ export function ChangePasswordPage() {
   const rules = [
     {
       id: 'length',
-      label: 'Minimum 6 characters',
-      met: password.length >= 6,
+      label: 'Minimum 8 characters',
+      met: password.length >= 8,
     },
     {
       id: 'different',

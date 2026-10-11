@@ -34,7 +34,7 @@ describe("registerSchema", () => {
         ).toBe(true);
     });
 
-    it("rejects a password under 6 characters", () => {
+    it("rejects a password under 8 characters", () => {
         const result = registerSchema.safeParse({
             name: "Alex",
             email: "alex@example.com",
@@ -44,7 +44,7 @@ describe("registerSchema", () => {
 
         expect(result.success).toBe(false);
         if (!result.success) {
-            expect(fieldErrors(result.error).password).toMatch(/at least 6/);
+            expect(fieldErrors(result.error).password).toMatch(/at least 8/);
         }
     });
 
