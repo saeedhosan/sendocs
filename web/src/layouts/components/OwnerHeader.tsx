@@ -46,10 +46,10 @@ const COMPACT_ITEM_BASE =
   'flex items-center gap-2 w-full px-3 py-2 text-[0.8125rem] text-left text-ink-secondary hover:text-ink hover:bg-surface-muted transition-colors duration-150'
 const DETAIL_ITEM_BASE =
   'flex items-center gap-2 w-full px-3 py-1.5 text-xs text-neutral-700 hover:bg-neutral-50 transition-colors duration-150'
-const COMPACT_ITEM = cn(COMPACT_ITEM_BASE, 'border-t border-border-subtle')
-const COMPACT_SIGN_OUT = cn(COMPACT_ITEM_BASE, 'border-t border-border-subtle text-danger-text')
+const COMPACT_ITEM = COMPACT_ITEM_BASE
+const COMPACT_SIGN_OUT = cn(COMPACT_ITEM_BASE, 'border-t border-border-subtle')
 const DETAIL_ITEM = DETAIL_ITEM_BASE
-const DETAIL_SIGN_OUT = cn(DETAIL_ITEM_BASE, 'text-danger-text')
+const DETAIL_SIGN_OUT = DETAIL_ITEM_BASE
 
 function initials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean)
@@ -70,7 +70,7 @@ export function OwnerHeader() {
   const pathname = useLocation().pathname
   const isDashboard = pathname === '/dashboard'
   const isCreateRequest = pathname === '/requests/new'
-  const isRequestDetail = /^\/requests\/[^/]+$/.test(pathname)
+  const isRequestDetail = !isCreateRequest && /^\/requests\/[^/]+$/.test(pathname)
   const [open, setOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
@@ -120,7 +120,7 @@ export function OwnerHeader() {
         )}
       >
         {isDashboard ? (
-          <Logo to="/dashboard" variant="owner" />
+          <Logo to="/dashboard" variant="owner" className="gap-2" />
         ) : (
           <Link
             to="/dashboard"
