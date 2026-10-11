@@ -71,6 +71,7 @@ export function ResetPasswordPage() {
       <AuthLayout
         headerAction={{ label: 'Help', to: '/contact' }}
         footerVariant="reset-password"
+        layoutVariant="reset"
       >
         <div className={s.heading}>
           <h1 className={s.title}>Reset link unavailable</h1>
@@ -94,6 +95,7 @@ export function ResetPasswordPage() {
     <AuthLayout
       headerAction={{ label: 'Help', to: '/contact' }}
       footerVariant="reset-password"
+      layoutVariant="reset"
     >
       <div className={s.heading}>
         <h1 className={s.title}>Create a new password</h1>

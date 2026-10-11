@@ -33,7 +33,7 @@ export type AuthLayoutProps = {
   /** Page-specific footer copy/order/layout when a reference differs. */
   footerVariant?: FooterVariant
   logoVariant?: 'auth' | 'auth-login' | 'auth-register'
-  layoutVariant?: 'default' | 'login'
+  layoutVariant?: 'default' | 'login' | 'reset'
 }
 
 const legalLinks = [
@@ -97,7 +97,9 @@ export function AuthLayout({
           <div
             className={cn(
               CARD,
-              layoutVariant === 'default' ? 'my-12' : 'mt-0 mb-12',
+              layoutVariant === 'default' || layoutVariant === 'reset'
+                ? 'my-12'
+                : 'mt-0 mb-12',
             )}
           >
             {children}
