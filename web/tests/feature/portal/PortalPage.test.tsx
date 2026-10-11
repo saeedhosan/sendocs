@@ -137,7 +137,7 @@ describe('PortalPage', () => {
     expect(uploadMock.mock.calls[0][1]).toBe('i1')
 
     const row = await screen.findByText('Passport or Government ID')
-    expect(within(row.closest('li') as HTMLElement).getByText('Uploaded')).toBeInTheDocument()
+    expect(within(row.closest('li') as HTMLElement).getAllByText('Uploaded')).toHaveLength(2)
   })
 
   it('rejects an oversized file locally without any network call', async () => {
@@ -166,7 +166,7 @@ describe('PortalPage', () => {
     await screen.findByText('Passport or Government ID')
     await user.upload(inputFor('Passport or Government ID'), file('passport_scan.pdf'))
 
-    expect(await screen.findByText('Uploaded')).toBeInTheDocument()
+    expect(await screen.findAllByText('Uploaded')).toHaveLength(2)
     expect(screen.queryByText(/already been uploaded/i)).not.toBeInTheDocument()
   })
 

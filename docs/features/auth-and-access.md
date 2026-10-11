@@ -661,7 +661,7 @@ Only the guard boundary is noted here; the endpoint itself is defined in secure-
 
 - Email normalisation maps case and whitespace variants to one stored value.
 - Hashing stores bcrypt, omits the plaintext, and verifies the same password.
-- Password policy: 11 rejected, 12 accepted, 200 accepted, 201 rejected.
+- Password policy: 5 rejected, 6 accepted, 200 accepted, 201 rejected.
 - CSRF derivation is stable per session and differs across sessions.
 - A changed secret invalidates every derived token.
 - Session expiry: valid at expires_at - 1s, rejected just after.

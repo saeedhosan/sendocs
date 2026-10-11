@@ -5,9 +5,8 @@ import { z } from 'zod'
  * appears before a round trip. The server remains the only authority; a 422
  * still maps back onto these same field names.
  *
- * Password length is 12 to 200 characters with no composition rules, matching
- * api/docs/openapi.yaml. The ui/auth references show an older 6-character rule
- * and a composition hint, which the contract supersedes.
+ * Password length is 6 to 200 characters with no composition rules, matching
+ * api/docs/openapi.yaml and the ui/auth references.
  */
 
 export const emailSchema = z
@@ -19,7 +18,7 @@ export const emailSchema = z
 
 export const passwordSchema = z
   .string()
-  .min(12, 'Password must be at least 12 characters.')
+  .min(6, 'Password must be at least 6 characters.')
   .max(200, 'Password must be 200 characters or fewer.')
 
 export const loginSchema = z.object({

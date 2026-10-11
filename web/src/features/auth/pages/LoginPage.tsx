@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../../app/providers/useAuth'
 import { FormField } from '../../../components/forms/FormField'
 import { ArrowForwardIcon } from '../../../components/icons'
-import { Alert, Button, Input, PasswordInput } from '../../../components/ui'
+import { Alert, Button, Checkbox, Input, PasswordInput } from '../../../components/ui'
 import { AuthLayout } from '../../../layouts/AuthLayout'
 import { errorMessage, validationErrors } from '../../../lib/api/errors'
 import { AuthDivider } from '../components/AuthDivider'
@@ -15,6 +15,7 @@ import styles from './auth.module.css'
 type LoginValues = {
   email: string
   password: string
+  remember?: boolean
 }
 
 type LocationState = {
@@ -26,7 +27,7 @@ export function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
 
-  const [values, setValues] = useState<LoginValues>({ email: '', password: '' })
+  const [values, setValues] = useState<LoginValues>({ email: '', password: '', remember: false })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [formError, setFormError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -127,6 +128,15 @@ export function LoginPage() {
             onChange={update('password')}
           />
         </FormField>
+
+        <Checkbox
+          label="Remember this device for 30 days"
+          name="remember"
+          checked={values.remember ?? false}
+          onChange={(event) => {
+            setValues((current) => ({ ...current, remember: event.target.checked }))
+          }}
+        />
 
         <div className={styles.actions}>
           <Button
