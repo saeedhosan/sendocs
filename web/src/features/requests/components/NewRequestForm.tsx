@@ -209,7 +209,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
               <div className="flex items-center gap-0.5 flex-shrink-0">
                 <button
                   type="button"
-                  className="inline-flex items-center justify-center w-9 h-11 sm:w-8 sm:h-9 border-0 rounded-md bg-transparent text-ink-secondary cursor-pointer transition-colors duration-150 enabled:hover:bg-surface-muted enabled:hover:text-ink disabled:opacity-35 disabled:cursor-not-allowed"
+                  className="inline-flex items-center justify-center w-9 h-11 sm:w-8 sm:h-9 border-0 rounded-md bg-transparent text-ink-secondary cursor-pointer transition-colors duration-150 enabled:hover:bg-surface-subtle enabled:hover:text-ink disabled:opacity-35 disabled:cursor-not-allowed"
                   onClick={() => move(index, -1)}
                   disabled={index === 0}
                   title="Move up"
