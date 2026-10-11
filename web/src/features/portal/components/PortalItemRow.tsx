@@ -73,6 +73,7 @@ export function PortalItemRow({
               <ProgressBar
                 value={percent ?? 0}
                 label={`Uploading ${item.label}`}
+                className="bg-[#e2e8f0]"
               />
             </div>
           </>
