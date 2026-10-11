@@ -15,7 +15,6 @@ import { RequestList } from '../components/RequestList'
 import { Notice } from '../components/Notice'
 import { requestsApi } from '../api'
 import type { RequestSummary } from '../types'
-import styles from './RequestsPage.module.css'
 
 export function RequestsPage() {
   const navigate = useNavigate()
@@ -133,15 +132,19 @@ export function RequestsPage() {
     : `${pageNumber} / ${pageNumber}`
 
   return (
-    <Container className={styles.page}>
-      <div className={styles.header}>
+    <Container className="flex flex-col gap-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className={styles.title}>Document Requests</h1>
-          <p className={styles.subtitle}>Collect and track client documentation</p>
+          <h1 className="text-xl leading-7 font-semibold tracking-[-0.01em] text-ink sm:text-2xl sm:leading-8">
+            Document Requests
+          </h1>
+          <p className="mt-1 text-sm text-ink-secondary">
+            Collect and track client documentation
+          </p>
         </div>
         <Button
           iconLeft={<PlusIcon size={18} />}
-          className={styles.newRequestButton}
+          className="w-full min-h-11 sm:w-auto sm:h-9 sm:min-h-9"
           onClick={() => navigate('/requests/new')}
         >
           New request
@@ -198,18 +201,21 @@ export function RequestsPage() {
             requests={visible}
             empty={<p>No requests match your search.</p>}
             footer={
-              <div className={styles.footerBar}>
-                <div className={styles.footerStatus}>
-                  <span className={styles.showing}>
+              <div className="flex flex-col gap-3 text-xs text-ink-muted sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center justify-between gap-3 w-full sm:w-auto">
+                  <span className="font-medium text-ink-secondary">
                     Showing 1 to {visible.length} of {requests.length} request
                     {requests.length === 1 ? '' : 's'}
                   </span>
-                  <span className={styles.allSynced}>
-                    <span className={styles.syncDot} aria-hidden="true" />
+                  <span className="hidden items-center gap-1 font-mono text-[0.6875rem] text-success-text sm:inline-flex">
+                    <span
+                      className="size-1.5 rounded-full bg-success"
+                      aria-hidden="true"
+                    />
                     All synced
                   </span>
                 </div>
-                <div className={styles.footerNav}>
+                <div className="flex items-center justify-between gap-2 w-full sm:w-auto">
                   <Button
                     variant="secondary"
                     size="sm"
@@ -219,7 +225,9 @@ export function RequestsPage() {
                   >
                     Previous
                   </Button>
-                  <span className={styles.pageIndicator}>{pageLabel}</span>
+                  <span className="px-2 font-mono text-[0.6875rem] text-ink-secondary">
+                    {pageLabel}
+                  </span>
                   <Button
                     variant="secondary"
                     size="sm"
