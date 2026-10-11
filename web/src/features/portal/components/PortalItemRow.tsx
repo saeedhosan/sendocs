@@ -1,8 +1,7 @@
 import { useRef } from 'react'
 import type { ChangeEvent } from 'react'
 import { Button, ProgressBar } from '../../../components/ui'
-import { UploadIcon } from '../../../components/icons'
-import { formatBytes } from '../../../lib/format'
+import { cn } from '../../../lib/cn'
 import { ACCEPT_ATTRIBUTE, ACCEPTED_TYPES_LABEL } from '../precheck'
 import type { ItemFailure } from '../useUploadQueue'
 import type { PortalItem } from '../types'
@@ -48,38 +47,56 @@ export function PortalItemRow({
   return (
     <li className={styles.row}>
       <div className={styles.main}>
-        <p className={styles.label}>{item.label}</p>
-
         {uploaded && item.file ? (
-          <p className={styles.meta}>
-            <span className={styles.filename}>{item.file.originalName}</span>
-            <span aria-hidden="true">•</span>
-            <span>{formatBytes(item.file.sizeBytes)}</span>
-          </p>
+          <>
+            <p className={styles.label}>{item.label}</p>
+            <p className={styles.meta}>
+              <span>Uploaded</span>
+              <span aria-hidden="true">·</span>
+              <span className={styles.filename}>{item.file.originalName}</span>
+            </p>
+          </>
         ) : uploading ? (
-          <div className={styles.transfer}>
-            <span className={styles.transferLabel}>Uploading · {percent}%</span>
-            <ProgressBar value={percent ?? 0} label={`Uploading ${item.label}`} />
-          </div>
+          <>
+            <div className={styles.uploadingHeading}>
+              <p className={styles.label}>{item.label}</p>
+              <span className={styles.transferLabel}>
+                Uploading · {percent}%
+              </span>
+            </div>
+            <div className={styles.transfer}>
+              <ProgressBar
+                value={percent ?? 0}
+                label={`Uploading ${item.label}`}
+              />
+            </div>
+          </>
         ) : failure ? (
-          <p className={styles.error} role="alert">
-            {failure.message}
-          </p>
+          <>
+            <p className={styles.label}>{item.label}</p>
+            <p className={styles.error} role="alert">
+              Upload failed · {failure.message}
+            </p>
+          </>
         ) : queued ? (
-          <p className={styles.waiting}>Waiting for a free slot…</p>
+          <>
+            <p className={styles.label}>{item.label}</p>
+            <p className={styles.waiting}>Waiting for a free slot…</p>
+          </>
         ) : (
-          <p className={styles.waiting}>
-            Waiting for upload · Max 25 MB · {ACCEPTED_TYPES_LABEL}
-          </p>
+          <>
+            <p className={styles.label}>{item.label}</p>
+            <p className={styles.waiting}>
+              Waiting for upload · Max 25 MB · {ACCEPTED_TYPES_LABEL}
+            </p>
+          </>
         )}
       </div>
 
       <div className={styles.action}>
         {uploaded ? (
           <span className={styles.done}>Uploaded</span>
-        ) : uploading ? (
-          <span className={styles.transferStatus}>{percent}%</span>
-        ) : (
+        ) : uploading ? null : (
           <>
             <input
               ref={inputRef}
@@ -91,9 +108,12 @@ export function PortalItemRow({
             />
             <Button
               ref={actionRef}
+              className={cn(
+                styles.uploadButton,
+                failure && styles.uploadButtonFailure,
+              )}
               variant={failure ? 'secondary' : 'primary'}
               size="sm"
-              iconLeft={failure ? undefined : <UploadIcon size={16} />}
               onClick={openPicker}
               disabled={queued}
               aria-label={`${failure ? 'Try again' : 'Upload'}: ${item.label}`}

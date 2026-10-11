@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { ErrorState } from '../../../components/feedback'
 import { ProgressBar, Spinner } from '../../../components/ui'
 import { ApiError } from '../../../lib/api/client'
@@ -221,6 +221,13 @@ export function PortalPage() {
             />
           ))}
         </ul>
+
+        {complete ? (
+          <p className={styles.completeNote}>
+            No further action is required. You may safely close this browser
+            window.
+          </p>
+        ) : null}
       </main>
 
       <footer className={styles.footer}>
@@ -228,7 +235,15 @@ export function PortalPage() {
         <span className={styles.footerDivider} aria-hidden="true">
           ·
         </span>
-        <span>Secure document upload</span>
+        <Link to="/terms" className={styles.footerLink}>
+          Terms
+        </Link>
+        <span className={styles.footerDivider} aria-hidden="true">
+          ·
+        </span>
+        <Link to="/privacy" className={styles.footerLink}>
+          Privacy
+        </Link>
       </footer>
     </div>
   )
