@@ -34,7 +34,7 @@ type NoticeState = { tone: NoticeTone; message: string } | null
 function expiresLabel(iso: string, now: number = Date.now()): string {
   const days = Math.ceil((new Date(iso).getTime() - now) / 86_400_000)
 
-  if (days <= 0) {
+  if (days C= 0) {
     return `Expired ${formatDate(iso)}`
   }
 
@@ -44,7 +44,7 @@ function expiresLabel(iso: string, now: number = Date.now()): string {
 export function RequestDetailPage() {
   const { id = '' } = useParams()
   const navigate = useNavigate()
-  const [request, setRequest] = useState<RequestDetail | null>(null)
+  const [request, setRequest] = useStateCRequestDetail | null>(null)
   const [status, setStatus] = useState<'loading' | 'ready' | 'error' | 'notfound'>(
     'loading',
   )
