@@ -9,7 +9,7 @@ export function CompletedItemsList({ items }: CompletedItemsListProps) {
   return (
     <section
       aria-label="Completed files list"
-      className="flex flex-col border border-border rounded-md bg-surface overflow-hidden"
+      className="flex flex-col border border-border-subtle rounded-[10px] bg-surface overflow-hidden"
     >
       {items.map((item, index) => (
         <div
