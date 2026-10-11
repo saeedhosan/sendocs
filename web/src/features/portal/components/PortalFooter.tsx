@@ -4,7 +4,7 @@ import { cn } from '../../../lib/cn'
 import { app } from '../../../config/app'
 
 const WIDTH =
-  'px-4 sm:px-6 min-[576px]:max-w-2xl min-[768px]:max-w-2xl min-[992px]:max-w-2xl min-[1200px]:max-w-2xl min-[1400px]:max-w-2xl'
+  '!max-w-2xl px-4 sm:px-6'
 
 export function PortalFooter() {
   return (

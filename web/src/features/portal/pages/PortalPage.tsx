@@ -137,7 +137,7 @@ export function PortalPage() {
         <PortalHeader />
         <Container
           as="main"
-          className="px-4 sm:px-6 min-[576px]:max-w-2xl min-[768px]:max-w-2xl min-[992px]:max-w-2xl min-[1200px]:max-w-2xl min-[1400px]:max-w-2xl flex-1 py-6 sm:py-10 md:py-12"
+          className="!max-w-2xl px-4 sm:px-6 flex-1 py-6 sm:py-10 md:py-12"
         >
           <DeadLinkScreen />
         </Container>
@@ -184,7 +184,7 @@ export function PortalPage() {
     <div className="flex flex-col min-h-screen bg-surface-muted">
       <PortalHeader />
 
-      <Container as="main" className="px-4 sm:px-6 min-[576px]:max-w-2xl min-[768px]:max-w-2xl min-[992px]:max-w-2xl min-[1200px]:max-w-2xl min-[1400px]:max-w-2xl flex-1 py-6 sm:py-10 md:py-12">
+      <Container as="main" className="!max-w-2xl px-4 sm:px-6 flex-1 py-6 sm:py-10 md:py-12">
         <p className="sr-only" role="status" aria-live="polite">
           {announcement}
         </p>
