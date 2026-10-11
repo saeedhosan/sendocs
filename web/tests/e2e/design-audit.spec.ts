@@ -355,7 +355,7 @@ async function captureTypography(page: Page) {
         const style = getComputedStyle(element)
         const rect = element.getBoundingClientRect()
         const text = (element.innerText || element.getAttribute('placeholder') || '')
-          .replace(/\\s+/g, ' ')
+          .replace(/\s+/g, ' ')
           .trim()
         return {
           selector,
