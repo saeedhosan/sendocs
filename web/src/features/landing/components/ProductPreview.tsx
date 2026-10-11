@@ -50,7 +50,7 @@ export function ProductPreview() {
       className="overflow-hidden bg-surface border border-border rounded-[10px] shadow-sm"
       aria-hidden="true"
     >
-      <div className="flex items-center justify-between gap-3 px-4 py-3 bg-surface-muted border-b border-border">
+      <div className="flex items-center justify-between gap-3 px-4 py-3 bg-surface-subtle border-b border-border-subtle">
         <div className="flex items-center gap-2 min-w-0">
           <span className="shrink-0 size-2.5 rounded-full bg-border-strong" />
           <span className="text-sm font-semibold text-ink truncate">
