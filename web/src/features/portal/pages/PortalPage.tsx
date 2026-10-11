@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { ErrorState } from '../../../components/feedback'
 import { Container, ProgressBar, Spinner } from '../../../components/ui'
 import { ApiError } from '../../../lib/api/client'
@@ -8,11 +8,11 @@ import { CompleteBanner } from '../components/CompleteBanner'
 import { CompletedItemsList } from '../components/CompletedItemsList'
 import { DeadLinkScreen } from '../components/DeadLinkScreen'
 import { PortalHeader } from '../components/PortalHeader'
+import { PortalFooter } from '../components/PortalFooter'
 import { PortalItemRow } from '../components/PortalItemRow'
 import { progressLabel, remainingLabel, uploadPercent } from '../progress'
 import { useUploadQueue } from '../useUploadQueue'
 import type { PortalView } from '../types'
-import { app } from '../../../config/app'
 
 type PortalStatus = 'loading' | 'ready' | 'dead' | 'error'
 
@@ -132,12 +132,23 @@ export function PortalPage() {
   }, [busy, failures, view])
 
   if (status === 'dead') {
-    return <DeadLinkScreen />
+    return (
+      <div className="flex flex-col min-h-screen bg-surface-muted">
+        <PortalHeader />
+        <Container
+          as="main"
+          className="px-4 sm:px-6 min-[576px]:max-w-2xl min-[768px]:max-w-2xl min-[992px]:max-w-2xl min-[1200px]:max-w-2xl min-[1400px]:max-w-2xl flex-1 py-6 sm:py-10 md:py-12"
+        >
+          <DeadLinkScreen />
+        </Container>
+        <PortalFooter />
+      </div>
+    )
   }
 
   if (status === 'error') {
     return (
-      <div className="flex items-center justify-center min-h-screen py-8 px-4 bg-canvas-muted">
+      <div className="flex items-center justify-center min-h-screen py-8 px-4 bg-surface-muted">
         <ErrorState
           title="We could not load this page"
           message="Check your connection and try again."
@@ -160,7 +171,7 @@ export function PortalPage() {
 
   if (status === 'loading' || view === null) {
     return (
-      <div className="flex items-center justify-center min-h-screen py-8 px-4 bg-canvas-muted">
+      <div className="flex items-center justify-center min-h-screen py-8 px-4 bg-surface-muted">
         <Spinner size={24} label="Loading your documents" />
       </div>
     )
@@ -170,10 +181,10 @@ export function PortalPage() {
   const remaining = view.total - view.uploaded
 
   return (
-    <div className="flex flex-col min-h-screen bg-canvas-muted">
+    <div className="flex flex-col min-h-screen bg-surface-muted">
       <PortalHeader />
 
-      <Container as="main" className="flex-1 py-6 pb-10 sm:py-10 md:py-12">
+      <Container as="main" className="px-4 sm:px-6 min-[576px]:max-w-2xl min-[768px]:max-w-2xl min-[992px]:max-w-2xl min-[1200px]:max-w-2xl min-[1400px]:max-w-2xl flex-1 py-6 sm:py-10 md:py-12">
         <p className="sr-only" role="status" aria-live="polite">
           {announcement}
         </p>
@@ -212,12 +223,13 @@ export function PortalPage() {
                   value={uploadPercent(view.uploaded, view.total)}
                   tone="waiting"
                   label={progressLabel(view.uploaded, view.total)}
+                  className="bg-[#e2e8f0] sm:h-2"
                 />
               </div>
             </section>
 
             <ul
-              className="list-none mt-5 mb-0 p-0 border border-border rounded-md bg-surface overflow-hidden"
+              className="list-none mt-5 mb-0 p-0 border border-border rounded-[10px] bg-surface overflow-hidden"
               aria-label="Required documents"
             >
               {view.items.map((item) => (
@@ -242,30 +254,7 @@ export function PortalPage() {
         )}
       </Container>
 
-      <Container
-        as="footer"
-        className="flex items-center justify-center gap-1.5 mt-8 py-6 border-t border-border-subtle text-xs text-ink-muted sm:mt-12 sm:py-8 sm:text-sm"
-      >
-        <span>© 2026 {app.name}</span>
-        <span className="text-border-strong" aria-hidden="true">
-          ·
-        </span>
-        <Link
-          to="/terms"
-          className="transition-colors duration-150 hover:text-ink-secondary"
-        >
-          Terms
-        </Link>
-        <span className="text-border-strong" aria-hidden="true">
-          ·
-        </span>
-        <Link
-          to="/privacy"
-          className="transition-colors duration-150 hover:text-ink-secondary"
-        >
-          Privacy
-        </Link>
-      </Container>
+      <PortalFooter />
     </div>
   )
 }

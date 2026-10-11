@@ -7,10 +7,11 @@ import { Input } from './Input'
 
 export type PasswordInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> & {
   invalid?: boolean
+  visibilityButtonClassName?: string
 }
 
 export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
-  function PasswordInput({ className, ...props }, ref) {
+  function PasswordInput({ className, visibilityButtonClassName, ...props }, ref) {
     const [visible, setVisible] = useState(false)
 
     return (
@@ -23,7 +24,7 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
         />
         <IconButton
           label={visible ? 'Hide password' : 'Show password'}
-          className="absolute right-2.5"
+          className={cn('absolute right-2.5', visibilityButtonClassName)}
           aria-pressed={visible}
           onClick={() => setVisible((current) => !current)}
         >

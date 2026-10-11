@@ -73,6 +73,7 @@ export function PortalItemRow({
               <ProgressBar
                 value={percent ?? 0}
                 label={`Uploading ${item.label}`}
+                className="bg-[#e2e8f0]"
               />
             </div>
           </>
@@ -82,7 +83,7 @@ export function PortalItemRow({
               {item.label}
             </p>
             <p
-              className="mt-1.5 text-[0.8125rem] text-danger-text sm:text-sm"
+              className="mt-1.5 text-xs text-[#e11d48] sm:text-sm"
               role="alert"
             >
               Upload failed · {failure.message}
@@ -127,8 +128,8 @@ export function PortalItemRow({
             <Button
               ref={actionRef}
               className={cn(
-                'w-full min-h-11 px-4 ![font-size:0.75rem] sm:w-auto sm:min-h-[2.375rem] sm:![font-size:0.875rem]',
-                failure && '!border-border',
+                'w-full min-h-11 px-4 rounded-[10px] ![font-size:0.75rem] sm:w-auto sm:min-h-[2.375rem] sm:![font-size:0.875rem]',
+                failure && '!border-border enabled:hover:bg-surface-muted',
               )}
               variant={failure ? 'secondary' : 'primary'}
               size="sm"
