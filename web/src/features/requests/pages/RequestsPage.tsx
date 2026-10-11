@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { Button } from '../../../components/ui'
 import { EmptyState, ErrorState, LoadingState } from '../../../components/feedback'
 import {
@@ -12,12 +12,14 @@ import { ApiError } from '../../../lib/api/client'
 import { RequestFilters } from '../components/RequestFilters'
 import type { RequestFilter } from '../components/RequestFilters'
 import { RequestList } from '../components/RequestList'
+import { Notice } from '../components/Notice'
 import { requestsApi } from '../api'
 import type { RequestSummary } from '../types'
 import styles from './RequestsPage.module.css'
 
 export function RequestsPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
   const cursor = searchParams.get('cursor')
 
@@ -28,8 +30,20 @@ export function RequestsPage() {
   const [pageNumber, setPageNumber] = useState(1)
   const [filter, setFilter] = useState<RequestFilter>('all')
   const [query, setQuery] = useState('')
+  const [notice, setNotice] = useState<string | null>(
+    () => (location.state as { notice?: string } | null)?.notice ?? null,
+  )
   const historyRef = useRef<Array<string | null>>([])
   const cursorRef = useRef<string | null>(cursor)
+
+  useEffect(() => {
+    if ((location.state as { notice?: string } | null)?.notice) {
+      navigate(`${location.pathname}${location.search}`, {
+        replace: true,
+        state: null,
+      })
+    }
+  }, [location, navigate])
 
   useEffect(() => {
     cursorRef.current = cursor
@@ -220,6 +234,14 @@ export function RequestsPage() {
             }
           />
         </>
+      ) : null}
+
+      {notice ? (
+        <Notice
+          tone="ok"
+          message={notice}
+          onDismiss={() => setNotice(null)}
+        />
       ) : null}
     </div>
   )

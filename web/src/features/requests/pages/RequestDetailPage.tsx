@@ -109,7 +109,10 @@ export function RequestDetailPage() {
   function confirmDeleteRequest() {
     void run(async () => {
       await requestsApi.remove(id)
-      navigate('/dashboard', { replace: true })
+      navigate('/dashboard', {
+        replace: true,
+        state: { notice: 'Request deleted' },
+      })
     })
   }
 
