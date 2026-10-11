@@ -81,7 +81,7 @@ export function LoginPage() {
   }
 
   return (
-    <AuthLayout boxedLogo={false}>
+    <AuthLayout boxedLogo={false} footerVariant="login">
       <div className={`${styles.heading} ${styles.center}`}>
         <h1 className={styles.title}>Sign in</h1>
         <p className={styles.subtitle}>Sign in to your account to continue.</p>
@@ -91,7 +91,7 @@ export function LoginPage() {
         <GoogleButton label="Continue with Google" />
       </div>
 
-      <AuthDivider label="or continue with email" />
+      <AuthDivider label="or continue with email" uppercase />
 
       {formError ? (
         <Alert variant="error" className={styles.formError}>

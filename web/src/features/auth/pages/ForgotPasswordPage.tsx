@@ -50,7 +50,7 @@ export function ForgotPasswordPage() {
 
   if (sentTo !== null) {
     return (
-      <AuthLayout>
+      <AuthLayout footerVariant="forget">
         <div className={styles.successIcon} aria-hidden="true">
           <MailIcon size={20} />
         </div>
@@ -90,7 +90,7 @@ export function ForgotPasswordPage() {
   }
 
   return (
-    <AuthLayout>
+    <AuthLayout footerVariant="forget">
       <div className={styles.heading}>
         <h1 className={styles.title}>Forgot your password?</h1>
         <p className={styles.subtitle}>
