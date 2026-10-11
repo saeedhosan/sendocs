@@ -74,18 +74,18 @@ test.describe("public landing", () => {
         await expect(page.getByRole("heading", { name: "Privacy Policy" })).toBeVisible();
     });
 
-    test.skip("a guest can reach the contact page from the footer", async ({ page }) => {
-        await page.goto("/");
+    test("a guest can reach the contact page from the legal header", async ({ page }) => {
+        await page.goto("/terms");
 
-        await page.getByRole("link", { name: "Contact" }).click();
-        await expect(page).toHaveURL(/\/contact$/);
+        await page.getByRole("link", { name: "Security" }).first().click();
+
+        await expect(page).toHaveURL(/\\/contact$/);
         await expect(page.getByRole("heading", { name: "Contact" })).toBeVisible();
-        await expect(page.getByRole("link", { name: app.emails.privacy })).toHaveAttribute(
+        await expect(page.getByRole("link", { name: app.emails.contact })).toHaveAttribute(
             "href",
-            "mailto:" + app.emails.privacy,
+            "mailto:" + app.emails.contact,
         );
     });
-
     test("a signed-in owner can still reach the landing page", async ({ page }) => {
         await page.route("**/api/v1/auth/session", (route) =>
             route.fulfill(json(200, sessionPayload)),
