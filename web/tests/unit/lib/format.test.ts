@@ -30,6 +30,9 @@ describe('timeAgo', () => {
     expect(timeAgo(new Date(now - 3 * 3_600_000).toISOString(), now)).toBe(
       '3 hours ago',
     )
+    expect(timeAgo(new Date(now - 86_400_000).toISOString(), now)).toBe(
+      'Yesterday',
+    )
     expect(timeAgo(new Date(now - 2 * 86_400_000).toISOString(), now)).toBe(
       '2 days ago',
     )
