@@ -10,6 +10,7 @@ import { ApiError } from '../../../lib/api/client'
 import { errorMessage, validationErrors } from '../../../lib/api/errors'
 import { deleteAccountSchema, fieldErrors } from '../schemas'
 import { authStyles as s } from './authStyles'
+import { app } from '../../../config/app'
 
 /**
  * Account deletion. The API requires the password and the address typed as
@@ -78,7 +79,7 @@ export function DeleteAccountPage() {
       <div className={s.heading}>
         <h1 className={s.title}>Delete account</h1>
         <p className={s.subtitle}>
-          Permanently close your Sendocs account.
+          Permanently close your {app.name} account.
         </p>
       </div>
 

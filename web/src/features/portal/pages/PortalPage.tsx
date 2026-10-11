@@ -12,6 +12,7 @@ import { PortalItemRow } from '../components/PortalItemRow'
 import { progressLabel, remainingLabel, uploadPercent } from '../progress'
 import { useUploadQueue } from '../useUploadQueue'
 import type { PortalView } from '../types'
+import { app } from '../../../config/app'
 
 type PortalStatus = 'loading' | 'ready' | 'dead' | 'error'
 
@@ -245,7 +246,7 @@ export function PortalPage() {
         as="footer"
         className="flex items-center justify-center gap-1.5 mt-8 py-6 border-t border-border-subtle text-xs text-ink-muted sm:mt-12 sm:py-8 sm:text-sm"
       >
-        <span>© 2026 Sendocs</span>
+        <span>© 2026 {app.name}</span>
         <span className="text-border-strong" aria-hidden="true">
           ·
         </span>

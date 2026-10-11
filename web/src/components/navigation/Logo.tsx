@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { cn } from '../../lib/cn'
+import { app } from '../../config/app'
 
 const LOGO = 'inline-flex items-center gap-2.5 text-ink'
 const MARK =
@@ -22,7 +23,7 @@ export function Logo({ to = '/', className }: LogoProps) {
       <span className={MARK} aria-hidden="true">
         S
       </span>
-      <span className={WORDMARK}>Sendocs</span>
+      <span className={WORDMARK}>{app.name}</span>
     </>
   )
 
@@ -31,7 +32,7 @@ export function Logo({ to = '/', className }: LogoProps) {
   }
 
   return (
-    <Link to={to} className={cn(LOGO, className)} aria-label="Sendocs">
+    <Link to={to} className={cn(LOGO, className)} aria-label={app.name}>
       {content}
     </Link>
   )

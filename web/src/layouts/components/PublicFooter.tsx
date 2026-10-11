@@ -2,6 +2,7 @@ import { Fragment } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Container } from '../../components/ui'
 import { cn } from '../../lib/cn'
+import { app } from '../../config/app'
 
 const INNER =
   'flex flex-wrap items-center justify-center gap-2 text-ink-muted text-center'
@@ -37,7 +38,7 @@ export function PublicFooter() {
       <Container
         className={cn(INNER, isLanding ? INNER_LANDING : INNER_DEFAULT)}
       >
-        <span>{isLanding ? '© 2026 Sendocs' : '© 2025 Sendocs Inc.'}</span>
+        <span>{isLanding ? `© 2026 ${app.name}` : `© 2025 ${app.name} Inc.`}</span>
         {visibleLinks.map((link) => (
           <Fragment key={link.to}>
             <span aria-hidden="true">·</span>

@@ -13,6 +13,7 @@ import { PasswordRequirementsList } from '../components/PasswordRequirementsList
 import { PasswordStrengthMeter } from '../components/PasswordStrengthMeter'
 import { changePasswordSchema, fieldErrors } from '../schemas'
 import { authStyles as s } from './authStyles'
+import { app } from '../../../config/app'
 
 export function ChangePasswordPage() {
   const { changePassword } = useAuth()
@@ -92,7 +93,7 @@ export function ChangePasswordPage() {
       <div className={s.heading}>
         <h1 className={s.title}>Change password</h1>
         <p className={s.subtitle}>
-          Update the password used to sign in to your Sendocs account.
+          Update the password used to sign in to your {app.name} account.
         </p>
       </div>
 

@@ -12,7 +12,7 @@ describe('legal content', () => {
       expect(section.blocks.length).toBeGreaterThan(0)
     }
 
-    expect(privacyPolicy.note?.email).toBe('privacy@sendocs.internal')
+    expect(privacyPolicy.note?.email).toBe('privacy@sendocs.io')
   })
 
   it('transcribes every terms section behind an intro', () => {

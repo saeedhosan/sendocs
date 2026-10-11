@@ -67,7 +67,7 @@ describe('Privacy Policy page', () => {
     expect(screen.getByText(/Account Identity Data:/)).toBeInTheDocument()
 
     expect(
-      screen.getByRole('link', { name: 'privacy@sendocs.internal' }),
-    ).toHaveAttribute('href', 'mailto:privacy@sendocs.internal')
+      screen.getByRole('link', { name: 'privacy@sendocs.io' }),
+    ).toHaveAttribute('href', 'mailto:privacy@sendocs.io')
   })
 })

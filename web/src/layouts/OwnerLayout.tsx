@@ -2,6 +2,7 @@ import { Link, Outlet, useLocation } from 'react-router-dom'
 import { Container } from '../components/ui'
 import { VerifyEmailBanner } from '../features/auth/components/VerifyEmailBanner'
 import { OwnerHeader } from './components/OwnerHeader'
+import { app } from '../config/app'
 
 export function OwnerLayout() {
   const pathname = useLocation().pathname
@@ -20,7 +21,7 @@ export function OwnerLayout() {
       {showFooter ? (
         <footer className="border-t border-border">
           <Container className="flex items-center justify-between gap-4">
-            <span>Sendocs</span>
+            <span>{app.name}</span>
             {isRequestDetail ? (
               <div className="flex items-center gap-4">
                 <Link to="/contact">Help</Link>

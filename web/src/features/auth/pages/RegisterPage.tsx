@@ -13,6 +13,7 @@ import { PasswordRequirementsList } from '../components/PasswordRequirementsList
 import { cn } from '../../../lib/cn'
 import { fieldErrors, registerSchema } from '../schemas'
 import { authStyles as s } from './authStyles'
+import { app } from '../../../config/app'
 
 type RegisterValues = {
   name: string
@@ -94,7 +95,7 @@ export function RegisterPage() {
       <div className={cn(s.heading, s.center)}>
         <h1 className={s.title}>Create your account</h1>
         <p className={s.subtitle}>
-          Start collecting documents securely with Sendocs.
+          Start collecting documents securely with {app.name}.
         </p>
       </div>
 
