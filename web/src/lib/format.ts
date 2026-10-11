@@ -49,7 +49,7 @@ export function timeAgo(iso: string | null, now: number = Date.now()): string {
   const days = Math.floor(hours / 24)
 
   if (days < 30) {
-    return days === 1 ? '1 day ago' : `${days} days ago`
+    return days === 1 ? 'Yesterday' : `${days} days ago`
   }
 
   return formatDate(iso)
