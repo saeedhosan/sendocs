@@ -77,6 +77,15 @@ export function RequestsPage() {
     const matchesSearch = request.title.toLowerCase().includes(search.trim().toLowerCase())
     return matchesFilter && matchesSearch
   })
+  const hasCompleteList =
+    filter === 'all' &&
+    search.trim() === '' &&
+    cursor === null &&
+    pageCursor === null &&
+    historyRef.current.length === 0
+  const showingLabel = hasCompleteList
+    ? `Showing 1 to ${visibleRequests.length} of ${requests.length} requests`
+    : `Showing ${visibleRequests.length} of ${requests.length} requests on this page`
 
   function setCursor(next: string | null) {
     setSearchParams(next ? { cursor: next } : {}, { replace: false })
@@ -207,9 +216,7 @@ export function RequestsPage() {
               requests={visibleRequests}
               footer={
                 <div className={styles.listFooter}>
-                  <span className={styles.showing}>
-                    Showing {visibleRequests.length} of {requests.length} requests on this page
-                  </span>
+                  <span className={styles.showing}>{showingLabel}</span>
                   <div className={styles.pagingButtons}>
                     <Button
                       variant="secondary"
