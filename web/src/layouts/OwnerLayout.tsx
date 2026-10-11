@@ -33,7 +33,7 @@ export function OwnerLayout() {
             className={cn(
               'px-4 sm:px-6 flex items-center justify-between gap-4 text-xs',
               isRequestDetail
-                ? 'text-neutral-500 min-[576px]:max-w-4xl min-[768px]:max-w-4xl min-[992px]:max-w-4xl min-[1200px]:max-w-4xl min-[1400px]:max-w-4xl'
+                ? 'text-neutral-500 !max-w-4xl'
                 : 'text-ink-secondary !max-w-2xl',
             )}
           >

@@ -14,7 +14,7 @@ const INNER_DASHBOARD =
 const INNER_CREATE =
   'py-3.5 px-4 sm:px-6 !max-w-2xl'
 const INNER_DETAIL =
-  'py-3.5 px-4 sm:px-6 min-[576px]:max-w-4xl min-[768px]:max-w-4xl min-[992px]:max-w-4xl min-[1200px]:max-w-4xl min-[1400px]:max-w-4xl'
+  'py-3 px-4 sm:px-6 !max-w-4xl'
 const TRIGGER_BASE = 'inline-flex items-center cursor-pointer transition-colors duration-150 hover:text-ink'
 const TRIGGER_DASHBOARD = cn(
   TRIGGER_BASE,
