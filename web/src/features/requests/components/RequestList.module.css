@@ -10,6 +10,19 @@
   display: none;
 }
 
+.empty {
+  padding: 2.5rem 1.25rem;
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+.footer {
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-canvas-muted);
+}
+
 @media (min-width: 48rem) {
   .header {
     display: grid;
