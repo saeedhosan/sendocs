@@ -1,7 +1,7 @@
 .field {
   display: flex;
   flex-direction: column;
-  gap: 0.625rem;
+  gap: 0.5rem;
   margin-top: 1.25rem;
 }
 
@@ -15,7 +15,7 @@
   background-color: var(--color-surface-sunken);
   color: var(--color-text);
   font-family: var(--font-workspace-mono);
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
 }
 
 .input:focus {
@@ -25,11 +25,19 @@
 
 .hint {
   margin-top: 0.5rem;
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
+  line-height: 1.5;
   color: var(--color-text-secondary);
 }
 
 @media (min-width: 640px) {
+  .input,
+  .copyButton,
+  .doneButton {
+    min-height: 2rem;
+    height: 2rem;
+  }
+
   .field {
     flex-direction: row;
     align-items: center;
@@ -39,10 +47,15 @@
 .copyButton {
   min-height: 2.75rem;
   height: 2.75rem;
+  padding-inline: 0.75rem;
+  font-size: 0.75rem;
 }
 
 .doneButton {
   min-height: 2.75rem;
-  border-color: #e2e8f0;
+  height: 2.75rem;
+  padding-inline: 0.75rem;
+  border-color: #e5e5e5;
   border-radius: var(--radius-md);
+  font-size: 0.75rem;
 }
