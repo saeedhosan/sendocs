@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import type { ReactNode } from 'react'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 import { PublicFooter } from '../../../src/layouts/components/PublicFooter'
@@ -8,7 +9,7 @@ vi.mock('../../../src/app/providers/useAuth', () => ({
   useAuth: () => ({ status: 'guest' }),
 }))
 
-function renderAt(path: string, children: React.ReactNode) {
+function renderAt(path: string, children: ReactNode) {
   return render(
     <MemoryRouter initialEntries={[path]}>{children}</MemoryRouter>,
   )
