@@ -29,7 +29,7 @@
   padding: 0.375rem 0.75rem;
   font-size: 0.8125rem;
   font-weight: 500;
-  color: var(--color-text-secondary);
+  color: var(--color-marketing-text-secondary);
   transition: color 0.15s ease;
 }
 
@@ -90,5 +90,23 @@
 
   .nav {
     gap: 1rem;
+  }
+}
+
+.homeHeader {
+  position: fixed;
+  background-color: rgb(255 255 255 / 90%);
+  backdrop-filter: blur(12px);
+}
+
+.homeInner {
+  max-width: var(--layout-max-public);
+  min-height: var(--layout-header-height-public);
+  padding-inline: 1rem;
+}
+
+@media (min-width: 640px) {
+  .homeInner {
+    padding-inline: 1.5rem;
   }
 }

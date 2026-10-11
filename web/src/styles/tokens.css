@@ -80,4 +80,10 @@
   --layout-max-document: 56rem;
   --layout-header-height: 4rem;
   --layout-header-height-public: 3.5rem;
+
+  /* Marketing reference palette */
+  --color-marketing-text-secondary: #475569;
+  --color-marketing-success: #16a34a;
+  --color-marketing-success-surface: #f0fdf4;
+  --color-marketing-success-border: rgba(22, 163, 74, 0.2);
 }
