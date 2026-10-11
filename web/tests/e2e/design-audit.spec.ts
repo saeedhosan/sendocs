@@ -279,54 +279,62 @@ async function waitForFonts(page: Page) {
   })
 }
 
-test('captures desktop pairs for all committed UI references', async ({ page }) => {
-  test.setTimeout(240_000)
+test('captures desktop and mobile pairs for all committed UI references', async ({ page }) => {
+  test.setTimeout(420_000)
   const outputDirectory = resolve(process.cwd(), 'test-results/design-audit')
   await mkdir(outputDirectory, { recursive: true })
 
+  const viewports = [
+    { name: 'desktop', width: 1440, height: 1000 },
+    { name: 'mobile', width: 390, height: 844 },
+  ]
+
   let authenticated = false
   await stubApi(page, () => authenticated)
-  await page.setViewportSize({ width: 1440, height: 1000 })
 
-  for (const item of pages) {
-    const referencePath = resolve(process.cwd(), '..', item.reference)
-    await page.goto(pathToFileURL(referencePath).href, {
-      waitUntil: 'domcontentloaded',
-    })
-    await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {})
-    await waitForFonts(page)
+  for (const viewport of viewports) {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height })
 
-    // Remove preview-only controls from the HTML mocks so screenshots compare
-    // the actual page rather than the reference authoring/demo controls.
-    if (item.name === 'client-portal') {
-      await page.evaluate(() => document.querySelector('aside')?.remove())
-    } else if (item.name === 'owner-dashboard') {
-      await page.evaluate(() => {
-        document.querySelector('button[title="Toggle empty state preview"]')?.remove()
+    for (const item of pages) {
+      const referencePath = resolve(process.cwd(), '..', item.reference)
+      await page.goto(pathToFileURL(referencePath).href, {
+        waitUntil: 'domcontentloaded',
       })
-    } else if (item.name === 'new-request') {
-      await page.evaluate(() => document.querySelector('#revealSuccessModal')?.remove())
-    }
+      await page.waitForLoadState('networkidle', { timeout: 8000 }).catch(() => {})
+      await waitForFonts(page)
 
-    await page.screenshot({
-      path: resolve(outputDirectory, `${item.name}-reference.png`),
-      fullPage: true,
-      animations: 'disabled',
-    })
+      // Remove preview-only controls from the HTML mocks so screenshots compare
+      // the actual page rather than the reference authoring/demo controls.
+      if (item.name === 'client-portal') {
+        await page.evaluate(() => document.querySelector('aside')?.remove())
+      } else if (item.name === 'owner-dashboard') {
+        await page.evaluate(() => {
+          document.querySelector('button[title="Toggle empty state preview"]')?.remove()
+        })
+      } else if (item.name === 'new-request') {
+        await page.evaluate(() => document.querySelector('#revealSuccessModal')?.remove())
+      }
 
-    authenticated = item.authenticated
-    await page.goto(item.path, { waitUntil: 'domcontentloaded' })
-    await expect(
-      page.getByRole('heading', { name: item.heading, exact: true }).first(),
-    ).toBeVisible({ timeout: 15000 })
-    if (item.name === 'owner-dashboard') {
-      await expect(page.getByText(summary.title).first()).toBeVisible()
+      await page.screenshot({
+        path: resolve(outputDirectory, `${viewport.name}-${item.name}-reference.png`),
+        fullPage: true,
+        animations: 'disabled',
+      })
+
+      authenticated = item.authenticated
+      await page.goto(item.path, { waitUntil: 'domcontentloaded' })
+      await expect(
+        page.getByRole('heading', { name: item.heading, exact: true }).first(),
+      ).toBeVisible({ timeout: 15000 })
+      if (item.name === 'owner-dashboard') {
+        await expect(page.getByText(summary.title).first()).toBeVisible()
+      }
+      await waitForFonts(page)
+      await page.screenshot({
+        path: resolve(outputDirectory, `${viewport.name}-${item.name}-implementation.png`),
+        fullPage: true,
+        animations: 'disabled',
+      })
     }
-    await waitForFonts(page)
-    await page.screenshot({
-      path: resolve(outputDirectory, `${item.name}-implementation.png`),
-      fullPage: true,
-      animations: 'disabled',
-    })
   }
 })
