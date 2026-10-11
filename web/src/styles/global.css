@@ -180,6 +180,7 @@ select {
   --color-canvas-muted: #fafafa;
   --color-surface: #ffffff;
   --color-surface-muted: #fafafa;
+  --color-surface-subtle: #fafafa;
   --color-surface-sunken: #e5e5e5;
   --color-text: #171717;
   --color-text-secondary: #525252;
