@@ -9,7 +9,6 @@ import { Alert, Button, Input, PasswordInput } from '../../../components/ui'
 import { AuthLayout } from '../../../layouts/AuthLayout'
 import { ApiError } from '../../../lib/api/client'
 import { errorMessage, validationErrors } from '../../../lib/api/errors'
-import { passwordRequirements } from '../../../lib/password'
 import { PasswordRequirementsList } from '../components/PasswordRequirementsList'
 import { PasswordStrengthMeter } from '../components/PasswordStrengthMeter'
 import { changePasswordSchema, fieldErrors } from '../schemas'
@@ -31,11 +30,11 @@ export function ChangePasswordPage() {
   const passwordsMismatch = confirmPassword !== '' && password !== confirmPassword
 
   const rules = [
-    ...passwordRequirements.map((requirement) => ({
-      id: requirement.id,
-      label: requirement.label,
-      met: requirement.test(password),
-    })),
+    {
+      id: 'length',
+      label: 'Minimum 6 characters',
+      met: password.length >= 6,
+    },
     {
       id: 'different',
       label: 'Different from current',
