@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom'
 import { cn } from '../../lib/cn'
 import { app } from '../../config/app'
+import { LockIcon } from '../icons'
 
 const LOGO = 'inline-flex items-center gap-2.5 text-ink'
 const MARK =
-  'inline-flex items-center justify-center size-7 rounded-[8px] bg-primary text-on-primary text-sm font-semibold tracking-[-0.01em]'
-const WORDMARK = 'text-[0.9375rem] font-semibold tracking-[-0.025em]'
+  'inline-flex items-center justify-center size-8 rounded-[10px] bg-primary text-on-primary'
+const WORDMARK = 'text-lg font-semibold tracking-tight'
 
 export type LogoProps = {
   /** Where the mark links. Pass `null` for non-navigating surfaces. */
@@ -21,7 +22,7 @@ export function Logo({ to = '/', className }: LogoProps) {
   const content = (
     <>
       <span className={MARK} aria-hidden="true">
-        S
+        <LockIcon size={18} />
       </span>
       <span className={WORDMARK}>{app.name}</span>
     </>
