@@ -97,11 +97,11 @@ export function RegisterPage() {
         </p>
       </div>
 
-      <div className={styles.social}>
+      <div className={`${styles.social} ${styles.registerSocial}`}>
         <GoogleButton label="Sign up with Google" />
       </div>
 
-      <AuthDivider label="or register with email" />
+      <AuthDivider label="or register with email" variant="register" />
 
       {formError ? (
         <Alert variant="error" className={styles.formError}>
