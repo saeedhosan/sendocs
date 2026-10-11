@@ -10,16 +10,16 @@ export type RequestListProps = {
 
 export function RequestList({ requests, footer, empty }: RequestListProps) {
   return (
-    <div className="overflow-hidden border border-border rounded-md bg-surface shadow-sm">
+    <div className="overflow-hidden border border-border-subtle rounded-[10px] bg-surface shadow-xs">
       <div
-        className="hidden md:grid md:grid-cols-[minmax(0,5fr)_2fr_3fr_2fr_4.5rem] md:gap-3 md:px-5 md:py-3 md:border-b md:border-border md:bg-canvas-muted md:text-[0.6875rem] md:font-medium md:tracking-[0.04em] md:uppercase md:text-ink-muted"
+        className="hidden md:grid md:grid-cols-12 md:gap-3 md:px-5 md:py-3 md:border-b md:border-border-subtle md:bg-surface-subtle md:text-[0.6875rem] md:font-medium md:tracking-[0.04em] md:uppercase md:text-ink-muted"
         aria-hidden="true"
       >
-        <span>Title</span>
-        <span>Status</span>
-        <span>Progress</span>
-        <span>Last activity</span>
-        <span className="md:text-right">Action</span>
+        <span className="md:col-span-5">Title</span>
+        <span className="md:col-span-2">Status</span>
+        <span className="md:col-span-2">Progress</span>
+        <span className="md:col-span-2">Last activity</span>
+        <span className="md:col-span-1 md:text-right">Action</span>
       </div>
       {requests.length > 0 ? (
         requests.map((request) => (
@@ -31,7 +31,7 @@ export function RequestList({ requests, footer, empty }: RequestListProps) {
         </div>
       )}
       {footer ? (
-        <div className="px-5 py-3 border-t border-border bg-canvas-muted">
+        <div className="px-5 py-3 border-t border-border-subtle bg-surface-subtle">
           {footer}
         </div>
       ) : null}
