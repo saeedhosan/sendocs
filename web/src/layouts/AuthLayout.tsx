@@ -69,7 +69,7 @@ export function AuthLayout({
     <div className="flex flex-col min-h-screen">
       <header className="w-full border-b border-border bg-surface">
         <Container className={HEADER_INNER}>
-          <Logo />
+          <Logo variant="auth" />
           {headerAction ? (
             <Link
               to={headerAction.to}
