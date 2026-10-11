@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import globalCss from '../../../src/styles/global.css?raw'
+import { transitions } from '../../../src/config/transition'
 import {
   TRANSITION_STYLES,
   applyTransitionStyles,
   transitionKeyframes,
-  transitions,
-} from '../../../src/config/transition'
+} from '../../../src/lib/transitionStyles'
 
-describe('transition config', () => {
+describe('transition styles', () => {
   it('resolves every preset to real keyframes in global.css', () => {
     for (const style of TRANSITION_STYLES) {
       const { out, in: incoming } = transitionKeyframes(style)
