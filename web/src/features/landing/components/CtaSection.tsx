@@ -4,7 +4,7 @@ export function CtaSection() {
   return (
     <section className="flex flex-col items-start justify-between gap-6 p-6 bg-surface-muted border border-border rounded-[10px] shadow-[0_1px_2px_rgba(0,0,0,0.02)] sm:flex-row sm:items-center sm:p-8">
       <div className="max-w-[32rem]">
-        <h2 className="text-xl font-semibold tracking-[-0.02em] text-ink sm:text-[1.375rem]">
+        <h2 className="text-xl font-semibold tracking-tight text-ink sm:text-[1.375rem]">
           Ready to simplify document collection?
         </h2>
         <p className="text-sm text-marketing-text-secondary">
