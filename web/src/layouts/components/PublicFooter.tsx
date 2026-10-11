@@ -6,7 +6,7 @@ import { app } from '../../config/app'
 
 const INNER =
   'flex flex-wrap items-center justify-center gap-2 text-ink-muted text-center'
-const INNER_DEFAULT = 'min-h-16 text-xs leading-4'
+const INNER_DEFAULT = 'text-xs leading-4'
 const INNER_LANDING = 'min-h-14 text-[0.8125rem] leading-5'
 const CONTAINER_LANDING = 'px-4 sm:px-6 min-[576px]:max-w-6xl min-[768px]:max-w-6xl min-[992px]:max-w-6xl min-[1200px]:max-w-6xl min-[1400px]:max-w-6xl'
 const CONTAINER_DOCUMENT = 'px-6 min-[576px]:max-w-4xl min-[768px]:max-w-4xl min-[992px]:max-w-4xl min-[1200px]:max-w-4xl min-[1400px]:max-w-4xl'
