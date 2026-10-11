@@ -1,5 +1,6 @@
 .hero {
   display: grid;
+  min-width: 0;
   grid-template-columns: 1fr;
   align-items: center;
   gap: 2.5rem;
@@ -7,6 +8,7 @@
 
 .copy {
   display: flex;
+  min-width: 0;
   flex-direction: column;
   gap: 1.5rem;
 }
@@ -77,6 +79,12 @@
 
 .primaryAction:hover {
   background-color: var(--color-primary-hover);
+}
+
+@media (max-width: 639px) {
+  .headline {
+    max-width: 20rem;
+  }
 }
 
 @media (min-width: 640px) {
