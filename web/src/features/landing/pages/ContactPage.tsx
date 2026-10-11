@@ -1,5 +1,4 @@
 import { Container } from '../../../components/ui'
-import styles from './ContactPage.module.css'
 
 const contactEmail = 'privacy@sendocs.internal'
 
@@ -9,15 +8,20 @@ const contactEmail = 'privacy@sendocs.internal'
  */
 export function ContactPage() {
   return (
-    <Container as="section" className={styles.page}>
-      <h1 className={styles.title}>Contact</h1>
+    <Container as="section" className="pt-10 pb-16 bg-surface">
+      <h1 className="text-[1.875rem] font-semibold tracking-[-0.025em] text-ink">
+        Contact
+      </h1>
 
-      <p className={styles.lede}>
+      <p className="max-w-[40rem] mt-2 text-sm leading-[1.625] text-ink-secondary">
         Sendocs is a document collection service. If you have a question about
         your account, a document request, or how your data is handled, email us.
       </p>
 
-      <a href={`mailto:${contactEmail}`} className={styles.email}>
+      <a
+        href={`mailto:${contactEmail}`}
+        className="inline-flex items-center min-h-10 mt-6 px-4 border border-border rounded-md bg-surface-muted text-[0.9375rem] font-medium text-primary transition-colors duration-150 hover:border-primary hover:underline"
+      >
         {contactEmail}
       </a>
     </Container>
