@@ -2,10 +2,27 @@ import { forwardRef } from 'react'
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
 import { cn } from '../../lib/cn'
 import { SpinnerIcon } from '../icons'
-import styles from './Button.module.css'
-
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger'
 export type ButtonSize = 'md' | 'sm'
+
+const BASE =
+  'inline-flex items-center justify-center gap-1.5 rounded-md border font-medium leading-5 whitespace-nowrap cursor-pointer transition-colors duration-150 disabled:opacity-[0.65] disabled:cursor-not-allowed'
+
+const SIZES: Record<ButtonSize, string> = {
+  md: 'h-10 px-4 text-sm',
+  sm: 'h-9 px-3 text-[0.8125rem]',
+}
+
+const VARIANTS: Record<ButtonVariant, string> = {
+  primary:
+    'border-transparent bg-primary text-on-primary shadow-sm enabled:hover:bg-primary-hover enabled:active:bg-primary-active',
+  secondary:
+    'border-border-strong bg-surface text-ink-secondary enabled:hover:bg-surface-muted',
+  ghost:
+    'border-transparent bg-transparent text-ink-secondary enabled:hover:bg-surface-muted enabled:hover:text-ink',
+  danger:
+    'border-danger-border bg-danger-surface text-danger-text enabled:hover:bg-[#ffe4e6]',
+}
 
 export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: ButtonVariant
@@ -37,10 +54,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       ref={ref}
       type={type}
       className={cn(
-        styles.button,
-        styles[variant],
-        size === 'sm' && styles.sm,
-        fullWidth && styles.fullWidth,
+        BASE,
+        SIZES[size],
+        VARIANTS[variant],
+        fullWidth && 'w-full',
         className,
       )}
       disabled={disabled || loading}
@@ -48,12 +65,17 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       {...props}
     >
       {loading ? (
-        <SpinnerIcon className={styles.spinner} size={16} />
+        <SpinnerIcon
+          className="animate-spin [animation-duration:0.6s]"
+          size={16}
+        />
       ) : (
-        iconLeft && <span className={styles.icon}>{iconLeft}</span>
+        iconLeft && <span className="inline-flex items-center">{iconLeft}</span>
       )}
       {children}
-      {!loading && iconRight && <span className={styles.icon}>{iconRight}</span>}
+      {!loading &&         iconRight && (
+          <span className="inline-flex items-center">{iconRight}</span>
+        )}
     </button>
   )
 })
