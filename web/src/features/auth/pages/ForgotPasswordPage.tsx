@@ -71,6 +71,9 @@ export function ForgotPasswordPage() {
         </div>
 
         <div className={styles.buttonStack}>
+          <Button fullWidth onClick={() => navigate('/login')}>
+            Return to sign in
+          </Button>
           <Button
             variant="secondary"
             fullWidth
@@ -80,9 +83,6 @@ export function ForgotPasswordPage() {
             }}
           >
             Try another email
-          </Button>
-          <Button fullWidth onClick={() => navigate('/login')}>
-            Return to sign in
           </Button>
         </div>
       </AuthLayout>
