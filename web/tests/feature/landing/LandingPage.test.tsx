@@ -70,7 +70,7 @@ describe('LandingPage', () => {
       ).toBeInTheDocument()
     })
 
-    it('links to the legal pages from the footer', () => {
+    it('links to the legal pages shown in the design reference from the footer', () => {
       renderHome()
 
       expect(screen.getByRole('link', { name: 'Terms' })).toHaveAttribute(
@@ -81,10 +81,9 @@ describe('LandingPage', () => {
         'href',
         '/privacy',
       )
-      expect(screen.getByRole('link', { name: 'Contact' })).toHaveAttribute(
-        'href',
-        '/contact',
-      )
+      expect(
+        screen.queryByRole('link', { name: 'Contact' }),
+      ).not.toBeInTheDocument()
     })
   })
 
