@@ -65,7 +65,7 @@
 }
 
 .navLink {
-  color: var(--color-text-secondary);
+  color: var(--color-text-body);
   transition: color 0.15s ease;
 }
 
@@ -75,9 +75,11 @@
 
 .navLinkActive {
   color: var(--color-primary);
+  font-weight: 600;
 }
 
 .navSignIn {
+  padding-left: 0.5rem;
   color: var(--color-primary);
 }
 
