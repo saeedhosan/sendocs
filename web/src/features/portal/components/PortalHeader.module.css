@@ -40,6 +40,7 @@
   background-color: var(--color-surface-muted);
   font-family: var(--font-workspace-mono);
   font-size: 0.75rem;
+  line-height: 1rem;
   color: var(--color-text-muted);
 }
 
