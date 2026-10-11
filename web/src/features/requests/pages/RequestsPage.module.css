@@ -229,7 +229,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    margin-bottom: 0;
+    margin-bottom: -0.5rem;
   }
 
   .search {
