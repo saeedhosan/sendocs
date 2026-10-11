@@ -15,6 +15,8 @@ export type DialogProps = {
   /** Element to focus when the dialog opens; defaults to the first control. */
   initialFocusRef?: React.RefObject<HTMLElement | null>
   className?: string
+  /** Centered modal presentation for reference-specific dialogs. */
+  variant?: 'default' | 'centered'
 }
 
 const FOCUSABLE =
@@ -36,6 +38,7 @@ export function Dialog({
   tone = 'default',
   initialFocusRef,
   className,
+  variant = 'default',
 }: DialogProps) {
   const titleId = useId()
   const descriptionId = useId()
@@ -104,7 +107,10 @@ export function Dialog({
   }
 
   return createPortal(
-    <div className={styles.overlay} onMouseDown={onClose}>
+    <div
+      className={cn(styles.overlay, variant === 'centered' && styles.centeredOverlay)}
+      onMouseDown={onClose}
+    >
       <div
         ref={panelRef}
         role="dialog"
@@ -112,7 +118,12 @@ export function Dialog({
         aria-labelledby={titleId}
         aria-describedby={description ? descriptionId : undefined}
         tabIndex={-1}
-        className={cn(styles.panel, styles[tone], className)}
+        className={cn(
+          styles.panel,
+          styles[tone],
+          variant === 'centered' && styles.centeredPanel,
+          className,
+        )}
         onMouseDown={(event) => event.stopPropagation()}
       >
         <div className={styles.body}>
@@ -120,7 +131,13 @@ export function Dialog({
             {title}
           </h2>
           {description ? (
-            <p id={descriptionId} className={styles.description}>
+            <p
+              id={descriptionId}
+              className={cn(
+                styles.description,
+                variant === 'centered' && styles.centeredDescription,
+              )}
+            >
               {description}
             </p>
           ) : null}

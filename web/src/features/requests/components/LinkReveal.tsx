@@ -36,9 +36,14 @@ export function LinkReveal({ open, link, onClose }: LinkRevealProps) {
       onClose={onClose}
       title="Your request is ready."
       description="Copy this link and send it to your client. The raw link is shown once only."
+      variant="centered"
       initialFocusRef={inputRef}
       footer={
-        <Button variant="secondary" onClick={onClose}>
+        <Button
+          variant="secondary"
+          onClick={onClose}
+          className={styles.doneButton}
+        >
           Done
         </Button>
       }
