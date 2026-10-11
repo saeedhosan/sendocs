@@ -167,4 +167,7 @@ const originalNavigate = router.navigate.bind(router) as unknown as (
 router.navigate = ((to: unknown, options?: Record<string, unknown>) =>
   typeof to === 'number'
     ? originalNavigate(to)
-    : originalNavigate(to, { viewTransition: true, ...options })) as typeof router.navigate
+    : originalNavigate(to, {
+        ...options,
+        viewTransition: options?.viewTransition ?? true,
+      })) as typeof router.navigate

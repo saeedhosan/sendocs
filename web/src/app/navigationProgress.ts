@@ -5,17 +5,14 @@ import './navigationProgress.css'
 NProgress.configure({
   showSpinner: false,
   minimum: 0.08,
-  speed: 180,
+  speed: 200,
   trickleSpeed: 200,
 })
 
-// Only show the bar once a navigation has taken at least this long, so quick
-// navigations don't produce a distracting flash.
-const SHOW_DELAY_MS = 120
-// Once visible, keep the bar on screen at least this long so it never blips.
-const MIN_VISIBLE_MS = 250
+// Keep the bar on screen at least this long once shown, so even instant
+// navigations give a visible, non-jarring sweep.
+const MIN_VISIBLE_MS = 320
 
-let showTimer: number | undefined
 let hideTimer: number | undefined
 let visible = false
 let shownAt = 0
@@ -26,32 +23,24 @@ export function startNavigationProgress() {
     clearTimeout(hideTimer)
     hideTimer = undefined
   }
-  if (visible || showTimer !== undefined) return
+  if (visible) return
 
-  showTimer = window.setTimeout(() => {
-    showTimer = undefined
-    visible = true
-    shownAt = performance.now()
-    NProgress.start()
-  }, SHOW_DELAY_MS)
+  visible = true
+  shownAt = performance.now()
+  NProgress.start()
 }
 
 /** Signal that the current navigation has settled. */
 export function finishNavigationProgress() {
-  if (showTimer !== undefined) {
-    window.clearTimeout(showTimer)
-    showTimer = undefined
-    return
-  }
-
   if (!visible) return
 
   const remaining = Math.max(0, MIN_VISIBLE_MS - (performance.now() - shownAt))
   if (hideTimer !== undefined) {
-    window.clearTimeout(hideTimer)
+    clearTimeout(hideTimer)
   }
   hideTimer = window.setTimeout(() => {
     hideTimer = undefined
+    visible = false
     NProgress.done()
   }, remaining)
 }
