@@ -2,7 +2,7 @@ import { useRef } from 'react'
 import type { ChangeEvent } from 'react'
 import { Button, ProgressBar } from '../../../components/ui'
 import { cn } from '../../../lib/cn'
-import { ACCEPT_ATTRIBUTE, ACCEPTED_TYPES_LABEL } from '../precheck'
+import { ACCEPT_ATTRIBUTE } from '../precheck'
 import type { ItemFailure } from '../useUploadQueue'
 import type { PortalItem } from '../types'
 import styles from './PortalItemRow.module.css'
@@ -87,7 +87,7 @@ export function PortalItemRow({
           <>
             <p className={styles.label}>{`${item.position}. ${item.label}`}</p>
             <p className={styles.waiting}>
-              Waiting for upload · Max 25 MB · {ACCEPTED_TYPES_LABEL}
+              Waiting for upload · Max 25 MB
             </p>
           </>
         )}
