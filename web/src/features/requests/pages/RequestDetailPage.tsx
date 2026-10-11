@@ -177,7 +177,7 @@ export function RequestDetailPage() {
       <div className="flex flex-col gap-4 pb-6 border-b border-border sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="flex items-center flex-wrap gap-2.5">
-            <h1 className="text-xl leading-7 font-semibold tracking-[-0.01em] text-ink sm:text-2xl sm:leading-8">
+            <h1 className="text-xl leading-7 font-semibold tracking-tight text-ink sm:text-2xl sm:leading-8">
               {request.title}
             </h1>
             <Badge
