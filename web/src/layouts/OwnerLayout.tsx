@@ -28,7 +28,7 @@ export function OwnerLayout() {
         <Outlet />
       </main>
       {showFooter ? (
-        <footer className="border-t border-border-subtle bg-surface py-4">
+        <footer className={cn('border-t bg-surface py-4', isRequestDetail ? 'border-neutral-200' : 'border-border-subtle')}>
           <Container
             className={cn(
               'px-4 sm:px-6 flex items-center justify-between gap-4 text-xs',
