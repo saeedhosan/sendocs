@@ -11,7 +11,8 @@ export const authStyles = {
   footerText: 'mt-6 text-center text-sm text-ink-muted',
   footerBox:
     'mt-6 pt-5 border-t border-border-subtle text-center text-sm text-ink-muted',
-  legal: 'my-4 text-center text-xs leading-5 text-ink-muted',
+  legal: 'my-4 text-center text-xs leading-4 text-ink-muted',
+  legalLink: 'text-primary hover:underline',
   link: 'font-medium text-primary hover:text-primary-hover',
   backRow: 'mt-6 text-center text-sm text-ink-secondary',
   backLink:

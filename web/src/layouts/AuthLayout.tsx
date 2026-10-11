@@ -11,9 +11,9 @@ const HEADER_INNER = `${AUTH_CONTAINER} flex items-center justify-between gap-4 
 const MAIN =
   '[view-transition-name:page-content] flex flex-1 flex-col items-center justify-center w-full px-4'
 const CARD =
-  'w-full max-w-md mx-auto mt-0 mb-12 p-8 bg-surface border border-border rounded-[10px] shadow-sm [&_input:not([type=checkbox]):not([type=radio])]:rounded-[10px] [&_button:not(.absolute)]:rounded-[10px]'
+  'w-full max-w-md mx-auto p-8 bg-surface border border-border rounded-[10px] shadow-sm [&_input:not([type=checkbox]):not([type=radio])]:rounded-[10px] [&_button:not(.absolute)]:rounded-[10px]'
 const FOOTER_INNER =
-  `${AUTH_CONTAINER} flex flex-wrap items-center justify-center gap-2 text-xs text-ink-muted text-center max-sm:flex-col`
+  `${AUTH_CONTAINER} flex flex-wrap items-center justify-center gap-2 text-xs text-ink-muted text-center`
 const FOOTER_RESET_INNER =
   `${AUTH_CONTAINER} flex flex-col items-center justify-center gap-4 text-[0.8125rem] leading-[1.125rem] text-ink-body text-center sm:flex-row`
 const FOOTER_RESET_LINK = 'transition-colors duration-150 hover:text-ink'
@@ -33,6 +33,7 @@ export type AuthLayoutProps = {
   /** Page-specific footer copy/order/layout when a reference differs. */
   footerVariant?: FooterVariant
   logoVariant?: 'auth' | 'auth-login' | 'auth-register'
+  layoutVariant?: 'default' | 'login'
 }
 
 const legalLinks = [
@@ -58,6 +59,7 @@ export function AuthLayout({
   headerAction,
   footerVariant = 'default',
   logoVariant = 'auth',
+  layoutVariant = 'default',
 }: AuthLayoutProps) {
   const isReset = footerVariant === 'reset-password'
   const footerLinks = isReset ? resetLinks : legalLinks
@@ -85,9 +87,21 @@ export function AuthLayout({
         </Container>
       </header>
 
-      <main className={MAIN}>
-        <div className="flex flex-1 items-center justify-center w-full">
-          <div className={CARD}>{children}</div>
+      <main className={cn(MAIN, layoutVariant === 'default' && 'py-6')}>
+        <div
+          className={cn(
+            'flex flex-1 items-center justify-center w-full',
+            layoutVariant === 'default' && 'px-4',
+          )}
+        >
+          <div
+            className={cn(
+              CARD,
+              layoutVariant === 'default' ? 'my-12' : 'mt-0 mb-12',
+            )}
+          >
+            {children}
+          </div>
         </div>
       </main>
 
@@ -119,6 +133,7 @@ export function AuthLayout({
           className={cn(
             'w-full border-t border-border py-6',
             whiteFooters.includes(footerVariant) && 'bg-surface',
+            whiteFooters.includes(footerVariant) && '[&>div]:max-sm:flex-col',
           )}
         >
           <Container className={FOOTER_INNER}>
