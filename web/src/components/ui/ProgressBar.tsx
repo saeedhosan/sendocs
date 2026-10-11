@@ -1,7 +1,12 @@
 import { cn } from '../../lib/cn'
-import styles from './ProgressBar.module.css'
 
 export type ProgressTone = 'waiting' | 'complete' | 'danger'
+
+const TONES: Record<ProgressTone, string> = {
+  waiting: 'bg-primary',
+  complete: 'bg-success',
+  danger: 'bg-danger',
+}
 
 export type ProgressBarProps = {
   /** Completion from 0 to 100. */
@@ -22,7 +27,10 @@ export function ProgressBar({
 
   return (
     <div
-      className={cn(styles.track, className)}
+      className={cn(
+        'w-full h-1.5 overflow-hidden rounded-full bg-surface-sunken',
+        className,
+      )}
       role="progressbar"
       aria-label={label}
       aria-valuemin={0}
@@ -30,7 +38,10 @@ export function ProgressBar({
       aria-valuenow={clamped}
     >
       <span
-        className={cn(styles.fill, styles[tone])}
+        className={cn(
+          'h-full rounded-full [transition:width_150ms_ease]',
+          TONES[tone],
+        )}
         style={{ width: `${clamped}%` }}
       />
     </div>
