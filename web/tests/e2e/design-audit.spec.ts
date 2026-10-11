@@ -194,7 +194,7 @@ const requestPage = {
 const portalView = {
   title: 'Documents for Corporate Onboarding',
   status: 'waiting' as const,
-  uploaded: 2,
+  uploaded: 3,
   total: 5,
   lastActivityAt: twoHoursAgo,
   expiresAt,
@@ -394,6 +394,43 @@ test('captures desktop and mobile pairs for all committed UI references', async 
       await expect(
         page.getByRole('heading', { name: item.heading, exact: true }).first(),
       ).toBeVisible({ timeout: 15000 })
+
+      if (item.name === 'client-portal') {
+        // The HTML reference deliberately depicts an in-flight transfer and a
+        // local size-precheck failure. Reproduce those transient states without
+        // sending a real file or depending on network timing.
+        await page.evaluate(() => {
+          XMLHttpRequest.prototype.send = function () {
+            const request = this
+            window.setTimeout(() => {
+              request.upload.dispatchEvent(
+                new ProgressEvent('progress', {
+                  lengthComputable: true,
+                  loaded: 67,
+                  total: 100,
+                }),
+              )
+            }, 0)
+          }
+        })
+        await page
+          .getByLabel('Choose a file for Recent Bank Statement (Last 3 Months)')
+          .setInputFiles({
+            name: 'bank_statement.pdf',
+            mimeType: 'application/pdf',
+            buffer: Buffer.from('%PDF-1.4 design audit fixture'),
+          })
+        await expect(page.getByText('Uploading · 67%', { exact: true })).toBeVisible()
+        await page
+          .getByLabel('Choose a file for Tax Return (Previous Fiscal Year)')
+          .setInputFiles({
+            name: 'oversized_tax_return.pdf',
+            mimeType: 'application/pdf',
+            buffer: Buffer.alloc(26 * 1024 * 1024),
+          })
+        await expect(page.getByText('Upload failed · The file is larger than 25 MB')).toBeVisible()
+      }
+
       if (item.name === 'owner-dashboard') {
         await expect(page.getByText(summary.title).first()).toBeVisible()
       }
