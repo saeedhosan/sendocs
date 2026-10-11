@@ -120,6 +120,7 @@ export function ResetPasswordPage() {
             <PasswordInput
               name="password"
               autoComplete="new-password"
+              visibilityButtonClassName="right-3 rounded-[10px]"
               placeholder="••••••••••••"
               value={password}
               onChange={(event) => {
