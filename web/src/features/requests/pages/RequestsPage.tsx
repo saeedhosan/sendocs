@@ -81,8 +81,7 @@ export function RequestsPage() {
     filter === 'all' &&
     search.trim() === '' &&
     cursor === null &&
-    pageCursor === null &&
-    historyRef.current.length === 0
+    pageCursor === null
   const showingLabel = hasCompleteList
     ? `Showing 1 to ${visibleRequests.length} of ${requests.length} requests`
     : `Showing ${visibleRequests.length} of ${requests.length} requests on this page`
