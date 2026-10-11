@@ -13,7 +13,7 @@
 @media (min-width: 48rem) {
   .header {
     display: grid;
-    grid-template-columns: minmax(0, 5fr) 2fr 3fr 2fr 4.5rem;
+    grid-template-columns: minmax(0, 5fr) 2fr 2fr 2fr minmax(4rem, 1fr);
     gap: 0.75rem;
     padding: 0.75rem 1.25rem;
     border-bottom: 1px solid var(--color-border);
