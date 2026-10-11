@@ -292,3 +292,10 @@
     padding-inline: 1.5rem;
   }
 }
+
+
+@media (max-width: 639px) {
+  .dashboardHeader .inner {
+    padding-inline: 1rem;
+  }
+}
