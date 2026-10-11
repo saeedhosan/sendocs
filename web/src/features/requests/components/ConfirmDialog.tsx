@@ -69,7 +69,7 @@ export function ConfirmDialog({
         </>
       }
     >
-      <p>{description}</p>
+      <p className={styles.description}>{description}</p>
     </Dialog>
   )
 }
