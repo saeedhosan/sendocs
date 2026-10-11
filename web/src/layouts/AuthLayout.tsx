@@ -72,14 +72,14 @@ export function AuthLayout({
           {footerLinks.map((link) => (
             <Fragment key={link.to}>
               <span className={styles.footerSeparator} aria-hidden="true">·</span>
-              <Link to={link.to> className={styles.footerLink}>
+              <Link to={link.to} className={styles.footerLink}>
                 {link.label}
               </Link>
             </Fragment>
           ))}
           {footerVariant !== 'reset-password' ? (
             <Fragment>
-              <span aria-hidden="true">·</span>
+              <span className={styles.footerSeparator} aria-hidden="true">·</span>
               <span className={styles.footerLink}>Security</span>
             </Fragment>
           ) : null}
