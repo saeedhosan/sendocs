@@ -127,7 +127,7 @@ export function ChangePasswordPage() {
           label="Current password"
           error={errors.currentPassword}
           labelAction={
-            <Link to="/forgot-password" className={s.link}>
+            <Link to="/forgot-password" className={`${s.link} text-xs`}>
               Forgot password?
             </Link>
           }
