@@ -9,7 +9,7 @@ export type BadgeVariant =
   | 'info'
 
 const BADGE =
-  'inline-flex items-center gap-1.5 px-2 py-0.5 border rounded-sm text-[0.6875rem] font-medium leading-4 whitespace-nowrap'
+  'inline-flex items-center gap-1.5 px-2 py-0.5 border rounded-[4px] text-[0.6875rem] font-medium leading-4 whitespace-nowrap'
 
 const VARIANTS: Record<BadgeVariant, string> = {
   neutral: 'bg-surface-sunken border-border text-ink-secondary',
