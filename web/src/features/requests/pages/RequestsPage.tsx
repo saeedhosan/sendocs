@@ -22,8 +22,8 @@ export function RequestsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const cursor = searchParams.get('cursor')
 
-  const [requests, setRequests] = useStateCRequestSummary[]>([])
-  const [pageCursor, setPageCursor] = useStateCstring | null>(null)
+  const [requests, setRequests] = useState<RequestSummary[]>([])
+  const [pageCursor, setPageCursor] = useState<string | null>(null)
   const [status, setStatus] = useState<'loading' | 'error' | 'ready'>('loading')
   const [canGoPrevious, setCanGoPrevious] = useState(false)
   const [pageNumber, setPageNumber] = useState(1)
@@ -132,7 +132,7 @@ export function RequestsPage() {
     : `${pageNumber} / ${pageNumber}`
 
   return (
-    <Container className="flex flex-col gap-6">
+    <Container className="px-4 sm:px-6 py-6 sm:py-8 min-[576px]:max-w-5xl min-[768px]:max-w-5xl min-[992px]:max-w-5xl min-[1200px]:max-w-5xl min-[1400px]:max-w-5xl flex flex-col gap-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-xl leading-7 font-semibold tracking-tight text-ink sm:text-2xl sm:leading-8">
