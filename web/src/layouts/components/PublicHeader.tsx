@@ -82,7 +82,6 @@ export function PublicHeader() {
                   cn(
                     NAV_LINK,
                     NAV_SIGN_IN,
-                    pathname === '/privacy' && 'text-primary hover:text-primary-hover',
                     isActive && NAV_LINK_ACTIVE,
                     isActive && 'text-primary',
                   )
@@ -94,7 +93,12 @@ export function PublicHeader() {
               <NavLink
                 to="/login"
                 className={({ isActive }) =>
-                  cn(NAV_LINK, NAV_SIGN_IN, isActive && NAV_LINK_ACTIVE)
+                  cn(
+                    NAV_LINK,
+                    NAV_SIGN_IN,
+                    pathname === '/privacy' && 'text-primary hover:text-primary-hover',
+                    isActive && NAV_LINK_ACTIVE,
+                  )
                 }
               >
                 Sign in
