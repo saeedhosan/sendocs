@@ -12,7 +12,7 @@ export type AuthLayoutProps = {
   /** Page-specific footer copy/order when a reference differs. */
   footerVariant?: 'default' | 'reset-password'
   /** Each auth reference has a distinct mobile card alignment. */
-  layoutVariant?: 'default' | 'login' | 'register' | 'change-password' | 'reset-password'
+  layoutVariant?: 'default' | 'login' | 'register' | 'forgot-password' | 'change-password' | 'reset-password'
 }
 
 const legalLinks = [
@@ -65,7 +65,7 @@ export function AuthLayout({
           <span>{copyright}</span>
           {footerVariant === 'reset-password' ? (
             <Fragment>
-              <span aria-hidden="true">·</span>
+              <span className={styles.footerSeparator} aria-hidden="true">·</span>
               <span className={styles.footerLink}>Security</span>
             </Fragment>
           ) : null}
