@@ -18,7 +18,7 @@ const INNER_DETAIL =
 const TRIGGER_BASE = 'inline-flex items-center cursor-pointer transition-colors duration-150 hover:text-ink'
 const TRIGGER_DASHBOARD = cn(
   TRIGGER_BASE,
-  'gap-1.5 min-h-11 px-3 py-2 rounded-[8px] bg-transparent text-[0.8125rem] font-medium text-ink-secondary hover:bg-surface-muted',
+  'gap-1.5 min-h-11 px-3 py-2 rounded-[8px] bg-transparent text-[0.8125rem] font-medium text-ink-secondary hover:bg-surface-subtle',
 )
 const TRIGGER_CREATE = cn(
   TRIGGER_BASE,
