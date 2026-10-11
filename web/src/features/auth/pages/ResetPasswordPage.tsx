@@ -11,6 +11,7 @@ import { authApi } from '../api'
 import { PasswordStrengthMeter } from '../components/PasswordStrengthMeter'
 import { fieldErrors, resetPasswordSchema } from '../schemas'
 import { authStyles as s } from './authStyles'
+import { app } from '../../../config/app'
 
 export function ResetPasswordPage() {
   const [searchParams] = useSearchParams()
@@ -97,7 +98,7 @@ export function ResetPasswordPage() {
       <div className={s.heading}>
         <h1 className={s.title}>Create a new password</h1>
         <p className={s.subtitle}>
-          Choose a secure password for your Sendocs account.
+          Choose a secure password for your {app.name} account.
         </p>
       </div>
 

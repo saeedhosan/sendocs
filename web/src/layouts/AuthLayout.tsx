@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Logo } from '../components/navigation/Logo'
 import { Container } from '../components/ui'
 import { cn } from '../lib/cn'
+import { app } from '../config/app'
 
 const HEADER_INNER = 'flex items-center justify-between gap-4 min-h-16'
 const MAIN =
@@ -57,8 +58,8 @@ export function AuthLayout({
   const isReset = footerVariant === 'reset-password'
   const footerLinks = isReset ? resetLinks : legalLinks
   const copyright = isReset
-    ? '© 2025 Sendocs Technologies Inc.'
-    : '© 2025 Sendocs Inc.'
+    ? `© 2025 ${app.name} Technologies Inc.`
+    : `© 2025 ${app.name} Inc.`
   const linkClass =
     footerVariant === 'login'
       ? `${EXTRA_LINK} hover:text-ink-secondary`

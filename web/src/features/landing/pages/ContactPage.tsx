@@ -1,6 +1,5 @@
 import { Container } from '../../../components/ui'
-
-const contactEmail = 'privacy@sendocs.internal'
+import { app } from '../../../config/app'
 
 /**
  * Minimal contact page. It surfaces the address the product already publishes
@@ -14,15 +13,15 @@ export function ContactPage() {
       </h1>
 
       <p className="max-w-[40rem] mt-2 text-sm leading-[1.625] text-ink-secondary">
-        Sendocs is a document collection service. If you have a question about
+        {app.name} is a document collection service. If you have a question about
         your account, a document request, or how your data is handled, email us.
       </p>
 
       <a
-        href={`mailto:${contactEmail}`}
+        href={`mailto:${app.emails.contact}`}
         className="inline-flex items-center min-h-10 mt-6 px-4 border border-border rounded-md bg-surface-muted text-[0.9375rem] font-medium text-primary transition-colors duration-150 hover:border-primary hover:underline"
       >
-        {contactEmail}
+        {app.emails.contact}
       </a>
     </Container>
   )
