@@ -138,8 +138,8 @@ describe('PortalPage', () => {
 
     const row = await screen.findByText('Passport or Government ID')
     expect(
-      within(row.closest('li') as HTMLElement).getByText('Uploaded', {
-        selector: 'span[class]',
+      within(row.closest('li') as HTMLElement).getByRole('status', {
+        name: 'Upload complete',
       }),
     ).toBeInTheDocument()
   })
@@ -172,8 +172,8 @@ describe('PortalPage', () => {
 
     const row = await screen.findByText('Passport or Government ID')
     expect(
-      within(row.closest('li') as HTMLElement).getByText('Uploaded', {
-        selector: 'span[class]',
+      within(row.closest('li') as HTMLElement).getByRole('status', {
+        name: 'Upload complete',
       }),
     ).toBeInTheDocument()
     expect(screen.queryByText(/already been uploaded/i)).not.toBeInTheDocument()
