@@ -8,6 +8,8 @@ const INNER =
   'flex flex-wrap items-center justify-center gap-2 text-ink-muted text-center'
 const INNER_DEFAULT = 'min-h-16 text-xs leading-4'
 const INNER_LANDING = 'min-h-14 text-[0.8125rem] leading-5'
+const CONTAINER_LANDING = 'px-4 sm:px-6 min-[576px]:max-w-6xl min-[768px]:max-w-6xl min-[992px]:max-w-6xl min-[1200px]:max-w-6xl min-[1400px]:max-w-6xl'
+const CONTAINER_DOCUMENT = 'px-6 min-[576px]:max-w-4xl min-[768px]:max-w-4xl min-[992px]:max-w-4xl min-[1200px]:max-w-4xl min-[1400px]:max-w-4xl'
 const LINK = 'transition-colors duration-150 hover:text-ink'
 const LINK_ACTIVE = 'text-ink font-medium'
 
@@ -36,7 +38,12 @@ export function PublicFooter() {
       )}
     >
       <Container
-        className={cn(INNER, isLanding ? INNER_LANDING : INNER_DEFAULT)}
+        className={cn(
+          INNER,
+          isLanding
+            ? cn(INNER_LANDING, CONTAINER_LANDING)
+            : cn(INNER_DEFAULT, CONTAINER_DOCUMENT),
+        )}
       >
         <span>{isLanding ? `© 2026 ${app.name}` : `© 2025 ${app.name} Inc.`}</span>
         {visibleLinks.map((link) => (
