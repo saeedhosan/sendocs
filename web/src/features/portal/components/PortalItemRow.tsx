@@ -82,7 +82,7 @@ export function PortalItemRow({
               {item.label}
             </p>
             <p
-              className="mt-1.5 text-[0.8125rem] text-danger-text sm:text-sm"
+              className="mt-1.5 text-xs text-[#e11d48] sm:text-sm"
               role="alert"
             >
               Upload failed · {failure.message}
