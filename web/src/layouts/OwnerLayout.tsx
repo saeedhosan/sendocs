@@ -1,8 +1,8 @@
-import { Link, Outlet, useLocation } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
 import { Container } from '../components/ui'
 import { VerifyEmailBanner } from '../features/auth/components/VerifyEmailBanner'
+import { OwnerFooter } from './components/OwnerFooter'
 import { OwnerHeader } from './components/OwnerHeader'
-import { app } from '../config/app'
 import { cn } from '../lib/cn'
 
 export function OwnerLayout() {
@@ -27,28 +27,7 @@ export function OwnerLayout() {
         </Container>
         <Outlet />
       </main>
-      {showFooter ? (
-        <footer className={cn('border-t bg-surface py-4', isRequestDetail ? 'border-neutral-200' : 'border-border-subtle')}>
-          <Container
-            className={cn(
-              'px-4 sm:px-6 flex items-center justify-between gap-4 text-xs',
-              isRequestDetail
-                ? 'text-neutral-500 !max-w-4xl'
-                : 'text-ink-secondary !max-w-2xl',
-            )}
-          >
-            <span>{app.name}</span>
-            {isRequestDetail ? (
-              <div className="flex items-center gap-4">
-                <Link to="/contact" className="transition-colors hover:text-neutral-900">Help</Link>
-                <Link to="/privacy" className="transition-colors hover:text-neutral-900">Privacy</Link>
-              </div>
-            ) : (
-              <span>Direct client document intake</span>
-            )}
-          </Container>
-        </footer>
-      ) : null}
+      {showFooter ? <OwnerFooter variant={isRequestDetail ? 'detail' : 'default'} /> : null}
     </div>
   )
 }
