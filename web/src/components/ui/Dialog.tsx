@@ -127,7 +127,13 @@ export function Dialog({
         onMouseDown={(event) => event.stopPropagation()}
       >
         <div className={styles.body}>
-          <h2 id={titleId} className={styles.title}>
+          <h2
+            id={titleId}
+            className={cn(
+              styles.title,
+              variant === 'centered' && styles.centeredTitle,
+            )}
+          >
             {title}
           </h2>
           {description ? (

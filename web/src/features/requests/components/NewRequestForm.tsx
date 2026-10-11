@@ -196,6 +196,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
                   className={styles.iconButton}
                   onClick={() => move(index, -1)}
                   disabled={index === 0}
+                  title="Move up"
                   aria-label={`Move document ${index + 1} up`}
                 >
                   <KeyboardArrowUpIcon size={18} />
@@ -205,6 +206,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
                   className={styles.iconButton}
                   onClick={() => move(index, 1)}
                   disabled={index === labels.length - 1}
+                  title="Move down"
                   aria-label={`Move document ${index + 1} down`}
                 >
                   <KeyboardArrowDownIcon size={18} />
@@ -214,6 +216,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
                   className={styles.removeButton}
                   onClick={() => removeRow(index)}
                   disabled={labels.length <= 1}
+                  title="Remove"
                   aria-label={`Remove document ${index + 1}`}
                 >
                   <CloseIcon size={18} />
