@@ -80,7 +80,7 @@ export function ProductPreview() {
               key={item.name}
               className={cn(
                 'flex items-center justify-between gap-3 p-3',
-                item.uploaded ? 'bg-surface' : 'bg-surface-muted',
+                item.uploaded ? 'bg-surface' : 'bg-surface-subtle',
                 index > 0 && 'border-t border-border',
               )}
             >
