@@ -95,7 +95,9 @@ export function PortalItemRow({
 
       <div className={styles.action}>
         {uploaded ? (
-          <span className={styles.done}>Uploaded</span>
+          <span className={styles.done} role="status" aria-label="Upload complete">
+            Uploaded
+          </span>
         ) : uploading ? null : (
           <>
             <input
