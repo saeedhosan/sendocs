@@ -125,7 +125,7 @@ export function Dialog({
   const panelClass = cn(
     PANEL_BASE,
     variant === 'centered'
-      ? 'max-w-lg rounded-[10px] shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)] sm:p-6'
+      ? 'max-w-lg rounded-[10px] p-6 shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)]'
       : 'max-w-sm rounded-md shadow-md max-sm:max-w-none max-sm:rounded-b-none max-sm:border-b-0',
     className,
   )
@@ -134,7 +134,7 @@ export function Dialog({
     'font-semibold',
     tone === 'danger' ? 'text-danger-text' : 'text-ink',
     variant === 'centered'
-      ? 'text-[1.0625rem] leading-6 tracking-[-0.01em] sm:text-lg sm:leading-7'
+      ? 'text-lg leading-7 tracking-tight'
       : 'text-sm',
   )
 
