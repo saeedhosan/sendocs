@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { FormField } from '../../../components/forms/FormField'
-import { ArrowBackIcon, MailIcon } from '../../../components/icons'
+import { ArrowBackIcon, MailCheckIcon } from '../../../components/icons'
 import { Alert, Button, Input } from '../../../components/ui'
 import { AuthLayout } from '../../../layouts/AuthLayout'
 import { errorMessage, validationErrors } from '../../../lib/api/errors'
@@ -52,7 +52,7 @@ export function ForgotPasswordPage() {
     return (
       <AuthLayout layoutVariant="forgot-password">
         <div className={styles.successIcon} aria-hidden="true">
-          <MailIcon size={20} />
+          <MailCheckIcon size={20} />
         </div>
         <div className={styles.heading}>
           <h1 className={styles.title}>Check your inbox</h1>
