@@ -92,6 +92,12 @@
 }
 
 
+@media (min-width: 640px) {
+  .layout[data-layout-variant='change-password'] .main {
+    padding-block: 0.875rem;
+  }
+}
+
 @media (max-width: 639px) {
   .layout[data-layout-variant='login'] .main {
     align-items: flex-start;
@@ -114,6 +120,10 @@
   .layout[data-layout-variant='change-password'] .main {
     align-items: flex-start;
     padding: 1.5rem 2rem;
+  }
+
+  .layout[data-layout-variant='change-password'] .card {
+    padding-bottom: 1.625rem;
   }
 
   .layout[data-layout-variant='change-password'] .card {
