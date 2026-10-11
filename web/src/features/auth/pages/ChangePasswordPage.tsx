@@ -5,7 +5,7 @@ import { useAuth } from '../../../app/providers/useAuth'
 import { FormField } from '../../../components/forms/FormField'
 import { FormError } from '../../../components/forms/FormError'
 import { ArrowForwardIcon, CheckCircleIcon, InfoIcon } from '../../../components/icons'
-import { Alert, Button, PasswordInput } from '../../../components/ui'
+import { Alert, Button, Input, PasswordInput } from '../../../components/ui'
 import { AuthLayout } from '../../../layouts/AuthLayout'
 import { ApiError } from '../../../lib/api/client'
 import { errorMessage, validationErrors } from '../../../lib/api/errors'
@@ -97,12 +97,21 @@ export function ChangePasswordPage() {
         </p>
       </div>
 
-      <div className={styles.infoBox}>
-        <div className={styles.infoBoxTitle}>
-          <InfoIcon size={16} aria-hidden="true" /> Updating your password will
-          automatically terminate all active sessions on other devices.
+      <div className={styles.changeInfoBox}>
+        <InfoIcon
+          size={18}
+          aria-hidden="true"
+          className={styles.changeInfoIcon}
+        />
+        <div className={styles.changeInfoBoxText}>
+          <p>
+            Updating your password will automatically terminate all active
+            sessions on other devices.
+          </p>
+          <span className={styles.infoBoxNote}>
+            SOC2 compliant session termination
+          </span>
         </div>
-        <span className={styles.infoBoxNote}>SOC2 compliant session termination</span>
       </div>
 
       {success ? (
@@ -117,7 +126,11 @@ export function ChangePasswordPage() {
         </Alert>
       ) : null}
 
-      <form className={styles.form} onSubmit={handleSubmit} noValidate>
+      <form
+        className={`${styles.form} ${styles.changePasswordForm}`}
+        onSubmit={handleSubmit}
+        noValidate
+      >
         <FormField
           label="Current password"
           error={errors.currentPassword}
@@ -144,7 +157,7 @@ export function ChangePasswordPage() {
             <PasswordInput
               name="newPassword"
               autoComplete="new-password"
-              placeholder="Enter new password"
+              placeholder="Enter new secure password"
               value={password}
               onChange={(event) => {
                 setPassword(event.target.value)
@@ -158,37 +171,42 @@ export function ChangePasswordPage() {
 
         <div>
           <FormField label="Confirm new password" error={errors.confirmPassword}>
-            <PasswordInput
-              name="confirmPassword"
-              autoComplete="new-password"
-              placeholder="Re-enter new password"
-              value={confirmPassword}
-              onChange={(event) => {
-                setConfirmPassword(event.target.value)
-                setErrors({})
-                setSuccess(false)
-              }}
-            />
+            <div className={styles.confirmPasswordInput}>
+              <Input
+                type="password"
+                name="confirmPassword"
+                autoComplete="new-password"
+                placeholder="Re-enter new password"
+                value={confirmPassword}
+                className={styles.confirmPasswordField}
+                onChange={(event) => {
+                  setConfirmPassword(event.target.value)
+                  setErrors({})
+                  setSuccess(false)
+                }}
+              />
+              {passwordsMatch ? (
+                <CheckCircleIcon
+                  size={18}
+                  aria-hidden="true"
+                  className={styles.confirmPasswordCheck}
+                />
+              ) : null}
+            </div>
           </FormField>
-          {passwordsMatch ? (
-            <p className={styles.matchOk}>
-              <CheckCircleIcon size={15} aria-hidden="true" />
-              Passwords match
-            </p>
-          ) : null}
           {passwordsMismatch ? (
             <FormError>Passwords do not match</FormError>
           ) : null}
         </div>
 
-        <PasswordRequirementsList rules={rules} />
+        <PasswordRequirementsList rules={rules} panel title="Requirements" />
 
         <div className={styles.actions}>
           <Button
             type="submit"
             fullWidth
             loading={submitting}
-            iconRight={<ArrowForwardIcon size={16} />}
+            iconRight={<ArrowForwardIcon size={18} />}
           >
             Save new password
           </Button>
