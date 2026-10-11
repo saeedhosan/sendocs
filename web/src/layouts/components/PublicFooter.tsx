@@ -53,7 +53,7 @@ export function PublicFooter() {
               to={link.to}
               className={cn(
                 LINK,
-                !isLanding && pathname === link.to && LINK_ACTIVE,
+                !isLanding && pathname === '/privacy' && pathname === link.to && LINK_ACTIVE,
               )}
             >
               {link.label}
