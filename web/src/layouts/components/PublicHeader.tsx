@@ -12,7 +12,7 @@ const ACTIONS = 'flex items-center gap-3'
 const LOGIN_LINK =
   'px-3 py-1.5 text-[0.8125rem] font-medium text-marketing-text-secondary transition-colors duration-150 hover:text-ink'
 const GET_STARTED =
-  'inline-flex items-center justify-center min-h-[2.125rem] px-3.5 rounded-md bg-primary text-on-primary text-[0.8125rem] font-medium shadow-sm transition-colors duration-150 hover:bg-primary-hover'
+  'inline-flex items-center justify-center min-h-[2.125rem] px-3.5 rounded-[10px] bg-primary text-on-primary text-[0.8125rem] font-medium shadow-sm transition-colors duration-150 hover:bg-primary-hover'
 const NAV = 'flex items-center gap-6 text-sm max-[480px]:gap-4'
 const NAV_LINK = 'text-ink-body transition-colors duration-150 hover:text-ink'
 const NAV_LINK_ACTIVE = 'text-primary font-semibold'
