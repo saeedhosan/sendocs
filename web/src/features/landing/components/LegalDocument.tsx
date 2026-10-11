@@ -5,7 +5,7 @@ function Note({ text, email }: { text: string; email: string }) {
   const [before, after] = text.split(email)
 
   return (
-    <p className="text-sm leading-[1.625] text-ink-body">
+    <p className="text-sm text-ink-body">
       {before}
       <a
         href={`mailto:${email}`}
@@ -23,7 +23,7 @@ export function LegalDocument({ document }: { document: LegalDocumentContent }) 
   return (
     <Container
       as="article"
-      className="px-6 py-10 bg-surface max-w-4xl min-[576px]:max-w-4xl min-[768px]:max-w-4xl min-[992px]:max-w-4xl min-[1200px]:max-w-4xl min-[1400px]:max-w-4xl"
+      className="!max-w-4xl px-6 py-10 bg-surface"
     >
       <h1 className="mb-2 text-[1.875rem] font-bold leading-9 tracking-[-0.025em] text-ink">
         {document.title}
@@ -81,7 +81,7 @@ export function LegalDocument({ document }: { document: LegalDocumentContent }) 
       ))}
 
       {document.note ? (
-        <div className="mt-10 pt-6 border-t border-border">
+        <div className="mt-6 pt-6 border-t border-border">
           <Note {...document.note} />
         </div>
       ) : null}

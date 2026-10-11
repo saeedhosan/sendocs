@@ -34,6 +34,7 @@ export function PublicFooter() {
     <footer
       className={cn(
         'w-full mt-auto border-t border-border',
+        !isLanding && 'py-6',
         isLanding ? 'bg-canvas-muted' : 'bg-surface',
       )}
     >
