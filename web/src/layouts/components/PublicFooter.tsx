@@ -1,5 +1,6 @@
 import { Fragment } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
+import { cn } from '../../lib/cn'
 import styles from './PublicFooter.module.css'
 
 const links = [
@@ -8,13 +9,21 @@ const links = [
   { label: 'Contact', to: '/contact' },
 ]
 
+const landingLinks = [
+  { label: 'Terms', to: '/terms' },
+  { label: 'Privacy', to: '/privacy' },
+]
+
 /** The minimal public footer shared by the landing and legal pages. */
 export function PublicFooter() {
+  const isLanding = useLocation().pathname === '/'
+  const visibleLinks = isLanding ? landingLinks : links
+
   return (
-    <footer className={styles.footer}>
-      <div className={styles.inner}>
-        <span>© 2025 Sendocs Inc.</span>
-        {links.map((link) => (
+    <footer className={cn(styles.footer, isLanding && styles.landingFooter)}>
+      <div className={cn(styles.inner, isLanding && styles.landingInner)}>
+        <span>{isLanding ? '© 2026 Sendocs' : '© 2025 Sendocs Inc.'}</span>
+        {visibleLinks.map((link) => (
           <Fragment key={link.to}>
             <span aria-hidden="true">·</span>
             <Link to={link.to} className={styles.link}>

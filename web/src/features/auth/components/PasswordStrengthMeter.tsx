@@ -4,10 +4,20 @@ import styles from './PasswordStrengthMeter.module.css'
 
 const barCount = 4
 
-export function PasswordStrengthMeter({ value }: { value: string }) {
+export function PasswordStrengthMeter({
+  value,
+  variant = 'full',
+}: {
+  value: string
+  variant?: 'full' | 'inline'
+}) {
   const { score, label } = evaluatePasswordStrength(value)
 
   const tone = score <= 1 ? styles.weak : score === 2 ? styles.standard : styles.strong
+
+  if (variant === 'inline') {
+    return <span className={styles.inlineLabel}>{label}</span>
+  }
 
   return (
     <div className={styles.meter}>

@@ -28,3 +28,21 @@
 .link:hover {
   color: var(--color-text);
 }
+
+.landingFooter {
+  background-color: var(--color-canvas-muted);
+}
+
+.landingInner {
+  max-width: var(--layout-max-public);
+  min-height: var(--layout-header-height-public);
+  padding-inline: 1rem;
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .landingInner {
+    padding-inline: 1.5rem;
+  }
+}

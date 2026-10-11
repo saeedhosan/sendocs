@@ -9,6 +9,8 @@ export type AuthLayoutProps = {
   headerAction?: { label: string; to: string }
   /** The sign-in reference uses the plain, unboxed logo. */
   boxedLogo?: boolean
+  /** Page-specific footer copy/order when a reference differs. */
+  footerVariant?: 'default' | 'reset-password'
 }
 
 const legalLinks = [
@@ -24,7 +26,20 @@ export function AuthLayout({
   children,
   headerAction,
   boxedLogo = true,
+  footerVariant = 'default',
 }: AuthLayoutProps) {
+  const footerLinks =
+    footerVariant === 'reset-password'
+      ? [
+          { label: 'Privacy', to: '/privacy' },
+          { label: 'Terms', to: '/terms' },
+        ]
+      : legalLinks
+  const copyright =
+    footerVariant === 'reset-password'
+      ? '© 2025 Sendocs Technologies Inc.'
+      : '© 2025 Sendocs Inc.'
+
   return (
     <div className={styles.layout}>
       <header className={styles.header}>
@@ -44,8 +59,8 @@ export function AuthLayout({
 
       <footer className={styles.footer}>
         <div className={styles.footerInner}>
-          <span>© 2025 Sendocs Inc.</span>
-          {legalLinks.map((link) => (
+          <span>{copyright}</span>
+          {footerLinks.map((link) => (
             <Fragment key={link.to}>
               <span aria-hidden="true">·</span>
               <Link to={link.to} className={styles.footerLink}>
