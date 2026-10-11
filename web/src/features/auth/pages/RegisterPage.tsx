@@ -10,8 +10,9 @@ import { passwordRequirements } from '../../../lib/password'
 import { AuthDivider } from '../components/AuthDivider'
 import { GoogleButton } from '../components/GoogleButton'
 import { PasswordRequirementsList } from '../components/PasswordRequirementsList'
+import { cn } from '../../../lib/cn'
 import { fieldErrors, registerSchema } from '../schemas'
-import styles from './auth.module.css'
+import { authStyles as s } from './authStyles'
 
 type RegisterValues = {
   name: string
@@ -90,26 +91,26 @@ export function RegisterPage() {
 
   return (
     <AuthLayout>
-      <div className={`${styles.heading} ${styles.center}`}>
-        <h1 className={styles.title}>Create your account</h1>
-        <p className={styles.subtitle}>
+      <div className={cn(s.heading, s.center)}>
+        <h1 className={s.title}>Create your account</h1>
+        <p className={s.subtitle}>
           Start collecting documents securely with Sendocs.
         </p>
       </div>
 
-      <div className={styles.social}>
+      <div className={s.social}>
         <GoogleButton label="Sign up with Google" />
       </div>
 
       <AuthDivider label="or register with email" />
 
       {formError ? (
-        <Alert variant="error" className={styles.formError}>
+        <Alert variant="error" className={s.formError}>
           {formError}
         </Alert>
       ) : null}
 
-      <form className={styles.form} onSubmit={handleSubmit} noValidate>
+      <form className={s.form} onSubmit={handleSubmit} noValidate>
         <FormField label="Full name" error={errors.name}>
           <Input
             name="name"
@@ -153,28 +154,28 @@ export function RegisterPage() {
 
         <PasswordRequirementsList rules={rules} />
 
-        <div className={styles.actions}>
+        <div className={s.actions}>
           <Button type="submit" fullWidth loading={submitting}>
             Create account
           </Button>
         </div>
       </form>
 
-      <p className={styles.legal}>
+      <p className={s.legal}>
         By creating an account, you agree to our{' '}
-        <Link to="/terms" className={styles.link}>
+        <Link to="/terms" className={s.link}>
           Terms of Service
         </Link>{' '}
         and{' '}
-        <Link to="/privacy" className={styles.link}>
+        <Link to="/privacy" className={s.link}>
           Privacy Policy
         </Link>
         .
       </p>
 
-      <div className={styles.footerBox}>
+      <div className={s.footerBox}>
         Already have an account?{' '}
-        <Link to="/login" className={styles.link}>
+        <Link to="/login" className={s.link}>
           Sign in
         </Link>
       </div>
