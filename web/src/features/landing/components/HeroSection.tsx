@@ -5,7 +5,7 @@ export function HeroSection() {
   return (
     <section className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-12">
       <div className="flex flex-col gap-6 lg:col-span-6">
-        <span className="inline-flex items-center self-start gap-2 px-2.5 py-1 border border-border rounded-md bg-surface-muted text-xs font-medium text-marketing-text-secondary">
+        <span className="inline-flex items-center self-start gap-2 px-2.5 py-1 border border-border rounded-[10px] bg-surface-muted text-xs font-medium text-marketing-text-secondary">
           <span className="size-1.5 rounded-full bg-primary" aria-hidden="true" />
           Document collection, made simple
         </span>
@@ -24,7 +24,7 @@ export function HeroSection() {
         <div className="flex flex-wrap items-center gap-3 pt-1">
           <Link
             to="/register"
-            className="inline-flex items-center justify-center min-h-11 px-5 rounded-md bg-primary text-on-primary text-[0.8125rem] font-medium shadow-sm transition-colors duration-150 hover:bg-primary-hover"
+            className="inline-flex items-center justify-center min-h-11 px-5 rounded-[10px] bg-primary text-on-primary text-[0.8125rem] font-medium shadow-sm transition-colors duration-150 hover:bg-primary-hover"
           >
             Get started
           </Link>
