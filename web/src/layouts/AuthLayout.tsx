@@ -5,15 +5,17 @@ import { Container } from '../components/ui'
 import { cn } from '../lib/cn'
 import { app } from '../config/app'
 
-const HEADER_INNER = 'flex items-center justify-between gap-4 min-h-16'
+const AUTH_CONTAINER =
+  'px-6 min-[576px]:max-w-5xl min-[768px]:max-w-5xl min-[992px]:max-w-5xl min-[1200px]:max-w-5xl min-[1400px]:max-w-5xl'
+const HEADER_INNER = `${AUTH_CONTAINER} flex items-center justify-between gap-4 min-h-16`
 const MAIN =
-  '[view-transition-name:page-content] flex flex-1 items-center justify-center py-12'
+  '[view-transition-name:page-content] flex flex-1 flex-col items-center justify-center w-full px-4 py-6'
 const CARD =
   'w-full max-w-md my-12 p-8 bg-surface border border-border rounded-[10px] shadow-sm [&_input]:rounded-[10px] [&_button:not(.absolute)]:rounded-[10px]'
 const FOOTER_INNER =
-  'flex flex-wrap items-center justify-center gap-2 text-xs text-ink-muted text-center max-sm:flex-col'
+  `${AUTH_CONTAINER} flex flex-wrap items-center justify-center gap-2 text-xs text-ink-muted text-center max-sm:flex-col`
 const FOOTER_RESET_INNER =
-  'flex flex-col items-center justify-center gap-4 text-[0.8125rem] leading-[1.125rem] text-ink-body text-center sm:flex-row'
+  `${AUTH_CONTAINER} flex flex-col items-center justify-center gap-4 text-[0.8125rem] leading-[1.125rem] text-ink-body text-center sm:flex-row`
 const FOOTER_RESET_LINK = 'transition-colors duration-150 hover:text-ink'
 const EXTRA_LINK = 'transition-colors duration-150'
 
@@ -83,9 +85,11 @@ export function AuthLayout({
         </Container>
       </header>
 
-      <Container as="main" className={MAIN}>
-        <div className={CARD}>{children}</div>
-      </Container>
+      <main className={MAIN}>
+        <div className="flex flex-1 items-center justify-center w-full px-4">
+          <div className={CARD}>{children}</div>
+        </div>
+      </main>
 
       {isReset ? (
         <footer className="w-full py-6">
