@@ -70,7 +70,7 @@ export function AuthLayout({
       : `${EXTRA_LINK} hover:text-ink-emphasis`
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-canvas-muted">
       <header className="w-full border-b border-border bg-surface">
         <Container className={HEADER_INNER}>
           <Logo variant={logoVariant} />
