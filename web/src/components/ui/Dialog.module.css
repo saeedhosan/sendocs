@@ -6,14 +6,14 @@
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  background-color: rgba(18, 17, 19, 0.4);
+  background-color: var(--color-dialog-overlay, rgba(18, 17, 19, 0.4));
 }
 
 .panel {
   width: 100%;
   max-width: 24rem;
   padding: 1.25rem;
-  border: 1px solid var(--color-border-strong);
+  border: 1px solid var(--color-dialog-border, var(--color-border-strong));
   border-radius: var(--radius-md);
   background-color: var(--color-surface);
   box-shadow: var(--shadow-md);
@@ -85,6 +85,14 @@
   backdrop-filter: blur(2px);
 }
 
+.compactCenteredOverlay {
+  padding: 1rem;
+}
+
+.centeredOverlay.compactCenteredOverlay {
+  padding: 1rem;
+}
+
 .centeredPanel {
   max-width: 32rem;
   padding: 1.25rem;
@@ -92,6 +100,16 @@
   box-shadow:
     0 20px 25px -5px rgba(0, 0, 0, 0.1),
     0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+.compactCenteredPanel {
+  max-width: 24rem;
+  margin-inline: 0.75rem;
+  padding: 1.25rem;
+  border-radius: 10px;
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -4px rgba(0, 0, 0, 0.1);
 }
 
 .centeredTitle {
@@ -110,7 +128,19 @@
   margin-top: 0.5rem;
 }
 
+.compactCenteredPanel .footer {
+  margin-top: 1.25rem;
+}
+
 @media (min-width: 640px) {
+  .centeredOverlay {
+    padding: 1.5rem;
+  }
+
+  .compactCenteredOverlay {
+    padding: 1rem;
+  }
+
   .centeredPanel {
     padding: 1.5rem;
   }
@@ -129,6 +159,12 @@
 
   .centeredPanel {
     max-width: 32rem;
+    border-bottom: 1px solid var(--color-border-strong);
+    border-radius: 10px;
+  }
+
+  .compactCenteredPanel {
+    max-width: 24rem;
     border-bottom: 1px solid var(--color-border-strong);
     border-radius: 10px;
   }

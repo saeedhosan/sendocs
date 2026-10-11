@@ -2,15 +2,25 @@ import { Link, Outlet, useLocation } from 'react-router-dom'
 import { VerifyEmailBanner } from '../features/auth/components/VerifyEmailBanner'
 import { OwnerHeader } from './components/OwnerHeader'
 import styles from './OwnerLayout.module.css'
+import themeStyles from '../styles/owner-themes.module.css'
 
 export function OwnerLayout() {
   const pathname = useLocation().pathname
   const showFooter = pathname !== '/dashboard'
-  const isRequestDetail = /^\/requests\/[^/]+$/.test(pathname)
   const isNewRequest = pathname === '/requests/new'
+  const isRequestDetail = !isNewRequest && /^\/requests\/[^/]+$/.test(pathname)
+  const themeClass =
+    pathname === '/dashboard'
+      ? themeStyles.dashboardTheme
+      : isNewRequest
+        ? themeStyles.newRequestTheme
+        : isRequestDetail
+          ? themeStyles.requestDetailTheme
+          : undefined
+  const layoutClassName = [styles.layout, themeClass].filter(Boolean).join(' ')
 
   return (
-    <div className={styles.layout}>
+    <div className={layoutClassName}>
       <OwnerHeader />
       <main className={styles.main}>
         <VerifyEmailBanner />

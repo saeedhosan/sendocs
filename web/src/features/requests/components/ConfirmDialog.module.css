@@ -1,5 +1,26 @@
-.confirmButton {
+.confirmCancel {
   min-height: 2.75rem;
+  border-color: #e5e5e5;
+  background-color: #ffffff;
+  color: #404040;
+}
+
+.confirmCancel:hover:not(:disabled) {
+  background-color: #fafafa;
+  color: #171717;
+}
+
+.confirmPrimary {
+  min-height: 2.75rem;
+  border-color: #171717;
+  background-color: #171717;
+  color: #ffffff;
+}
+
+.confirmPrimary:hover:not(:disabled) {
+  border-color: #000000;
+  background-color: #000000;
+  color: #ffffff;
 }
 
 .confirmDanger {
@@ -16,7 +37,8 @@
 }
 
 @media (min-width: 640px) {
-  .confirmButton,
+  .confirmCancel,
+  .confirmPrimary,
   .confirmDanger {
     height: 2rem;
     min-height: 2rem;

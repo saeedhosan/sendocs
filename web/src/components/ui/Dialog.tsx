@@ -2,6 +2,7 @@ import { useEffect, useId, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import type { ReactNode } from 'react'
 import { cn } from '../../lib/cn'
+import ownerThemeStyles from '../../styles/owner-themes.module.css'
 import styles from './Dialog.module.css'
 
 export type DialogProps = {
@@ -16,7 +17,9 @@ export type DialogProps = {
   initialFocusRef?: React.RefObject<HTMLElement | null>
   className?: string
   /** Centered modal presentation for reference-specific dialogs. */
-  variant?: 'default' | 'centered'
+  variant?: 'default' | 'centered' | 'compact-centered'
+  /** Route palette to apply inside the body-level portal. */
+  ownerTheme?: 'dashboard' | 'new-request' | 'request-detail' | 'link-reveal'
 }
 
 const FOCUSABLE =
@@ -39,10 +42,21 @@ export function Dialog({
   initialFocusRef,
   className,
   variant = 'default',
+  ownerTheme,
 }: DialogProps) {
   const titleId = useId()
   const descriptionId = useId()
   const panelRef = useRef<HTMLDivElement>(null)
+  const ownerThemeClass =
+    ownerTheme === 'dashboard'
+      ? ownerThemeStyles.dashboardTheme
+      : ownerTheme === 'new-request'
+        ? ownerThemeStyles.newRequestTheme
+        : ownerTheme === 'request-detail'
+          ? ownerThemeStyles.requestDetailTheme
+          : ownerTheme === 'link-reveal'
+            ? cn(ownerThemeStyles.newRequestTheme, ownerThemeStyles.linkRevealTheme)
+            : undefined
 
   useEffect(() => {
     if (!open) {
@@ -108,7 +122,12 @@ export function Dialog({
 
   return createPortal(
     <div
-      className={cn(styles.overlay, variant === 'centered' && styles.centeredOverlay)}
+      className={cn(
+        styles.overlay,
+        ownerThemeClass,
+        variant !== 'default' && styles.centeredOverlay,
+        variant === 'compact-centered' && styles.compactCenteredOverlay,
+      )}
       onMouseDown={onClose}
     >
       <div
@@ -122,12 +141,13 @@ export function Dialog({
           styles.panel,
           styles[tone],
           variant === 'centered' && styles.centeredPanel,
+          variant === 'compact-centered' && styles.compactCenteredPanel,
           className,
         )}
         onMouseDown={(event) => event.stopPropagation()}
       >
         <div className={styles.body}>
-          <h2 id={titleId} className={styles.title}>
+          <h2 id={titleId} className={cn(styles.title, variant === 'centered' && styles.centeredTitle)}>
             {title}
           </h2>
           {description ? (

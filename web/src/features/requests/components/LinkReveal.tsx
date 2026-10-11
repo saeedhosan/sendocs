@@ -37,6 +37,7 @@ export function LinkReveal({ open, link, onClose }: LinkRevealProps) {
       title="Your request is ready."
       description="Copy this link and send it to your client. The raw link is shown once only."
       variant="centered"
+      ownerTheme="link-reveal"
       initialFocusRef={inputRef}
       footer={
         <Button
@@ -61,6 +62,7 @@ export function LinkReveal({ open, link, onClose }: LinkRevealProps) {
         <Button
           type="button"
           iconLeft={copied ? <CheckIcon size={16} /> : <CopyIcon size={16} />}
+          className={styles.copyButton}
           onClick={() => void copy()}
         >
           {copied ? 'Copied' : 'Copy link'}

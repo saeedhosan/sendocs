@@ -94,7 +94,7 @@
 }
 
 .percent {
-  font-family: var(--font-mono);
+  font-family: var(--font-workspace-mono);
   color: var(--color-text-muted);
 }
 

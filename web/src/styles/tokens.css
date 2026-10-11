@@ -62,6 +62,8 @@
     'Helvetica Neue', Arial, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas,
     monospace;
+  --font-workspace-mono: 'Geist Mono', 'JetBrains Mono', ui-monospace,
+    SFMono-Regular, Menlo, Consolas, monospace;
 
   /* Radii */
   --radius-sm: 4px;

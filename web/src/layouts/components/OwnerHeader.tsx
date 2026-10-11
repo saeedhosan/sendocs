@@ -21,7 +21,18 @@ function initials(name: string): string {
 export function OwnerHeader() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
-  const isDashboard = useLocation().pathname === '/dashboard'
+  const pathname = useLocation().pathname
+  const isDashboard = pathname === '/dashboard'
+  const isNewRequest = pathname === '/requests/new'
+  const isRequestDetail = !isNewRequest && /^\/requests\/[^/]+$/.test(pathname)
+  const headerClass = isDashboard
+    ? styles.dashboardHeader
+    : isNewRequest
+      ? styles.newRequestHeader
+      : isRequestDetail
+        ? styles.requestDetailHeader
+        : undefined
+  const headerClassName = [styles.header, headerClass].filter(Boolean).join(' ')
   const [open, setOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
@@ -59,7 +70,7 @@ export function OwnerHeader() {
   const displayName = user?.name ?? 'Account'
 
   return (
-    <header className={styles.header}>
+    <header className={headerClassName}>
       <div className={styles.inner}>
         {isDashboard ? (
           <Logo className={styles.logo} />
@@ -86,7 +97,9 @@ export function OwnerHeader() {
           </button>
           {open ? (
             <div className={styles.menu} role="menu">
-              <p className={styles.email}>{user?.email}</p>
+              {isDashboard ? (
+                <p className={styles.email}>{user?.email}</p>
+              ) : null}
               <Link
                 to="/settings/password"
                 role="menuitem"
@@ -96,15 +109,17 @@ export function OwnerHeader() {
                 <LockIcon size={16} />
                 Change password
               </Link>
-              <Link
-                to="/settings/delete"
-                role="menuitem"
-                className={styles.item}
-                onClick={() => setOpen(false)}
-              >
-                <TrashIcon size={16} />
-                Delete account
-              </Link>
+              {isDashboard ? (
+                <Link
+                  to="/settings/delete"
+                  role="menuitem"
+                  className={styles.item}
+                  onClick={() => setOpen(false)}
+                >
+                  <TrashIcon size={16} />
+                  Delete account
+                </Link>
+              ) : null}
               <button
                 type="button"
                 role="menuitem"

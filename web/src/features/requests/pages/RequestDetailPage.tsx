@@ -238,6 +238,7 @@ export function RequestDetailPage() {
       </section>
 
       <ConfirmDialog
+        ownerTheme="request-detail"
         open={confirm !== null}
         busy={busy}
         tone={confirm?.kind === 'revoke' ? 'default' : 'danger'}

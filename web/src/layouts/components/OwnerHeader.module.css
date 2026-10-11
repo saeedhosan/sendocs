@@ -30,7 +30,7 @@
 
 .logo > span:first-child::after {
   content: 'S';
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 0.75rem;
   font-weight: 700;
 }
@@ -75,7 +75,7 @@
   height: 1.5rem;
   border-radius: var(--radius-full);
   background-color: var(--color-surface-sunken);
-  font-family: var(--font-mono);
+  font-family: var(--font-workspace-mono);
   font-size: 0.6875rem;
   font-weight: 500;
   color: var(--color-text-secondary);
@@ -101,7 +101,7 @@
 .email {
   padding: 0.5rem 0.75rem;
   border-bottom: 1px solid var(--color-border-subtle);
-  font-family: var(--font-mono);
+  font-family: var(--font-workspace-mono);
   font-size: 0.6875rem;
   color: var(--color-text-muted);
   overflow: hidden;
@@ -150,5 +150,138 @@
 }
 
 .wordmarkOnly:hover {
-  color: var(--color-primary);
+  color: var(--color-text);
+}
+
+
+.dashboardHeader .inner {
+  max-width: 72rem;
+  min-height: 3.5rem;
+  padding: 0 1rem;
+}
+
+.dashboardHeader .logo > span:first-child {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 8px;
+}
+
+.dashboardHeader .logo > span:first-child::after {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.dashboardHeader .logo > span:last-child {
+  font-weight: 600;
+}
+
+.newRequestHeader .inner {
+  max-width: 42rem;
+  min-height: 0;
+  padding: 0.875rem 1rem;
+}
+
+.requestDetailHeader .inner {
+  max-width: 56rem;
+  min-height: 0;
+  padding: 0.875rem 1rem;
+}
+
+.requestDetailHeader .trigger {
+  min-height: 1.5rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+}
+
+.requestDetailHeader .wordmarkOnly {
+  font-size: 0.875rem;
+}
+
+
+.dashboardHeader .menu {
+  width: 12rem;
+}
+
+.dashboardHeader .item,
+.dashboardHeader .signOut {
+  min-height: 2.75rem;
+}
+
+.dashboardHeader .item {
+  border-top: none;
+}
+
+.dashboardHeader .item + .item {
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.dashboardHeader .signOut {
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.newRequestHeader .menu {
+  width: 10rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.newRequestHeader .item,
+.newRequestHeader .signOut {
+  min-height: 0;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  border-top: none;
+}
+
+.newRequestHeader .item svg,
+.newRequestHeader .signOut svg,
+.requestDetailHeader .item svg,
+.requestDetailHeader .signOut svg {
+  display: none;
+}
+
+.newRequestHeader .signOut {
+  border-top: 1px solid var(--color-border-subtle);
+  color: var(--color-text-secondary);
+}
+
+.newRequestHeader .trigger:hover,
+.requestDetailHeader .trigger:hover {
+  background: transparent;
+  color: var(--color-text);
+}
+
+.requestDetailHeader .menu {
+  width: 11rem;
+}
+
+.requestDetailHeader .item,
+.requestDetailHeader .signOut {
+  min-height: 0;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  border-top: none;
+}
+
+.requestDetailHeader .signOut {
+  border-top: 1px solid var(--color-border-subtle);
+  color: var(--color-text-secondary);
+}
+
+
+.dashboardHeader .trigger:hover,
+.dashboardHeader .item:hover {
+  background-color: #fafafa;
+  color: var(--color-text);
+}
+
+.newRequestHeader .item:hover,
+.newRequestHeader .signOut:hover {
+  background-color: #fafafa;
+  color: var(--color-text);
+}
+
+.requestDetailHeader .item:hover,
+.requestDetailHeader .signOut:hover {
+  background-color: #fafafa;
+  color: var(--color-text);
 }

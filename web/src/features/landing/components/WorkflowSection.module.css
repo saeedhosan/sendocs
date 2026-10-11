@@ -42,7 +42,7 @@
 }
 
 .step {
-  font-family: var(--font-mono);
+  font-family: var(--font-workspace-mono);
   font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.05em;

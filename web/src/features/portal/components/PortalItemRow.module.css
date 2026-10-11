@@ -28,7 +28,7 @@
   align-items: center;
   gap: 0.5rem;
   margin-top: 0.125rem;
-  font-family: var(--font-mono);
+  font-family: var(--font-workspace-mono);
   font-size: 0.75rem;
   color: var(--color-text-muted);
 }
@@ -67,7 +67,7 @@
 
 .transferLabel {
   flex-shrink: 0;
-  font-family: var(--font-mono);
+  font-family: var(--font-workspace-mono);
   font-size: 0.75rem;
   color: var(--color-text-muted);
 }

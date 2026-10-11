@@ -27,7 +27,7 @@
   align-items: center;
   gap: 0.375rem;
   margin-top: 0.25rem;
-  font-family: var(--font-mono);
+  font-family: var(--font-workspace-mono);
   font-size: 0.75rem;
   color: var(--color-text-muted);
 }

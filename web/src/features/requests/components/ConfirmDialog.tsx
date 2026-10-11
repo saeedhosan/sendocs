@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import { Button } from '../../../components/ui'
 import { Dialog } from '../../../components/ui'
 import type { ReactNode } from 'react'
+import type { DialogProps } from '../../../components/ui/Dialog'
 import styles from './ConfirmDialog.module.css'
 
 export type ConfirmDialogProps = {
@@ -13,6 +14,7 @@ export type ConfirmDialogProps = {
   busy?: boolean
   onConfirm: () => void
   onCancel: () => void
+  ownerTheme?: DialogProps['ownerTheme']
 }
 
 /**
@@ -30,6 +32,7 @@ export function ConfirmDialog({
   onCancel,
   onConfirm,
   busy = false,
+  ownerTheme,
 }: ConfirmDialogProps) {
   const cancelRef = useRef<HTMLButtonElement>(null)
 
@@ -39,7 +42,8 @@ export function ConfirmDialog({
       onClose={onCancel}
       title={title}
       tone={tone}
-      variant="centered"
+      variant="compact-centered"
+      ownerTheme={ownerTheme}
       initialFocusRef={cancelRef}
       footer={
         <>
@@ -47,7 +51,7 @@ export function ConfirmDialog({
             ref={cancelRef}
             variant="secondary"
             size="sm"
-            className={styles.confirmButton}
+            className={styles.confirmCancel}
             onClick={onCancel}
             disabled={busy}
           >
@@ -56,7 +60,7 @@ export function ConfirmDialog({
           <Button
             variant={tone === 'danger' ? 'danger' : 'primary'}
             size="sm"
-            className={tone === 'danger' ? styles.confirmDanger : styles.confirmButton}
+            className={tone === 'danger' ? styles.confirmDanger : styles.confirmPrimary}
             onClick={onConfirm}
             loading={busy}
           >
