@@ -89,7 +89,10 @@ export function ChangePasswordPage() {
   }
 
   return (
-    <AuthLayout headerAction={{ label: 'Back to account', to: '/dashboard' }}>
+    <AuthLayout
+      headerAction={{ label: 'Back to account', to: '/dashboard' }}
+      layoutVariant="change-password"
+    >
       <div className={styles.heading}>
         <h1 className={styles.title}>Change password</h1>
         <p className={styles.subtitle}>
