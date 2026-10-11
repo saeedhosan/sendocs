@@ -42,7 +42,6 @@ body {
 }
 
 a {
-  color: inherit;
   text-decoration: none;
 }
 
@@ -68,15 +67,11 @@ select {
 }
 
 ::view-transition-old(page-content) {
-  animation: var(--page-transition-out-duration, 160ms)
-    var(--page-transition-easing, ease-out) both
-    var(--page-transition-out-name, route-fade-out);
+  animation: var(--page-transition-out-duration, 160ms) var(--page-transition-easing, ease-out) both var(--page-transition-out-name, route-fade-out);
 }
 
 ::view-transition-new(page-content) {
-  animation: var(--page-transition-in-duration, 180ms)
-    var(--page-transition-easing, ease-out) both
-    var(--page-transition-in-name, route-fade-in);
+  animation: var(--page-transition-in-duration, 180ms) var(--page-transition-easing, ease-out) both var(--page-transition-in-name, route-fade-in);
 }
 
 @keyframes route-fade-out {
@@ -148,6 +143,7 @@ select {
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
