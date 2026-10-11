@@ -20,6 +20,8 @@ export function RequestsPage() {
   const cursor = searchParams.get('cursor')
 
   const [requests, setRequests] = useState<RequestSummary[]>([])
+  const [filter, setFilter] = useState<'all' | 'waiting' | 'complete'>('all')
+  const [search, setSearch] = useState('')
   const [pageCursor, setPageCursor] = useState<string | null>(null)
   const [status, setStatus] = useState<'loading' | 'error' | 'ready'>('loading')
   const [canGoPrevious, setCanGoPrevious] = useState(false)
@@ -64,6 +66,17 @@ export function RequestsPage() {
     window.addEventListener('focus', onFocus)
     return () => window.removeEventListener('focus', onFocus)
   }, [load])
+
+  const counts = {
+    all: requests.length,
+    waiting: requests.filter((request) => request.status === 'waiting').length,
+    complete: requests.filter((request) => request.status === 'complete').length,
+  }
+  const visibleRequests = requests.filter((request) => {
+    const matchesFilter = filter === 'all' || request.status === filter
+    const matchesSearch = request.title.toLowerCase().includes(search.trim().toLowerCase())
+    return matchesFilter && matchesSearch
+  })
 
   function setCursor(next: string | null) {
     setSearchParams(next ? { cursor: next } : {}, { replace: false })
@@ -146,33 +159,85 @@ export function RequestsPage() {
 
       {requests.length > 0 ? (
         <>
-          <RequestList requests={requests} />
-          <div className={styles.paging}>
-            <span className={styles.showing}>
-              Showing {requests.length} request
-              {requests.length === 1 ? '' : 's'}
-            </span>
-            <div className={styles.pagingButtons}>
-              <Button
-                variant="secondary"
-                size="sm"
-                iconLeft={<ChevronLeftIcon size={16} />}
-                onClick={goPrevious}
-                disabled={!canGoPrevious}
+          <div className={styles.toolbar}>
+            <div className={styles.filters} aria-label="Filter requests">
+              <button
+                type="button"
+                className={filter === 'all' ? styles.filterActive : styles.filter}
+                aria-pressed={filter === 'all'}
+                onClick={() => setFilter('all')}
               >
-                Previous
-              </Button>
-              <Button
-                variant="secondary"
-                size="sm"
-                iconRight={<ChevronRightIcon size={16} />}
-                onClick={goNext}
-                disabled={!pageCursor}
+                <span>All</span>
+                <span className={styles.count}>{counts.all}</span>
+              </button>
+              <button
+                type="button"
+                className={filter === 'waiting' ? styles.filterActive : styles.filter}
+                aria-pressed={filter === 'waiting'}
+                onClick={() => setFilter('waiting')}
               >
-                Next
-              </Button>
+                <span className={styles.waitingDot} aria-hidden="true" />
+                <span>Waiting</span>
+                <span className={`${styles.count} ${styles.waitingCount}`}>{counts.waiting}</span>
+              </button>
+              <button
+                type="button"
+                className={filter === 'complete' ? styles.filterActive : styles.filter}
+                aria-pressed={filter === 'complete'}
+                onClick={() => setFilter('complete')}
+              >
+                <span className={styles.completeDot} aria-hidden="true" />
+                <span>Complete</span>
+                <span className={`${styles.count} ${styles.completeCount}`}>{counts.complete}</span>
+              </button>
             </div>
+            <label className={styles.search}>
+              <span className={styles.searchIcon} aria-hidden="true" />
+              <span className="sr-only">Search requests</span>
+              <input
+                type="search"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Search requests..."
+              />
+            </label>
           </div>
+          {visibleRequests.length > 0 ? (
+            <RequestList
+              requests={visibleRequests}
+              footer={
+                <div className={styles.listFooter}>
+                  <span className={styles.showing}>
+                    Showing {visibleRequests.length} of {requests.length} requests on this page
+                  </span>
+                  <div className={styles.pagingButtons}>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      iconLeft={<ChevronLeftIcon size={16} />}
+                      onClick={goPrevious}
+                      disabled={!canGoPrevious}
+                    >
+                      Previous
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      iconRight={<ChevronRightIcon size={16} />}
+                      onClick={goNext}
+                      disabled={!pageCursor}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              }
+            />
+          ) : (
+            <div className={styles.noResults} role="status">
+              No requests match your search or filter.
+            </div>
+          )}
         </>
       ) : null}
     </div>
