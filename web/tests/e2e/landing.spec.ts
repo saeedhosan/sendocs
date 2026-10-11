@@ -79,7 +79,7 @@ test.describe("public landing", () => {
 
         await page.getByRole("link", { name: "Security" }).first().click();
 
-        await expect(page).toHaveURL(/\\/contact$/);
+        await expect(page).toHaveURL(/contact$/);
         await expect(page.getByRole("heading", { name: "Contact" })).toBeVisible();
         await expect(page.getByRole("link", { name: app.emails.contact })).toHaveAttribute(
             "href",
