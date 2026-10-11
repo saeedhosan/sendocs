@@ -1,7 +1,6 @@
 import { forwardRef, useId } from 'react'
 import type { InputHTMLAttributes, ReactNode } from 'react'
 import { cn } from '../../lib/cn'
-import styles from './Checkbox.module.css'
 
 export type CheckboxProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> & {
   label: ReactNode
@@ -13,15 +12,18 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
     const inputId = id ?? generatedId
 
     return (
-      <div className={cn(styles.row, className)}>
+      <div className={cn('inline-flex items-center gap-2', className)}>
         <input
           ref={ref}
           id={inputId}
           type="checkbox"
-          className={styles.checkbox}
+          className="size-4 shrink-0 rounded-sm border border-border-strong accent-primary cursor-pointer"
           {...props}
         />
-        <label className={styles.label} htmlFor={inputId}>
+        <label
+          className="text-sm text-ink-secondary cursor-pointer select-none"
+          htmlFor={inputId}
+        >
           {label}
         </label>
       </div>
