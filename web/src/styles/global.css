@@ -201,3 +201,77 @@ select {
   --color-danger-surface: #fff1f2;
   --color-danger-border: #fecdd3;
 }
+
+
+/* The dashboard reference uses a compact neutral surface and a darker blue accent. */
+.owner-dashboard-theme {
+  --color-canvas: #fdf8fb;
+  --color-canvas-muted: #fafafa;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f4f4f5;
+  --color-surface-subtle: #fafafa;
+  --color-surface-sunken: #f1ecef;
+  --color-text: #121113;
+  --color-text-secondary: #52525b;
+  --color-text-body: #52525b;
+  --color-text-emphasis: #1c1b1d;
+  --color-text-muted: #71717a;
+  --color-text-placeholder: #a1a1aa;
+  --color-border: #e4e4e7;
+  --color-border-strong: #d4d4d8;
+  --color-border-subtle: #e4e4e7;
+  --color-primary: #304fcf;
+  --color-primary-hover: #263fb0;
+  --color-primary-active: #0d36ba;
+  --color-primary-soft: rgba(98, 126, 255, 0.1);
+  --color-on-primary: #ffffff;
+  --color-success: #16a34a;
+  --color-success-text: #047857;
+  --color-success-surface: #f0fdf4;
+  --color-success-border: #bbf7d0;
+  --color-danger: #dc2626;
+  --color-danger-strong: #b91c1c;
+  --color-danger-text: #dc2626;
+  --color-danger-surface: #fef2f2;
+  --color-danger-border: #fecaca;
+  --color-warning-text: #b45309;
+  --color-warning-surface: #fffbeb;
+  --color-warning-border: #fde68a;
+  --color-focus: #304fcf;
+  --color-focus-ring: rgba(98, 126, 255, 0.25);
+}
+
+/* The request-creation reference uses a softer canvas with indigo form controls. */
+.create-request-theme {
+  --color-canvas: #fafafa;
+  --color-canvas-muted: #fafafa;
+  --color-surface: #ffffff;
+  --color-surface-muted: #fafafa;
+  --color-surface-subtle: #fafafa;
+  --color-surface-sunken: #f4f4f5;
+  --color-text: #1c1b1d;
+  --color-text-secondary: #444654;
+  --color-text-body: #444654;
+  --color-text-emphasis: #27272a;
+  --color-text-muted: #71717a;
+  --color-text-placeholder: #a1a1aa;
+  --color-border: #e2e8f0;
+  --color-border-strong: #d4d4d8;
+  --color-border-subtle: #e4e4e7;
+  --color-primary: #4f46e5;
+  --color-primary-hover: #4338ca;
+  --color-primary-active: #3730a3;
+  --color-primary-soft: #eef2ff;
+  --color-on-primary: #ffffff;
+  --color-danger: #dc2626;
+  --color-danger-strong: #b91c1c;
+  --color-danger-text: #dc2626;
+  --color-danger-surface: #fef2f2;
+  --color-danger-border: #fecaca;
+  --color-success: #16a34a;
+  --color-success-text: #047857;
+  --color-success-surface: #f0fdf4;
+  --color-success-border: #bbf7d0;
+  --color-focus: #4f46e5;
+  --color-focus-ring: rgba(79, 70, 229, 0.15);
+}
