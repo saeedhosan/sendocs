@@ -7,7 +7,7 @@ export const authStyles = {
   form: 'flex flex-col gap-4',
   formReset: 'flex flex-col gap-5',
   social: 'mb-6',
-  formError: 'mb-4',
+  formError: 'mb-4 rounded-[10px]',
   footerText: 'mt-6 text-center text-sm text-ink-muted',
   footerBox:
     'mt-6 pt-5 border-t border-border-subtle text-center text-sm text-ink-muted',
