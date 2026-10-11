@@ -2,7 +2,19 @@ import { Fragment, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { Logo } from '../components/navigation/Logo'
 import { Container } from '../components/ui'
-import styles from './AuthLayout.module.css'
+import { cn } from '../lib/cn'
+
+const HEADER_INNER = 'flex items-center justify-between gap-4 min-h-16'
+const MAIN =
+  '[view-transition-name:page-content] flex flex-1 items-center justify-center py-12'
+const CARD =
+  'w-full max-w-md my-12 p-8 bg-surface border border-border rounded-md shadow-sm'
+const FOOTER_INNER =
+  'flex flex-wrap items-center justify-center gap-2 text-xs text-ink-muted text-center max-sm:flex-col'
+const FOOTER_RESET_INNER =
+  'flex flex-col items-center justify-center gap-4 text-[0.8125rem] leading-[1.125rem] text-ink-body text-center sm:flex-row'
+const FOOTER_RESET_LINK = 'transition-colors duration-150 hover:text-ink'
+const EXTRA_LINK = 'transition-colors duration-150'
 
 export type FooterVariant =
   | 'default'
@@ -49,39 +61,45 @@ export function AuthLayout({
     : '© 2025 Sendocs Inc.'
   const linkClass =
     footerVariant === 'login'
-      ? `${styles.footerLink} ${styles.footerLinkSecondary}`
-      : styles.footerLink
+      ? `${EXTRA_LINK} hover:text-ink-secondary`
+      : `${EXTRA_LINK} hover:text-ink-emphasis`
 
   return (
-    <div className={styles.layout}>
-      <header className={styles.header}>
-        <Container className={styles.headerInner}>
+    <div className="flex flex-col min-h-screen">
+      <header className="w-full border-b border-border bg-surface">
+        <Container className={HEADER_INNER}>
           <Logo />
           {headerAction ? (
-            <Link to={headerAction.to} className={styles.headerAction}>
+            <Link
+              to={headerAction.to}
+              className="text-sm font-medium text-ink-muted transition-colors duration-150 hover:text-ink"
+            >
               {headerAction.label}
             </Link>
           ) : null}
         </Container>
       </header>
 
-      <Container as="main" className={styles.main}>
-        <div className={styles.card}>{children}</div>
+      <Container as="main" className={MAIN}>
+        <div className={CARD}>{children}</div>
       </Container>
 
       {isReset ? (
-        <footer className={styles.footerReset}>
-          <Container className={styles.footerInnerReset}>
-            <span className={styles.footerResetCopy}>{copyright}</span>
-            <div className={styles.footerResetLinks}>
+        <footer className="w-full py-6">
+          <Container className={FOOTER_RESET_INNER}>
+            <span>{copyright}</span>
+            <div className="flex items-center gap-4">
               {footerLinks.map((link, index) => (
                 <Fragment key={link.to}>
                   {index > 0 ? (
-                    <span aria-hidden="true" className={styles.footerResetDot}>
+                    <span
+                      aria-hidden="true"
+                      className="transition-colors duration-150"
+                    >
                       •
                     </span>
                   ) : null}
-                  <Link to={link.to} className={styles.footerResetLink}>
+                  <Link to={link.to} className={FOOTER_RESET_LINK}>
                     {link.label}
                   </Link>
                 </Fragment>
@@ -91,11 +109,12 @@ export function AuthLayout({
         </footer>
       ) : (
         <footer
-          className={`${styles.footer} ${
-            whiteFooters.includes(footerVariant) ? styles.footerWhite : ''
-          }`}
+          className={cn(
+            'w-full border-t border-border py-6',
+            whiteFooters.includes(footerVariant) && 'bg-surface',
+          )}
         >
-          <Container className={styles.footerInner}>
+          <Container className={FOOTER_INNER}>
             <span>{copyright}</span>
             {footerLinks.map((link) => (
               <Fragment key={link.to}>
