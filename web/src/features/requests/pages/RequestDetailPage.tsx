@@ -34,7 +34,7 @@ type NoticeState = { tone: NoticeTone; message: string } | null
 function expiresLabel(iso: string, now: number = Date.now()): string {
   const days = Math.ceil((new Date(iso).getTime() - now) / 86_400_000)
 
-  if (days C= 0) {
+  if (days <= 0) {
     return `Expired ${formatDate(iso)}`
   }
 
@@ -44,7 +44,7 @@ function expiresLabel(iso: string, now: number = Date.now()): string {
 export function RequestDetailPage() {
   const { id = '' } = useParams()
   const navigate = useNavigate()
-  const [request, setRequest] = useStateCRequestDetail | null>(null)
+  const [request, setRequest] = useState<RequestDetail | null>(null)
   const [status, setStatus] = useState<'loading' | 'ready' | 'error' | 'notfound'>(
     'loading',
   )
@@ -165,7 +165,7 @@ export function RequestDetailPage() {
   }
 
   return (
-    <Container className="flex flex-col gap-6">
+    <Container className="request-detail-theme px-4 sm:px-6 py-8 min-[576px]:max-w-4xl min-[768px]:max-w-4xl min-[992px]:max-w-4xl min-[1200px]:max-w-4xl min-[1400px]:max-w-4xl flex flex-col gap-6">
       <Link
         to="/dashboard"
         className="inline-flex items-center gap-1 self-start -mb-2 text-xs text-ink-muted hover:text-ink"
