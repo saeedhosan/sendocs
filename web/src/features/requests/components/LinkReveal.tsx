@@ -2,7 +2,6 @@ import { useRef, useState } from 'react'
 import { Button, Dialog } from '../../../components/ui'
 import { CheckIcon, CopyIcon } from '../../../components/icons'
 import type { MagicLink } from '../types'
-import styles from './LinkReveal.module.css'
 
 export type LinkRevealProps = {
   open: boolean
@@ -42,16 +41,16 @@ export function LinkReveal({ open, link, onClose }: LinkRevealProps) {
         <Button
           variant="secondary"
           onClick={onClose}
-          className={styles.doneButton}
+          className="min-h-11 !border-border rounded-md"
         >
           Done
         </Button>
       }
     >
-      <div className={styles.field}>
+      <div className="flex flex-col gap-2.5 mt-5 sm:flex-row sm:items-center">
         <input
           ref={inputRef}
-          className={styles.input}
+          className="w-full min-w-0 min-h-11 px-3 border border-border rounded-md bg-surface-sunken text-ink font-mono text-[0.8125rem] focus:outline-2 focus:outline-focus focus:outline-offset-1"
           type="text"
           readOnly
           value={link?.url ?? ''}
@@ -66,9 +65,11 @@ export function LinkReveal({ open, link, onClose }: LinkRevealProps) {
           {copied ? 'Copied' : 'Copy link'}
         </Button>
       </div>
-      <p className={styles.hint}>This link is shown only once.</p>
+      <p className="mt-2 text-xs text-ink-secondary">
+        This link is shown only once.
+      </p>
       {copyFailed ? (
-        <p className={styles.hint} role="alert">
+        <p className="mt-2 text-xs text-ink-secondary" role="alert">
           Copy failed — select the link above and copy it manually.
         </p>
       ) : null}
