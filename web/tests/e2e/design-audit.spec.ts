@@ -496,11 +496,7 @@ test('captures desktop and mobile pairs for all committed UI references', async 
 
         for (const dialog of referenceDialogs) {
           const trigger = page.locator(dialog.triggerSelector)
-          if (dialog.name === 'delete-document-dialog') {
-            await trigger.first().click()
-          } else {
-            await trigger.click()
-          }
+          await trigger.first().click()
           await expect(page.locator(dialog.selector)).toBeVisible()
           await page.evaluate(() => window.scrollTo(0, 0))
           typographyAudit.push({
@@ -621,7 +617,11 @@ test('captures desktop and mobile pairs for all committed UI references', async 
         const dialog = page.getByRole('dialog', { name: 'Your request is ready.' })
         await expect(dialog).toBeVisible()
         await page.evaluate(() => {
-          if (document.activeElement instanceof HTMLElement) document.activeElement.blur()
+          const input = document.querySelector('[role="dialog"] input')
+          if (input instanceof HTMLInputElement) {
+            input.setSelectionRange(0, 0)
+            input.blur()
+          }
           window.scrollTo(0, 0)
         })
         typographyAudit.push({
