@@ -477,13 +477,25 @@ test('captures desktop and mobile pairs for all committed UI references', async 
 
       if (item.name === 'request-detail') {
         const referenceDialogs = [
-          { name: 'revoke-dialog', trigger: 'Revoke link', selector: '#revoke-modal' },
-          { name: 'delete-request-dialog', trigger: 'Delete request', selector: '#delete-modal' },
-          { name: 'delete-document-dialog', trigger: 'Delete', selector: '#delete-file-modal' },
+          {
+            name: 'revoke-dialog',
+            triggerSelector: 'button[onclick*="revoke-modal"]',
+            selector: '#revoke-modal',
+          },
+          {
+            name: 'delete-request-dialog',
+            triggerSelector: 'button[onclick*="delete-modal"]',
+            selector: '#delete-modal',
+          },
+          {
+            name: 'delete-document-dialog',
+            triggerSelector: 'button[onclick^="openDocDeleteModal"]',
+            selector: '#delete-file-modal',
+          },
         ]
 
         for (const dialog of referenceDialogs) {
-          const trigger = page.getByRole('button', { name: dialog.trigger, exact: true })
+          const trigger = page.locator(dialog.triggerSelector)
           if (dialog.name === 'delete-document-dialog') {
             await trigger.first().click()
           } else {
