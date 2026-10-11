@@ -17,6 +17,7 @@
 
 .heading {
   font-size: 1.25rem;
+  line-height: 1.5;
   font-weight: 600;
   letter-spacing: -0.02em;
   color: var(--color-text);
@@ -24,6 +25,7 @@
 
 .body {
   margin-top: 0.25rem;
+  line-height: 1.5;
   font-size: 0.875rem;
   color: var(--color-marketing-text-secondary);
 }
