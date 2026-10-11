@@ -38,7 +38,11 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: 3rem 1rem;
+  padding: 1.5rem 1rem;
+}
+
+.layout[data-layout-variant='login'] .main {
+  padding-block: 0;
 }
 
 .card {
