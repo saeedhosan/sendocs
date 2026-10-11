@@ -11,6 +11,13 @@
   white-space: nowrap;
 }
 
+.dot {
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: var(--radius-full);
+  background-color: currentColor;
+}
+
 .neutral {
   background-color: var(--color-surface-sunken);
   border-color: var(--color-border);
