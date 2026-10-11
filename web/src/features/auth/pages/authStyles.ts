@@ -21,7 +21,7 @@ export const authStyles = {
   successIcon:
     'inline-flex items-center justify-center size-10 mb-4 rounded-full bg-success-surface border border-success-border text-success',
   infoBox:
-    'mb-6 p-4 bg-surface-muted border border-border rounded-[10px] text-xs leading-[1.375rem] text-ink-muted',
+    'mb-6 p-4 bg-surface-subtle border border-border rounded-[10px] text-xs leading-[1.375rem] text-ink-muted',
   infoBoxTitle: 'flex items-start gap-1.5 mb-1 font-medium text-ink-secondary',
   infoBoxNote: 'block mt-0.5 font-mono text-[0.6875rem] text-ink-muted',
   changeInfoBox:
