@@ -1,4 +1,4 @@
-import { CheckCircleIcon } from '../../../components/icons'
+import { CheckIcon } from '../../../components/icons'
 
 export type CompleteBannerProps = {
   uploaded: number
@@ -13,7 +13,7 @@ export function CompleteBanner({ uploaded, total }: CompleteBannerProps) {
       aria-labelledby="portal-complete-title"
     >
       <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-[#d1fae5] text-[#047857]">
-        <CheckCircleIcon size={22} />
+        <CheckIcon size={22} />
       </span>
       <div className="flex flex-col items-center gap-1">
         <h1
