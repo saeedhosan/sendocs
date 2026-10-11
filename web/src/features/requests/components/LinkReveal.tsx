@@ -41,7 +41,7 @@ export function LinkReveal({ open, link, onClose }: LinkRevealProps) {
         <Button
           variant="secondary"
           onClick={onClose}
-          className="min-h-11 !border-border rounded-md"
+          className="min-h-11 !border-border rounded-[10px]"
         >
           Done
         </Button>
@@ -50,7 +50,7 @@ export function LinkReveal({ open, link, onClose }: LinkRevealProps) {
       <div className="flex flex-col gap-2.5 mt-5 sm:flex-row sm:items-center">
         <input
           ref={inputRef}
-          className="w-full min-w-0 min-h-11 px-3 border border-border rounded-md bg-surface-sunken text-ink font-mono text-[0.8125rem] focus:outline-2 focus:outline-focus focus:outline-offset-1"
+          className="w-full min-w-0 min-h-11 px-3 border border-border rounded-[10px] bg-surface-sunken text-ink font-mono text-[0.8125rem] focus:outline-2 focus:outline-focus focus:outline-offset-1"
           type="text"
           readOnly
           value={link?.url ?? ''}
@@ -61,6 +61,7 @@ export function LinkReveal({ open, link, onClose }: LinkRevealProps) {
           type="button"
           iconLeft={copied ? <CheckIcon size={16} /> : <CopyIcon size={16} />}
           onClick={() => void copy()}
+          className="rounded-[10px]"
         >
           {copied ? 'Copied' : 'Copy link'}
         </Button>
