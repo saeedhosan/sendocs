@@ -3,7 +3,6 @@ import { useAuth } from '../../../app/providers/useAuth'
 import { Alert, Button } from '../../../components/ui'
 import { errorMessage } from '../../../lib/api/errors'
 import { authApi } from '../api'
-import styles from './VerifyEmailBanner.module.css'
 
 /**
  * Non-blocking reminder for owners whose address is not yet confirmed.
@@ -39,21 +38,21 @@ export function VerifyEmailBanner() {
     <Alert
       variant="warning"
       title="Verify your email address"
-      className={styles.banner}
+      className="mb-4"
     >
-      <p className={styles.text}>
+      <p>
         {sent
           ? `Verification email sent to ${user.email}. Check your inbox.`
           : `We sent a verification link to ${user.email}.`}
       </p>
-      {error ? <p className={styles.error}>{error}</p> : null}
+      {error ? <p className="mt-1">{error}</p> : null}
       {sent ? null : (
         <Button
           variant="secondary"
           size="sm"
           loading={sending}
           onClick={handleResend}
-          className={styles.action}
+          className="mt-2"
         >
           Resend email
         </Button>
