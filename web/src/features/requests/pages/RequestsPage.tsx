@@ -135,7 +135,7 @@ export function RequestsPage() {
     <Container className="flex flex-col gap-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-xl leading-7 font-semibold tracking-[-0.01em] text-ink sm:text-2xl sm:leading-8">
+          <h1 className="text-xl leading-7 font-semibold tracking-tight text-ink sm:text-2xl sm:leading-8">
             Document Requests
           </h1>
           <p className="mt-1 text-sm text-ink-secondary">
