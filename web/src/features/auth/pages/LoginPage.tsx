@@ -131,6 +131,7 @@ export function LoginPage() {
         </FormField>
 
         <Checkbox
+          className="pt-1"
           label="Remember this device for 30 days"
           name="remember"
           checked={values.remember ?? false}
