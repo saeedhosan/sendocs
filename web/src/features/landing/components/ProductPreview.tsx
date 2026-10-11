@@ -53,11 +53,11 @@ export function ProductPreview() {
       <div className="flex items-center justify-between gap-3 px-4 py-3 bg-surface-subtle border-b border-border-subtle">
         <div className="flex items-center gap-2 min-w-0">
           <span className="shrink-0 size-2.5 rounded-full bg-border-strong" />
-          <span className="text-sm font-semibold text-ink truncate">
+          <span className="text-[14px] leading-[1.5] font-semibold text-ink truncate">
             2024 Corporate Tax Return — Acme Corp
           </span>
         </div>
-        <span className="shrink-0 px-2 py-0.5 border border-marketing-success-border rounded-[4px] bg-marketing-success-surface text-[0.6875rem] font-medium text-marketing-success">
+        <span className="shrink-0 px-2 py-0.5 border border-marketing-success-border rounded-[4px] bg-marketing-success-surface text-[0.6875rem] leading-[1.5] font-medium text-marketing-success">
           Active
         </span>
       </div>
@@ -65,7 +65,7 @@ export function ProductPreview() {
       <div className="flex flex-col gap-4 p-4 sm:p-5">
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-marketing-text-secondary">
+            <span className="text-[12px] leading-[1.5] font-medium text-marketing-text-secondary">
               3 of 5 uploaded
             </span>
           </div>
@@ -97,10 +97,10 @@ export function ProductPreview() {
                   />
                 )}
                 <div className="min-w-0">
-                  <p className="text-[0.8125rem] font-medium text-ink truncate">
+                  <p className="text-[0.8125rem] leading-[1.5] font-medium text-ink truncate">
                     {item.name}
                   </p>
-                  <p className="mt-0.5 font-mono text-[0.6875rem] text-ink-muted truncate">
+                  <p className="font-mono text-[0.6875rem] leading-[1.5] text-ink-muted truncate">
                     {item.meta}
                   </p>
                 </div>
@@ -112,7 +112,7 @@ export function ProductPreview() {
                   <span className="hidden sm:inline">Download</span>
                 </span>
               ) : (
-                <span className="shrink-0 px-2 py-0.5 border border-border rounded-[4px] bg-surface-sunken text-[0.6875rem] font-medium text-marketing-text-secondary">
+                <span className="shrink-0 px-2 py-0.5 border border-border rounded-[4px] bg-surface-sunken text-[0.6875rem] leading-[1.5] font-medium text-marketing-text-secondary">
                   Waiting
                 </span>
               )}

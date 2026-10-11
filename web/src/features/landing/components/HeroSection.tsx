@@ -5,7 +5,7 @@ export function HeroSection() {
   return (
     <section className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-12">
       <div className="flex flex-col gap-6 lg:col-span-6">
-        <span className="inline-flex items-center self-start gap-2 px-2.5 py-1 border border-border-subtle rounded-[10px] bg-surface-subtle text-xs font-medium text-marketing-text-secondary">
+        <span className="inline-flex items-center self-start gap-2 px-2.5 py-1 border border-border-subtle rounded-[10px] bg-surface-subtle text-[12px] leading-[1.5] font-medium text-marketing-text-secondary">
           <span className="size-1.5 rounded-full bg-primary" aria-hidden="true" />
           Document collection, made simple
         </span>
