@@ -130,7 +130,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
 
   return (
     <form
-      className="flex flex-col gap-6 p-4 sm:p-6 border border-border rounded-[10px] bg-surface shadow-sm"
+      className="flex flex-col gap-6 p-4 sm:p-6 border border-border-subtle rounded-[10px] bg-surface shadow-sm"
       onSubmit={handleSubmit}
       noValidate
     >
