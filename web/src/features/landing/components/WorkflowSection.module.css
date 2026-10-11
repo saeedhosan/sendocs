@@ -13,6 +13,7 @@
 
 .heading {
   font-size: 1.5rem;
+  line-height: 1.5;
   font-weight: 600;
   letter-spacing: -0.02em;
   color: var(--color-text);
@@ -42,6 +43,7 @@
 }
 
 .step {
+  line-height: 1.5;
   font-family: var(--font-workspace-mono);
   font-size: 0.75rem;
   font-weight: 500;
@@ -52,6 +54,7 @@
 
 .title {
   font-size: 0.9375rem;
+  line-height: 1.5;
   font-weight: 600;
   color: var(--color-text);
 }
