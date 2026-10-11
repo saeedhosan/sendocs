@@ -8,6 +8,8 @@ const HEADER = 'top-0 z-50 w-full border-b border-border'
 const HEADER_HOME = 'fixed bg-white/90 backdrop-blur-[12px]'
 const INNER = 'flex items-center justify-between gap-4 min-h-16'
 const INNER_HOME = 'min-h-14'
+const CONTAINER_HOME = 'px-4 sm:px-6 min-[576px]:max-w-6xl min-[768px]:max-w-6xl min-[992px]:max-w-6xl min-[1200px]:max-w-6xl min-[1400px]:max-w-6xl'
+const CONTAINER_DOCUMENT = 'px-6 min-[576px]:max-w-5xl min-[768px]:max-w-5xl min-[992px]:max-w-5xl min-[1200px]:max-w-5xl min-[1400px]:max-w-5xl'
 const ACTIONS = 'flex items-center gap-3'
 const LOGIN_LINK =
   'px-3 py-1.5 text-[0.8125rem] font-medium text-marketing-text-secondary transition-colors duration-150 hover:text-ink'
@@ -47,7 +49,12 @@ export function PublicHeader() {
         isLanding ? HEADER_HOME : 'bg-surface',
       )}
     >
-      <Container className={cn(INNER, isLanding && INNER_HOME)}>
+      <Container
+        className={cn(
+          INNER,
+          isLanding ? cn(INNER_HOME, CONTAINER_HOME) : CONTAINER_DOCUMENT,
+        )}
+      >
         <Logo />
 
         {isDocument ? (
