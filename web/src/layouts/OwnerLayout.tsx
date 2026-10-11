@@ -18,11 +18,18 @@ export function OwnerLayout() {
           ? themeStyles.requestDetailTheme
           : undefined
   const layoutClassName = [styles.layout, themeClass].filter(Boolean).join(' ')
+  const mainClassName = [
+    styles.main,
+    isNewRequest && styles.mainNewRequest,
+    isRequestDetail && styles.mainRequestDetail,
+  ]
+    .filter(Boolean)
+    .join(' ')
 
   return (
     <div className={layoutClassName}>
       <OwnerHeader />
-      <main className={styles.main}>
+      <main className={mainClassName}>
         <VerifyEmailBanner />
         <Outlet />
       </main>
