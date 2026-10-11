@@ -69,9 +69,9 @@ export function FeatureGrid() {
           return (
             <article
               key={feature.title}
-              className="flex flex-col gap-2 p-5 bg-surface border border-border rounded-md shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
+              className="flex flex-col gap-2 p-5 bg-surface border border-border rounded-[10px] shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
             >
-              <span className="inline-flex items-center justify-center size-8 mb-1 border border-border rounded-sm bg-surface-muted text-primary">
+              <span className="inline-flex items-center justify-center size-8 mb-1 border border-border rounded-[8px] bg-surface-muted text-primary">
                 <FeatureIcon size={18} />
               </span>
               <h3 className="text-[0.9375rem] font-semibold text-ink">
@@ -85,9 +85,9 @@ export function FeatureGrid() {
         })}
       </div>
 
-      <div className="flex flex-col gap-4 p-5 bg-surface-muted border border-border rounded-md sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:p-6">
+      <div className="flex flex-col gap-4 p-5 bg-surface-muted border border-border rounded-[10px] sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:p-6">
         <div className="flex items-start gap-3.5 max-w-[42rem]">
-          <span className="inline-flex shrink-0 items-center justify-center size-9 mt-0.5 border border-border rounded-sm bg-surface text-primary">
+          <span className="inline-flex shrink-0 items-center justify-center size-9 mt-0.5 border border-border rounded-[8px] bg-surface text-primary">
             <LockIcon size={20} />
           </span>
           <div>
