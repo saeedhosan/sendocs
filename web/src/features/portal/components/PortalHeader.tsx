@@ -1,7 +1,6 @@
 import { LockIcon } from '../../../components/icons'
 import { Logo } from '../../../components/navigation/Logo'
 import { Container } from '../../../components/ui'
-import styles from './PortalHeader.module.css'
 
 /**
  * The portal's minimal shell: the brand mark and a privacy note. No account, no
@@ -9,10 +8,10 @@ import styles from './PortalHeader.module.css'
  */
 export function PortalHeader() {
   return (
-    <header className={styles.header}>
-      <Container className={styles.inner}>
+    <header className="border-b border-border bg-surface">
+      <Container className="flex items-center justify-between gap-4 py-4">
         <Logo to={null} />
-        <span className={styles.private}>
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 border border-border rounded-md bg-surface-muted font-mono text-xs text-ink-muted">
           <LockIcon size={14} />
           <span>End-to-End Private</span>
         </span>
