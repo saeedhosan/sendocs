@@ -103,7 +103,7 @@ export function RegisterPage() {
         <GoogleButton label="Sign up with Google" />
       </div>
 
-      <AuthDivider label="or register with email" />
+      <AuthDivider label="or register with email" compact />
 
       {formError ? (
         <Alert variant="error" className={s.formError}>
@@ -155,7 +155,7 @@ export function RegisterPage() {
 
         <PasswordRequirementsList rules={rules} />
 
-        <div className={s.actions}>
+        <div className="pt-2">
           <Button type="submit" fullWidth loading={submitting}>
             Create account
           </Button>
@@ -164,11 +164,11 @@ export function RegisterPage() {
 
       <p className={s.legal}>
         By creating an account, you agree to our{' '}
-        <Link to="/terms" className={s.link}>
+        <Link to="/terms" className={s.legalLink}>
           Terms of Service
         </Link>{' '}
         and{' '}
-        <Link to="/privacy" className={s.link}>
+        <Link to="/privacy" className={s.legalLink}>
           Privacy Policy
         </Link>
         .
