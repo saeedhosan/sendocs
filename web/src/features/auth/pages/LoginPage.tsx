@@ -80,7 +80,7 @@ export function LoginPage() {
   }
 
   return (
-    <AuthLayout boxedLogo={false}>
+    <AuthLayout boxedLogo={false} layoutVariant="login">
       <div className={`${styles.heading} ${styles.center}`}>
         <h1 className={styles.title}>Sign in</h1>
         <p className={styles.subtitle}>Sign in to your account to continue.</p>
