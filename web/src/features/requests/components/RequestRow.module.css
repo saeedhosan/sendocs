@@ -109,6 +109,10 @@
 }
 
 @media (min-width: 48rem) {
+  .open {
+    min-height: 1.75rem;
+  }
+
   .row {
     display: grid;
     grid-template-columns: minmax(0, 5fr) 2fr 2fr 2fr minmax(4rem, 1fr);
