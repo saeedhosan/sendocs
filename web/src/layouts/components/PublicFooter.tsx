@@ -6,7 +6,7 @@ import styles from './PublicFooter.module.css'
 const links = [
   { label: 'Terms', to: '/terms' },
   { label: 'Privacy', to: '/privacy' },
-  { label: 'Contact', to: '/contact' },
+  { label: 'Security', to: '/contact' },
 ]
 
 const landingLinks = [
