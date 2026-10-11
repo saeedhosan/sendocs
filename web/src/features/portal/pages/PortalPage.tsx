@@ -223,7 +223,7 @@ export function PortalPage() {
                   value={uploadPercent(view.uploaded, view.total)}
                   tone="waiting"
                   label={progressLabel(view.uploaded, view.total)}
-                  className="sm:h-2"
+                  className="bg-[#e2e8f0] sm:h-2"
                 />
               </div>
             </section>
