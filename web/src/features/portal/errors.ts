@@ -5,7 +5,7 @@ import { ACCEPTED_TYPES_LABEL } from './precheck'
  * never shown; every sentence is authored here.
  */
 const MESSAGES: Record<string, string> = {
-  file_too_large: 'The file is larger than 25 MB. Choose a smaller file.',
+  file_too_large: 'The file is larger than 25 MB',
   unsupported_type: `That file type is not accepted. Upload a ${ACCEPTED_TYPES_LABEL} file.`,
   not_found: 'This item is no longer part of the request.',
   duplicate_upload: 'A file has already been uploaded for this item.',
