@@ -327,7 +327,19 @@ async function stubApi(page: Page, isAuthenticated: () => boolean) {
       return route.fulfill(json(200, requestDetail))
     }
 
-    if (pathname === '/api/v1/requests') {
+    if (pathname === '/api/v1/requests' && route.request().method() === 'POST') {
+      return route.fulfill(
+        json(201, {
+          request: requestDetail,
+          link: {
+            url: 'https://sendocs.app/portal/3b8f9e29a7c414d8eb11e9f420b87a',
+            expiresAt,
+          },
+        }),
+      )
+    }
+
+    if (pathname === '/api/v1/requests' && route.request().method() === 'GET') {
       return route.fulfill(json(200, requestPage))
     }
 
@@ -349,7 +361,7 @@ async function waitForFonts(page: Page) {
 
 async function captureTypography(page: Page) {
   return page.evaluate(() => {
-    const selectors = ['body', 'header', 'main', 'footer', 'h1', 'h2', 'h3', 'p', 'label', 'button', 'input', 'section', 'article']
+    const selectors = ['body', 'header', 'main', 'footer', 'h1', 'h2', 'h3', 'p', 'label', 'button', 'input', 'section', 'article', '.card', '.main', '.footerInner', '.page', '.form', '.linkPanel', '.itemRow', '.panel', '[role="dialog"]']
     return selectors.flatMap((selector) =>
       [...document.querySelectorAll<HTMLElement>(selector)].map((element, index) => {
         const style = getComputedStyle(element)
@@ -403,6 +415,21 @@ test('captures desktop and mobile pairs for all committed UI references', async 
       })
       await waitForFonts(page)
 
+      // Capture the reference's creation-success modal before hiding the
+      // prototype's always-visible preview overlay for the resting-page shot.
+      if (item.name === 'new-request') {
+        typographyAudit.push({
+          viewport: viewport.name,
+          page: item.name,
+          side: 'link-reveal-reference',
+          elements: await captureTypography(page),
+        })
+        await page.screenshot({
+          path: resolve(outputDirectory, `${viewport.name}-new-request-link-reveal-reference.png`),
+          animations: 'disabled',
+        })
+      }
+
       // Remove preview-only controls from the HTML mocks so screenshots compare
       // the actual page rather than the reference authoring/demo controls.
       if (item.name === 'client-portal') {
@@ -426,6 +453,53 @@ test('captures desktop and mobile pairs for all committed UI references', async 
         fullPage: true,
         animations: 'disabled',
       })
+
+      if (item.name === 'forgot-password') {
+        await page.getByLabel('Email address', { exact: true }).fill('alex@example.com')
+        await page.getByRole('button', { name: 'Send reset link', exact: true }).click()
+        await expect(page.getByRole('heading', { name: 'Check your inbox' })).toBeVisible()
+        typographyAudit.push({
+          viewport: viewport.name,
+          page: 'forgot-password-success',
+          side: 'reference',
+          elements: await captureTypography(page),
+        })
+        await page.screenshot({
+          path: resolve(outputDirectory, `${viewport.name}-forgot-password-success-reference.png`),
+          fullPage: true,
+          animations: 'disabled',
+        })
+      }
+
+      if (item.name === 'request-detail') {
+        const referenceDialogs = [
+          { name: 'revoke-dialog', trigger: 'Revoke link', selector: '#revoke-modal' },
+          { name: 'delete-request-dialog', trigger: 'Delete request', selector: '#delete-modal' },
+          { name: 'delete-document-dialog', trigger: 'Delete', selector: '#delete-file-modal' },
+        ]
+
+        for (const dialog of referenceDialogs) {
+          const trigger = page.getByRole('button', { name: dialog.trigger, exact: true })
+          if (dialog.name === 'delete-document-dialog') {
+            await trigger.first().click()
+          } else {
+            await trigger.click()
+          }
+          await expect(page.locator(dialog.selector)).toBeVisible()
+          await page.evaluate(() => window.scrollTo(0, 0))
+          typographyAudit.push({
+            viewport: viewport.name,
+            page: `request-detail-${dialog.name}`,
+            side: 'reference',
+            elements: await captureTypography(page),
+          })
+          await page.screenshot({
+            path: resolve(outputDirectory, `${viewport.name}-request-detail-${dialog.name}-reference.png`),
+            animations: 'disabled',
+          })
+          await page.locator(dialog.selector).getByRole('button', { name: 'Cancel', exact: true }).click()
+        }
+      }
 
       authenticated = item.authenticated
       await page.goto(item.path, { waitUntil: 'domcontentloaded' })
@@ -505,6 +579,79 @@ test('captures desktop and mobile pairs for all committed UI references', async 
         fullPage: true,
         animations: 'disabled',
       })
+
+      if (item.name === 'forgot-password') {
+        await page.getByLabel('Email address', { exact: true }).fill('alex@example.com')
+        await page.getByRole('button', { name: 'Send reset link', exact: true }).click()
+        await expect(page.getByRole('heading', { name: 'Check your inbox' })).toBeVisible()
+        await page.evaluate(() => {
+          if (document.activeElement instanceof HTMLElement) document.activeElement.blur()
+        })
+        typographyAudit.push({
+          viewport: viewport.name,
+          page: 'forgot-password-success',
+          side: 'implementation',
+          elements: await captureTypography(page),
+        })
+        await page.screenshot({
+          path: resolve(outputDirectory, `${viewport.name}-forgot-password-success-implementation.png`),
+          fullPage: true,
+          animations: 'disabled',
+        })
+      }
+
+      if (item.name === 'new-request') {
+        await page.getByRole('button', { name: 'Create request', exact: true }).click()
+        const dialog = page.getByRole('dialog', { name: 'Your request is ready.' })
+        await expect(dialog).toBeVisible()
+        await page.evaluate(() => {
+          if (document.activeElement instanceof HTMLElement) document.activeElement.blur()
+          window.scrollTo(0, 0)
+        })
+        typographyAudit.push({
+          viewport: viewport.name,
+          page: 'new-request-link-reveal',
+          side: 'implementation',
+          elements: await captureTypography(page),
+        })
+        await page.screenshot({
+          path: resolve(outputDirectory, `${viewport.name}-new-request-link-reveal-implementation.png`),
+          animations: 'disabled',
+        })
+        await dialog.getByRole('button', { name: 'Done', exact: true }).click()
+      }
+
+      if (item.name === 'request-detail') {
+        const implementationDialogs = [
+          { name: 'revoke-dialog', trigger: 'Revoke link' },
+          { name: 'delete-request-dialog', trigger: 'Delete request' },
+          { name: 'delete-document-dialog', trigger: 'Delete' },
+        ]
+
+        for (const dialogConfig of implementationDialogs) {
+          const trigger = page.getByRole('button', { name: dialogConfig.trigger, exact: true })
+          if (dialogConfig.name === 'delete-document-dialog') {
+            await page.evaluate(() => window.scrollTo(0, 0))
+            await trigger.first().click()
+          } else {
+            await trigger.click()
+          }
+          const dialog = page.getByRole('dialog')
+          await expect(dialog).toBeVisible()
+          await page.evaluate(() => window.scrollTo(0, 0))
+          typographyAudit.push({
+            viewport: viewport.name,
+            page: `request-detail-${dialogConfig.name}`,
+            side: 'implementation',
+            elements: await captureTypography(page),
+          })
+          await page.screenshot({
+            path: resolve(outputDirectory, `${viewport.name}-request-detail-${dialogConfig.name}-implementation.png`),
+            animations: 'disabled',
+          })
+          await dialog.getByRole('button', { name: 'Cancel', exact: true }).click()
+        }
+      }
 
       if (item.name === 'owner-dashboard') {
         await page.getByRole('button', { name: /Waiting/ }).click()
