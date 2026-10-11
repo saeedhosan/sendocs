@@ -8,7 +8,7 @@ import { PublicHeader } from './components/PublicHeader'
  */
 export function PublicLayout() {
   return (
-    <div className="flex flex-col min-h-screen bg-surface">
+    <div className="flex flex-col min-h-screen bg-canvas-muted">
       <PublicHeader />
       <main className="[view-transition-name:page-content] flex-1 w-full">
         <Outlet />
