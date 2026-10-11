@@ -14,7 +14,7 @@ export const authStyles = {
   legal: 'my-4 text-center text-xs leading-4 text-ink-muted',
   legalLink: 'text-primary hover:underline',
   link: 'font-medium text-primary hover:text-primary-hover',
-  backRow: 'mt-6 text-center text-sm text-ink-secondary',
+  backRow: 'mt-6 flex h-[25px] items-center justify-center text-sm text-ink-secondary',
   backLink:
     'inline-flex items-center gap-1.5 text-ink-secondary hover:text-ink',
   actions: 'mt-2',

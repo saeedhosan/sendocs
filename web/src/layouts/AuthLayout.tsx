@@ -140,7 +140,12 @@ export function AuthLayout({
             <span>{copyright}</span>
             {footerLinks.map((link) => (
               <Fragment key={link.to}>
-                <span aria-hidden="true">·</span>
+                <span
+                  aria-hidden="true"
+                  className={whiteFooters.includes(footerVariant) ? 'max-sm:hidden' : undefined}
+                >
+                  ·
+                </span>
                 <Link to={link.to} className={linkClass}>
                   {link.label}
                 </Link>
