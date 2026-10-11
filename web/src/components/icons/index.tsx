@@ -95,6 +95,23 @@ export function MailIcon(props: IconProps) {
   )
 }
 
+export function MailCheckIcon(props: IconProps) {
+  return (
+    <Icon
+      {...props}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.6}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="m4 7 8 6 8-6" />
+      <path d="m15.5 15.5 2 2 3.5-3.5" />
+    </Icon>
+  )
+}
+
 export function CheckCircleIcon(props: IconProps) {
   return (
     <Icon {...props}>
