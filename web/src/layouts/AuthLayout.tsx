@@ -30,6 +30,7 @@ export type AuthLayoutProps = {
   headerAction?: { label: string; to: string }
   /** Page-specific footer copy/order/layout when a reference differs. */
   footerVariant?: FooterVariant
+  logoVariant?: 'auth' | 'auth-login' | 'auth-register'
 }
 
 const legalLinks = [
@@ -54,6 +55,7 @@ export function AuthLayout({
   children,
   headerAction,
   footerVariant = 'default',
+  logoVariant = 'auth',
 }: AuthLayoutProps) {
   const isReset = footerVariant === 'reset-password'
   const footerLinks = isReset ? resetLinks : legalLinks
@@ -69,7 +71,7 @@ export function AuthLayout({
     <div className="flex flex-col min-h-screen">
       <header className="w-full border-b border-border bg-surface">
         <Container className={HEADER_INNER}>
-          <Logo variant="auth" />
+          <Logo variant={logoVariant} />
           {headerAction ? (
             <Link
               to={headerAction.to}
