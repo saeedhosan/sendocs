@@ -13,6 +13,7 @@
 
 .heading {
   font-size: 1.5rem;
+  line-height: 1.5;
   font-weight: 600;
   letter-spacing: -0.02em;
   color: var(--color-text);
@@ -56,6 +57,7 @@
 
 .cardTitle {
   font-size: 0.9375rem;
+  line-height: 1.5;
   font-weight: 600;
   color: var(--color-text);
 }
@@ -99,6 +101,7 @@
 
 .storageNote {
   display: inline-flex;
+  line-height: 1.5;
   align-items: center;
   gap: 0.375rem;
   font-family: var(--font-workspace-mono);
