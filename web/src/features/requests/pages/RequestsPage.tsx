@@ -144,7 +144,7 @@ export function RequestsPage() {
         </div>
         <Button
           iconLeft={<PlusIcon size={18} />}
-          className="w-full min-h-11 sm:w-auto sm:h-9 sm:min-h-9"
+          className="w-full min-h-11 rounded-[10px] sm:w-auto sm:h-9 sm:min-h-9"
           onClick={() => navigate('/requests/new')}
         >
           New request
@@ -180,6 +180,7 @@ export function RequestsPage() {
           action={
             <Button
               iconLeft={<PlusIcon size={18} />}
+              className="rounded-[10px]"
               onClick={() => navigate('/requests/new')}
             >
               Create request
