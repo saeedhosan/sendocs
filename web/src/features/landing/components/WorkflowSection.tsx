@@ -20,7 +20,7 @@ export function WorkflowSection() {
   return (
     <section className="flex flex-col gap-8">
       <div className="flex flex-col gap-2 max-w-[36rem]">
-        <h2 className="text-2xl font-semibold tracking-[-0.02em] text-ink sm:text-[1.625rem]">
+        <h2 className="text-2xl font-semibold tracking-tight text-ink sm:text-[1.625rem]">
           How it works
         </h2>
         <p className="text-sm leading-[1.625] text-marketing-text-secondary">
