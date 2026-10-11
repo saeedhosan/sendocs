@@ -10,6 +10,8 @@ const documentLinks = [
   { label: 'Contact', to: '/contact' },
 ]
 
+const legalReferenceLinks = documentLinks.filter((link) => link.to !== '/contact')
+
 /**
  * The minimal public header shared by the landing and legal pages.
  *
@@ -24,6 +26,7 @@ export function PublicHeader() {
   const isAuthenticated = status === 'authenticated'
   const isLanding = pathname === '/'
   const isDocument = documentLinks.some((link) => link.to === pathname)
+  const isLegalReference = pathname === '/terms' || pathname === '/privacy'
 
   return (
     <header className={cn(styles.header, isLanding && styles.homeHeader)}>
@@ -32,7 +35,7 @@ export function PublicHeader() {
 
         {isDocument ? (
           <nav className={styles.nav} aria-label="Legal">
-            {documentLinks.map((link) => (
+            {(isLegalReference ? legalReferenceLinks : documentLinks).map((link) => (
               <NavLink
                 key={link.to}
                 to={link.to}
@@ -43,6 +46,9 @@ export function PublicHeader() {
                 {link.label}
               </NavLink>
             ))}
+            {isLegalReference ? (
+              <span className={styles.navLink}>Security</span>
+            ) : null}
             {isAuthenticated ? (
               <NavLink
                 to="/dashboard"
