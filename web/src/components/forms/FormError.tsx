@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react'
 import { cn } from '../../lib/cn'
-import styles from './FormError.module.css'
 
 export type FormErrorProps = {
   id?: string
@@ -10,7 +9,11 @@ export type FormErrorProps = {
 
 export function FormError({ id, className, children }: FormErrorProps) {
   return (
-    <p id={id} role="alert" className={cn(styles.error, className)}>
+    <p
+      id={id}
+      role="alert"
+      className={cn('mt-1.5 text-xs leading-[1.125rem] text-danger', className)}
+    >
       {children}
     </p>
   )
