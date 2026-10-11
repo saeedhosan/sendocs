@@ -3,9 +3,9 @@ import type { FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { Alert, Button } from '../../../components/ui'
 import {
-  ArrowDownIcon,
-  ArrowUpIcon,
   CloseIcon,
+  KeyboardArrowDownIcon,
+  KeyboardArrowUpIcon,
   PlusIcon,
 } from '../../../components/icons'
 import { ApiError } from '../../../lib/api/client'
@@ -19,6 +19,12 @@ import {
 } from '../schemas'
 import type { CreateRequestInput } from '../types'
 import styles from './NewRequestForm.module.css'
+
+const ITEM_PLACEHOLDERS = [
+  'e.g. Government-issued photo ID',
+  'e.g. W-2 / 1099 Tax Documents',
+  'e.g. Voided business check',
+]
 
 export type NewRequestFormProps = {
   onSubmit: (input: CreateRequestInput) => Promise<void>
@@ -169,7 +175,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
                     styles.input,
                     errors[`items.${index}.label`] && styles.inputInvalid,
                   )}
-                  placeholder="e.g. Government-issued photo ID"
+                  placeholder={ITEM_PLACEHOLDERS[index] ?? 'e.g. Proof of address'}
                   value={label}
                   maxLength={200}
                   aria-label={`Document ${index + 1}`}
@@ -192,7 +198,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
                   disabled={index === 0}
                   aria-label={`Move document ${index + 1} up`}
                 >
-                  <ArrowUpIcon size={18} />
+                  <KeyboardArrowUpIcon size={18} />
                 </button>
                 <button
                   type="button"
@@ -201,7 +207,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
                   disabled={index === labels.length - 1}
                   aria-label={`Move document ${index + 1} down`}
                 >
-                  <ArrowDownIcon size={18} />
+                  <KeyboardArrowDownIcon size={18} />
                 </button>
                 <button
                   type="button"

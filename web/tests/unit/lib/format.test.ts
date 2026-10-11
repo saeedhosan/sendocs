@@ -33,6 +33,9 @@ describe('timeAgo', () => {
     expect(timeAgo(new Date(now - 2 * 86_400_000).toISOString(), now)).toBe(
       '2 days ago',
     )
+    expect(timeAgo(new Date(now - 86_400_000).toISOString(), now)).toBe(
+      'Yesterday',
+    )
   })
 
   it('falls back to an absolute date past a month', () => {
