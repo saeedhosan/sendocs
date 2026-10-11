@@ -12,7 +12,7 @@ export function RequestList({ requests, footer, empty }: RequestListProps) {
   return (
     <div className="overflow-hidden border border-border-subtle rounded-[10px] bg-surface shadow-xs">
       <div
-        className="hidden md:grid md:grid-cols-12 md:gap-3 md:px-5 md:py-3 md:border-b md:border-border-subtle md:bg-surface-subtle md:text-[0.6875rem] md:font-medium md:tracking-[0.04em] md:uppercase md:text-ink-muted"
+        className="hidden md:grid md:grid-cols-12 md:gap-3 md:px-5 md:py-3 md:border-b md:border-border-subtle md:bg-surface-subtle md:text-[0.6875rem] md:font-medium md:tracking-wider md:uppercase md:text-ink-muted"
         aria-hidden="true"
       >
         <span className="md:col-span-5">Title</span>
