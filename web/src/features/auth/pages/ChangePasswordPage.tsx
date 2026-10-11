@@ -201,7 +201,9 @@ export function ChangePasswordPage() {
           ) : null}
         </div>
 
-        <PasswordRequirementsList rules={rules} panel title="Requirements" />
+        <div className={styles.requirements}>
+          <PasswordRequirementsList rules={rules} panel title="Requirements" />
+        </div>
 
         <div className={styles.actions}>
           <Button
