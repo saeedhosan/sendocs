@@ -406,9 +406,8 @@ test('captures desktop and mobile pairs for all committed UI references', async 
         // sending a real file or depending on network timing.
         await page.evaluate(() => {
           XMLHttpRequest.prototype.send = function () {
-            const request = this
             window.setTimeout(() => {
-              request.upload.dispatchEvent(
+              this.upload.dispatchEvent(
                 new ProgressEvent('progress', {
                   lengthComputable: true,
                   loaded: 67,
