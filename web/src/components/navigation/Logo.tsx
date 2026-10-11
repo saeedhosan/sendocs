@@ -10,6 +10,8 @@ export type LogoProps = {
   className?: string
   letterMark?: boolean
   compact?: boolean
+  /** Wordmark size; the account-creation reference uses the smaller mark. */
+  wordmarkSize?: 'md' | 'lg'
 }
 
 export function Logo({
@@ -18,6 +20,7 @@ export function Logo({
   className,
   letterMark = false,
   compact = false,
+  wordmarkSize = 'lg',
 }: LogoProps) {
   const content = (
     <>
@@ -30,7 +33,13 @@ export function Logo({
       >
         {letterMark ? 'S' : <LockIcon size={boxed ? 18 : 20} />}
       </span>
-      <span className={cn(styles.wordmark, compact && styles.wordmarkCompact)}>
+      <span
+        className={cn(
+          styles.wordmark,
+          compact && styles.wordmarkCompact,
+          wordmarkSize === 'md' && styles.wordmarkMd,
+        )}
+      >
         Sendocs
       </span>
     </>

@@ -16,6 +16,8 @@ export type AuthLayoutProps = {
   headerAction?: { label: string; to: string }
   /** The sign-in reference uses the plain, unboxed logo. */
   boxedLogo?: boolean
+  /** Wordmark size; the account-creation reference uses the smaller mark. */
+  logoWordmark?: 'md' | 'lg'
   /** Page-specific footer copy/order/layout when a reference differs. */
   footerVariant?: FooterVariant
 }
@@ -42,6 +44,7 @@ export function AuthLayout({
   children,
   headerAction,
   boxedLogo = true,
+  logoWordmark = 'lg',
   footerVariant = 'default',
 }: AuthLayoutProps) {
   const isReset = footerVariant === 'reset-password'
@@ -58,7 +61,7 @@ export function AuthLayout({
     <div className={styles.layout}>
       <header className={styles.header}>
         <div className={styles.headerInner}>
-          <Logo boxed={boxedLogo} />
+          <Logo boxed={boxedLogo} wordmarkSize={logoWordmark} />
           {headerAction ? (
             <Link to={headerAction.to} className={styles.headerAction}>
               {headerAction.label}

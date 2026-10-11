@@ -89,7 +89,7 @@ export function RegisterPage() {
   }
 
   return (
-    <AuthLayout>
+    <AuthLayout logoWordmark="md">
       <div className={`${styles.heading} ${styles.center}`}>
         <h1 className={styles.title}>Create your account</h1>
         <p className={styles.subtitle}>
