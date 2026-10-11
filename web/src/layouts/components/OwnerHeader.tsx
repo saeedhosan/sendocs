@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../app/providers/useAuth'
 import { Logo } from '../../components/navigation/Logo'
+import { Container } from '../../components/ui'
 import { ChevronDownIcon, LockResetIcon, LogoutIcon, TrashIcon } from '../../components/icons'
 import styles from './OwnerHeader.module.css'
 
@@ -60,14 +61,8 @@ export function OwnerHeader() {
 
   return (
     <header className={styles.header}>
-      <div className={styles.inner}>
-        {isDashboard ? (
-          <Logo className={styles.logo} />
-        ) : (
-          <Link to="/dashboard" className={styles.wordmarkOnly}>
-            Sendocs
-          </Link>
-        )}
+      <Container className={styles.inner}>
+        <Logo to="/dashboard" />
         <div className={styles.menuWrap} ref={menuRef}>
           <button
             type="button"
@@ -117,7 +112,7 @@ export function OwnerHeader() {
             </div>
           ) : null}
         </div>
-      </div>
+      </Container>
     </header>
   )
 }

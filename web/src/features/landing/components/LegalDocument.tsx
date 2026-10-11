@@ -1,3 +1,4 @@
+import { Container } from '../../../components/ui'
 import type { LegalDocumentContent } from '../content/legal'
 import styles from './LegalDocument.module.css'
 
@@ -18,7 +19,7 @@ function Note({ text, email }: { text: string; email: string }) {
 /** Renders a transcribed legal document: title, sections, and an optional note. */
 export function LegalDocument({ document }: { document: LegalDocumentContent }) {
   return (
-    <article className={styles.document}>
+    <Container as="article" className={styles.document}>
       <h1 className={styles.title}>{document.title}</h1>
       <p className={styles.updated}>Last updated: {document.updated}</p>
 
@@ -60,6 +61,6 @@ export function LegalDocument({ document }: { document: LegalDocumentContent }) 
           <Note {...document.note} />
         </div>
       ) : null}
-    </article>
+    </Container>
   )
 }

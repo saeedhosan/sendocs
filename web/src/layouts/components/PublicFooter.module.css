@@ -11,10 +11,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  max-width: var(--layout-max-document);
   min-height: 4rem;
-  margin-inline: auto;
-  padding-inline: 1.5rem;
   font-size: 0.75rem;
   line-height: 1rem;
   color: var(--color-text-muted);
@@ -39,15 +36,7 @@
 }
 
 .landingInner {
-  max-width: var(--layout-max-public);
   min-height: var(--layout-header-height-public);
-  padding-inline: 1rem;
   font-size: 0.8125rem;
   line-height: 1.25rem;
-}
-
-@media (min-width: 640px) {
-  .landingInner {
-    padding-inline: 1.5rem;
-  }
 }

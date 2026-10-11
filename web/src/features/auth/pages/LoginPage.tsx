@@ -81,7 +81,7 @@ export function LoginPage() {
   }
 
   return (
-    <AuthLayout boxedLogo={false} footerVariant="login">
+    <AuthLayout footerVariant="login">
       <div className={`${styles.heading} ${styles.center}`}>
         <h1 className={styles.title}>Sign in</h1>
         <p className={styles.subtitle}>Sign in to your account to continue.</p>
