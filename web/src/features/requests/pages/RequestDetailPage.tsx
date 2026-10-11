@@ -164,6 +164,7 @@ export function RequestDetailPage() {
           <div className={styles.titleRow}>
             <h1 className={styles.title}>{request.title}</h1>
             <Badge
+              className={styles.linkStateBadge}
               variant={
                 linkState(request) === 'active'
                   ? 'success'
@@ -251,9 +252,9 @@ export function RequestDetailPage() {
           confirm?.kind === 'revoke'
             ? 'Are you sure you want to revoke this link? The client will immediately lose access. This action cannot be undone.'
             : confirm?.kind === 'delete-request'
-              ? `This permanently removes the request and all ${request.uploaded} uploaded document${request.uploaded === 1 ? '' : 's'}. This action cannot be undone.`
+              ? `Are you sure you want to delete this request? This permanently removes the request and all ${request.uploaded} uploaded document${request.uploaded === 1 ? '' : 's'}. This action cannot be undone.`
               : confirm?.kind === 'delete-document'
-                ? `Permanently delete “${confirm.item.document?.originalName ?? confirm.item.label}”? This action cannot be undone.`
+                ? `Are you sure you want to delete this document? This action cannot be undone.`
                 : ''
         }
         confirmLabel={

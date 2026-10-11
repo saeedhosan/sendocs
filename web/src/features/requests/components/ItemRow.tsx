@@ -1,5 +1,5 @@
 import { Button } from '../../../components/ui'
-import { DownloadIcon, TrashIcon } from '../../../components/icons'
+import { TrashIcon } from '../../../components/icons'
 import { formatBytes } from '../../../lib/format'
 import type { RequestItem } from '../types'
 import styles from './ItemRow.module.css'
@@ -34,14 +34,13 @@ export function ItemRow({ item, onDelete }: ItemRowProps) {
               href={file.downloadUrl}
               download={file.originalName}
             >
-              <DownloadIcon size={16} />
               <span>Download</span>
             </a>
           ) : null}
           <Button
-            variant="danger"
+            variant="ghost"
             size="sm"
-            iconLeft={<TrashIcon size={16} />}
+            className={styles.deleteButton}
             onClick={() => onDelete(item)}
           >
             Delete

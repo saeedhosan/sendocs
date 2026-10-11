@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import { Button } from '../../../components/ui'
 import { Dialog } from '../../../components/ui'
 import type { ReactNode } from 'react'
+import styles from './ConfirmDialog.module.css'
 
 export type ConfirmDialogProps = {
   open: boolean
@@ -38,12 +39,15 @@ export function ConfirmDialog({
       onClose={onCancel}
       title={title}
       tone={tone}
+      variant="centered"
       initialFocusRef={cancelRef}
       footer={
         <>
           <Button
             ref={cancelRef}
             variant="secondary"
+            size="sm"
+            className={styles.confirmButton}
             onClick={onCancel}
             disabled={busy}
           >
@@ -51,6 +55,8 @@ export function ConfirmDialog({
           </Button>
           <Button
             variant={tone === 'danger' ? 'danger' : 'primary'}
+            size="sm"
+            className={tone === 'danger' ? styles.confirmDanger : styles.confirmButton}
             onClick={onConfirm}
             loading={busy}
           >
