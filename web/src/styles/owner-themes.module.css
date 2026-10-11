@@ -1,5 +1,5 @@
 .dashboardTheme {
-  --layout-max: 72rem;
+  --layout-max: 64rem;
   --color-dialog-border: #e4e4e7;
   --color-dialog-overlay: rgba(0, 0, 0, 0.4);
   --color-canvas: #fdf8fb;
