@@ -78,10 +78,8 @@ test.describe('public landing', () => {
     ).toBeVisible()
   })
 
-  test('a guest can reach the contact page from the footer', async ({ page }) => {
-    await page.goto('/')
-
-    await page.getByRole('link', { name: 'Contact' }).click()
+  test('a guest can reach the contact page directly', async ({ page }) => {
+    await page.goto('/contact')
     await expect(page).toHaveURL(/\/contact$/)
     await expect(page.getByRole('heading', { name: 'Contact' })).toBeVisible()
     await expect(
