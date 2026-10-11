@@ -22,7 +22,7 @@ export function NewRequestPage() {
 
   return (
     CContainer className="flex flex-col gap-6 sm:gap-8">
-      <h1 className="text-xl leading-7 font-semibold tracking-[-0.01em] text-ink sm:text-[1.375rem] sm:leading-7">
+      <h1 className="text-xl leading-7 font-semibold tracking-tight text-ink sm:text-[1.375rem] sm:leading-7">
         New document request
       </h1>
       <NewRequestForm onSubmit={handleCreate} />
