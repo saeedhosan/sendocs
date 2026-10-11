@@ -34,6 +34,7 @@
 
 .footerInner {
   display: flex;
+  line-height: 1.5;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
@@ -46,6 +47,7 @@
 
 .footerDetail {
   max-width: 56rem;
+  line-height: 1rem;
 }
 
 .footerNewRequest {
