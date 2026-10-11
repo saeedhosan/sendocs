@@ -29,6 +29,11 @@
   color: var(--color-text);
 }
 
+.linkActive {
+  color: var(--color-text);
+  font-weight: 500;
+}
+
 .landingFooter {
   background-color: var(--color-canvas-muted);
 }

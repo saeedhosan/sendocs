@@ -6,7 +6,7 @@ import styles from './PublicFooter.module.css'
 const links = [
   { label: 'Terms', to: '/terms' },
   { label: 'Privacy', to: '/privacy' },
-  { label: 'Contact', to: '/contact' },
+  { label: 'Security', to: '/contact' },
 ]
 
 const landingLinks = [
@@ -16,7 +16,8 @@ const landingLinks = [
 
 /** The minimal public footer shared by the landing and legal pages. */
 export function PublicFooter() {
-  const isLanding = useLocation().pathname === '/'
+  const { pathname } = useLocation()
+  const isLanding = pathname === '/'
   const visibleLinks = isLanding ? landingLinks : links
 
   return (
@@ -26,7 +27,13 @@ export function PublicFooter() {
         {visibleLinks.map((link) => (
           <Fragment key={link.to}>
             <span aria-hidden="true">·</span>
-            <Link to={link.to} className={styles.link}>
+            <Link
+              to={link.to}
+              className={cn(
+                styles.link,
+                !isLanding && pathname === link.to && styles.linkActive,
+              )}
+            >
               {link.label}
             </Link>
           </Fragment>

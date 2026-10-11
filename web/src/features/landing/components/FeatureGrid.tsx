@@ -1,11 +1,11 @@
 import type { ComponentType } from 'react'
 import {
-  ChecklistIcon,
+  RuleIcon,
   DevicesIcon,
   KeyIcon,
   LockIcon,
   ShieldCheckIcon,
-  ShieldIcon,
+  ShieldPersonIcon,
   TableChartIcon,
   TrendingUpIcon,
 } from '../../../components/icons'
@@ -20,12 +20,12 @@ type Feature = {
 
 const features: Feature[] = [
   {
-    icon: ShieldIcon,
+    icon: ShieldPersonIcon,
     title: 'Authentication and access',
     body: 'Secure owner accounts to manage document requests.',
   },
   {
-    icon: ChecklistIcon,
+    icon: RuleIcon,
     title: 'Document requests',
     body: 'Request 1–10 specific documents from each client.',
   },
