@@ -118,7 +118,7 @@ describe('PortalPage', () => {
     expect(
       screen.queryByText('Documents for Corporate Onboarding'),
     ).not.toBeInTheDocument()
-    expect(screen.queryByText('Passport or Government ID')).not.toBeInTheDocument()
+    expect(screen.queryByText(/Passport or Government ID/)).not.toBeInTheDocument()
   })
 
   it('uploads a chosen file and marks the row done', async () => {
@@ -127,7 +127,7 @@ describe('PortalPage', () => {
     const user = userEvent.setup()
     renderPortal()
 
-    await screen.findByText('Passport or Government ID')
+    await screen.findByText(/Passport or Government ID/)
     await user.upload(inputFor('Passport or Government ID'), file('passport_scan.pdf'))
 
     await waitFor(() => {
@@ -136,7 +136,7 @@ describe('PortalPage', () => {
     expect(uploadMock.mock.calls[0][0]).toBe(token)
     expect(uploadMock.mock.calls[0][1]).toBe('i1')
 
-    const row = await screen.findByText('Passport or Government ID')
+    const row = await screen.findByText(/Passport or Government ID/)
     expect(
       within(row.closest('li') as HTMLElement).getByRole('status', {
         name: 'Upload complete',
@@ -149,7 +149,7 @@ describe('PortalPage', () => {
     const user = userEvent.setup()
     renderPortal()
 
-    await screen.findByText('Passport or Government ID')
+    await screen.findByText(/Passport or Government ID/)
     await user.upload(
       inputFor('Passport or Government ID'),
       file('big.pdf', 'application/pdf', 25 * 1024 * 1024 + 1),
@@ -167,10 +167,10 @@ describe('PortalPage', () => {
     const user = userEvent.setup()
     renderPortal()
 
-    await screen.findByText('Passport or Government ID')
+    await screen.findByText(/Passport or Government ID/)
     await user.upload(inputFor('Passport or Government ID'), file('passport_scan.pdf'))
 
-    const row = await screen.findByText('Passport or Government ID')
+    const row = await screen.findByText(/Passport or Government ID/)
     expect(
       within(row.closest('li') as HTMLElement).getByRole('status', {
         name: 'Upload complete',
@@ -187,7 +187,7 @@ describe('PortalPage', () => {
     const user = userEvent.setup()
     renderPortal()
 
-    await screen.findByText('Certificate of Incorporation')
+    await screen.findByText(/Certificate of Incorporation/)
     await user.upload(inputFor('Certificate of Incorporation'), file('scan.pdf'))
 
     expect(await screen.findByText(/file type is not accepted/i)).toBeInTheDocument()
@@ -214,7 +214,7 @@ describe('PortalPage', () => {
     const user = userEvent.setup()
     renderPortal()
 
-    await screen.findByText('Passport or Government ID')
+    await screen.findByText(/Passport or Government ID/)
 
     await user.upload(inputFor('Passport or Government ID'), file('a.pdf'))
     await user.upload(inputFor('Certificate of Incorporation'), file('b.pdf'))
@@ -244,7 +244,7 @@ describe('PortalPage', () => {
     const user = userEvent.setup()
     renderPortal()
 
-    await screen.findByText('Passport or Government ID')
+    await screen.findByText(/Passport or Government ID/)
     await user.upload(inputFor('Passport or Government ID'), file('passport_scan.pdf'))
 
     expect(
@@ -260,7 +260,7 @@ describe('PortalPage', () => {
       )
     renderPortal()
 
-    await screen.findByText('Passport or Government ID')
+    await screen.findByText(/Passport or Government ID/)
     window.dispatchEvent(new Event('focus'))
 
     expect(
@@ -274,7 +274,7 @@ describe('PortalPage', () => {
     const user = userEvent.setup()
     renderPortal()
 
-    await screen.findByText('Passport or Government ID')
+    await screen.findByText(/Passport or Government ID/)
     await user.upload(inputFor('Passport or Government ID'), file('passport_scan.pdf'))
 
     const stored = Object.keys(window.localStorage).map(
