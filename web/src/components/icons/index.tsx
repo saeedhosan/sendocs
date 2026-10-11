@@ -298,6 +298,71 @@ export function ClockIcon(props: IconProps) {
   )
 }
 
+/**
+ * Material Symbols glyphs use a 960-unit viewBox with a negative origin, so
+ * they bypass the 24px `Icon` frame and pass the viewBox through instead.
+ */
+function MaterialIcon({ size = 20, title, children, ...props }: IconProps) {
+  return (
+    <Icon
+      viewBox="0 -960 960 960"
+      size={size}
+      title={title}
+      {...props}
+    >
+      {children}
+    </Icon>
+  )
+}
+
+export function PendingIcon(props: IconProps) {
+  return (
+    <MaterialIcon {...props}>
+      <path d="M301.5-444.62q14.5-14.62 14.5-35.5 0-20.88-14.62-35.38-14.62-14.5-35.5-14.5-20.88 0-35.38 14.62-14.5 14.62-14.5 35.5 0 20.88 14.62 35.38 14.62 14.5 35.5 14.5 20.88 0 35.38-14.62Zm214 0q14.5-14.62 14.5-35.5 0-20.88-14.62-35.38-14.62-14.5-35.5-14.5-20.88 0-35.38 14.62-14.5 14.62-14.5 35.5 0 20.88 14.62 35.38 14.62 14.5 35.5 14.5 20.88 0 35.38-14.62Zm213 0q14.5-14.62 14.5-35.5 0-20.88-14.62-35.38-14.62-14.5-35.5-14.5-20.88 0-35.38 14.62-14.5 14.62-14.5 35.5 0 20.88 14.62 35.38 14.62 14.5 35.5 14.5 20.88 0 35.38-14.62ZM480.27-80q-82.74 0-155.5-31.5Q252-143 197.5-197.5t-86-127.34Q80-397.68 80-480.5t31.5-155.66Q143-709 197.5-763t127.34-85.5Q397.68-880 480.5-880t155.66 31.5Q709-817 763-763t85.5 127Q880-563 880-480.27q0 82.74-31.5 155.5Q817-252 763-197.68q-54 54.31-127 86Q563-80 480.27-80Zm.23-60Q622-140 721-239.5t99-241Q820-622 721.19-721T480-820q-141 0-240.5 98.81T140-480q0 141 99.5 240.5t241 99.5Zm-.5-340Z" />
+    </MaterialIcon>
+  )
+}
+
+export function ShieldPersonIcon(props: IconProps) {
+  return (
+    <MaterialIcon {...props}>
+      <path d="M382.5-489.5Q343-529 343-587t39.5-97.5Q422-724 480-724t97.5 39.5Q617-645 617-587t-39.5 97.5Q538-450 480-450t-97.5-39.5Zm153-42Q557-553 557-587t-21.5-55.5Q514-664 480-664t-55.5 21.5Q403-621 403-587t21.5 55.5Q446-510 480-510t55.5-21.5ZM480-81q-140-35-230-162.5T160-523v-238l320-120 320 120v238q0 152-90 279.5T480-81Zm0-399Zm0-337-260 98v196q0 63 17.5 120.5T287-296q46-25 93.5-37.5T480-346q52 0 99.5 12.5T673-296q32-49 49.5-106.5T740-523v-196l-260-98Zm-78 541q-39 10-77 30 32 35 71 61.5t84 41.5q45-15 84-41.5t71-61.5q-38-20-77-30t-78-10q-39 0-78 10Z" />
+    </MaterialIcon>
+  )
+}
+
+export function RuleIcon(props: IconProps) {
+  return (
+    <MaterialIcon {...props}>
+      <path d="m576-160-42-42 111-111-111-111 42-42 111 111 111-111 42 42-111 111 111 111-42 42-111-111-111 111Zm83-374L517-676l42-42 100 99 179-179 42 43-221 221ZM80-290v-60h360v60H80Zm0-320v-60h360v60H80Z" />
+    </MaterialIcon>
+  )
+}
+
+export function LockResetIcon(props: IconProps) {
+  return (
+    <MaterialIcon {...props}>
+      <path d="M480-80q-88 0-164-35t-130.5-94q-54.5-59-83-138T81-513h61q-7 75 16 142.5t69.5 119Q274-200 339-169.5T480-139q142 0 241-99t99-241q0-142-99-241t-241-99q-100 0-180.5 51.5T177-633h129v60H80v-227h60v109q54-86 142.5-137.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm-80-245q-14 0-24.5-10.5T365-360v-120q0-14 11.5-24.5T405-515v-45q0-31 22-53t53-22q31 0 53 22t22 53v45q17 0 28.5 10.5T595-480v120q0 14-10.5 24.5T560-325H400Zm35-190h90v-45q0-19-13-32t-32-13q-19 0-32 13t-13 32v45Z" />
+    </MaterialIcon>
+  )
+}
+
+export function KeyboardArrowUpIcon(props: IconProps) {
+  return (
+    <MaterialIcon {...props}>
+      <path d="M480-554 283-357l-43-43 240-240 240 240-43 43-197-197Z" />
+    </MaterialIcon>
+  )
+}
+
+export function KeyboardArrowDownIcon(props: IconProps) {
+  return (
+    <MaterialIcon {...props}>
+      <path d="M480-344 240-584l43-43 197 197 197-197 43 43-240 240Z" />
+    </MaterialIcon>
+  )
+}
+
 export function ShieldCheckIcon(props: IconProps) {
   return (
     <Icon {...props}>

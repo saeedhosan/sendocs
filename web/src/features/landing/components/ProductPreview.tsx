@@ -1,6 +1,6 @@
 import {
   CheckCircleIcon,
-  ClockIcon,
+  PendingIcon,
   DownloadIcon,
 } from '../../../components/icons'
 import { cn } from '../../../lib/cn'
@@ -78,7 +78,7 @@ export function ProductPreview() {
                 {item.uploaded ? (
                   <CheckCircleIcon size={18} className={styles.iconDone} />
                 ) : (
-                  <ClockIcon size={18} className={styles.iconWaiting} />
+                  <PendingIcon size={18} className={styles.iconWaiting} />
                 )}
                 <div className={styles.itemText}>
                   <p className={styles.itemName}>{item.name}</p>
