@@ -157,22 +157,22 @@
 .dashboardHeader .inner {
   max-width: 64rem;
   min-height: 4.25rem;
-  padding: 0 1rem;
+  padding: 0 1.5rem;
 }
 
 .dashboardHeader .logo > span:first-child {
-  width: 1.75rem;
-  height: 1.75rem;
-  border-radius: 8px;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 6px;
 }
 
 .dashboardHeader .logo > span:first-child::after {
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: 0.75rem;
+  font-weight: 700;
 }
 
 .dashboardHeader .logo > span:last-child {
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .newRequestHeader .inner {
@@ -284,4 +284,11 @@
 .requestDetailHeader .signOut:hover {
   background-color: #fafafa;
   color: var(--color-text);
+}
+
+@media (min-width: 640px) {
+  .newRequestHeader .inner,
+  .requestDetailHeader .inner {
+    padding-inline: 1.5rem;
+  }
 }
