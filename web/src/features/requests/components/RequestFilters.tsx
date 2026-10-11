@@ -35,7 +35,7 @@ export function RequestFilters({
             className={cn(
               'inline-flex items-center gap-1.5 px-3 py-1.5 border rounded-[8px] bg-surface text-xs font-normal leading-[1.125rem] whitespace-nowrap cursor-pointer transition-colors duration-150 hover:text-ink',
               value === chip.value
-                ? 'border-border-strong text-ink font-medium shadow-sm'
+                ? 'border-border-strong text-ink font-medium shadow-2xs'
                 : 'border-border-subtle text-ink-secondary',
             )}
             aria-pressed={value === chip.value}
