@@ -1,52 +1,33 @@
 import { Link } from 'react-router-dom'
 import { cn } from '../../lib/cn'
-import { LockIcon } from '../icons'
 import styles from './Logo.module.css'
 
 export type LogoProps = {
-  /** Solid indigo tile behind the mark. The sign-in reference uses the plain form. */
-  boxed?: boolean
-  to?: string
+  /** Where the mark links. Pass `null` for non-navigating surfaces. */
+  to?: string | null
   className?: string
-  letterMark?: boolean
-  compact?: boolean
-  /** Wordmark size; the account-creation reference uses the smaller mark. */
-  wordmarkSize?: 'md' | 'lg'
 }
 
-export function Logo({
-  boxed = true,
-  to = '/',
-  className,
-  letterMark = false,
-  compact = false,
-  wordmarkSize = 'lg',
-}: LogoProps) {
+/**
+ * The one Sendocs logo: a rounded indigo tile with the "S" letter mark and the
+ * wordmark. Used on every surface so the brand reads the same everywhere.
+ */
+export function Logo({ to = '/', className }: LogoProps) {
   const content = (
     <>
-      <span
-        className={cn(
-          styles.mark,
-          !boxed && styles.markPlain,
-          letterMark && styles.markLetter,
-        )}
-      >
-        {letterMark ? 'S' : <LockIcon size={boxed ? 18 : 20} />}
+      <span className={styles.mark} aria-hidden="true">
+        S
       </span>
-      <span
-        className={cn(
-          styles.wordmark,
-          compact && styles.wordmarkCompact,
-          wordmarkSize === 'md' && styles.wordmarkMd,
-        )}
-      >
-        Sendocs
-      </span>
+      <span className={styles.wordmark}>Sendocs</span>
     </>
   )
 
+  if (to === null) {
+    return <span className={cn(styles.logo, className)}>{content}</span>
+  }
+
   return (
-    <Link to={to} className={cn(styles.logo, compact && styles.logoCompact, className)} aria-label="Sendocs home">
+    <Link to={to} className={cn(styles.logo, className)} aria-label="Sendocs">
       {content}
     </Link>
   )

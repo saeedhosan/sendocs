@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ErrorState } from '../../../components/feedback'
-import { ProgressBar, Spinner } from '../../../components/ui'
+import { Container, ProgressBar, Spinner } from '../../../components/ui'
 import { ApiError } from '../../../lib/api/client'
 import { portalApi } from '../api'
 import { CompleteBanner } from '../components/CompleteBanner'
@@ -173,7 +173,7 @@ export function PortalPage() {
     <div className={styles.page}>
       <PortalHeader />
 
-      <main className={styles.main}>
+      <Container as="main" className={styles.main}>
         <p className="sr-only" role="status" aria-live="polite">
           {announcement}
         </p>
@@ -235,9 +235,9 @@ export function PortalPage() {
             </ul>
           </>
         )}
-      </main>
+      </Container>
 
-      <footer className={styles.footer}>
+      <Container as="footer" className={styles.footer}>
         <span>© 2026 Sendocs</span>
         <span className={styles.footerDivider} aria-hidden="true">
           ·
@@ -251,7 +251,7 @@ export function PortalPage() {
         <Link to="/privacy" className={styles.footerLink}>
           Privacy
         </Link>
-      </footer>
+      </Container>
     </div>
   )
 }

@@ -1,3 +1,4 @@
+import { Container } from '../../../components/ui'
 import styles from './ContactPage.module.css'
 
 const contactEmail = 'privacy@sendocs.internal'
@@ -8,7 +9,7 @@ const contactEmail = 'privacy@sendocs.internal'
  */
 export function ContactPage() {
   return (
-    <section className={styles.page}>
+    <Container as="section" className={styles.page}>
       <h1 className={styles.title}>Contact</h1>
 
       <p className={styles.lede}>
@@ -19,6 +20,6 @@ export function ContactPage() {
       <a href={`mailto:${contactEmail}`} className={styles.email}>
         {contactEmail}
       </a>
-    </section>
+    </Container>
   )
 }

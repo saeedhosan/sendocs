@@ -1,13 +1,13 @@
 import { useNavigate } from 'react-router-dom'
 import { Logo } from '../components/navigation/Logo'
-import { Button } from '../components/ui'
+import { Button, Container } from '../components/ui'
 import styles from './NotFoundPage.module.css'
 
 export function NotFoundPage() {
   const navigate = useNavigate()
 
   return (
-    <div className={styles.page}>
+    <Container className={styles.page}>
       <Logo />
       <p className={styles.code}>Error 404</p>
       <h1 className={styles.title}>Page not found</h1>
@@ -20,6 +20,6 @@ export function NotFoundPage() {
         </Button>
         <Button onClick={() => navigate('/')}>Back to home</Button>
       </div>
-    </div>
+    </Container>
   )
 }

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { Badge, Button, ProgressBar } from '../../../components/ui'
+import { Badge, Button, Container, ProgressBar } from '../../../components/ui'
 import { ErrorState, LoadingState } from '../../../components/feedback'
 import {
   ArrowBackIcon,
@@ -166,7 +166,7 @@ export function RequestDetailPage() {
   }
 
   return (
-    <div className={styles.page}>
+    <Container className={styles.page}>
       <Link to="/dashboard" className={styles.back}>
         <ArrowBackIcon size={14} />
         <span>Back to requests</span>
@@ -297,6 +297,6 @@ export function RequestDetailPage() {
           onDismiss={() => setNotice(null)}
         />
       ) : null}
-    </div>
+    </Container>
   )
 }

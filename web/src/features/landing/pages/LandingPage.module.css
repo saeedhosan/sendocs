@@ -2,22 +2,12 @@
   display: flex;
   flex-direction: column;
   gap: 4rem;
-  width: 100%;
-  max-width: var(--layout-max-public);
-  margin-inline: auto;
-  padding: calc(var(--layout-header-height-public) + 2.5rem) 1rem 2.5rem;
-}
-
-@media (min-width: 640px) {
-  .page {
-    padding-inline: 1.5rem;
-  }
+  padding-block: calc(var(--layout-header-height-public) + 2.5rem) 2.5rem;
 }
 
 @media (min-width: 768px) {
   .page {
     gap: 6rem;
-    padding-top: calc(var(--layout-header-height-public) + 4rem);
-    padding-bottom: 4rem;
+    padding-block: calc(var(--layout-header-height-public) + 4rem) 4rem;
   }
 }

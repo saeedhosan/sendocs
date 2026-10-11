@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { Button } from '../../../components/ui'
+import { Button, Container } from '../../../components/ui'
 import { EmptyState, ErrorState, LoadingState } from '../../../components/feedback'
 import {
   ChevronLeftIcon,
@@ -133,7 +133,7 @@ export function RequestsPage() {
     : `${pageNumber} / ${pageNumber}`
 
   return (
-    <div className={styles.page}>
+    <Container className={styles.page}>
       <div className={styles.header}>
         <div>
           <h1 className={styles.title}>Document Requests</h1>
@@ -243,6 +243,6 @@ export function RequestsPage() {
           onDismiss={() => setNotice(null)}
         />
       ) : null}
-    </div>
+    </Container>
   )
 }

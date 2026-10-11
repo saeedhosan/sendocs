@@ -1,4 +1,5 @@
 import { Link, Outlet, useLocation } from 'react-router-dom'
+import { Container } from '../components/ui'
 import { VerifyEmailBanner } from '../features/auth/components/VerifyEmailBanner'
 import { OwnerHeader } from './components/OwnerHeader'
 import styles from './OwnerLayout.module.css'
@@ -7,26 +8,19 @@ export function OwnerLayout() {
   const pathname = useLocation().pathname
   const showFooter = pathname !== '/dashboard'
   const isRequestDetail = /^\/requests\/[^/]+$/.test(pathname)
-  const isNewRequest = pathname === '/requests/new'
 
   return (
     <div className={styles.layout}>
       <OwnerHeader />
       <main className={styles.main}>
-        <VerifyEmailBanner />
+        <Container>
+          <VerifyEmailBanner />
+        </Container>
         <Outlet />
       </main>
       {showFooter ? (
         <footer className={styles.footer}>
-          <div
-            className={[
-              styles.footerInner,
-              isRequestDetail && styles.footerDetail,
-              isNewRequest && styles.footerNewRequest,
-            ]
-              .filter(Boolean)
-              .join(' ')}
-          >
+          <Container className={styles.footerInner}>
             <span>Sendocs</span>
             {isRequestDetail ? (
               <div className={styles.footerLinks}>
@@ -36,7 +30,7 @@ export function OwnerLayout() {
             ) : (
               <span>Direct client document intake</span>
             )}
-          </div>
+          </Container>
         </footer>
       ) : null}
     </div>

@@ -1,6 +1,7 @@
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useAuth } from '../../app/providers/useAuth'
 import { Logo } from '../../components/navigation/Logo'
+import { Container } from '../../components/ui'
 import { cn } from '../../lib/cn'
 import styles from './PublicHeader.module.css'
 
@@ -27,8 +28,10 @@ export function PublicHeader() {
 
   return (
     <header className={cn(styles.header, isLanding && styles.homeHeader)}>
-      <div className={cn(styles.inner, isLanding && styles.homeInner)}>
-        <Logo letterMark={isLanding} compact={isLanding} />
+      <Container
+        className={cn(styles.inner, isLanding && styles.homeInner)}
+      >
+        <Logo />
 
         {isDocument ? (
           <nav className={styles.nav} aria-label="Legal">
@@ -87,7 +90,7 @@ export function PublicHeader() {
             </Link>
           </div>
         )}
-      </div>
+      </Container>
     </header>
   )
 }

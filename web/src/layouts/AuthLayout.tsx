@@ -1,6 +1,7 @@
 import { Fragment, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { Logo } from '../components/navigation/Logo'
+import { Container } from '../components/ui'
 import styles from './AuthLayout.module.css'
 
 export type FooterVariant =
@@ -14,10 +15,6 @@ export type AuthLayoutProps = {
   children: ReactNode
   /** A single muted link at the top right, e.g. "Help" or "Back to account". */
   headerAction?: { label: string; to: string }
-  /** The sign-in reference uses the plain, unboxed logo. */
-  boxedLogo?: boolean
-  /** Wordmark size; the account-creation reference uses the smaller mark. */
-  logoWordmark?: 'md' | 'lg'
   /** Page-specific footer copy/order/layout when a reference differs. */
   footerVariant?: FooterVariant
 }
@@ -43,8 +40,6 @@ const whiteFooters: FooterVariant[] = ['login', 'forget', 'change']
 export function AuthLayout({
   children,
   headerAction,
-  boxedLogo = true,
-  logoWordmark = 'lg',
   footerVariant = 'default',
 }: AuthLayoutProps) {
   const isReset = footerVariant === 'reset-password'
@@ -60,23 +55,23 @@ export function AuthLayout({
   return (
     <div className={styles.layout}>
       <header className={styles.header}>
-        <div className={styles.headerInner}>
-          <Logo boxed={boxedLogo} wordmarkSize={logoWordmark} />
+        <Container className={styles.headerInner}>
+          <Logo />
           {headerAction ? (
             <Link to={headerAction.to} className={styles.headerAction}>
               {headerAction.label}
             </Link>
           ) : null}
-        </div>
+        </Container>
       </header>
 
-      <main className={styles.main}>
+      <Container as="main" className={styles.main}>
         <div className={styles.card}>{children}</div>
-      </main>
+      </Container>
 
       {isReset ? (
         <footer className={styles.footerReset}>
-          <div className={styles.footerInnerReset}>
+          <Container className={styles.footerInnerReset}>
             <span className={styles.footerResetCopy}>{copyright}</span>
             <div className={styles.footerResetLinks}>
               {footerLinks.map((link, index) => (
@@ -92,7 +87,7 @@ export function AuthLayout({
                 </Fragment>
               ))}
             </div>
-          </div>
+          </Container>
         </footer>
       ) : (
         <footer
@@ -100,7 +95,7 @@ export function AuthLayout({
             whiteFooters.includes(footerVariant) ? styles.footerWhite : ''
           }`}
         >
-          <div className={styles.footerInner}>
+          <Container className={styles.footerInner}>
             <span>{copyright}</span>
             {footerLinks.map((link) => (
               <Fragment key={link.to}>
@@ -110,7 +105,7 @@ export function AuthLayout({
                 </Link>
               </Fragment>
             ))}
-          </div>
+          </Container>
         </footer>
       )}
     </div>

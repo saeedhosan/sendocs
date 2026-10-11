@@ -1,60 +1,174 @@
+import type { ComponentType } from 'react'
 import { createBrowserRouter } from 'react-router-dom'
-import { ChangePasswordPage } from '../features/auth/pages/ChangePasswordPage'
-import { DeleteAccountPage } from '../features/auth/pages/DeleteAccountPage'
-import { ForgotPasswordPage } from '../features/auth/pages/ForgotPasswordPage'
-import { LoginPage } from '../features/auth/pages/LoginPage'
-import { RegisterPage } from '../features/auth/pages/RegisterPage'
-import { ResetPasswordPage } from '../features/auth/pages/ResetPasswordPage'
-import { VerifyEmailPage } from '../features/auth/pages/VerifyEmailPage'
-import { ContactPage } from '../features/landing/pages/ContactPage'
-import { LandingPage } from '../features/landing/pages/LandingPage'
-import { PrivacyPolicyPage } from '../features/landing/pages/PrivacyPolicyPage'
-import { TermsOfServicePage } from '../features/landing/pages/TermsOfServicePage'
-import { NewRequestPage } from '../features/requests/pages/NewRequestPage'
-import { RequestDetailPage } from '../features/requests/pages/RequestDetailPage'
-import { RequestsPage } from '../features/requests/pages/RequestsPage'
-import { PortalPage } from '../features/portal/pages/PortalPage'
+import { transitions } from '../config/transition'
 import { OwnerLayout } from '../layouts/OwnerLayout'
 import { PublicLayout } from '../layouts/PublicLayout'
 import { GuestOnly } from './guards/GuestOnly'
 import { RequireAuth } from './guards/RequireAuth'
 import { NotFoundPage } from './NotFoundPage'
+import { RootLayout } from './RootLayout'
+
+type PageModule = Record<string, ComponentType>
+
+/**
+ * Code-split a page behind the route-level `lazy` API. This keeps the initial
+ * bundle small and gives the router a real pending state during chunk loads,
+ * which the navigation progress bar surfaces.
+ */
+const lazyPage =
+  (load: () => Promise<PageModule>, name: string) =>
+  async (): Promise<{ Component: ComponentType }> => {
+    const module = await load()
+    return { Component: module[name] }
+  }
 
 export const router = createBrowserRouter([
   {
-    element: <PublicLayout />,
+    element: <RootLayout />,
     children: [
-      { index: true, element: <LandingPage /> },
-      { path: 'privacy', element: <PrivacyPolicyPage /> },
-      { path: 'terms', element: <TermsOfServicePage /> },
-      { path: 'contact', element: <ContactPage /> },
-    ],
-  },
-  {
-    element: <GuestOnly />,
-    children: [
-      { path: 'login', element: <LoginPage /> },
-      { path: 'register', element: <RegisterPage /> },
-      { path: 'forgot-password', element: <ForgotPasswordPage /> },
-      { path: 'reset-password', element: <ResetPasswordPage /> },
-    ],
-  },
-  { path: 'verify-email', element: <VerifyEmailPage /> },
-  { path: 'portal/:token', element: <PortalPage /> },
-  {
-    element: <RequireAuth />,
-    children: [
-      { path: 'settings/password', element: <ChangePasswordPage /> },
-      { path: 'settings/delete', element: <DeleteAccountPage /> },
       {
-        element: <OwnerLayout />,
+        element: <PublicLayout />,
         children: [
-          { path: 'dashboard', element: <RequestsPage /> },
-          { path: 'requests/new', element: <NewRequestPage /> },
-          { path: 'requests/:id', element: <RequestDetailPage /> },
+          {
+            index: true,
+            lazy: lazyPage(
+              () => import('../features/landing/pages/LandingPage'),
+              'LandingPage',
+            ),
+          },
+          {
+            path: 'privacy',
+            lazy: lazyPage(
+              () => import('../features/landing/pages/PrivacyPolicyPage'),
+              'PrivacyPolicyPage',
+            ),
+          },
+          {
+            path: 'terms',
+            lazy: lazyPage(
+              () => import('../features/landing/pages/TermsOfServicePage'),
+              'TermsOfServicePage',
+            ),
+          },
+          {
+            path: 'contact',
+            lazy: lazyPage(
+              () => import('../features/landing/pages/ContactPage'),
+              'ContactPage',
+            ),
+          },
         ],
       },
+      {
+        element: <GuestOnly />,
+        children: [
+          {
+            path: 'login',
+            lazy: lazyPage(
+              () => import('../features/auth/pages/LoginPage'),
+              'LoginPage',
+            ),
+          },
+          {
+            path: 'register',
+            lazy: lazyPage(
+              () => import('../features/auth/pages/RegisterPage'),
+              'RegisterPage',
+            ),
+          },
+          {
+            path: 'forgot-password',
+            lazy: lazyPage(
+              () => import('../features/auth/pages/ForgotPasswordPage'),
+              'ForgotPasswordPage',
+            ),
+          },
+          {
+            path: 'reset-password',
+            lazy: lazyPage(
+              () => import('../features/auth/pages/ResetPasswordPage'),
+              'ResetPasswordPage',
+            ),
+          },
+        ],
+      },
+      {
+        path: 'verify-email',
+        lazy: lazyPage(
+          () => import('../features/auth/pages/VerifyEmailPage'),
+          'VerifyEmailPage',
+        ),
+      },
+      {
+        path: 'portal/:token',
+        lazy: lazyPage(
+          () => import('../features/portal/pages/PortalPage'),
+          'PortalPage',
+        ),
+      },
+      {
+        element: <RequireAuth />,
+        children: [
+          {
+            path: 'settings/password',
+            lazy: lazyPage(
+              () => import('../features/auth/pages/ChangePasswordPage'),
+              'ChangePasswordPage',
+            ),
+          },
+          {
+            path: 'settings/delete',
+            lazy: lazyPage(
+              () => import('../features/auth/pages/DeleteAccountPage'),
+              'DeleteAccountPage',
+            ),
+          },
+          {
+            element: <OwnerLayout />,
+            children: [
+              {
+                path: 'dashboard',
+                lazy: lazyPage(
+                  () => import('../features/requests/pages/RequestsPage'),
+                  'RequestsPage',
+                ),
+              },
+              {
+                path: 'requests/new',
+                lazy: lazyPage(
+                  () => import('../features/requests/pages/NewRequestPage'),
+                  'NewRequestPage',
+                ),
+              },
+              {
+                path: 'requests/:id',
+                lazy: lazyPage(
+                  () => import('../features/requests/pages/RequestDetailPage'),
+                  'RequestDetailPage',
+                ),
+              },
+            ],
+          },
+        ],
+      },
+      { path: '*', element: <NotFoundPage /> },
     ],
   },
-  { path: '*', element: <NotFoundPage /> },
 ])
+
+// Enable browser View Transitions for every navigation at the router's single
+// entry point, so we don't have to touch each <Link>/<NavLink>. `useNavigate`
+// (used by those links) funnels through `router.navigate`, which reads the
+// `viewTransition` option; passing an extra option degrades safely elsewhere.
+const originalNavigate = router.navigate.bind(router) as unknown as (
+  to: unknown,
+  options?: unknown,
+) => Promise<void>
+
+router.navigate = ((to: unknown, options?: Record<string, unknown>) =>
+  typeof to === 'number'
+    ? originalNavigate(to)
+    : originalNavigate(to, {
+        ...options,
+        viewTransition: options?.viewTransition ?? transitions.view.enabled,
+      })) as typeof router.navigate
