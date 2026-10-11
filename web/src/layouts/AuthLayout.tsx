@@ -9,7 +9,7 @@ const HEADER_INNER = 'flex items-center justify-between gap-4 min-h-16'
 const MAIN =
   '[view-transition-name:page-content] flex flex-1 items-center justify-center py-12'
 const CARD =
-  'w-full max-w-md my-12 p-8 bg-surface border border-border rounded-md shadow-sm'
+  'w-full max-w-md my-12 p-8 bg-surface border border-border rounded-[10px] shadow-sm'
 const FOOTER_INNER =
   'flex flex-wrap items-center justify-center gap-2 text-xs text-ink-muted text-center max-sm:flex-col'
 const FOOTER_RESET_INNER =
