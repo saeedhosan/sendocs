@@ -224,6 +224,12 @@
 }
 
 @media (min-width: 768px) {
+  .pagingButtons > button {
+    height: 1.875rem;
+    min-height: 1.875rem;
+    padding-inline: 0.625rem;
+  }
+
   .toolbar {
     flex-direction: row;
     align-items: center;
