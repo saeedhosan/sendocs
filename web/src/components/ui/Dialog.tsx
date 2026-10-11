@@ -131,8 +131,8 @@ export function Dialog({
   )
 
   const titleClass = cn(
-    'font-semibold text-ink',
-    tone === 'danger' && 'text-danger-text',
+    'font-semibold',
+    tone === 'danger' ? 'text-danger-text' : 'text-ink',
     variant === 'centered'
       ? 'text-[1.0625rem] leading-6 tracking-[-0.01em] sm:text-lg sm:leading-7'
       : 'text-sm',
