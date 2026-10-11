@@ -94,6 +94,10 @@
   margin-top: 0.5rem;
 }
 
+.requirements {
+  margin-bottom: 0.375rem;
+}
+
 .changePasswordForm .actions {
   margin-top: 0;
 }
@@ -230,7 +234,7 @@
 }
 
 .cancelRow {
-  margin-top: 0.75rem;
+  margin-top: 0.25rem;
   text-align: center;
 }
 
