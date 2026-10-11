@@ -202,6 +202,7 @@ export function RequestDetailPage() {
             variant="secondary"
             size="sm"
             iconLeft={<LinkOffIcon size={16} />}
+            className="rounded-[10px]"
             onClick={() => setConfirm({ kind: 'revoke' })}
             disabled={linkState(request) !== 'active'}
           >
@@ -211,6 +212,7 @@ export function RequestDetailPage() {
             variant="danger"
             size="sm"
             iconLeft={<TrashIcon size={16} />}
+            className="rounded-[10px]"
             onClick={() => setConfirm({ kind: 'delete-request' })}
           >
             Delete request
@@ -230,11 +232,12 @@ export function RequestDetailPage() {
         <ProgressBar
           value={percent(request.uploaded, request.total)}
           tone={request.status === 'complete' ? 'complete' : 'waiting'}
+          className="rounded-[10px]"
           label={progressLabel(request.uploaded, request.total)}
         />
       </div>
 
-      <section className="flex flex-col gap-3 my-2 p-4 border border-border rounded-md bg-surface sm:flex-row sm:items-center sm:justify-between">
+      <section className="flex flex-col gap-3 my-2 p-4 border border-border rounded-[10px] bg-surface sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-xs font-medium text-ink">Client portal link</p>
           <p className="mt-1.5 text-xs text-ink-muted">
