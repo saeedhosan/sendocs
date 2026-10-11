@@ -395,8 +395,8 @@ test('captures desktop and mobile pairs for all committed UI references', async 
       ).toBeVisible({ timeout: 15000 })
 
       if (item.name === 'reset-password') {
-        await page.getByLabel('New password').fill('abcdefghijkl')
-        await page.getByLabel('Confirm new password').fill('abcdefghijkl')
+        await page.getByLabel('New password', { exact: true }).fill('abcdefghijkl')
+        await page.getByLabel('Confirm new password', { exact: true }).fill('abcdefghijkl')
       }
 
       if (item.name === 'new-request') {
