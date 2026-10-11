@@ -41,7 +41,7 @@
 }
 
 .waiting {
-  margin-top: 0.25rem;
+  align-self: flex-end;
   font-size: 0.75rem;
   font-weight: 500;
   color: var(--color-text-muted);
@@ -73,6 +73,11 @@
 
 .download:hover {
   background-color: var(--color-surface-muted);
+}
+
+.divider {
+  display: none;
+  color: var(--color-border);
 }
 
 .deleteButton {
@@ -121,5 +126,9 @@
     min-height: 0;
     height: auto;
     padding-inline: 0;
+  }
+
+  .divider {
+    display: inline;
   }
 }

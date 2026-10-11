@@ -29,7 +29,7 @@ Source mockups live in `ui/`; each `code.html` is the visual reference for a rou
 | `ui/auth/account-login/code.html`, `ui/auth/account-create/code.html` | `AuthLayout.tsx`, `AuthDivider.tsx`, `GoogleButton.tsx`, `PasswordRequirementsList.tsx` |
 | `ui/auth/password-change/code.html` | `PasswordStrengthMeter.tsx`, `PasswordRequirementsList.tsx`, `auth.module.css` |
 | `ui/auth/password-reset/code.html` | `PasswordStrengthMeter.tsx`, `auth.module.css` |
-| `ui/owner/owner_dashboard/code.html` | `RequestList.tsx`, `RequestRow.tsx`, `OwnerLayout.tsx`, `OwnerHeader.tsx` |
+| `ui/owner/owner_dashboard/code.html` | `RequestList.tsx`, `RequestRow.tsx`, `RequestFilters.tsx`, `OwnerLayout.tsx`, `OwnerHeader.tsx` |
 | `ui/owner/create_request/code.html` | `NewRequestForm.tsx`, `LinkReveal.tsx` |
 | `ui/owner/request_details/code.html` | `ItemList.tsx`, `ItemRow.tsx`, `StatusBadge.tsx`, `ConfirmDialog.tsx`, `Notice.tsx`, `ProgressBar.tsx` |
 | `ui/client/code.html` | `PortalHeader.tsx`, `PortalItemRow.tsx`, `CompleteBanner.tsx`, `DeadLinkScreen.tsx`, `ProgressBar.tsx` |

@@ -7,9 +7,10 @@ import styles from './ItemRow.module.css'
 export type ItemRowProps = {
   item: RequestItem
   onDelete: (item: RequestItem) => void
+  onDownload: (item: RequestItem) => void
 }
 
-export function ItemRow({ item, onDelete }: ItemRowProps) {
+export function ItemRow({ item, onDelete, onDownload }: ItemRowProps) {
   const file = item.document
 
   return (
@@ -22,9 +23,7 @@ export function ItemRow({ item, onDelete }: ItemRowProps) {
             <span aria-hidden="true">•</span>
             <span>{formatBytes(file.sizeBytes)}</span>
           </p>
-        ) : (
-          <p className={styles.waiting}>Waiting</p>
-        )}
+        ) : null}
       </div>
       {file ? (
         <div className={styles.actions}>
@@ -33,10 +32,14 @@ export function ItemRow({ item, onDelete }: ItemRowProps) {
               className={styles.download}
               href={file.downloadUrl}
               download={file.originalName}
+              onClick={() => onDownload(item)}
             >
               <span>Download</span>
             </a>
           ) : null}
+          <span className={styles.divider} aria-hidden="true">
+            |
+          </span>
           <Button
             variant="ghost"
             size="sm"
@@ -46,7 +49,9 @@ export function ItemRow({ item, onDelete }: ItemRowProps) {
             Delete
           </Button>
         </div>
-      ) : null}
+      ) : (
+        <p className={styles.waiting}>Waiting</p>
+      )}
     </li>
   )
 }

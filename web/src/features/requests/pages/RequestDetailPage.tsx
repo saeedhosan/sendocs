@@ -109,7 +109,10 @@ export function RequestDetailPage() {
   function confirmDeleteRequest() {
     void run(async () => {
       await requestsApi.remove(id)
-      navigate('/dashboard', { replace: true })
+      navigate('/dashboard', {
+        replace: true,
+        state: { notice: 'Request deleted' },
+      })
     })
   }
 
@@ -117,7 +120,17 @@ export function RequestDetailPage() {
     void run(async () => {
       await requestsApi.removeDocument(id, item.id)
       await load(id)
-      setNotice({ tone: 'ok', message: 'Document deleted' })
+      setNotice({
+        tone: 'ok',
+        message: `Deleted ${item.document?.originalName ?? item.label}`,
+      })
+    })
+  }
+
+  function downloadDocument(item: RequestItem) {
+    setNotice({
+      tone: 'ok',
+      message: `Downloading ${item.document?.originalName ?? item.label}`,
     })
   }
 
@@ -234,6 +247,7 @@ export function RequestDetailPage() {
           onDeleteDocument={(item) =>
             setConfirm({ kind: 'delete-document', item })
           }
+          onDownloadDocument={downloadDocument}
         />
       </section>
 
@@ -253,9 +267,9 @@ export function RequestDetailPage() {
             ? 'Are you sure you want to revoke this link? The client will immediately lose access. This action cannot be undone.'
             : confirm?.kind === 'delete-request'
               ? `Are you sure you want to delete this request? This permanently removes the request and all ${request.uploaded} uploaded document${request.uploaded === 1 ? '' : 's'}. This action cannot be undone.`
-              : confirm?.kind === 'delete-document'
-                ? `Are you sure you want to delete this document? This action cannot be undone.`
-                : ''
+            : confirm?.kind === 'delete-document'
+              ? `Are you sure you want to permanently delete "${confirm.item.document?.originalName ?? confirm.item.label}"?`
+              : ''
         }
         confirmLabel={
           confirm?.kind === 'revoke'

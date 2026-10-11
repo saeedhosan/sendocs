@@ -11,7 +11,7 @@ export function StatusBadge({ request }: StatusBadgeProps) {
   const tone = statusTone(request)
 
   return (
-    <Badge variant={tone === 'complete' ? 'success' : 'warning'} dot>
+    <Badge variant={tone === 'complete' ? 'success' : 'warning'}>
       {statusLabel(request)}
     </Badge>
   )

@@ -29,7 +29,7 @@
   min-height: 2.75rem;
 }
 
-.paging {
+.footerBar {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -37,15 +37,48 @@
   color: var(--color-text-muted);
 }
 
+.footerStatus {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+}
+
 .showing {
   font-weight: 500;
   color: var(--color-text-secondary);
 }
 
-.pagingButtons {
+.allSynced {
+  display: none;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--color-success-text);
+}
+
+.syncDot {
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: var(--radius-full);
+  background-color: var(--color-success);
+}
+
+.footerNav {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 0.5rem;
+  width: 100%;
+}
+
+.pageIndicator {
+  padding-inline: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--color-text-secondary);
 }
 
 @media (min-width: 640px) {
@@ -66,9 +99,18 @@
     min-height: 2.25rem;
   }
 
-  .paging {
+  .footerBar {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+  }
+
+  .footerStatus,
+  .footerNav {
+    width: auto;
+  }
+
+  .allSynced {
+    display: inline-flex;
   }
 }

@@ -91,6 +91,37 @@ describe('RequestsPage', () => {
     ).toBeInTheDocument()
   })
 
+  it('filters by status and search query', async () => {
+    const complete: RequestSummary = {
+      ...request,
+      id: 'r2',
+      title: 'Signed engagement letter',
+      status: 'complete',
+      uploaded: 5,
+    }
+    list.mockResolvedValue({ data: [request, complete], nextCursor: null })
+
+    const user = userEvent.setup()
+    renderPage()
+
+    await screen.findByText('2024 Corporate Tax Return')
+    expect(screen.getByText('Signed engagement letter')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /^Complete/ }))
+    expect(
+      screen.queryByText('2024 Corporate Tax Return'),
+    ).not.toBeInTheDocument()
+    expect(screen.getByText('Signed engagement letter')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /^All/ }))
+    await user.type(screen.getByPlaceholderText('Search requests...'), 'tax')
+
+    expect(screen.getByText('2024 Corporate Tax Return')).toBeInTheDocument()
+    expect(
+      screen.queryByText('Signed engagement letter'),
+    ).not.toBeInTheDocument()
+  })
+
   it('pages forward with the cursor', async () => {
     list
       .mockResolvedValueOnce({ data: [request], nextCursor: 'c2' })
