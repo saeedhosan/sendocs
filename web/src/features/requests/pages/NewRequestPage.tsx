@@ -5,7 +5,6 @@ import { NewRequestForm } from '../components/NewRequestForm'
 import { LinkReveal } from '../components/LinkReveal'
 import { requestsApi } from '../api'
 import type { CreatedRequest, CreateRequestInput } from '../types'
-import styles from './NewRequestPage.module.css'
 
 export function NewRequestPage() {
   const navigate = useNavigate()
@@ -22,8 +21,10 @@ export function NewRequestPage() {
   }
 
   return (
-    <Container className={styles.page}>
-      <h1 className={styles.title}>New document request</h1>
+    <Container className="flex flex-col gap-6 sm:gap-8">
+      <h1 className="text-xl leading-7 font-semibold tracking-[-0.01em] text-ink sm:text-[1.375rem] sm:leading-7">
+        New document request
+      </h1>
       <NewRequestForm onSubmit={handleCreate} />
       <LinkReveal
         open={created !== null}
