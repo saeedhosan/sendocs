@@ -368,7 +368,6 @@ test('captures desktop and mobile pairs for all committed UI references', async 
       await page.goto(pathToFileURL(referencePath).href, {
         waitUntil: 'domcontentloaded',
       })
-      await page.waitForLoadState('networkidle', { timeout: 8000 }).catch(() => {})
       await waitForFonts(page)
 
       // Remove preview-only controls from the HTML mocks so screenshots compare
