@@ -22,9 +22,7 @@ export function ItemRow({ item, onDelete }: ItemRowProps) {
             <span aria-hidden="true">•</span>
             <span>{formatBytes(file.sizeBytes)}</span>
           </p>
-        ) : (
-          <p className={styles.waiting}>Waiting</p>
-        )}
+        ) : null}
       </div>
       {file ? (
         <div className={styles.actions}>
@@ -37,6 +35,9 @@ export function ItemRow({ item, onDelete }: ItemRowProps) {
               <span>Download</span>
             </a>
           ) : null}
+          <span className={styles.divider} aria-hidden="true">
+            |
+          </span>
           <Button
             variant="ghost"
             size="sm"
@@ -46,7 +47,9 @@ export function ItemRow({ item, onDelete }: ItemRowProps) {
             Delete
           </Button>
         </div>
-      ) : null}
+      ) : (
+        <p className={styles.waiting}>Waiting</p>
+      )}
     </li>
   )
 }
