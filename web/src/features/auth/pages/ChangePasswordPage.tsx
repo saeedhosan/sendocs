@@ -111,7 +111,7 @@ export function ChangePasswordPage() {
       </div>
 
       {success ? (
-        <Alert variant="error" className={s.formError}>
+        <Alert variant="success" className={s.formError}>
           Password updated. All sessions have been terminated.
         </Alert>
       ) : null}
@@ -127,7 +127,7 @@ export function ChangePasswordPage() {
           label="Current password"
           error={errors.currentPassword}
           labelAction={
-            <Link to="/forgot-password" className={s.link}>
+            <Link to="/forgot-password" className={`${s.link} text-xs`}>
               Forgot password?
             </Link>
           }

@@ -47,7 +47,7 @@ export function PasswordRequirementsList({
   }
 
   return (
-    <div className="flex flex-col gap-2 p-3 border border-border rounded-md bg-surface-muted">
+    <div className="flex flex-col gap-2 p-3 border border-border rounded-[10px] bg-surface-subtle">
       <span className="block text-[0.6875rem] font-semibold tracking-[0.05em] uppercase text-ink-muted">
         {title}
       </span>
