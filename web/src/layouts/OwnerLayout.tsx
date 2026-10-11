@@ -1,5 +1,4 @@
-import { Outlet, useLocation } from 'react-router-dom'
-import { Link } from '../components/navigation/AppLink'
+import { Link, Outlet, useLocation } from 'react-router-dom'
 import { VerifyEmailBanner } from '../features/auth/components/VerifyEmailBanner'
 import { OwnerHeader } from './components/OwnerHeader'
 import styles from './OwnerLayout.module.css'

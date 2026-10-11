@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import type { FormEvent } from 'react'
-import { Link } from '../../../components/navigation/AppLink'
+import { Link } from 'react-router-dom'
 import { Alert, Button } from '../../../components/ui'
 import {
   CloseIcon,

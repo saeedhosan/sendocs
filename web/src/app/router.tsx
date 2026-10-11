@@ -154,3 +154,17 @@ export const router = createBrowserRouter([
     ],
   },
 ])
+
+// Enable browser View Transitions for every navigation at the router's single
+// entry point, so we don't have to touch each <Link>/<NavLink>. `useNavigate`
+// (used by those links) funnels through `router.navigate`, which reads the
+// `viewTransition` option; passing an extra option degrades safely elsewhere.
+const originalNavigate = router.navigate.bind(router) as unknown as (
+  to: unknown,
+  options?: unknown,
+) => Promise<void>
+
+router.navigate = ((to: unknown, options?: Record<string, unknown>) =>
+  typeof to === 'number'
+    ? originalNavigate(to)
+    : originalNavigate(to, { viewTransition: true, ...options })) as typeof router.navigate

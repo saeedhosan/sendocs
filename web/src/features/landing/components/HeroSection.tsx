@@ -1,4 +1,4 @@
-import { Link } from '../../../components/navigation/AppLink'
+import { Link } from 'react-router-dom'
 import { ProductPreview } from './ProductPreview'
 import styles from './HeroSection.module.css'
 

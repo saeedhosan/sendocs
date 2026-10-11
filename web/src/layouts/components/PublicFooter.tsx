@@ -1,6 +1,5 @@
 import { Fragment } from 'react'
-import { useLocation } from 'react-router-dom'
-import { Link } from '../../components/navigation/AppLink'
+import { Link, useLocation } from 'react-router-dom'
 import { cn } from '../../lib/cn'
 import styles from './PublicFooter.module.css'
 

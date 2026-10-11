@@ -72,12 +72,17 @@ select {
   outline-offset: 2px;
 }
 
-::view-transition-old(root) {
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
+
+::view-transition-old(page-content) {
   animation: 160ms ease-out both route-fade-out;
 }
 
-::view-transition-new(root) {
-  animation: 160ms ease-out both route-fade-in;
+::view-transition-new(page-content) {
+  animation: 180ms ease-out both route-fade-in;
 }
 
 @keyframes route-fade-out {
@@ -104,7 +109,9 @@ select {
   }
 
   ::view-transition-old(root),
-  ::view-transition-new(root) {
+  ::view-transition-new(root),
+  ::view-transition-old(page-content),
+  ::view-transition-new(page-content) {
     animation: none;
   }
 }

@@ -33,6 +33,7 @@
 }
 
 .main {
+  view-transition-name: page-content;
   display: flex;
   flex: 1;
   align-items: center;

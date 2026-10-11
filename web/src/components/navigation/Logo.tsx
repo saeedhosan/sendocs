@@ -1,4 +1,4 @@
-import { Link } from './AppLink'
+import { Link } from 'react-router-dom'
 import { cn } from '../../lib/cn'
 import { LockIcon } from '../icons'
 import styles from './Logo.module.css'

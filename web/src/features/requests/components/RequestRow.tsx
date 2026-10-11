@@ -1,4 +1,4 @@
-import { Link } from '../../../components/navigation/AppLink'
+import { Link } from 'react-router-dom'
 import { ProgressBar } from '../../../components/ui'
 import { ChevronRightIcon } from '../../../components/icons'
 import { formatDateTime, timeAgo } from '../../../lib/format'

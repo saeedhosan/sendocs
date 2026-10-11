@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Link } from '../../../components/navigation/AppLink'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../../app/providers/useAuth'
 import { FormField } from '../../../components/forms/FormField'
 import { FormError } from '../../../components/forms/FormError'

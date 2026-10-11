@@ -6,6 +6,7 @@
 }
 
 .main {
+  view-transition-name: page-content;
   flex: 1;
   width: 100%;
 }
