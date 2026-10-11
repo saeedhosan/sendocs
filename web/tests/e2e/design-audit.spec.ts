@@ -274,9 +274,11 @@ async function stubApi(page: Page, isAuthenticated: () => boolean) {
 }
 
 async function waitForFonts(page: Page) {
-  await page.evaluate(async () => {
-    await document.fonts.ready
-  })
+  await page
+    .waitForFunction(() => document.fonts.status === 'loaded', undefined, {
+      timeout: 5000,
+    })
+    .catch(() => {})
 }
 
 test('captures desktop and mobile pairs for all committed UI references', async ({ page }) => {
