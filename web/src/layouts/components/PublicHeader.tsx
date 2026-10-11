@@ -8,14 +8,16 @@ const HEADER = 'top-0 z-50 w-full border-b border-border'
 const HEADER_HOME = 'fixed bg-white/90 backdrop-blur-[12px]'
 const INNER = 'flex items-center justify-between gap-4 min-h-16'
 const INNER_HOME = 'min-h-14'
+const CONTAINER_HOME = 'px-4 sm:px-6 min-[576px]:max-w-6xl min-[768px]:max-w-6xl min-[992px]:max-w-6xl min-[1200px]:max-w-6xl min-[1400px]:max-w-6xl'
+const CONTAINER_DOCUMENT = 'px-6 min-[576px]:max-w-5xl min-[768px]:max-w-5xl min-[992px]:max-w-5xl min-[1200px]:max-w-5xl min-[1400px]:max-w-5xl'
 const ACTIONS = 'flex items-center gap-3'
 const LOGIN_LINK =
   'px-3 py-1.5 text-[0.8125rem] font-medium text-marketing-text-secondary transition-colors duration-150 hover:text-ink'
 const GET_STARTED =
-  'inline-flex items-center justify-center min-h-[2.125rem] px-3.5 rounded-md bg-primary text-on-primary text-[0.8125rem] font-medium shadow-sm transition-colors duration-150 hover:bg-primary-hover'
+  'inline-flex items-center justify-center min-h-[2.125rem] px-3.5 rounded-[10px] bg-primary text-on-primary text-[0.8125rem] font-medium shadow-sm transition-colors duration-150 hover:bg-primary-hover'
 const NAV = 'flex items-center gap-6 text-sm max-[480px]:gap-4'
 const NAV_LINK = 'text-ink-body transition-colors duration-150 hover:text-ink'
-const NAV_LINK_ACTIVE = 'text-primary font-semibold'
+const NAV_LINK_ACTIVE = 'font-semibold'
 const NAV_SIGN_IN = 'pl-2'
 
 const documentLinks = [
@@ -47,8 +49,13 @@ export function PublicHeader() {
         isLanding ? HEADER_HOME : 'bg-surface',
       )}
     >
-      <Container className={cn(INNER, isLanding && INNER_HOME)}>
-        <Logo />
+      <Container
+        className={cn(
+          INNER,
+          isLanding ? cn(INNER_HOME, CONTAINER_HOME) : CONTAINER_DOCUMENT,
+        )}
+      >
+        <Logo variant={isLanding ? 'brand' : 'auth'} />
 
         {isDocument ? (
           <nav className={NAV} aria-label="Legal">
@@ -57,7 +64,12 @@ export function PublicHeader() {
                 key={link.to}
                 to={link.to}
                 className={({ isActive }) =>
-                  cn(NAV_LINK, isActive && NAV_LINK_ACTIVE)
+                  cn(
+                    NAV_LINK,
+                    isActive && NAV_LINK_ACTIVE,
+                    isActive && pathname === '/terms' && 'text-primary',
+                    isActive && pathname === '/privacy' && 'text-ink',
+                  )
                 }
               >
                 {link.label}
@@ -67,7 +79,12 @@ export function PublicHeader() {
               <NavLink
                 to="/dashboard"
                 className={({ isActive }) =>
-                  cn(NAV_LINK, NAV_SIGN_IN, isActive && NAV_LINK_ACTIVE)
+                  cn(
+                    NAV_LINK,
+                    NAV_SIGN_IN,
+                    isActive && NAV_LINK_ACTIVE,
+                    isActive && 'text-primary',
+                  )
                 }
               >
                 Dashboard
@@ -76,7 +93,12 @@ export function PublicHeader() {
               <NavLink
                 to="/login"
                 className={({ isActive }) =>
-                  cn(NAV_LINK, NAV_SIGN_IN, isActive && NAV_LINK_ACTIVE)
+                  cn(
+                    NAV_LINK,
+                    NAV_SIGN_IN,
+                    pathname === '/privacy' && 'text-primary hover:text-primary-hover',
+                    isActive && NAV_LINK_ACTIVE,
+                  )
                 }
               >
                 Sign in

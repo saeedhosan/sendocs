@@ -47,17 +47,17 @@ const items: PreviewItem[] = [
 export function ProductPreview() {
   return (
     <div
-      className="overflow-hidden bg-surface border border-border rounded-md shadow-sm"
+      className="overflow-hidden bg-surface border border-border rounded-[10px] shadow-sm"
       aria-hidden="true"
     >
-      <div className="flex items-center justify-between gap-3 px-4 py-3 bg-surface-muted border-b border-border">
+      <div className="flex items-center justify-between gap-3 px-4 py-3 bg-surface-subtle border-b border-border-subtle">
         <div className="flex items-center gap-2 min-w-0">
           <span className="shrink-0 size-2.5 rounded-full bg-border-strong" />
           <span className="text-sm font-semibold text-ink truncate">
             2024 Corporate Tax Return — Acme Corp
           </span>
         </div>
-        <span className="shrink-0 px-2 py-0.5 border border-marketing-success-border rounded-sm bg-marketing-success-surface text-[0.6875rem] font-medium text-marketing-success">
+        <span className="shrink-0 px-2 py-0.5 border border-marketing-success-border rounded-[4px] bg-marketing-success-surface text-[0.6875rem] font-medium text-marketing-success">
           Active
         </span>
       </div>
@@ -74,13 +74,13 @@ export function ProductPreview() {
           </div>
         </div>
 
-        <div className="flex flex-col overflow-hidden border border-border rounded-md">
+        <div className="flex flex-col overflow-hidden border border-border rounded-[10px]">
           {items.map((item, index) => (
             <div
               key={item.name}
               className={cn(
                 'flex items-center justify-between gap-3 p-3',
-                item.uploaded ? 'bg-surface' : 'bg-surface-muted',
+                item.uploaded ? 'bg-surface' : 'bg-surface-subtle',
                 index > 0 && 'border-t border-border',
               )}
             >
@@ -107,12 +107,12 @@ export function ProductPreview() {
               </div>
 
               {item.uploaded ? (
-                <span className="inline-flex shrink-0 items-center gap-1 px-2.5 py-1 border border-border rounded-sm text-xs font-medium text-marketing-text-secondary">
+                <span className="inline-flex shrink-0 items-center gap-1 px-2.5 py-1 border border-border rounded-[6px] text-xs font-medium text-marketing-text-secondary">
                   <DownloadIcon size={14} />
                   <span className="hidden sm:inline">Download</span>
                 </span>
               ) : (
-                <span className="shrink-0 px-2 py-0.5 border border-border rounded-sm bg-surface-sunken text-[0.6875rem] font-medium text-marketing-text-secondary">
+                <span className="shrink-0 px-2 py-0.5 border border-border rounded-[4px] bg-surface-sunken text-[0.6875rem] font-medium text-marketing-text-secondary">
                   Waiting
                 </span>
               )}

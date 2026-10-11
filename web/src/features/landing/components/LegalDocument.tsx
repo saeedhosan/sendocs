@@ -21,7 +21,10 @@ function Note({ text, email }: { text: string; email: string }) {
 /** Renders a transcribed legal document: title, sections, and an optional note. */
 export function LegalDocument({ document }: { document: LegalDocumentContent }) {
   return (
-    <Container as="article" className="py-10 bg-surface">
+    <Container
+      as="article"
+      className="px-6 py-10 bg-surface max-w-4xl min-[576px]:max-w-4xl min-[768px]:max-w-4xl min-[992px]:max-w-4xl min-[1200px]:max-w-4xl min-[1400px]:max-w-4xl"
+    >
       <h1 className="mb-2 text-[1.875rem] font-bold leading-9 tracking-[-0.025em] text-ink">
         {document.title}
       </h1>
@@ -36,7 +39,7 @@ export function LegalDocument({ document }: { document: LegalDocumentContent }) 
       ) : null}
 
       {document.sections.map((section) => (
-        <section key={section.heading} className="mt-6">
+        <section key={section.heading}>
           <h2 className="mt-6 mb-2 text-lg leading-7 font-semibold text-ink">
             {section.heading}
           </h2>
