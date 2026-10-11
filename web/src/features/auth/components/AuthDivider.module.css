@@ -6,6 +6,16 @@
   margin-block: 1.5rem;
 }
 
+.register {
+  margin-top: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.register .label {
+  text-transform: none;
+  letter-spacing: normal;
+}
+
 .line {
   position: absolute;
   left: 0;
