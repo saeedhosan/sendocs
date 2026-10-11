@@ -231,7 +231,7 @@ export function RequestDetailPage() {
         </div>
         <ProgressBar
           value={percent(request.uploaded, request.total)}
-          tone={request.status === 'complete' ? 'complete' : 'waiting'}
+          tone="waiting"
           className="rounded-[10px]"
           label={progressLabel(request.uploaded, request.total)}
         />
