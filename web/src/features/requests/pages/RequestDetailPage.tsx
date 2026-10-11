@@ -22,7 +22,6 @@ import { Notice } from '../components/Notice'
 import type { NoticeTone } from '../components/Notice'
 import { requestsApi } from '../api'
 import type { RequestDetail, RequestItem } from '../types'
-import styles from './RequestDetailPage.module.css'
 
 type ConfirmState =
   | { kind: 'revoke' }
@@ -166,18 +165,23 @@ export function RequestDetailPage() {
   }
 
   return (
-    <Container className={styles.page}>
-      <Link to="/dashboard" className={styles.back}>
+    <Container className="flex flex-col gap-6">
+      <Link
+        to="/dashboard"
+        className="inline-flex items-center gap-1 self-start -mb-2 text-xs text-ink-muted hover:text-ink"
+      >
         <ArrowBackIcon size={14} />
         <span>Back to requests</span>
       </Link>
 
-      <div className={styles.header}>
+      <div className="flex flex-col gap-4 pb-6 border-b border-border sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <div className={styles.titleRow}>
-            <h1 className={styles.title}>{request.title}</h1>
+          <div className="flex items-center flex-wrap gap-2.5">
+            <h1 className="text-xl leading-7 font-semibold tracking-[-0.01em] text-ink sm:text-2xl sm:leading-8">
+              {request.title}
+            </h1>
             <Badge
-              className={styles.linkStateBadge}
+              className="rounded-[10px]"
               variant={
                 linkState(request) === 'active'
                   ? 'success'
@@ -189,9 +193,11 @@ export function RequestDetailPage() {
               {linkStateLabel(linkState(request))}
             </Badge>
           </div>
-          <p className={styles.expiry}>{expiresLabel(request.expiresAt)}</p>
+          <p className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-ink-muted">
+            {expiresLabel(request.expiresAt)}
+          </p>
         </div>
-        <div className={styles.actions}>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:flex-shrink-0 [&>*]:w-full [&>*]:min-h-11 sm:[&>*]:min-h-9 sm:[&>*]:w-auto">
           <Button
             variant="secondary"
             size="sm"
@@ -212,12 +218,12 @@ export function RequestDetailPage() {
         </div>
       </div>
 
-      <div className={styles.progress}>
-        <div className={styles.progressTop}>
-          <span className={styles.progressLabel}>
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-between text-xs">
+          <span className="font-medium text-ink">
             {progressLabel(request.uploaded, request.total)}
           </span>
-          <span className={styles.percent}>
+          <span className="font-mono text-ink-muted">
             {percent(request.uploaded, request.total)}%
           </span>
         </div>
@@ -228,20 +234,22 @@ export function RequestDetailPage() {
         />
       </div>
 
-      <section className={styles.linkPanel}>
+      <section className="flex flex-col gap-3 my-2 p-4 border border-border rounded-md bg-surface sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className={styles.linkTitle}>Client portal link</p>
-          <p className={styles.linkMeta}>
+          <p className="text-xs font-medium text-ink">Client portal link</p>
+          <p className="mt-1.5 text-xs text-ink-muted">
             {linkState(request) === 'active'
               ? expiresLabel(request.expiresAt)
               : linkStateLabel(linkState(request))}
           </p>
         </div>
-        <span className={styles.linkNote}>Shown once at creation</span>
+        <span className="text-xs text-ink-muted">Shown once at creation</span>
       </section>
 
-      <section className={styles.documents}>
-        <h2 className={styles.sectionTitle}>Requested Documents</h2>
+      <section className="flex flex-col gap-2">
+        <h2 className="px-1 text-[0.6875rem] font-semibold tracking-[0.06em] uppercase text-ink-muted">
+          Requested Documents
+        </h2>
         <ItemList
           items={request.items}
           onDeleteDocument={(item) =>

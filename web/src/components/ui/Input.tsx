@@ -1,11 +1,19 @@
 import { forwardRef } from 'react'
 import type { InputHTMLAttributes } from 'react'
 import { cn } from '../../lib/cn'
-import styles from './Input.module.css'
 
 export type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   invalid?: boolean
 }
+
+const BASE =
+  'h-10 w-full rounded-md border bg-surface px-3 py-2 text-sm leading-5 text-ink outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-placeholder disabled:bg-surface-sunken disabled:cursor-not-allowed'
+
+const INVALID =
+  'border-danger focus:border-danger focus:shadow-[0_0_0_3px_rgba(220,38,38,0.15)]'
+
+const VALID =
+  'border-border-strong focus:border-focus focus:shadow-[0_0_0_3px_var(--color-focus-ring)]'
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   { invalid = false, className, ...props },
@@ -15,7 +23,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     <input
       ref={ref}
       aria-invalid={invalid || undefined}
-      className={cn(styles.input, invalid && styles.invalid, className)}
+      className={cn(BASE, invalid ? INVALID : VALID, className)}
       {...props}
     />
   )

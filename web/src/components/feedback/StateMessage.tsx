@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react'
 import { cn } from '../../lib/cn'
-import styles from './StateMessage.module.css'
 
 export type StateMessageProps = {
   title: ReactNode
@@ -19,11 +18,18 @@ export function StateMessage({
   className,
 }: StateMessageProps) {
   return (
-    <div className={cn(styles.state, className)}>
+    <div
+      className={cn(
+        'flex flex-col items-center justify-center gap-3 py-12 px-6 text-center',
+        className,
+      )}
+    >
       {icon}
-      <p className={styles.title}>{title}</p>
-      {message ? <p className={styles.message}>{message}</p> : null}
-      {action ? <div className={styles.action}>{action}</div> : null}
+      <p className="text-base font-semibold text-ink">{title}</p>
+      {message ? (
+        <p className="max-w-sm text-sm leading-5 text-ink-muted">{message}</p>
+      ) : null}
+      {action ? <div className="mt-2">{action}</div> : null}
     </div>
   )
 }

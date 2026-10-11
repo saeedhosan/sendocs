@@ -4,7 +4,23 @@ import { useAuth } from '../../app/providers/useAuth'
 import { Logo } from '../../components/navigation/Logo'
 import { Container } from '../../components/ui'
 import { ChevronDownIcon, LockResetIcon, LogoutIcon, TrashIcon } from '../../components/icons'
-import styles from './OwnerHeader.module.css'
+import { cn } from '../../lib/cn'
+
+const HEADER =
+  'sticky top-0 z-30 w-full border-b border-border bg-surface'
+const INNER = 'flex items-center justify-between gap-4 min-h-16 py-3'
+const TRIGGER =
+  'inline-flex items-center gap-1.5 min-h-11 px-3 py-2 rounded-[8px] bg-transparent text-[0.8125rem] font-medium text-ink-secondary cursor-pointer transition-colors duration-150 hover:bg-surface-muted hover:text-ink'
+const AVATAR =
+  'inline-flex items-center justify-center size-6 rounded-full bg-surface-sunken font-mono text-[0.6875rem] font-medium text-ink-secondary'
+const MENU =
+  'absolute right-0 top-[calc(100%+0.25rem)] z-50 w-52 p-1 border border-border rounded-md bg-surface shadow-md'
+const EMAIL =
+  'px-3 py-2 border-b border-border-subtle font-mono text-[0.6875rem] text-ink-muted overflow-hidden text-ellipsis whitespace-nowrap'
+const ITEM_BASE =
+  'flex items-center gap-2 w-full min-h-10 px-3.5 py-2.5 border-t border-border-subtle bg-transparent text-[0.8125rem] text-left cursor-pointer transition-colors duration-150'
+const ITEM = cn(ITEM_BASE, 'text-ink-secondary hover:bg-surface-muted hover:text-ink')
+const SIGN_OUT = cn(ITEM_BASE, 'text-danger-text hover:bg-danger-surface')
 
 function initials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean)
@@ -60,19 +76,19 @@ export function OwnerHeader() {
   const displayName = user?.name ?? 'Account'
 
   return (
-    <header className={styles.header}>
-      <Container className={styles.inner}>
+    <header className={HEADER}>
+      <Container className={INNER}>
         <Logo to="/dashboard" />
-        <div className={styles.menuWrap} ref={menuRef}>
+        <div className="relative" ref={menuRef}>
           <button
             type="button"
-            className={styles.trigger}
+            className={TRIGGER}
             aria-haspopup="menu"
             aria-expanded={open}
             onClick={() => setOpen((value) => !value)}
           >
             {isDashboard ? (
-              <span className={styles.avatar} aria-hidden="true">
+              <span className={AVATAR} aria-hidden="true">
                 {initials(displayName)}
               </span>
             ) : null}
@@ -80,12 +96,12 @@ export function OwnerHeader() {
             <ChevronDownIcon size={16} />
           </button>
           {open ? (
-            <div className={styles.menu} role="menu">
-              <p className={styles.email}>{user?.email}</p>
+            <div className={MENU} role="menu">
+              <p className={EMAIL}>{user?.email}</p>
               <Link
                 to="/settings/password"
                 role="menuitem"
-                className={styles.item}
+                className={ITEM}
                 onClick={() => setOpen(false)}
               >
                 <LockResetIcon size={16} />
@@ -94,7 +110,7 @@ export function OwnerHeader() {
               <Link
                 to="/settings/delete"
                 role="menuitem"
-                className={styles.item}
+                className={ITEM}
                 onClick={() => setOpen(false)}
               >
                 <TrashIcon size={16} />
@@ -103,7 +119,7 @@ export function OwnerHeader() {
               <button
                 type="button"
                 role="menuitem"
-                className={styles.signOut}
+                className={SIGN_OUT}
                 onClick={handleSignOut}
               >
                 <LogoutIcon size={16} />

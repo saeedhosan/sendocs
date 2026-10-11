@@ -3,7 +3,20 @@ import { useAuth } from '../../app/providers/useAuth'
 import { Logo } from '../../components/navigation/Logo'
 import { Container } from '../../components/ui'
 import { cn } from '../../lib/cn'
-import styles from './PublicHeader.module.css'
+
+const HEADER = 'top-0 z-50 w-full border-b border-border'
+const HEADER_HOME = 'fixed bg-white/90 backdrop-blur-[12px]'
+const INNER = 'flex items-center justify-between gap-4 min-h-16'
+const INNER_HOME = 'min-h-14'
+const ACTIONS = 'flex items-center gap-3'
+const LOGIN_LINK =
+  'px-3 py-1.5 text-[0.8125rem] font-medium text-marketing-text-secondary transition-colors duration-150 hover:text-ink'
+const GET_STARTED =
+  'inline-flex items-center justify-center min-h-[2.125rem] px-3.5 rounded-md bg-primary text-on-primary text-[0.8125rem] font-medium shadow-sm transition-colors duration-150 hover:bg-primary-hover'
+const NAV = 'flex items-center gap-6 text-sm max-[480px]:gap-4'
+const NAV_LINK = 'text-ink-body transition-colors duration-150 hover:text-ink'
+const NAV_LINK_ACTIVE = 'text-primary font-semibold'
+const NAV_SIGN_IN = 'pl-2'
 
 const documentLinks = [
   { label: 'Terms', to: '/terms' },
@@ -27,20 +40,24 @@ export function PublicHeader() {
   const isDocument = documentLinks.some((link) => link.to === pathname)
 
   return (
-    <header className={cn(styles.header, isLanding && styles.homeHeader)}>
-      <Container
-        className={cn(styles.inner, isLanding && styles.homeInner)}
-      >
+    <header
+      className={cn(
+        HEADER,
+        !isLanding && 'sticky',
+        isLanding ? HEADER_HOME : 'bg-surface',
+      )}
+    >
+      <Container className={cn(INNER, isLanding && INNER_HOME)}>
         <Logo />
 
         {isDocument ? (
-          <nav className={styles.nav} aria-label="Legal">
+          <nav className={NAV} aria-label="Legal">
             {documentLinks.map((link) => (
               <NavLink
                 key={link.to}
                 to={link.to}
                 className={({ isActive }) =>
-                  cn(styles.navLink, isActive && styles.navLinkActive)
+                  cn(NAV_LINK, isActive && NAV_LINK_ACTIVE)
                 }
               >
                 {link.label}
@@ -50,11 +67,7 @@ export function PublicHeader() {
               <NavLink
                 to="/dashboard"
                 className={({ isActive }) =>
-                  cn(
-                    styles.navLink,
-                    styles.navSignIn,
-                    isActive && styles.navLinkActive,
-                  )
+                  cn(NAV_LINK, NAV_SIGN_IN, isActive && NAV_LINK_ACTIVE)
                 }
               >
                 Dashboard
@@ -63,11 +76,7 @@ export function PublicHeader() {
               <NavLink
                 to="/login"
                 className={({ isActive }) =>
-                  cn(
-                    styles.navLink,
-                    styles.navSignIn,
-                    isActive && styles.navLinkActive,
-                  )
+                  cn(NAV_LINK, NAV_SIGN_IN, isActive && NAV_LINK_ACTIVE)
                 }
               >
                 Sign in
@@ -75,17 +84,17 @@ export function PublicHeader() {
             )}
           </nav>
         ) : isAuthenticated ? (
-          <div className={styles.actions}>
-            <Link to="/dashboard" className={styles.getStarted}>
+          <div className={ACTIONS}>
+            <Link to="/dashboard" className={GET_STARTED}>
               Dashboard
             </Link>
           </div>
         ) : (
-          <div className={styles.actions}>
-            <Link to="/login" className={styles.loginLink}>
+          <div className={ACTIONS}>
+            <Link to="/login" className={LOGIN_LINK}>
               Log in
             </Link>
-            <Link to="/register" className={styles.getStarted}>
+            <Link to="/register" className={GET_STARTED}>
               Get started
             </Link>
           </div>

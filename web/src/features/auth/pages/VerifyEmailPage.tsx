@@ -8,7 +8,7 @@ import { AuthLayout } from '../../../layouts/AuthLayout'
 import { ApiError } from '../../../lib/api/client'
 import { errorMessage } from '../../../lib/api/errors'
 import { authApi } from '../api'
-import styles from './auth.module.css'
+import { authStyles as s } from './authStyles'
 
 type VerifyState = 'loading' | 'success' | 'error'
 
@@ -65,12 +65,12 @@ export function VerifyEmailPage() {
   if (state === 'success') {
     return (
       <AuthLayout>
-        <div className={styles.successIcon} aria-hidden="true">
+        <div className={s.successIcon} aria-hidden="true">
           <CheckCircleIcon size={20} />
         </div>
-        <div className={styles.heading}>
-          <h1 className={styles.title}>Email verified</h1>
-          <p className={styles.subtitle}>
+        <div className={s.heading}>
+          <h1 className={s.title}>Email verified</h1>
+          <p className={s.subtitle}>
             Your email address has been confirmed. Your account is ready.
           </p>
         </div>
@@ -88,19 +88,19 @@ export function VerifyEmailPage() {
 
   return (
     <AuthLayout>
-      <div className={styles.successIcon} aria-hidden="true">
+      <div className={s.successIcon} aria-hidden="true">
         <MailIcon size={20} />
       </div>
-      <div className={styles.heading}>
-        <h1 className={styles.title}>Verification failed</h1>
-        <p className={styles.subtitle}>{message}</p>
+      <div className={s.heading}>
+        <h1 className={s.title}>Verification failed</h1>
+        <p className={s.subtitle}>{message}</p>
       </div>
-      <Alert variant="error" className={styles.formError}>
+      <Alert variant="error" className={s.formError}>
         {status === 'authenticated'
           ? 'You can send a new verification email from your dashboard.'
           : 'Sign in to send a new verification email from your dashboard.'}
       </Alert>
-      <div className={styles.buttonStack}>
+      <div className={s.buttonStack}>
         <Button
           fullWidth
           onClick={() =>

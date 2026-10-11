@@ -1,5 +1,4 @@
 import { LinkIcon } from '../../../components/icons'
-import styles from './DeadLinkScreen.module.css'
 
 /**
  * The single dead-link screen.
@@ -10,17 +9,19 @@ import styles from './DeadLinkScreen.module.css'
  */
 export function DeadLinkScreen() {
   return (
-    <main className={styles.wrap}>
-      <div className={styles.card}>
-        <span className={styles.icon}>
+    <main className="flex flex-1 items-center justify-center w-full py-12 px-4">
+      <div className="w-full max-w-104 py-7 px-6 border border-border rounded-md bg-surface text-center">
+        <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-surface-sunken text-ink-muted">
           <LinkIcon size={22} />
         </span>
-        <h1 className={styles.title}>This link is no longer active</h1>
-        <p className={styles.message}>
+        <h1 className="mt-3.5 text-lg font-semibold tracking-[-0.01em] text-ink">
+          This link is no longer active
+        </h1>
+        <p className="mt-2 text-sm leading-normal text-ink-secondary">
           The document upload link you accessed is invalid, expired, or has been
           revoked by the sender.
         </p>
-        <p className={styles.note}>
+        <p className="mt-2 pt-4 border-t border-border-subtle text-[0.8125rem] leading-normal text-ink-muted">
           If you still need to submit documents, please contact the person or
           organization who requested them to request a new secure upload link.
         </p>

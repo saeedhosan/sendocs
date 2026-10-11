@@ -1,6 +1,5 @@
 import { ItemRow } from './ItemRow'
 import type { RequestItem } from '../types'
-import styles from './ItemList.module.css'
 
 export type ItemListProps = {
   items: RequestItem[]
@@ -14,7 +13,7 @@ export function ItemList({
   onDownloadDocument,
 }: ItemListProps) {
   return (
-    <ul className={styles.list}>
+    <ul className="overflow-hidden border border-border rounded-md bg-surface list-none">
       {items.map((item) => (
         <ItemRow
           key={item.id}

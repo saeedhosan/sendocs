@@ -9,8 +9,9 @@ import { AuthLayout } from '../../../layouts/AuthLayout'
 import { errorMessage, validationErrors } from '../../../lib/api/errors'
 import { AuthDivider } from '../components/AuthDivider'
 import { GoogleButton } from '../components/GoogleButton'
+import { cn } from '../../../lib/cn'
 import { fieldErrors, loginSchema } from '../schemas'
-import styles from './auth.module.css'
+import { authStyles as s } from './authStyles'
 
 type LoginValues = {
   email: string
@@ -82,24 +83,24 @@ export function LoginPage() {
 
   return (
     <AuthLayout footerVariant="login">
-      <div className={`${styles.heading} ${styles.center}`}>
-        <h1 className={styles.title}>Sign in</h1>
-        <p className={styles.subtitle}>Sign in to your account to continue.</p>
+      <div className={cn(s.heading, s.center)}>
+        <h1 className={s.title}>Sign in</h1>
+        <p className={s.subtitle}>Sign in to your account to continue.</p>
       </div>
 
-      <div className={styles.social}>
+      <div className={s.social}>
         <GoogleButton label="Continue with Google" />
       </div>
 
       <AuthDivider label="or continue with email" uppercase />
 
       {formError ? (
-        <Alert variant="error" className={styles.formError}>
+        <Alert variant="error" className={s.formError}>
           {formError}
         </Alert>
       ) : null}
 
-      <form className={styles.form} onSubmit={handleSubmit} noValidate>
+      <form className={s.form} onSubmit={handleSubmit} noValidate>
         <FormField label="Email address" error={errors.email}>
           <Input
             type="email"
@@ -115,7 +116,7 @@ export function LoginPage() {
           label="Password"
           error={errors.password}
           labelAction={
-            <Link to="/forgot-password" className={styles.link}>
+            <Link to="/forgot-password" className={s.link}>
               Forgot password?
             </Link>
           }
@@ -138,7 +139,7 @@ export function LoginPage() {
           }}
         />
 
-        <div className={styles.actions}>
+        <div className={s.actions}>
           <Button
             type="submit"
             fullWidth
@@ -150,9 +151,9 @@ export function LoginPage() {
         </div>
       </form>
 
-      <p className={styles.footerText}>
+      <p className={s.footerText}>
         Don&apos;t have an account?{' '}
-        <Link to="/register" className={styles.link}>
+        <Link to="/register" className={s.link}>
           Create account
         </Link>
       </p>

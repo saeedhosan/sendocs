@@ -8,7 +8,7 @@ import { AuthLayout } from '../../../layouts/AuthLayout'
 import { errorMessage, validationErrors } from '../../../lib/api/errors'
 import { authApi } from '../api'
 import { fieldErrors, forgotPasswordSchema } from '../schemas'
-import styles from './auth.module.css'
+import { authStyles as s } from './authStyles'
 
 export function ForgotPasswordPage() {
   const navigate = useNavigate()
@@ -51,26 +51,26 @@ export function ForgotPasswordPage() {
   if (sentTo !== null) {
     return (
       <AuthLayout footerVariant="forget">
-        <div className={styles.successIcon} aria-hidden="true">
+        <div className={s.successIcon} aria-hidden="true">
           <MailIcon size={20} />
         </div>
-        <div className={styles.heading}>
-          <h1 className={styles.title}>Check your inbox</h1>
-          <p className={styles.subtitle}>
+        <div className={s.heading}>
+          <h1 className={s.title}>Check your inbox</h1>
+          <p className={s.subtitle}>
             We sent a reset link to{' '}
-            <span className={styles.strong}>{sentTo}</span>
+            <span className={s.strong}>{sentTo}</span>
           </p>
         </div>
 
-        <div className={styles.infoBox}>
-          <p className={styles.infoBoxTitle}>Link valid for 60 minutes</p>
+        <div className={s.infoBox}>
+          <p className={s.infoBoxTitle}>Link valid for 60 minutes</p>
           <p>
             Didn&apos;t receive an email? Check your spam folder or contact your
             administrator.
           </p>
         </div>
 
-        <div className={styles.buttonStack}>
+        <div className={s.buttonStack}>
           <Button fullWidth onClick={() => navigate('/login')}>
             Return to sign in
           </Button>
@@ -91,20 +91,20 @@ export function ForgotPasswordPage() {
 
   return (
     <AuthLayout footerVariant="forget">
-      <div className={styles.heading}>
-        <h1 className={styles.title}>Forgot your password?</h1>
-        <p className={styles.subtitle}>
+      <div className={s.heading}>
+        <h1 className={s.title}>Forgot your password?</h1>
+        <p className={s.subtitle}>
           Enter your email address to receive a password reset link.
         </p>
       </div>
 
       {formError ? (
-        <Alert variant="error" className={styles.formError}>
+        <Alert variant="error" className={s.formError}>
           {formError}
         </Alert>
       ) : null}
 
-      <form className={styles.form} onSubmit={handleSubmit} noValidate>
+      <form className={s.form} onSubmit={handleSubmit} noValidate>
         <FormField label="Email address" error={errors.email}>
           <Input
             type="email"
@@ -119,15 +119,15 @@ export function ForgotPasswordPage() {
           />
         </FormField>
 
-        <div className={styles.actions}>
+        <div className={s.actions}>
           <Button type="submit" fullWidth loading={submitting}>
             Send reset link
           </Button>
         </div>
       </form>
 
-      <div className={styles.backRow}>
-        <Link to="/login" className={styles.backLink}>
+      <div className={s.backRow}>
+        <Link to="/login" className={s.backLink}>
           <ArrowBackIcon size={16} />
           Back to sign in
         </Link>

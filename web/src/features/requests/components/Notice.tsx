@@ -1,7 +1,5 @@
 import { useEffect } from 'react'
-import { cn } from '../../../lib/cn'
 import { AlertIcon, CheckCircleIcon } from '../../../components/icons'
-import styles from './Notice.module.css'
 
 export type NoticeTone = 'ok' | 'error'
 
@@ -23,14 +21,14 @@ export function Notice({ tone, message, onDismiss, duration = 4000 }: NoticeProp
 
   return (
     <div
-      className={cn(styles.notice, styles[tone])}
+      className="fixed right-5 bottom-5 z-[60] inline-flex items-center gap-2 max-w-[min(24rem,calc(100vw-2.5rem))] px-3.5 py-2 rounded-md bg-ink text-[0.8125rem] text-white shadow-md"
       role={tone === 'error' ? 'alert' : 'status'}
       aria-live={tone === 'error' ? 'assertive' : 'polite'}
     >
       {tone === 'error' ? (
-        <AlertIcon size={16} className={styles.icon} />
+        <AlertIcon size={16} className="shrink-0 text-[#fca5a5]" />
       ) : (
-        <CheckCircleIcon size={16} className={styles.icon} />
+        <CheckCircleIcon size={16} className="shrink-0 text-[#4ade80]" />
       )}
       <span>{message}</span>
     </div>

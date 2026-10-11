@@ -1,5 +1,4 @@
 import { cn } from '../../../lib/cn'
-import styles from './AuthDivider.module.css'
 
 export function AuthDivider({
   label,
@@ -9,9 +8,16 @@ export function AuthDivider({
   uppercase?: boolean
 }) {
   return (
-    <div className={styles.divider}>
-      <span className={styles.line} aria-hidden="true" />
-      <span className={cn(styles.label, uppercase && styles.uppercase)}>
+    <div className="relative flex items-center justify-center my-6">
+      <span className="absolute inset-x-0 top-1/2 h-px bg-border" aria-hidden="true" />
+      <span
+        className={cn(
+          'relative px-3 bg-surface text-xs',
+          uppercase
+            ? 'uppercase tracking-[0.05em] text-ink-placeholder'
+            : 'text-ink-muted',
+        )}
+      >
         {label}
       </span>
     </div>

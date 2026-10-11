@@ -12,7 +12,7 @@ import { errorMessage, validationErrors } from '../../../lib/api/errors'
 import { PasswordRequirementsList } from '../components/PasswordRequirementsList'
 import { PasswordStrengthMeter } from '../components/PasswordStrengthMeter'
 import { changePasswordSchema, fieldErrors } from '../schemas'
-import styles from './auth.module.css'
+import { authStyles as s } from './authStyles'
 
 export function ChangePasswordPage() {
   const { changePassword } = useAuth()
@@ -89,52 +89,44 @@ export function ChangePasswordPage() {
 
   return (
     <AuthLayout footerVariant="change" headerAction={{ label: 'Back to account', to: '/dashboard' }}>
-      <div className={styles.heading}>
-        <h1 className={styles.title}>Change password</h1>
-        <p className={styles.subtitle}>
+      <div className={s.heading}>
+        <h1 className={s.title}>Change password</h1>
+        <p className={s.subtitle}>
           Update the password used to sign in to your Sendocs account.
         </p>
       </div>
 
-      <div className={styles.changeInfoBox}>
-        <InfoIcon
-          size={18}
-          aria-hidden="true"
-          className={styles.changeInfoIcon}
-        />
-        <div className={styles.changeInfoBoxText}>
+      <div className={s.changeInfoBox}>
+        <InfoIcon size={18} aria-hidden="true" className={s.changeInfoIcon} />
+        <div className={s.changeInfoBoxText}>
           <p>
             Updating your password will automatically terminate all active
             sessions on other devices.
           </p>
-          <span className={styles.infoBoxNote}>
+          <span className={s.infoBoxNote}>
             SOC2 compliant session termination
           </span>
         </div>
       </div>
 
       {success ? (
-        <Alert variant="success" className={styles.formError}>
-          Password updated. Other sessions have been signed out.
+        <Alert variant="error" className={s.formError}>
+          Password updated. All sessions have been terminated.
         </Alert>
       ) : null}
 
       {formError ? (
-        <Alert variant="error" className={styles.formError}>
+        <Alert variant="error" className={s.formError}>
           {formError}
         </Alert>
       ) : null}
 
-      <form
-        className={`${styles.form} ${styles.changePasswordForm}`}
-        onSubmit={handleSubmit}
-        noValidate
-      >
+      <form className={s.form} onSubmit={handleSubmit} noValidate>
         <FormField
           label="Current password"
           error={errors.currentPassword}
           labelAction={
-            <Link to="/forgot-password" className={styles.link}>
+            <Link to="/forgot-password" className={s.link}>
               Forgot password?
             </Link>
           }
@@ -170,14 +162,14 @@ export function ChangePasswordPage() {
 
         <div>
           <FormField label="Confirm new password" error={errors.confirmPassword}>
-            <div className={styles.confirmPasswordInput}>
+            <div className={s.confirmPasswordInput}>
               <Input
                 type="password"
                 name="confirmPassword"
                 autoComplete="new-password"
                 placeholder="Re-enter new password"
                 value={confirmPassword}
-                className={styles.confirmPasswordField}
+                className={s.confirmPasswordField}
                 onChange={(event) => {
                   setConfirmPassword(event.target.value)
                   setErrors({})
@@ -188,7 +180,7 @@ export function ChangePasswordPage() {
                 <CheckCircleIcon
                   size={18}
                   aria-hidden="true"
-                  className={styles.confirmPasswordCheck}
+                  className={s.confirmPasswordCheck}
                 />
               ) : null}
             </div>
@@ -200,7 +192,7 @@ export function ChangePasswordPage() {
 
         <PasswordRequirementsList rules={rules} panel title="Requirements" />
 
-        <div className={styles.actions}>
+        <div className={s.actionsFlush}>
           <Button
             type="submit"
             fullWidth
@@ -209,7 +201,7 @@ export function ChangePasswordPage() {
           >
             Save new password
           </Button>
-          <div className={styles.cancelRow}>
+          <div className={s.cancelRow}>
             <Button variant="ghost" onClick={() => navigate('/dashboard')}>
               Cancel
             </Button>

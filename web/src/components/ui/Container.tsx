@@ -1,6 +1,5 @@
 import type { ElementType, HTMLAttributes, ReactNode } from 'react'
 import { cn } from '../../lib/cn'
-import styles from './Container.module.css'
 
 export type ContainerProps = HTMLAttributes<HTMLElement> & {
   as?: ElementType
@@ -19,7 +18,13 @@ export function Container({
   ...rest
 }: ContainerProps) {
   return (
-    <Component className={cn(styles.container, className)} {...rest}>
+    <Component
+      className={cn(
+        'w-full mx-auto px-3 pt-2 min-[576px]:max-w-[540px] min-[768px]:max-w-[720px] min-[992px]:max-w-[960px] min-[1200px]:max-w-[1140px] min-[1400px]:max-w-[1320px]',
+        className,
+      )}
+      {...rest}
+    >
       {children}
     </Component>
   )

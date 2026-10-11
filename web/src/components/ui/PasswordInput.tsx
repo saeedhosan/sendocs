@@ -4,7 +4,6 @@ import { cn } from '../../lib/cn'
 import { VisibilityIcon, VisibilityOffIcon } from '../icons'
 import { IconButton } from './IconButton'
 import { Input } from './Input'
-import styles from './PasswordInput.module.css'
 
 export type PasswordInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> & {
   invalid?: boolean
@@ -15,16 +14,16 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
     const [visible, setVisible] = useState(false)
 
     return (
-      <div className={styles.wrapper}>
+      <div className="relative flex items-center w-full">
         <Input
           ref={ref}
           type={visible ? 'text' : 'password'}
-          className={cn(styles.input, className)}
+          className={cn('pr-10', className)}
           {...props}
         />
         <IconButton
           label={visible ? 'Hide password' : 'Show password'}
-          className={styles.toggle}
+          className="absolute right-2.5"
           aria-pressed={visible}
           onClick={() => setVisible((current) => !current)}
         >

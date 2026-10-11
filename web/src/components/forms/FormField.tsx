@@ -2,7 +2,6 @@ import { cloneElement, isValidElement, useId } from 'react'
 import type { ReactElement, ReactNode } from 'react'
 import { cn } from '../../lib/cn'
 import { FormError } from './FormError'
-import styles from './FormField.module.css'
 
 type FieldChildProps = {
   id?: string
@@ -60,12 +59,15 @@ export function FormField({
   }
 
   return (
-    <div className={cn(styles.field, className)}>
-      <div className={styles.labelRow}>
-        <label className={styles.label} htmlFor={fieldId}>
+    <div className={cn('flex flex-col', className)}>
+      <div className="flex items-center justify-between gap-2 mb-1.5">
+        <label
+          className="block text-sm font-medium text-ink-secondary"
+          htmlFor={fieldId}
+        >
           {label}
           {required ? (
-            <span className={styles.required} aria-hidden="true">
+            <span className="text-danger ml-0.5" aria-hidden="true">
               *
             </span>
           ) : null}
@@ -74,7 +76,10 @@ export function FormField({
       </div>
       {control}
       {hint ? (
-        <p id={hintId} className={styles.hint}>
+        <p
+          id={hintId}
+          className="mt-1.5 text-xs leading-[1.125rem] text-ink-muted"
+        >
           {hint}
         </p>
       ) : null}

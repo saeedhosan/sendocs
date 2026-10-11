@@ -5,7 +5,6 @@ import { cn } from '../../../lib/cn'
 import { ACCEPT_ATTRIBUTE } from '../precheck'
 import type { ItemFailure } from '../useUploadQueue'
 import type { PortalItem } from '../types'
-import styles from './PortalItemRow.module.css'
 
 export type PortalItemRowProps = {
   item: PortalItem
@@ -45,26 +44,32 @@ export function PortalItemRow({
   }
 
   return (
-    <li className={styles.row}>
-      <div className={styles.main}>
+    <li className="flex flex-col gap-2 p-[0.875rem] border-b border-border-subtle last:border-b-0 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:p-4 md:p-5">
+      <div className="min-w-0">
         {uploaded && item.file ? (
           <>
-            <p className={styles.label}>{item.label}</p>
-            <p className={styles.meta}>
+            <p className="text-sm font-medium leading-[1.4] text-ink [overflow-wrap:anywhere] sm:text-base sm:leading-6">
+              {item.label}
+            </p>
+            <p className="flex flex-wrap items-center gap-2 mt-0.5 font-mono text-xs text-ink-muted sm:text-sm">
               <span>Uploaded</span>
               <span aria-hidden="true">·</span>
-              <span className={styles.filename}>{item.file.originalName}</span>
+              <span className="overflow-hidden max-w-full text-ink-secondary text-ellipsis whitespace-nowrap">
+                {item.file.originalName}
+              </span>
             </p>
           </>
         ) : uploading ? (
           <>
-            <div className={styles.uploadingHeading}>
-              <p className={styles.label}>{item.label}</p>
-              <span className={styles.transferLabel}>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="text-sm font-medium leading-[1.4] text-ink [overflow-wrap:anywhere] sm:text-base sm:leading-6">
+                {item.label}
+              </p>
+              <span className="flex-shrink-0 font-mono text-xs text-ink-muted sm:text-sm">
                 Uploading · {percent}%
               </span>
             </div>
-            <div className={styles.transfer}>
+            <div className="mt-2">
               <ProgressBar
                 value={percent ?? 0}
                 label={`Uploading ${item.label}`}
@@ -73,27 +78,42 @@ export function PortalItemRow({
           </>
         ) : failure ? (
           <>
-            <p className={styles.label}>{item.label}</p>
-            <p className={styles.error} role="alert">
+            <p className="text-sm font-medium leading-[1.4] text-ink [overflow-wrap:anywhere] sm:text-base sm:leading-6">
+              {item.label}
+            </p>
+            <p
+              className="mt-1.5 text-[0.8125rem] text-danger-text sm:text-sm"
+              role="alert"
+            >
               Upload failed · {failure.message}
             </p>
           </>
         ) : queued ? (
           <>
-            <p className={styles.label}>{item.label}</p>
-            <p className={styles.waiting}>Waiting for a free slot…</p>
+            <p className="text-sm font-medium leading-[1.4] text-ink [overflow-wrap:anywhere] sm:text-base sm:leading-6">
+              {item.label}
+            </p>
+            <p className="mt-1 text-xs text-ink-muted sm:text-sm">
+              Waiting for a free slot…
+            </p>
           </>
         ) : (
           <>
-            <p className={styles.label}>{item.label}</p>
-            <p className={styles.waiting}>Waiting for upload · Max 25 MB</p>
+            <p className="text-sm font-medium leading-[1.4] text-ink [overflow-wrap:anywhere] sm:text-base sm:leading-6">
+              {item.label}
+            </p>
+            <p className="mt-1 text-xs text-ink-muted sm:text-sm">
+              Waiting for upload · Max 25 MB
+            </p>
           </>
         )}
       </div>
 
-      <div className={styles.action}>
+      <div className="flex items-center w-full empty:hidden sm:flex-shrink-0 sm:w-auto">
         {uploaded ? (
-          <span className={styles.done}>Uploaded</span>
+          <span className="text-[0.8125rem] font-medium text-success-text">
+            Uploaded
+          </span>
         ) : uploading ? null : (
           <>
             <input
@@ -107,8 +127,8 @@ export function PortalItemRow({
             <Button
               ref={actionRef}
               className={cn(
-                styles.uploadButton,
-                failure && styles.uploadButtonFailure,
+                'w-full min-h-11 px-4 ![font-size:0.75rem] sm:w-auto sm:min-h-[2.375rem] sm:![font-size:0.875rem]',
+                failure && '!border-border',
               )}
               variant={failure ? 'secondary' : 'primary'}
               size="sm"

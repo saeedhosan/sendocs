@@ -1,5 +1,3 @@
-import styles from './WorkflowSection.module.css'
-
 const steps = [
   {
     step: '01 — Create a request',
@@ -20,20 +18,31 @@ const steps = [
 
 export function WorkflowSection() {
   return (
-    <section className={styles.section}>
-      <div className={styles.intro}>
-        <h2 className={styles.heading}>How it works</h2>
-        <p className={styles.subheading}>
+    <section className="flex flex-col gap-8">
+      <div className="flex flex-col gap-2 max-w-[36rem]">
+        <h2 className="text-2xl font-semibold tracking-[-0.02em] text-ink sm:text-[1.625rem]">
+          How it works
+        </h2>
+        <p className="text-sm leading-[1.625] text-marketing-text-secondary">
           A straightforward workflow designed for independent professionals.
         </p>
       </div>
 
-      <div className={styles.grid}>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         {steps.map((item) => (
-          <article key={item.step} className={styles.card}>
-            <p className={styles.step}>{item.step}</p>
-            <h3 className={styles.title}>{item.title}</h3>
-            <p className={styles.body}>{item.body}</p>
+          <article
+            key={item.step}
+            className="flex flex-col gap-3 p-5 bg-surface border border-border rounded-md shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
+          >
+            <p className="font-mono text-xs font-medium tracking-[0.05em] uppercase text-ink-muted">
+              {item.step}
+            </p>
+            <h3 className="text-[0.9375rem] font-semibold text-ink">
+              {item.title}
+            </h3>
+            <p className="text-[0.8125rem] leading-[1.625] text-marketing-text-secondary">
+              {item.body}
+            </p>
           </article>
         ))}
       </div>

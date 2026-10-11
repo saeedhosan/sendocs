@@ -1,6 +1,5 @@
 import type { CSSProperties } from 'react'
 import { cn } from '../../lib/cn'
-import styles from './Skeleton.module.css'
 
 export type SkeletonProps = {
   width?: string
@@ -20,7 +19,10 @@ export function Skeleton({
 
   return (
     <span
-      className={cn(styles.skeleton, className)}
+      className={cn(
+        'block bg-surface-sunken rounded-sm animate-skeleton motion-reduce:animate-none',
+        className,
+      )}
       style={style}
       aria-hidden="true"
     />

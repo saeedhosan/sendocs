@@ -2,7 +2,6 @@ import { useRef } from 'react'
 import { Button } from '../../../components/ui'
 import { Dialog } from '../../../components/ui'
 import type { ReactNode } from 'react'
-import styles from './ConfirmDialog.module.css'
 
 export type ConfirmDialogProps = {
   open: boolean
@@ -47,7 +46,7 @@ export function ConfirmDialog({
             ref={cancelRef}
             variant="secondary"
             size="sm"
-            className={styles.confirmButton}
+            className="min-h-11 sm:h-8 sm:min-h-8 sm:px-3 sm:text-xs"
             onClick={onCancel}
             disabled={busy}
           >
@@ -56,7 +55,11 @@ export function ConfirmDialog({
           <Button
             variant={tone === 'danger' ? 'danger' : 'primary'}
             size="sm"
-            className={tone === 'danger' ? styles.confirmDanger : styles.confirmButton}
+            className={
+              tone === 'danger'
+                ? 'min-h-11 sm:h-8 sm:min-h-8 sm:px-3 sm:text-xs !border-[#e11d48] !bg-[#e11d48] !text-white enabled:hover:!border-[#be123c] enabled:hover:!bg-[#be123c] enabled:hover:!text-white'
+                : 'min-h-11 sm:h-8 sm:min-h-8 sm:px-3 sm:text-xs'
+            }
             onClick={onConfirm}
             loading={busy}
           >

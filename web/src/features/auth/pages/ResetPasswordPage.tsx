@@ -10,7 +10,7 @@ import { errorMessage, validationErrors } from '../../../lib/api/errors'
 import { authApi } from '../api'
 import { PasswordStrengthMeter } from '../components/PasswordStrengthMeter'
 import { fieldErrors, resetPasswordSchema } from '../schemas'
-import styles from './auth.module.css'
+import { authStyles as s } from './authStyles'
 
 export function ResetPasswordPage() {
   const [searchParams] = useSearchParams()
@@ -71,15 +71,15 @@ export function ResetPasswordPage() {
         headerAction={{ label: 'Help', to: '/contact' }}
         footerVariant="reset-password"
       >
-        <div className={styles.heading}>
-          <h1 className={styles.title}>Reset link unavailable</h1>
-          <p className={styles.subtitle}>
+        <div className={s.heading}>
+          <h1 className={s.title}>Reset link unavailable</h1>
+          <p className={s.subtitle}>
             {invalidLink
               ? 'This link has expired or has already been used.'
               : 'This link is missing its reset token.'}
           </p>
         </div>
-        <Alert variant="error" className={styles.formError}>
+        <Alert variant="error" className={s.formError}>
           Request a new link to choose a password.
         </Alert>
         <Button fullWidth onClick={() => navigate('/forgot-password')}>
@@ -94,24 +94,20 @@ export function ResetPasswordPage() {
       headerAction={{ label: 'Help', to: '/contact' }}
       footerVariant="reset-password"
     >
-      <div className={styles.heading}>
-        <h1 className={styles.title}>Create a new password</h1>
-        <p className={styles.subtitle}>
+      <div className={s.heading}>
+        <h1 className={s.title}>Create a new password</h1>
+        <p className={s.subtitle}>
           Choose a secure password for your Sendocs account.
         </p>
       </div>
 
       {formError ? (
-        <Alert variant="error" className={styles.formError}>
+        <Alert variant="error" className={s.formError}>
           {formError}
         </Alert>
       ) : null}
 
-      <form
-        className={`${styles.form} ${styles.resetForm}`}
-        onSubmit={handleSubmit}
-        noValidate
-      >
+      <form className={s.formReset} onSubmit={handleSubmit} noValidate>
         <div>
           <FormField
             label="New password"
@@ -146,7 +142,7 @@ export function ResetPasswordPage() {
           />
         </FormField>
 
-        <div className={styles.actions}>
+        <div className={s.actionsFlush}>
           <Button type="submit" fullWidth loading={submitting}>
             Reset password
           </Button>

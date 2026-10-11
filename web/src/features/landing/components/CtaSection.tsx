@@ -1,18 +1,22 @@
 import { Link } from 'react-router-dom'
-import styles from './CtaSection.module.css'
 
 export function CtaSection() {
   return (
-    <section className={styles.section}>
-      <div className={styles.copy}>
-        <h2 className={styles.heading}>Ready to simplify document collection?</h2>
-        <p className={styles.body}>
+    <section className="flex flex-col items-start justify-between gap-6 p-6 bg-surface-muted border border-border rounded-md shadow-[0_1px_2px_rgba(0,0,0,0.02)] sm:flex-row sm:items-center sm:p-8">
+      <div className="max-w-[32rem]">
+        <h2 className="text-xl font-semibold tracking-[-0.02em] text-ink sm:text-[1.375rem]">
+          Ready to simplify document collection?
+        </h2>
+        <p className="text-sm text-marketing-text-secondary">
           Create a request, share one link, and keep track of the documents you
           receive.
         </p>
       </div>
-      <div className={styles.action}>
-        <Link to="/register" className={styles.button}>
+      <div className="shrink-0">
+        <Link
+          to="/register"
+          className="inline-flex items-center justify-center min-h-11 px-6 rounded-md bg-primary text-on-primary text-[0.8125rem] font-medium shadow-sm transition-colors duration-150 hover:bg-primary-hover"
+        >
           Get started
         </Link>
       </div>
