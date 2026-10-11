@@ -91,7 +91,7 @@ export function RegisterPage() {
   }
 
   return (
-    <AuthLayout>
+    <AuthLayout logoVariant="auth-register">
       <div className={cn(s.heading, s.center)}>
         <h1 className={s.title}>Create your account</h1>
         <p className={s.subtitle}>
