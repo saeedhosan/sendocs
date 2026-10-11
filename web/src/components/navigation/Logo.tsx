@@ -9,7 +9,7 @@ const MARK_BRAND =
 const MARK_AUTH =
   'inline-flex items-center justify-center size-8 rounded-[10px] bg-primary text-on-primary'
 const MARK_OWNER =
-  'inline-flex items-center justify-center size-6 rounded-[6px] bg-primary text-on-primary font-mono text-xs font-bold shadow-xs'
+  'inline-flex items-center justify-center size-6 rounded-[6px] bg-primary text-on-primary font-mono text-xs font-bold shadow-sm'
 const WORDMARK_BRAND = 'text-[0.9375rem] font-semibold tracking-[-0.025em]'
 const WORDMARK_AUTH = 'text-lg font-semibold tracking-tight'
 const WORDMARK_OWNER = 'text-[0.9375rem] font-medium tracking-tight'
