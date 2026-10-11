@@ -254,7 +254,7 @@ export function PortalPage() {
         )}
       </Container>
 
-      <PortalFooter />>
+      <PortalFooter />
     </div>
   )
 }
