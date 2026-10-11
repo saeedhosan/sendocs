@@ -2,7 +2,13 @@ import { Fragment } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Container } from '../../components/ui'
 import { cn } from '../../lib/cn'
-import styles from './PublicFooter.module.css'
+
+const INNER =
+  'flex flex-wrap items-center justify-center gap-2 text-ink-muted text-center'
+const INNER_DEFAULT = 'min-h-16 text-xs leading-4'
+const INNER_LANDING = 'min-h-14 text-[0.8125rem] leading-5'
+const LINK = 'transition-colors duration-150 hover:text-ink'
+const LINK_ACTIVE = 'text-ink font-medium'
 
 const links = [
   { label: 'Terms', to: '/terms' },
@@ -22,9 +28,14 @@ export function PublicFooter() {
   const visibleLinks = isLanding ? landingLinks : links
 
   return (
-    <footer className={cn(styles.footer, isLanding && styles.landingFooter)}>
+    <footer
+      className={cn(
+        'w-full mt-auto border-t border-border',
+        isLanding ? 'bg-canvas-muted' : 'bg-surface',
+      )}
+    >
       <Container
-        className={cn(styles.inner, isLanding && styles.landingInner)}
+        className={cn(INNER, isLanding ? INNER_LANDING : INNER_DEFAULT)}
       >
         <span>{isLanding ? '© 2026 Sendocs' : '© 2025 Sendocs Inc.'}</span>
         {visibleLinks.map((link) => (
@@ -33,8 +44,8 @@ export function PublicFooter() {
             <Link
               to={link.to}
               className={cn(
-                styles.link,
-                !isLanding && pathname === link.to && styles.linkActive,
+                LINK,
+                !isLanding && pathname === link.to && LINK_ACTIVE,
               )}
             >
               {link.label}
