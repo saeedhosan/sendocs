@@ -81,3 +81,12 @@ jobs:
             - name: Test
               working-directory: web
               run: bun run test
+
+            - name: Upload UI reference audit screenshots
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: ui-reference-audit
+                  path: web/test-results/design-audit/
+                  if-no-files-found: ignore
+                  retention-days: 7
