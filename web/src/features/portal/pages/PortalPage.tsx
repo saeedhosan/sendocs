@@ -12,7 +12,6 @@ import { PortalItemRow } from '../components/PortalItemRow'
 import { progressLabel, remainingLabel, uploadPercent } from '../progress'
 import { useUploadQueue } from '../useUploadQueue'
 import type { PortalView } from '../types'
-import styles from './PortalPage.module.css'
 
 type PortalStatus = 'loading' | 'ready' | 'dead' | 'error'
 
@@ -137,14 +136,14 @@ export function PortalPage() {
 
   if (status === 'error') {
     return (
-      <div className={styles.fallback}>
+      <div className="flex items-center justify-center min-h-screen py-8 px-4 bg-canvas-muted">
         <ErrorState
           title="We could not load this page"
           message="Check your connection and try again."
           action={
             <button
               type="button"
-              className={styles.retry}
+              className="min-h-9 px-4 border border-border rounded-md bg-surface text-sm font-medium text-ink cursor-pointer hover:bg-surface-muted"
               onClick={() => {
                 setStatus('loading')
                 setReload((value) => value + 1)
@@ -160,7 +159,7 @@ export function PortalPage() {
 
   if (status === 'loading' || view === null) {
     return (
-      <div className={styles.fallback}>
+      <div className="flex items-center justify-center min-h-screen py-8 px-4 bg-canvas-muted">
         <Spinner size={24} label="Loading your documents" />
       </div>
     )
@@ -170,10 +169,10 @@ export function PortalPage() {
   const remaining = view.total - view.uploaded
 
   return (
-    <div className={styles.page}>
+    <div className="flex flex-col min-h-screen bg-canvas-muted">
       <PortalHeader />
 
-      <Container as="main" className={styles.main}>
+      <Container as="main" className="flex-1 py-6 pb-10 sm:py-10 md:py-12">
         <p className="sr-only" role="status" aria-live="polite">
           {announcement}
         </p>
@@ -184,25 +183,27 @@ export function PortalPage() {
 
             <CompletedItemsList items={view.items} />
 
-            <p className={styles.completeNote}>
+            <p className="mt-6 text-xs text-center text-ink-muted">
               No further action is required. You may safely close this browser
               window.
             </p>
           </>
         ) : (
           <>
-            <section className={styles.intro}>
-              <h1 className={styles.title}>{view.title}</h1>
-              <p className={styles.lede}>
+            <section className="mb-6">
+              <h1 className="text-xl font-semibold leading-[1.4] tracking-[-0.015em] text-ink [overflow-wrap:anywhere] sm:text-2xl sm:leading-8 md:text-3xl md:leading-9">
+                {view.title}
+              </h1>
+              <p className="mt-1 text-sm leading-5 text-ink-secondary sm:mt-1.5 sm:text-base sm:leading-6">
                 Please upload each requested document.
               </p>
 
-              <div className={styles.progress}>
-                <div className={styles.progressTop}>
-                  <h2 className={styles.progressLabel}>
+              <div className="mt-4">
+                <div className="flex flex-wrap items-baseline justify-between gap-1 mb-2">
+                  <h2 className="text-sm font-semibold text-ink">
                     {progressLabel(view.uploaded, view.total)}
                   </h2>
-                  <span className={styles.remaining}>
+                  <span className="text-[0.8125rem] text-ink-muted">
                     {remainingLabel(remaining)}
                   </span>
                 </div>
@@ -214,7 +215,10 @@ export function PortalPage() {
               </div>
             </section>
 
-            <ul className={styles.list} aria-label="Required documents">
+            <ul
+              className="list-none mt-5 mb-0 p-0 border border-border rounded-md bg-surface overflow-hidden"
+              aria-label="Required documents"
+            >
               {view.items.map((item) => (
                 <PortalItemRow
                   key={item.id}
@@ -237,18 +241,27 @@ export function PortalPage() {
         )}
       </Container>
 
-      <Container as="footer" className={styles.footer}>
+      <Container
+        as="footer"
+        className="flex items-center justify-center gap-1.5 mt-8 py-6 border-t border-border-subtle text-xs text-ink-muted sm:mt-12 sm:py-8 sm:text-sm"
+      >
         <span>© 2026 Sendocs</span>
-        <span className={styles.footerDivider} aria-hidden="true">
+        <span className="text-border-strong" aria-hidden="true">
           ·
         </span>
-        <Link to="/terms" className={styles.footerLink}>
+        <Link
+          to="/terms"
+          className="transition-colors duration-150 hover:text-ink-secondary"
+        >
           Terms
         </Link>
-        <span className={styles.footerDivider} aria-hidden="true">
+        <span className="text-border-strong" aria-hidden="true">
           ·
         </span>
-        <Link to="/privacy" className={styles.footerLink}>
+        <Link
+          to="/privacy"
+          className="transition-colors duration-150 hover:text-ink-secondary"
+        >
           Privacy
         </Link>
       </Container>
