@@ -14,10 +14,21 @@ const landingLinks = [
   { label: 'Privacy', to: '/privacy' },
 ]
 
+const legalReferenceLinks = [
+  { label: 'Terms', to: '/terms' },
+  { label: 'Privacy', to: '/privacy' },
+]
+
 /** The minimal public footer shared by the landing and legal pages. */
 export function PublicFooter() {
-  const isLanding = useLocation().pathname === '/'
-  const visibleLinks = isLanding ? landingLinks : links
+  const pathname = useLocation().pathname
+  const isLanding = pathname === '/'
+  const isLegalReference = pathname === '/terms' || pathname === '/privacy'
+  const visibleLinks = isLanding
+    ? landingLinks
+    : isLegalReference
+      ? legalReferenceLinks
+      : links
 
   return (
     <footer className={cn(styles.footer, isLanding && styles.landingFooter)}>
@@ -31,6 +42,12 @@ export function PublicFooter() {
             </Link>
           </Fragment>
         ))}
+        {isLegalReference ? (
+          <Fragment>
+            <span aria-hidden="true">·</span>
+            <span className={styles.link}>Security</span>
+          </Fragment>
+        ) : null}
       </div>
     </footer>
   )
