@@ -19,6 +19,14 @@
   }
 }
 
+.mainNewRequest {
+  padding-block: 2.5rem;
+}
+
+.mainRequestDetail {
+  padding-block: 2rem;
+}
+
 .footer {
   border-top: 1px solid var(--color-border);
   background-color: var(--color-surface);
@@ -52,6 +60,12 @@
 
 .footerLinks a:hover {
   color: var(--color-text);
+}
+
+@media (max-width: 639px) {
+  .mainNewRequest {
+    padding-block: 1.5rem;
+  }
 }
 
 @media (min-width: 640px) {
