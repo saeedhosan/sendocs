@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { cn } from '../../lib/cn'
 import { app } from '../../config/app'
+import { LockIcon } from '../icons'
 
 const LOGO = 'inline-flex items-center gap-2.5 text-ink'
 const MARK =
@@ -11,19 +12,36 @@ export type LogoProps = {
   /** Where the mark links. Pass `null` for non-navigating surfaces. */
   to?: string | null
   className?: string
+  variant?: 'brand' | 'auth'
 }
 
 /**
  * The one Sendocs logo: a rounded indigo tile with the "S" letter mark and the
  * wordmark. Used on every surface so the brand reads the same everywhere.
  */
-export function Logo({ to = '/', className }: LogoProps) {
+export function Logo({ to = '/', className, variant = 'brand' }: LogoProps) {
   const content = (
     <>
-      <span className={MARK} aria-hidden="true">
-        S
+      <span
+        className={cn(
+          'inline-flex items-center justify-center bg-primary text-on-primary',
+          variant === 'auth'
+            ? 'size-8 rounded-[10px]'
+            : 'size-7 rounded-[8px] text-sm font-semibold tracking-[-0.01em]',
+        )}
+        aria-hidden="true"
+      >
+        {variant === 'auth' ? <LockIcon size={18} /> : 'S'}
       </span>
-      <span className={WORDMARK}>{app.name}</span>
+      <span
+        className={cn(
+          variant === 'auth'
+            ? 'text-lg font-semibold tracking-tight'
+            : 'text-[0.9375rem] font-semibold tracking-[-0.025em]',
+        )}
+      >
+        {app.name}
+      </span>
     </>
   )
 
