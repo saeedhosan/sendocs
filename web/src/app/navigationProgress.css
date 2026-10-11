@@ -1,5 +1,5 @@
 #nprogress .bar {
-  height: 3px;
+  height: 2px;
   background: var(--color-primary);
 }
 

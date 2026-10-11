@@ -1,5 +1,6 @@
 import type { ComponentType } from 'react'
 import { createBrowserRouter } from 'react-router-dom'
+import { transitions } from '../config/transition'
 import { OwnerLayout } from '../layouts/OwnerLayout'
 import { PublicLayout } from '../layouts/PublicLayout'
 import { GuestOnly } from './guards/GuestOnly'
@@ -169,5 +170,5 @@ router.navigate = ((to: unknown, options?: Record<string, unknown>) =>
     ? originalNavigate(to)
     : originalNavigate(to, {
         ...options,
-        viewTransition: options?.viewTransition ?? true,
+        viewTransition: options?.viewTransition ?? transitions.view.enabled,
       })) as typeof router.navigate

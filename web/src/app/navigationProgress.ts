@@ -1,17 +1,13 @@
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
+import { transitions } from '../config/transition'
 import './navigationProgress.css'
 
-NProgress.configure({
-  showSpinner: false,
-  minimum: 0.08,
-  speed: 200,
-  trickleSpeed: 200,
-})
+NProgress.configure(transitions.progress.nprogress)
 
 // Keep the bar on screen at least this long once shown, so even instant
 // navigations give a visible, non-jarring sweep.
-const MIN_VISIBLE_MS = 320
+const MIN_VISIBLE_MS = transitions.progress.minVisibleMs
 
 let hideTimer: number | undefined
 let visible = false
