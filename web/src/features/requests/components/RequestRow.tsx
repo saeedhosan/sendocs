@@ -41,6 +41,7 @@ export function RequestRow({ request }: RequestRowProps) {
           value={value}
           tone={request.status === 'complete' ? 'complete' : 'waiting'}
           label={progressLabel(request.uploaded, request.total)}
+          className="border border-border-subtle/50 bg-surface-muted"
         />
       </div>
 
