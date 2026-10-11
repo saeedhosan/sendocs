@@ -20,7 +20,7 @@ import {
 import type { CreateRequestInput } from '../types'
 
 const INPUT_CLASS =
-  'w-full min-h-11 px-3 border rounded-md bg-surface text-ink text-sm placeholder:text-ink-placeholder focus:outline-none focus:border-primary focus:shadow-[0_0_0_1px_var(--color-primary)]'
+  'w-full min-h-11 px-3 border rounded-[10px] bg-surface text-ink text-sm placeholder:text-ink-placeholder focus:outline-none focus:border-primary focus:shadow-[0_0_0_1px_var(--color-primary)]'
 
 const ITEM_PLACEHOLDERS = [
   'e.g. Government-issued photo ID',
@@ -130,7 +130,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
 
   return (
     <form
-      className="flex flex-col gap-6 p-4 sm:p-6 border border-border rounded-md bg-surface shadow-sm"
+      className="flex flex-col gap-6 p-4 sm:p-6 border border-border rounded-[10px] bg-surface shadow-sm"
       onSubmit={handleSubmit}
       noValidate
     >
