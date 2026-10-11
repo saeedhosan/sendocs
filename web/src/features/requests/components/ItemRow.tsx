@@ -1,5 +1,4 @@
 import { Button } from '../../../components/ui'
-import { TrashIcon } from '../../../components/icons'
 import { formatBytes } from '../../../lib/format'
 import type { RequestItem } from '../types'
 import styles from './ItemRow.module.css'
