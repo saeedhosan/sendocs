@@ -1,5 +1,4 @@
 import type { PortalItem } from '../types'
-import styles from './CompletedItemsList.module.css'
 
 export type CompletedItemsListProps = {
   items: PortalItem[]
@@ -8,13 +7,21 @@ export type CompletedItemsListProps = {
 /** Read-only summary of every item once the request is complete. */
 export function CompletedItemsList({ items }: CompletedItemsListProps) {
   return (
-    <section aria-label="Completed files list" className={styles.list}>
+    <section
+      aria-label="Completed files list"
+      className="flex flex-col border border-border rounded-md bg-surface overflow-hidden"
+    >
       {items.map((item, index) => (
-        <div key={item.id} className={styles.row}>
-          <span className={styles.label}>
+        <div
+          key={item.id}
+          className="flex items-center justify-between gap-4 p-4 border-t border-border-subtle first:border-t-0"
+        >
+          <span className="text-xs font-medium text-ink">
             {index + 1}. {item.label}
           </span>
-          <span className={styles.status}>Uploaded</span>
+          <span className="text-xs font-medium text-success-text">
+            Uploaded
+          </span>
         </div>
       ))}
     </section>
