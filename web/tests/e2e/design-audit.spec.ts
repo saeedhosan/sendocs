@@ -17,8 +17,8 @@ const sessionExpiresAt = new Date(now + 7 * 24 * 60 * 60 * 1000).toISOString()
 const sessionPayload = {
   user: {
     id: 'owner-audit',
-    name: 'Alex Morgan',
-    email: 'alex@example.com',
+    name: 'John Doe',
+    email: 'john@acmepartners.com',
     emailVerifiedAt: twoHoursAgo,
   },
   csrfToken: 'csrf-audit',
