@@ -55,10 +55,15 @@
 
 .uploadingHeading {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+  flex-wrap: nowrap;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 0.5rem;
+}
+
+.uploadingHeading .label {
+  flex: 1;
+  min-width: 0;
 }
 
 .transfer {
@@ -101,7 +106,25 @@
   color: var(--color-success-text);
 }
 
+@media (max-width: 639px) {
+  .row {
+    padding-block: 0.75rem;
+  }
+
+  .meta,
+  .waiting,
+  .error,
+  .done,
+  .transferLabel {
+    line-height: 1rem;
+  }
+}
+
 @media (min-width: 640px) {
+  .main {
+    flex: 1;
+  }
+
   .row {
     flex-direction: row;
     align-items: center;
