@@ -10,7 +10,13 @@
   width: 100%;
   max-width: var(--layout-max);
   margin-inline: auto;
-  padding: 1.5rem;
+  padding: 1.5rem 1rem;
+}
+
+@media (min-width: 640px) {
+  .main {
+    padding: 2rem 1.5rem;
+  }
 }
 
 .footer {
@@ -22,9 +28,34 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 1rem;
   max-width: var(--layout-max);
   margin-inline: auto;
-  padding: 1rem 1.5rem;
+  padding: 1rem 1rem;
   font-size: 0.75rem;
   color: var(--color-text-muted);
+}
+
+.footerDetail {
+  max-width: 56rem;
+}
+
+.footerNewRequest {
+  max-width: 42rem;
+}
+
+.footerLinks {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.footerLinks a:hover {
+  color: var(--color-text);
+}
+
+@media (min-width: 640px) {
+  .footerInner {
+    padding-inline: 1.5rem;
+  }
 }

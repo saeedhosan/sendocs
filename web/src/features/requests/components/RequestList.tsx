@@ -14,7 +14,7 @@ export function RequestList({ requests }: RequestListProps) {
         <span>Status</span>
         <span>Progress</span>
         <span>Last activity</span>
-        <span />
+        <span className={styles.actionHeading}>Action</span>
       </div>
       {requests.map((request) => (
         <RequestRow key={request.id} request={request} />
