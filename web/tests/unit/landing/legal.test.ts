@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { app } from '../../../src/config/app'
 import { privacyPolicy } from '../../../src/features/landing/content/privacyPolicy'
 import { termsOfService } from '../../../src/features/landing/content/termsOfService'
 
@@ -12,7 +13,7 @@ describe('legal content', () => {
       expect(section.blocks.length).toBeGreaterThan(0)
     }
 
-    expect(privacyPolicy.note?.email).toBe('privacy@sendocs.io')
+    expect(privacyPolicy.note?.email).toBe(app.emails.privacy)
   })
 
   it('transcribes every terms section behind an intro', () => {
