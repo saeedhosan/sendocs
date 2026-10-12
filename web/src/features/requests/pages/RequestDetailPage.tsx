@@ -1,12 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
-import { Badge, Button, ProgressBar } from '../../../components/ui'
+import { useNavigate, useParams } from 'react-router-dom'
+import { Badge, Button, PageHeader, ProgressBar } from '../../../components/ui'
 import { ErrorState, LoadingState } from '../../../components/feedback'
-import {
-  ArrowBackIcon,
-  LinkOffIcon,
-  TrashIcon,
-} from '../../../components/icons'
+import { LinkOffIcon, TrashIcon } from '../../../components/icons'
 import { ApiError } from '../../../lib/api/client'
 import { errorMessage } from '../../../lib/api/errors'
 import { formatDate } from '../../../lib/format'
@@ -166,59 +162,48 @@ export function RequestDetailPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <Link
-        to="/dashboard"
-        className="inline-flex items-center gap-1 self-start -mb-2 text-xs text-ink-muted hover:text-ink"
-      >
-        <ArrowBackIcon size={14} />
-        <span>Back to requests</span>
-      </Link>
-
-      <div className="flex flex-col gap-4 pb-6 border-b border-border sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <div className="flex items-center flex-wrap gap-2.5">
-            <h1 className="text-xl leading-7 font-semibold tracking-tight text-ink sm:text-2xl sm:leading-8">
-              {request.title}
-            </h1>
-            <Badge
+      <PageHeader
+        back={{ to: '/dashboard', label: 'Back to requests' }}
+        title={request.title}
+        badge={
+          <Badge
+            className="rounded-[10px]"
+            variant={
+              linkState(request) === 'active'
+                ? 'success'
+                : linkState(request) === 'revoked'
+                  ? 'danger'
+                  : 'warning'
+            }
+          >
+            {linkStateLabel(linkState(request))}
+          </Badge>
+        }
+        subtitle={expiresLabel(request.expiresAt)}
+        actions={
+          <>
+            <Button
+              variant="secondary"
+              size="sm"
+              iconLeft={<LinkOffIcon size={16} />}
               className="rounded-[10px]"
-              variant={
-                linkState(request) === 'active'
-                  ? 'success'
-                  : linkState(request) === 'revoked'
-                    ? 'danger'
-                    : 'warning'
-              }
+              onClick={() => setConfirm({ kind: 'revoke' })}
+              disabled={linkState(request) !== 'active'}
             >
-              {linkStateLabel(linkState(request))}
-            </Badge>
-          </div>
-          <p className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-ink-muted">
-            {expiresLabel(request.expiresAt)}
-          </p>
-        </div>
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:flex-shrink-0 [&>*]:w-full [&>*]:min-h-11 sm:[&>*]:min-h-9 sm:[&>*]:w-auto">
-          <Button
-            variant="secondary"
-            size="sm"
-            iconLeft={<LinkOffIcon size={16} />}
-            className="rounded-[10px]"
-            onClick={() => setConfirm({ kind: 'revoke' })}
-            disabled={linkState(request) !== 'active'}
-          >
-            Revoke link
-          </Button>
-          <Button
-            variant="danger"
-            size="sm"
-            iconLeft={<TrashIcon size={16} />}
-            className="rounded-[10px]"
-            onClick={() => setConfirm({ kind: 'delete-request' })}
-          >
-            Delete request
-          </Button>
-        </div>
-      </div>
+              Revoke link
+            </Button>
+            <Button
+              variant="danger"
+              size="sm"
+              iconLeft={<TrashIcon size={16} />}
+              className="rounded-[10px]"
+              onClick={() => setConfirm({ kind: 'delete-request' })}
+            >
+              Delete request
+            </Button>
+          </>
+        }
+      />
 
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between text-xs">
