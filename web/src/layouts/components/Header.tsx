@@ -127,12 +127,12 @@ export function Header({ mode = 'auto', authAction }: HeaderProps) {
               className={TRIGGER_DASHBOARD}
               aria-haspopup="menu"
               aria-expanded={open}
+              aria-label={`${displayName}'s account menu`}
               onClick={() => setOpen((value) => !value)}
             >
               <span className={AVATAR} aria-hidden="true">
                 {initials(displayName)}
               </span>
-              <span className="hidden sm:inline font-medium text-ink-secondary">{displayName}</span>
               <ChevronDownIcon size={14} className="text-ink-muted" />
             </button>
             {open ? (

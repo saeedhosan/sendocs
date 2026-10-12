@@ -85,7 +85,7 @@ describe('DeleteAccountPage', () => {
     renderPage()
 
     expect(
-      await screen.findByRole('button', { name: 'Alex Morgan' }),
+      await screen.findByRole('button', { name: "Alex Morgan's account menu" }),
     ).toBeInTheDocument()
     expect(
       screen.queryByRole('link', { name: 'Back to account' }),
