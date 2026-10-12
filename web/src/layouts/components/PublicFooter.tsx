@@ -20,7 +20,7 @@ const LINK_ACTIVE = 'text-ink-secondary font-medium'
 const links = [
   { label: 'Terms', to: '/terms' },
   { label: 'Privacy', to: '/privacy' },
-  { label: 'Security', to: '/contact' },
+  { label: 'Contact', to: '/contact' },
 ]
 
 const landingLinks = [
@@ -50,7 +50,7 @@ export function PublicFooter({
   const whiteFooter = variant === 'login' || variant === 'forget' || isChange
   const footerLinks = isReset
     ? [
-        { label: 'Security', to: '/contact' },
+        { label: 'Contact', to: '/contact' },
         { label: 'Privacy', to: '/privacy' },
         { label: 'Terms', to: '/terms' },
       ]

@@ -23,7 +23,7 @@ const NAV_SIGN_IN = 'pl-2'
 const documentLinks = [
   { label: 'Terms', to: '/terms' },
   { label: 'Privacy', to: '/privacy' },
-  { label: 'Security', to: '/contact' },
+  { label: 'Contact', to: '/contact' },
 ]
 
 export type PublicHeaderMode = 'auto' | 'auth'

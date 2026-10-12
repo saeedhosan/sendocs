@@ -39,11 +39,11 @@ export type AuthLayoutProps = {
 const legalLinks = [
   { label: 'Terms', to: '/terms' },
   { label: 'Privacy', to: '/privacy' },
-  { label: 'Security', to: '/contact' },
+  { label: 'Contact', to: '/contact' },
 ]
 
 const resetLinks = [
-  { label: 'Security', to: '/contact' },
+  { label: 'Contact', to: '/contact' },
   { label: 'Privacy', to: '/privacy' },
   { label: 'Terms', to: '/terms' },
 ]

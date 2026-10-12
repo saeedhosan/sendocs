@@ -77,7 +77,7 @@ test.describe("public landing", () => {
     test("a guest can reach the contact page from the legal header", async ({ page }) => {
         await page.goto("/terms");
 
-        await page.getByRole("link", { name: "Security" }).first().click();
+        await page.getByRole("link", { name: "Contact" }).first().click();
 
         await expect(page).toHaveURL(/contact$/);
         await expect(page.getByRole("heading", { name: "Contact" })).toBeVisible();
