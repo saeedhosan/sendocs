@@ -20,10 +20,10 @@ export function OwnerLayout() {
     <div className={cn("flex flex-col min-h-screen bg-canvas", theme)}>
       <OwnerHeader />
       <main className="[view-transition-name:page-content] flex-1 w-full">
-        <Container>
+        <Container className="flex flex-col">
           <VerifyEmailBanner />
+          <Outlet />
         </Container>
-        <Outlet />
       </main>
     </div>
   )

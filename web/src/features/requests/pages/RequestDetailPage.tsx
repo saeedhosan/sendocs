@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { Badge, Button, Container, ProgressBar } from '../../../components/ui'
+import { Badge, Button, ProgressBar } from '../../../components/ui'
 import { ErrorState, LoadingState } from '../../../components/feedback'
 import {
   ArrowBackIcon,
@@ -165,7 +165,7 @@ export function RequestDetailPage() {
   }
 
   return (
-    <Container className="request-detail-theme !max-w-4xl px-4 sm:px-6 py-8 flex flex-col gap-6">
+    <div className="request-detail-theme flex flex-col gap-6 py-8">
       <Link
         to="/dashboard"
         className="inline-flex items-center gap-1 self-start -mb-2 text-xs text-ink-muted hover:text-ink"
@@ -308,6 +308,6 @@ export function RequestDetailPage() {
           onDismiss={() => setNotice(null)}
         />
       ) : null}
-    </Container>
+    </div>
   )
 }

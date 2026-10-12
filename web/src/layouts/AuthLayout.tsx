@@ -6,18 +6,16 @@ import { PublicHeader } from './components/PublicHeader'
 import { cn } from '../lib/cn'
 import { app } from '../config/app'
 
-const AUTH_CONTAINER =
-  'px-6 min-[576px]:max-w-5xl min-[768px]:max-w-5xl min-[992px]:max-w-5xl min-[1200px]:max-w-5xl min-[1400px]:max-w-5xl'
 const MAIN =
   '[view-transition-name:page-content] flex flex-1 flex-col items-center justify-center w-full px-4'
 const CARD =
   'w-full max-w-md mx-auto p-8 bg-surface border border-border rounded-[10px] shadow-sm [&_input:not([type=checkbox]):not([type=radio])]:rounded-[10px] [&_button:not(.absolute)]:rounded-[10px]'
 const FOOTER_INNER =
-  `${AUTH_CONTAINER} flex flex-wrap items-center justify-center gap-2 text-xs text-ink-muted text-center`
+  'flex flex-wrap items-center justify-center gap-2 text-xs text-ink-muted text-center'
 const FOOTER_RESET_INNER =
-  `${AUTH_CONTAINER} flex flex-col items-center justify-center gap-4 text-[0.8125rem] leading-[1.125rem] text-ink-body text-center sm:flex-row`
+  'flex flex-col items-center justify-center gap-4 text-[0.8125rem] leading-[1.125rem] text-ink-body text-center sm:flex-row'
 const FOOTER_RESET_LINK = 'transition-colors duration-150 hover:text-ink'
-const CHANGE_FOOTER_INNER = `${AUTH_CONTAINER} text-center text-xs text-ink-muted`
+const CHANGE_FOOTER_INNER = 'text-center text-xs text-ink-muted'
 const EXTRA_LINK = 'transition-colors duration-150'
 
 export type FooterVariant =
@@ -64,13 +62,7 @@ export function AuthLayout({
       <PublicHeader mode="auth" authAction={headerAction} />
 
       <main className={cn(MAIN, layoutVariant === 'default' && 'py-6')}>
-        <div
-          className={cn(
-            'flex flex-1 items-center justify-center w-full',
-            layoutVariant === 'default' && 'px-4',
-            layoutVariant === 'change' && 'max-w-md mt-0 mb-6 px-4 pt-6 sm:px-0',
-          )}
-        >
+        <Container className="flex flex-1 items-center justify-center w-full">
           <div
             className={cn(
               CARD,
@@ -83,7 +75,7 @@ export function AuthLayout({
           >
             {children}
           </div>
-        </div>
+        </Container>
       </main>
 
       {isReset ? (

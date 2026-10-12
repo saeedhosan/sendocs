@@ -1,4 +1,3 @@
-import { Container } from '../../../components/ui'
 import type { LegalDocumentContent } from '../content/legal'
 
 function Note({ text, email }: { text: string; email: string }) {
@@ -21,10 +20,7 @@ function Note({ text, email }: { text: string; email: string }) {
 /** Renders a transcribed legal document: title, sections, and an optional note. */
 export function LegalDocument({ document }: { document: LegalDocumentContent }) {
   return (
-    <Container
-      as="article"
-      className="!max-w-4xl px-6 py-10 bg-surface"
-    >
+    <article className="py-10">
       <h1 className="mb-2 text-[1.875rem] font-bold leading-9 tracking-[-0.025em] text-ink">
         {document.title}
       </h1>
@@ -85,6 +81,6 @@ export function LegalDocument({ document }: { document: LegalDocumentContent }) 
           <Note {...document.note} />
         </div>
       ) : null}
-    </Container>
+    </article>
   )
 }

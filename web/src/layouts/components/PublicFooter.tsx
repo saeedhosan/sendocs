@@ -9,12 +9,10 @@ const INNER =
   'flex flex-wrap items-center justify-center gap-2 text-ink-muted text-center'
 const INNER_DEFAULT = 'text-xs leading-4'
 const INNER_LANDING = 'min-h-14 text-[0.8125rem] leading-5'
-const CONTAINER_LANDING = 'px-4 sm:px-6 min-[576px]:max-w-6xl min-[768px]:max-w-6xl min-[992px]:max-w-6xl min-[1200px]:max-w-6xl min-[1400px]:max-w-6xl'
-const CONTAINER_DOCUMENT = 'px-6 min-[576px]:max-w-5xl min-[768px]:max-w-5xl min-[992px]:max-w-5xl min-[1200px]:max-w-5xl min-[1400px]:max-w-5xl'
-const FOOTER_INNER = `${CONTAINER_DOCUMENT} flex flex-wrap items-center justify-center gap-2 text-xs text-ink-muted text-center`
-const FOOTER_RESET_INNER = `${CONTAINER_DOCUMENT} flex flex-col items-center justify-center gap-4 text-[0.8125rem] leading-[1.125rem] text-ink-body text-center sm:flex-row`
+const FOOTER_INNER = 'flex flex-wrap items-center justify-center gap-2 text-xs text-ink-muted text-center'
+const FOOTER_RESET_INNER = 'flex flex-col items-center justify-center gap-4 text-[0.8125rem] leading-[1.125rem] text-ink-body text-center sm:flex-row'
 const FOOTER_RESET_LINK = 'transition-colors duration-150 hover:text-ink'
-const CHANGE_FOOTER_INNER = `${CONTAINER_DOCUMENT} text-center text-xs text-ink-muted`
+const CHANGE_FOOTER_INNER = 'text-center text-xs text-ink-muted'
 const LINK = 'transition-colors duration-150 hover:text-ink'
 const LINK_ACTIVE = 'text-ink-secondary font-medium'
 
@@ -115,9 +113,7 @@ export function PublicFooter({
       <Container
         className={cn(
           INNER,
-          isLanding
-            ? cn(INNER_LANDING, CONTAINER_LANDING)
-            : cn(INNER_DEFAULT, CONTAINER_DOCUMENT),
+          isLanding ? INNER_LANDING : INNER_DEFAULT,
         )}
       >
         <span>{isLanding ? `© 2026 ${app.name}` : `© 2025 ${app.name} Inc.`}</span>

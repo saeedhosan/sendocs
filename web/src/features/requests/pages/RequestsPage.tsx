@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { Button, Container } from '../../../components/ui'
+import { Button } from '../../../components/ui'
 import { EmptyState, ErrorState, LoadingState } from '../../../components/feedback'
 import {
   ChevronLeftIcon,
@@ -132,7 +132,7 @@ export function RequestsPage() {
     : `${pageNumber} / ${pageNumber}`
 
   return (
-    <Container className="!max-w-5xl px-4 sm:px-6 py-6 sm:py-8 flex flex-col gap-0">
+    <div className="flex flex-col gap-0 py-6 sm:py-8">
       <div className="flex flex-col gap-3 pb-6 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="flex items-center gap-2.5">
@@ -256,6 +256,6 @@ export function RequestsPage() {
           onDismiss={() => setNotice(null)}
         />
       ) : null}
-    </Container>
+    </div>
   )
 }

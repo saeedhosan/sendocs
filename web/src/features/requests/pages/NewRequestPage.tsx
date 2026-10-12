@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Container } from '../../../components/ui'
 import { NewRequestForm } from '../components/NewRequestForm'
 import { LinkReveal } from '../components/LinkReveal'
 import { requestsApi } from '../api'
@@ -21,7 +20,7 @@ export function NewRequestPage() {
   }
 
   return (
-    <Container className="!max-w-2xl px-4 sm:px-6 py-6 sm:py-10 flex flex-col gap-6 sm:gap-8">
+    <div className="flex flex-col gap-6 sm:gap-8 py-6 sm:py-10">
       <h1 className="text-xl leading-[1.5] font-semibold tracking-tight text-ink sm:text-[1.375rem]">
         New document request
       </h1>
@@ -31,6 +30,6 @@ export function NewRequestPage() {
         link={created?.link ?? null}
         onClose={dismiss}
       />
-    </Container>
+    </div>
   )
 }
