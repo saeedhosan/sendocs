@@ -1,8 +1,12 @@
-import type { ReactNode } from 'react'
-import { PublicFooter } from './components/PublicFooter'
+import { Fragment, type ReactNode } from 'react'
+import { Link } from 'react-router-dom'
+import { Container } from '../components/ui'
 import { PublicHeader } from './components/PublicHeader'
 import { cn } from '../lib/cn'
+import { app } from '../config/app'
 
+const AUTH_CONTAINER =
+  'px-6 min-[576px]:max-w-5xl min-[768px]:max-w-5xl min-[992px]:max-w-5xl min-[1200px]:max-w-5xl min-[1400px]:max-w-5xl'
 const MAIN =
   '[view-transition-name:page-content] flex flex-1 flex-col items-center justify-center w-full px-4'
 const CARD =
@@ -31,6 +35,20 @@ export type AuthLayoutProps = {
   logoVariant?: 'auth' | 'auth-login' | 'auth-register'
   layoutVariant?: 'default' | 'login' | 'reset' | 'change'
 }
+
+const legalLinks = [
+  { label: 'Terms', to: '/terms' },
+  { label: 'Privacy', to: '/privacy' },
+  { label: 'Security', to: '/contact' },
+]
+
+const resetLinks = [
+  { label: 'Security', to: '/contact' },
+  { label: 'Privacy', to: '/privacy' },
+  { label: 'Terms', to: '/terms' },
+]
+
+const whiteFooters: FooterVariant[] = ['login', 'forget', 'change']
 
 /**
  * The shared shell for every unauthenticated page: brand header, a centered

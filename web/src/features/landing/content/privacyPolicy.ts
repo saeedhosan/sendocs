@@ -10,7 +10,7 @@ export const privacyPolicy: LegalDocumentContent = {
             blocks: [
                 {
                     type: "paragraph",
-                    text: "Sendocs operates under an architectural zero-knowledge invariant. Document payloads collected through our request pipelines are processed as opaque cryptographic envelopes. Our administrative tooling, internal support engineers, and automated worker engines have zero plaintext visibility into customer files.",
+                    text: `${app.name} operates under an architectural zero-knowledge invariant. Document payloads collected through our request pipelines are processed as opaque cryptographic envelopes. Our administrative tooling, internal support engineers, and automated worker engines have zero plaintext visibility into customer files.`,
                 },
                 {
                     type: "paragraph",
@@ -30,7 +30,7 @@ export const privacyPolicy: LegalDocumentContent = {
                     items: [
                         {
                             lead: "Account Identity Data:",
-                            text: "Institutional subscriber work email, professional firm legal name, and Stripe transaction references. We do not store raw payment card data on Sendocs infrastructure.",
+                            text: `Institutional subscriber work email, professional firm legal name, and Stripe transaction references. We do not store raw payment card data on ${app.name} infrastructure.`,
                         },
                         {
                             lead: "Audit Envelope Metadata:",
@@ -97,7 +97,7 @@ export const privacyPolicy: LegalDocumentContent = {
             blocks: [
                 {
                     type: "paragraph",
-                    text: "Sendocs explicitly guarantees that no third-party user behavioral trackers, advertising beacons, or session recording suites (e.g., Hotjar, FullStory, Google Analytics, Segment, Meta Pixel) are loaded within our application. Our Content Security Policy strictly blocks execution of any external script host not explicitly listed in our subprocessor schedule.",
+                    text: `${app.name} explicitly guarantees that no third-party user behavioral trackers, advertising beacons, or session recording suites (e.g., Hotjar, FullStory, Google Analytics, Segment, Meta Pixel) are loaded within our application. Our Content Security Policy strictly blocks execution of any external script host not explicitly listed in our subprocessor schedule.`,
                 },
             ],
         },
@@ -106,7 +106,7 @@ export const privacyPolicy: LegalDocumentContent = {
             blocks: [
                 {
                     type: "paragraph",
-                    text: "Sendocs works exclusively with verified Tier-1 infrastructure vendors who adhere to SOC 2 Type II, ISO 27001, and HIPAA compliance protocols:",
+                    text: `${app.name} works exclusively with verified Tier-1 infrastructure vendors who adhere to SOC 2 Type II, ISO 27001, and HIPAA compliance protocols:`,
                 },
                 {
                     type: "list",
