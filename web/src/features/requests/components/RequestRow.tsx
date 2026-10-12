@@ -46,7 +46,7 @@ export function RequestRow({ request }: RequestRowProps) {
       </div>
 
       <div className="flex items-center font-mono text-xs text-ink-muted whitespace-nowrap md:col-span-2 md:justify-start">
-        <span className="mr-1 font-sans text-[0.6875rem] text-ink-secondary md:hidden">
+        <span className="mr-1 text-[0.6875rem] text-ink-secondary md:hidden">
           Activity:
         </span>
         {request.lastActivityAt ? (
