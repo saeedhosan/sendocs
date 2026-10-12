@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { Button, PageHeader } from '../../../components/ui'
 import { EmptyState, ErrorState, LoadingState } from '../../../components/feedback'
 import {
   ChevronLeftIcon,
@@ -8,12 +7,13 @@ import {
   DescriptionIcon,
   PlusIcon,
 } from '../../../components/icons'
+import { Button, PageHeader } from '../../../components/ui'
 import { ApiError } from '../../../lib/api/client'
-import { RequestFilters } from '../components/RequestFilters'
-import type { RequestFilter } from '../components/RequestFilters'
-import { RequestList } from '../components/RequestList'
-import { Notice } from '../components/Notice'
 import { requestsApi } from '../api'
+import { Notice } from '../components/Notice'
+import type { RequestFilter } from '../components/RequestFilters'
+import { RequestFilters } from '../components/RequestFilters'
+import { RequestList } from '../components/RequestList'
 import type { RequestSummary } from '../types'
 
 export function RequestsPage() {
@@ -132,7 +132,7 @@ export function RequestsPage() {
     : `${pageNumber} / ${pageNumber}`
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col mb-20">
       <PageHeader
         title="Document Requests"
         subtitle="Collect and track client documentation"

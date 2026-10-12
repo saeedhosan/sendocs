@@ -1,6 +1,6 @@
 import { Buffer } from 'node:buffer'
 import { expect, test } from '@playwright/test'
-import type { Page, Route } from '@playwright/test'
+import type { Route } from '@playwright/test'
 
 /*
  * Browser smoke tests for the Phase 3 client portal.
@@ -56,14 +56,7 @@ function json(route: Route, status: number, body: unknown) {
   })
 }
 
-async function stubSession(page: Page) {
-  await page.route('**/api/v1/auth/session', (route) =>
-    json(route, 401, { error: { code: 'unauthenticated', message: 'No session.' } }),
-  )
-}
-
 test('a client uploads a required document', async ({ page }) => {
-  await stubSession(page)
   await page.route('**/api/v1/portal/**', (route) => {
     if (route.request().method() === 'POST') {
       return json(route, 200, uploadedView)
@@ -94,7 +87,6 @@ test('a client uploads a required document', async ({ page }) => {
 test('an invalid link shows the dead-link screen with no request data', async ({
   page,
 }) => {
-  await stubSession(page)
   await page.route('**/api/v1/portal/**', (route) =>
     json(route, 410, {
       error: { code: 'invalid_link', message: 'This link is no longer valid.' },

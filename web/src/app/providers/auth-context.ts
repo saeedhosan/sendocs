@@ -8,7 +8,7 @@ import type {
   SessionPayload,
 } from '../../features/auth/types'
 
-export type AuthStatus = 'loading' | 'authenticated' | 'unauthenticated'
+export type AuthStatus = 'authenticated' | 'unauthenticated'
 
 export type AuthContextValue = {
   status: AuthStatus
@@ -19,7 +19,6 @@ export type AuthContextValue = {
   logout: () => Promise<void>
   changePassword: (input: ChangePasswordInput) => Promise<void>
   deleteAccount: (input: DeleteAccountInput) => Promise<void>
-  refresh: () => Promise<void>
   setSession: (payload: SessionPayload) => void
 }
 

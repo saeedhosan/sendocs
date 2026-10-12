@@ -7,7 +7,7 @@ import { Container, Link, ThemeToggle } from '../../components/ui'
 import { cn } from '../../lib/cn'
 
 const HEADER = 'top-0 z-50 w-full border-b border-border'
-const HEADER_HOME = 'fixed  backdrop-blur-[12px]'
+const HEADER_HOME = 'fixed backdrop-blur-[12px] bg-surface/80'
 const INNER = 'flex items-center justify-between gap-4 min-h-16'
 const INNER_HOME = '!min-h-14'
 const ACTIONS = 'flex items-center gap-3'
@@ -104,11 +104,10 @@ export function Header({ mode = 'auto', authAction }: HeaderProps) {
     <header
       className={cn(
         HEADER,
-        !isLanding && !isAuth && 'sticky',
-        isLanding ? HEADER_HOME : 'bg-surface',
+        isLanding || isAuthenticated ? HEADER_HOME : 'sticky bg-surface',
       )}
     >
-      <Container className={cn(INNER, isLanding && INNER_HOME)}>
+      <Container className={cn(INNER, (isLanding || isAuthenticated) && INNER_HOME)}>
         <Logo variant="brand" />
 
         {isAuth ? (

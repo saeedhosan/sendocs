@@ -35,7 +35,10 @@ function renderPage() {
       <Route path="/settings/delete" element={<DeleteAccountPage />} />
       <Route path="/login" element={<h1>Sign in</h1>} />
     </Routes>,
-    { initialEntries: ['/settings/delete'] },
+    {
+      initialEntries: ['/settings/delete'],
+      initialSession: sessionPayload,
+    },
   )
 }
 
@@ -59,10 +62,6 @@ beforeEach(() => {
   fetchMock.mockReset()
   fetchMock.mockImplementation((input: RequestInfo | URL) => {
     const url = String(input)
-
-    if (url.endsWith('/auth/session')) {
-      return Promise.resolve(json(200, sessionPayload))
-    }
 
     if (url.endsWith('/auth/account')) {
       return Promise.resolve(new Response(null, { status: 204 }))
@@ -102,12 +101,7 @@ describe('DeleteAccountPage', () => {
 
   it('surfaces an incorrect password from the API', async () => {
     fetchMock.mockImplementation((input: RequestInfo | URL) => {
-      const url = String(input)
-
-      if (url.endsWith('/auth/session')) {
-        return Promise.resolve(json(200, sessionPayload))
-      }
-
+      void input
       return Promise.resolve(
         errorEnvelope(401, 'invalid_credentials', 'Password is incorrect.'),
       )

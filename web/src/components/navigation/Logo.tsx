@@ -1,12 +1,8 @@
 import { Link } from 'react-router-dom'
-import { cn } from '../../lib/cn'
 import { app } from '../../config/app'
+import { cn } from '../../lib/cn'
 
 const LOGO = 'inline-flex items-center gap-2.5 text-ink'
-const MARK_TILE =
-  'inline-flex items-center justify-center size-7 rounded-[8px] bg-primary text-on-primary text-sm font-semibold tracking-[-0.01em]'
-const MARK_TILE_OWNER =
-  'inline-flex items-center justify-center size-6 rounded-[6px] bg-primary text-on-primary font-mono text-xs font-bold shadow-sm'
 const MARK_IMAGE = 'size-7 object-contain'
 const MARK_IMAGE_OWNER = 'size-6 object-contain'
 const WORDMARK_BRAND = 'text-[0.9375rem] font-semibold tracking-[-0.025em]'
@@ -42,9 +38,12 @@ export function Logo({
       className={isOwner ? MARK_IMAGE_OWNER : MARK_IMAGE}
     />
   ) : (
-    <span className={isOwner ? MARK_TILE_OWNER : MARK_TILE} aria-hidden="true">
-      S
-    </span>
+    <img
+      src="/favicon.svg"
+      alt=""
+      aria-hidden="true"
+      className={isOwner ? MARK_IMAGE_OWNER : MARK_IMAGE}
+    />
   )
   const wordmarkClass = isOwner ? WORDMARK_OWNER : WORDMARK_BRAND
   const gapClass = isOwner ? 'gap-2' : undefined

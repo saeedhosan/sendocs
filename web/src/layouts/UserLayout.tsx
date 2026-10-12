@@ -14,7 +14,7 @@ export function UserLayout() {
     <div className="flex flex-col min-h-screen bg-canvas">
       <Header />
       <main className="[view-transition-name:page-content] flex-1 w-full">
-        <Container className="flex flex-col gap-6 py-6 sm:py-8">
+        <Container className="flex flex-col gap-6 mt-20">
           <VerifyEmailBanner />
           <Outlet />
         </Container>

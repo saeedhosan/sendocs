@@ -14,16 +14,60 @@ import { setSessionInvalidHandler } from '../../lib/api/client'
 import { AuthContext } from './auth-context'
 import type { AuthContextValue, AuthStatus } from './auth-context'
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [status, setStatus] = useState<AuthStatus>('loading')
-  const [user, setUser] = useState<AuthUser | null>(null)
-  const [expiresAt, setExpiresAt] = useState<string | null>(null)
+const SESSION_STORAGE_KEY = 'sendocs.owner-session.v1'
+
+function readStoredSession(): SessionPayload | null {
+  try {
+    const value = sessionStorage.getItem(SESSION_STORAGE_KEY)
+
+    if (value === null) {
+      return null
+    }
+
+    const session = JSON.parse(value) as SessionPayload
+
+    if (
+      typeof session.csrfToken !== 'string' ||
+      typeof session.expiresAt !== 'string' ||
+      Date.parse(session.expiresAt) <= Date.now() ||
+      typeof session.user?.id !== 'string'
+    ) {
+      sessionStorage.removeItem(SESSION_STORAGE_KEY)
+      return null
+    }
+
+    return session
+  } catch {
+    return null
+  }
+}
+
+export function AuthProvider({
+  children,
+  initialSession,
+}: {
+  children: ReactNode
+  initialSession?: SessionPayload
+}) {
+  const [restoredSession] = useState(() => initialSession ?? readStoredSession())
+  const [status, setStatus] = useState<AuthStatus>(
+    restoredSession ? 'authenticated' : 'unauthenticated',
+  )
+  const [user, setUser] = useState<AuthUser | null>(restoredSession?.user ?? null)
+  const [expiresAt, setExpiresAt] = useState<string | null>(
+    restoredSession?.expiresAt ?? null,
+  )
 
   const setSession = useCallback((payload: SessionPayload) => {
     setCsrfToken(payload.csrfToken)
     setUser(payload.user)
     setExpiresAt(payload.expiresAt)
     setStatus('authenticated')
+    try {
+      sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(payload))
+    } catch {
+      // Authentication remains available for this page if storage is blocked.
+    }
   }, [])
 
   const clearSession = useCallback(() => {
@@ -31,46 +75,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null)
     setExpiresAt(null)
     setStatus('unauthenticated')
+    try {
+      sessionStorage.removeItem(SESSION_STORAGE_KEY)
+    } catch {
+      // The in-memory session is still cleared.
+    }
   }, [])
 
-  // Any request that reports the session is gone (401 unauthenticated, or a
-  // CSRF refresh that fails twice) drops the session so guards return to sign in.
+  // Any request that reports the session is gone drops it and returns to sign in.
   useEffect(() => {
     setSessionInvalidHandler(clearSession)
 
     return () => setSessionInvalidHandler(null)
   }, [clearSession])
 
-  // Resolve the session once on boot, per docs/frontend.md.
   useEffect(() => {
-    const controller = new AbortController()
-    let active = true
-
-    authApi
-      .session(controller.signal)
-      .then((payload) => {
-        if (active) {
-          setSession(payload)
-        }
-      })
-      .catch((error: unknown) => {
-        if (
-          error instanceof DOMException &&
-          error.name === 'AbortError'
-        ) {
-          return
-        }
-
-        if (active) {
-          clearSession()
-        }
-      })
-
-    return () => {
-      active = false
-      controller.abort()
+    if (restoredSession) {
+      setCsrfToken(restoredSession.csrfToken)
     }
-  }, [setSession, clearSession])
+  }, [restoredSession])
 
   const login = useCallback(
     async (input: LoginInput) => {
@@ -110,11 +133,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [clearSession],
   )
 
-  const refresh = useCallback(async () => {
-    const payload = await authApi.session()
-    setSession(payload)
-  }, [setSession])
-
   const value = useMemo<AuthContextValue>(
     () => ({
       status,
@@ -125,7 +143,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       logout,
       changePassword,
       deleteAccount,
-      refresh,
       setSession,
     }),
     [
@@ -137,7 +154,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       logout,
       changePassword,
       deleteAccount,
-      refresh,
       setSession,
     ],
   )

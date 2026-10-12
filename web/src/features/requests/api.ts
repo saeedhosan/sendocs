@@ -1,6 +1,4 @@
-import { authApi } from '../auth/api'
 import { apiRequest, ApiError, notifySessionInvalid } from '../../lib/api/client'
-import { setCsrfToken } from '../../lib/api/csrf'
 import type {
   CreatedRequest,
   CreateRequestInput,
@@ -13,29 +11,15 @@ export const DEFAULT_LIMIT = 20
 export const MAX_LIMIT = 100
 
 /**
- * Retry a state-changing call once after refreshing a stale CSRF token.
- *
- * A `403 csrf_failed` means the session is still valid but the in-memory token
- * is out of date, so the session endpoint is re-fetched and the call retried
- * once. A second failure signs out, per owner-dashboard.md.
+ * A stale CSRF token invalidates the in-memory session. The UI asks the owner
+ * to sign in again, which obtains a fresh token without a session read.
  */
 async function withCsrfRetry<T>(attempt: () => Promise<T>): Promise<T> {
   try {
     return await attempt()
   } catch (error) {
     if (error instanceof ApiError && error.code === 'csrf_failed') {
-      const session = await authApi.session()
-      setCsrfToken(session.csrfToken)
-
-      try {
-        return await attempt()
-      } catch (retryError) {
-        if (retryError instanceof ApiError && retryError.code === 'csrf_failed') {
-          notifySessionInvalid()
-        }
-
-        throw retryError
-      }
+      notifySessionInvalid()
     }
 
     throw error

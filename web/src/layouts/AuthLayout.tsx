@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react'
-import { Container } from '../components/ui'
-import { Header } from './components/Header'
-import { Footer } from './components/Footer'
 import { useAuth } from '../app/providers/useAuth'
+import { Container } from '../components/ui'
+import { Footer } from './components/Footer'
+import { Header } from './components/Header'
 
 const MAIN =
   '[view-transition-name:page-content] flex flex-1 flex-col items-center justify-center w-full px-4 py-6'
@@ -34,7 +34,7 @@ export function AuthLayout({ children, headerAction }: AuthLayoutProps) {
       )}
 
       <main className={MAIN}>
-        <Container className="flex flex-1 items-center justify-center w-full">
+        <Container className="flex flex-1 items-center justify-center w-full flex-col gap-6 mt-20">
           <div className={CARD}>{children}</div>
         </Container>
       </main>
