@@ -254,6 +254,22 @@ export function KeyIcon(props: IconProps) {
   )
 }
 
+export function UserIcon(props: IconProps) {
+  return (
+    <MaterialIcon {...props}>
+      <path d="M480-480q-140-35-230-162.5T160-523v-238l320-120 320 120v238q0 152-90 279.5T480-81Zm0-399Zm0-337-260 98v196q0 63 17.5 120.5T287-296q46-25 93.5-37.5T480-346q52 0 99.5 12.5T673-296q32-49 49.5-106.5T740-523v-196l-260-98Zm-78 541q-39 10-77 30 32 35 71 61.5t84 41.5q45-15 84-41.5t71-61.5q-38-20-77-30t-78-10q-39 0-78 10Z" />
+    </MaterialIcon>
+  )
+}
+
+export function SettingsIcon(props: IconProps) {
+  return (
+    <MaterialIcon {...props}>
+      <path d="M576-160l-42-42 111-111-111-111 42-42 111 111 111-111 42 42-111 111 111 111-42 42-111-111-111 111Zm83-374L517-676l42-42 100 99 179-179 42 43-221 221ZM80-290v-60h360v60H80Zm0-320v-60h360v60H80Z" />
+    </MaterialIcon>
+  )
+}
+
 export function TrendingUpIcon(props: IconProps) {
   return (
     <MaterialIcon {...props}>
