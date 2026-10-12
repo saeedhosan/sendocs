@@ -1,7 +1,7 @@
 import { Fragment } from 'react'
 import { NavLink } from 'react-router-dom'
 import { cn } from '../../lib/cn'
-import { MENU_ITEMS, type MenuItemData } from './menu-items'
+import { FOOTER_ITEMS, type MenuItemData } from './menu-items'
 
 const ITEM_HEADER = 'text-ink-body transition-colors duration-150 hover:text-ink'
 const ITEM_HEADER_ACTIVE = 'font-semibold text-primary'
@@ -47,7 +47,7 @@ export type MenuProps = {
 
 /** The one header/footer menu used on every surface. */
 export function Menu({
-  items = MENU_ITEMS,
+  items = FOOTER_ITEMS,
   variant = 'footer',
   as = 'nav',
   ariaLabel,

@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it } from 'vitest'
 import { Menu } from '../../../src/components/navigation/Menu'
-import { MENU_ITEMS } from '../../../src/components/navigation/menu-items'
+import { FOOTER_ITEMS } from '../../../src/components/navigation/menu-items'
 
 function renderMenu(props: Partial<Parameters<typeof Menu>[0]> = {}) {
   return render(
@@ -15,7 +15,7 @@ function renderMenu(props: Partial<Parameters<typeof Menu>[0]> = {}) {
 describe('Menu', () => {
   it('renders every item', () => {
     renderMenu()
-    for (const item of MENU_ITEMS) {
+    for (const item of FOOTER_ITEMS) {
       expect(screen.getByRole('link', { name: item.label })).toHaveAttribute(
         'href',
         item.to,
@@ -36,7 +36,7 @@ describe('Menu', () => {
   it('draws separators between entries when provided', () => {
     const { container } = renderMenu({ separator: '·', leadingSeparator: false })
     expect(container.querySelectorAll('span[aria-hidden="true"]')).toHaveLength(
-      MENU_ITEMS.length - 1,
+      FOOTER_ITEMS.length - 1,
     )
   })
 
@@ -44,7 +44,7 @@ describe('Menu', () => {
     const { container } = renderMenu({ separator: '·', leadingSeparator: true })
     expect(
       container.querySelectorAll('span[aria-hidden="true"]'),
-    ).toHaveLength(MENU_ITEMS.length)
+    ).toHaveLength(FOOTER_ITEMS.length)
   })
 
   it('skips the active highlight when disabled', () => {

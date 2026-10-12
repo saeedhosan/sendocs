@@ -32,7 +32,7 @@ afterEach(() => {
 })
 
 describe('Terms of Service page', () => {
-  it('renders the transcribed document and the legal navigation', () => {
+  it('renders the transcribed document and the shared header actions', () => {
     renderAt('/terms')
 
     expect(
@@ -45,10 +45,13 @@ describe('Terms of Service page', () => {
       }),
     ).toBeInTheDocument()
 
-    for (const link of screen.getAllByRole('link', { name: 'Sign in' })) {
-      expect(link).toHaveAttribute('href', '/login')
-    }
-    expect(screen.queryByRole('link', { name: 'Log in' })).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Log in' })).toHaveAttribute(
+      'href',
+      '/login',
+    )
+    expect(
+      screen.getByRole('link', { name: 'Get started' }),
+    ).toHaveAttribute('href', '/register')
   })
 })
 
