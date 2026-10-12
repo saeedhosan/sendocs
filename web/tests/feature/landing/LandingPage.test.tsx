@@ -93,7 +93,7 @@ describe('LandingPage', () => {
       stubSession(true)
     })
 
-    it('still renders the landing page with a dashboard action', async () => {
+    it('shows the profile menu button for authenticated owner', async () => {
       renderHome()
 
       expect(
@@ -102,9 +102,10 @@ describe('LandingPage', () => {
         }),
       ).toBeInTheDocument()
 
+      // Profile menu button should be present
       expect(
-        await screen.findByRole('link', { name: 'Dashboard' }),
-      ).toHaveAttribute('href', '/dashboard')
+        await screen.findByRole('button', { name: "Alex Morgan's account menu" }),
+      ).toBeInTheDocument()
       expect(
         screen.queryByRole('link', { name: 'Log in' }),
       ).not.toBeInTheDocument()

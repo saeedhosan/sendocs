@@ -98,6 +98,10 @@ test.describe("public landing", () => {
                 name: "Collect client documents without the back-and-forth.",
             }),
         ).toBeVisible();
-        await expect(page.getByRole("link", { name: "Dashboard" })).toBeVisible();
+
+        // Open the profile menu to access Dashboard link
+        await page.getByRole("button", { name: "Alex Morgan's account menu" }).click({ force: true });
+        await page.waitForTimeout(500); // wait for dropdown animation
+        await expect(page.getByRole("menuitem", { name: "Dashboard" })).toBeVisible({ timeout: 10000 });
     });
 });

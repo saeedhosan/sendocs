@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../app/providers/useAuth'
-import { Logo } from '../../components/navigation/Logo'
-import { Container } from '../../components/ui'
-import { Link } from '../../components/ui'
 import { ChevronDownIcon, LockResetIcon, LogoutIcon, TrashIcon, UserIcon } from '../../components/icons'
+import { Logo } from '../../components/navigation/Logo'
+import { Container, Link } from '../../components/ui'
 import { cn } from '../../lib/cn'
 
 const HEADER = 'top-0 z-50 w-full border-b border-border'
@@ -55,8 +54,7 @@ export type HeaderProps = {
 
 /**
  * Single header used across the entire app. For auth pages, pass mode="auth" and
- * optionally authAction; for authenticated users on owner surfaces show the
- * user menu with dashboard link, settings, and sign out.
+ * optionally authAction; for authenticated users show the user menu on all pages.
  */
 export function Header({ mode = 'auto', authAction }: HeaderProps) {
   const { pathname } = useLocation()
@@ -68,7 +66,6 @@ export function Header({ mode = 'auto', authAction }: HeaderProps) {
   const isAuthenticated = status === 'authenticated'
   const isAuth = mode === 'auth'
   const isLanding = pathname === '/' && !isAuth
-  const isOwnerArea = isAuthenticated && (pathname.startsWith('/dashboard') || pathname.startsWith('/requests') || pathname.startsWith('/settings'))
 
   useEffect(() => {
     if (!open) {
@@ -120,7 +117,7 @@ export function Header({ mode = 'auto', authAction }: HeaderProps) {
               {authAction.label}
             </Link>
           ) : null
-        ) : isOwnerArea ? (
+        ) : isAuthenticated ? (
           <div className="relative" ref={menuRef}>
             <button
               type="button"
@@ -191,12 +188,6 @@ export function Header({ mode = 'auto', authAction }: HeaderProps) {
                 </div>
               </div>
             ) : null}
-          </div>
-        ) : isAuthenticated ? (
-          <div className={ACTIONS}>
-            <Link to="/dashboard" variant="primary" size="sm">
-              Dashboard
-            </Link>
           </div>
         ) : (
           <div className={ACTIONS}>
