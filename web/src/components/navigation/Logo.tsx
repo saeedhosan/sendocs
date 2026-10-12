@@ -2,12 +2,6 @@ import { Link } from 'react-router-dom'
 import { app } from '../../config/app'
 import { cn } from '../../lib/cn'
 
-const LOGO = 'inline-flex items-center gap-2.5 text-ink'
-const MARK_IMAGE = 'size-7 object-contain'
-const MARK_IMAGE_OWNER = 'size-6 object-contain'
-const WORDMARK_BRAND = 'text-[0.9375rem] font-semibold tracking-[-0.025em]'
-const WORDMARK_OWNER = 'text-[0.9375rem] font-medium tracking-tight'
-
 export type LogoProps = {
   /** Where the mark links. Pass `null` for non-navigating surfaces. */
   to?: string | null
@@ -35,17 +29,19 @@ export function Logo({
       src={imageSrc}
       alt={imageAlt ?? ''}
       aria-hidden={!imageAlt}
-      className={isOwner ? MARK_IMAGE_OWNER : MARK_IMAGE}
+      className={isOwner ? 'size-6 object-contain' : 'size-7 object-contain'}
     />
   ) : (
     <img
       src="/favicon.svg"
       alt=""
       aria-hidden="true"
-      className={isOwner ? MARK_IMAGE_OWNER : MARK_IMAGE}
+      className={isOwner ? 'size-6 object-contain' : 'size-7 object-contain'}
     />
   )
-  const wordmarkClass = isOwner ? WORDMARK_OWNER : WORDMARK_BRAND
+  const wordmarkClass = isOwner
+    ? 'text-[0.9375rem] font-medium tracking-tight'
+    : 'text-[0.9375rem] font-semibold tracking-[-0.025em]'
   const gapClass = isOwner ? 'gap-2' : undefined
   const content = (
     <>
@@ -56,7 +52,7 @@ export function Logo({
 
   if (to === null) {
     return (
-      <span className={cn(LOGO, gapClass, className)}>
+      <span className={cn('inline-flex items-center gap-2.5 text-ink', gapClass, className)}>
         {content}
       </span>
     )
@@ -65,7 +61,7 @@ export function Logo({
   return (
     <Link
       to={to}
-      className={cn(LOGO, gapClass, className)}
+      className={cn('inline-flex items-center gap-2.5 text-ink', gapClass, className)}
       aria-label={app.name}
     >
       {content}

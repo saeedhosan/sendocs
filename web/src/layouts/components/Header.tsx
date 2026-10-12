@@ -6,31 +6,10 @@ import { Logo } from '../../components/navigation/Logo'
 import { Container, Link, ThemeToggle } from '../../components/ui'
 import { cn } from '../../lib/cn'
 
-const HEADER = 'top-0 z-50 w-full border-b border-border'
-const HEADER_HOME = 'fixed backdrop-blur-[12px] bg-surface/80'
-const INNER = 'flex items-center justify-between gap-4 min-h-16'
-const INNER_HOME = '!min-h-14'
 const ACTIONS = 'flex items-center gap-3'
-const TRIGGER_BASE = 'inline-flex items-center cursor-pointer transition-colors duration-150 hover:text-ink'
-const TRIGGER_DASHBOARD = cn(
-  TRIGGER_BASE,
-  'gap-2 min-h-8 px-3 py-1.5 rounded-md bg-transparent text-[0.8125rem] font-medium text-ink-secondary hover:bg-surface-subtle',
-)
-const AVATAR = 'inline-flex items-center justify-center size-8 rounded-full bg-surface-sunken text-ink-secondary font-medium text-sm'
-const MENU_DASHBOARD = cn(
-  'absolute right-0 top-full z-50 mt-1.5 min-w-[200px]',
-  'border border-border-subtle rounded-lg bg-surface shadow-lg py-1',
-  'shadow-md dark:shadow-gray-900/50'
-)
-const USER_INFO = 'px-3 py-2 border-b border-border-subtle'
-const USER_NAME = 'text-sm font-medium text-ink truncate'
-const USER_EMAIL = 'text-xs text-ink-muted truncate'
 const MENU_GROUP = 'py-1'
-const ITEM_BASE = 'flex items-center gap-2 w-full px-3 py-2 text-sm text-left cursor-pointer transition-colors duration-150'
-const ITEM = cn(ITEM_BASE, 'text-ink-secondary hover:bg-surface-muted hover:text-ink')
-const ITEM_DESTRUCTIVE = cn(ITEM_BASE, 'text-danger-text hover:bg-danger-surface hover:text-danger-text')
+const ITEM = 'flex items-center gap-2 w-full px-3 py-2 text-sm text-left cursor-pointer transition-colors duration-150 text-ink-secondary hover:bg-surface-muted hover:text-ink'
 const ICON = 'size-4 shrink-0'
-const DIVIDER = 'h-px bg-border-subtle my-1'
 
 function initials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean)
@@ -103,11 +82,11 @@ export function Header({ mode = 'auto', authAction }: HeaderProps) {
   return (
     <header
       className={cn(
-        HEADER,
-        isLanding || isAuthenticated ? HEADER_HOME : 'sticky bg-surface',
+        'top-0 z-50 w-full border-b border-border',
+        isLanding || isAuthenticated ? 'fixed backdrop-blur-[12px] bg-surface/80' : 'sticky bg-surface',
       )}
     >
-      <Container className={cn(INNER, (isLanding || isAuthenticated) && INNER_HOME)}>
+      <Container className={cn('flex items-center justify-between gap-4 min-h-16', (isLanding || isAuthenticated) && '!min-h-14')}>
         <Logo variant="brand" />
 
         {isAuth ? (
@@ -122,26 +101,26 @@ export function Header({ mode = 'auto', authAction }: HeaderProps) {
             <div className="relative" ref={menuRef}>
               <button
                 type="button"
-                className={TRIGGER_DASHBOARD}
+                className="inline-flex items-center cursor-pointer transition-colors duration-150 hover:text-ink gap-2 min-h-8 px-3 py-1.5 rounded-md bg-transparent text-[0.8125rem] font-medium text-ink-secondary hover:bg-surface-subtle"
                 aria-haspopup="menu"
                 aria-expanded={open}
                 aria-label={`${displayName}'s account menu`}
                 onClick={() => setOpen((value) => !value)}
               >
-                <span className={AVATAR} aria-hidden="true">
+                <span className="inline-flex items-center justify-center size-8 rounded-full bg-surface-sunken text-ink-secondary font-medium text-sm" aria-hidden="true">
                   {initials(displayName)}
                 </span>
                 <ChevronDownIcon size={14} className="text-ink-muted" />
               </button>
               {open ? (
                 <div
-                  className={MENU_DASHBOARD}
+                  className="absolute right-0 top-full z-50 mt-1.5 min-w-[200px] border border-border-subtle rounded-lg bg-surface shadow-lg py-1 shadow-md dark:shadow-gray-900/50"
                   role="menu"
                   aria-orientation="vertical"
                 >
-                  <div className={USER_INFO}>
-                    <p className={USER_NAME}>{displayName}</p>
-                    <p className={USER_EMAIL}>{user?.email}</p>
+                  <div className="px-3 py-2 border-b border-border-subtle">
+                    <p className="text-sm font-medium text-ink truncate">{displayName}</p>
+                    <p className="text-xs text-ink-muted truncate">{user?.email}</p>
                   </div>
 
                   <div className={MENU_GROUP} role="none">
@@ -174,13 +153,13 @@ export function Header({ mode = 'auto', authAction }: HeaderProps) {
                     </RouterLink>
                   </div>
 
-                  <div className={DIVIDER} role="separator" />
+                  <div className="h-px bg-border-subtle my-1" role="separator" />
 
                   <div className={MENU_GROUP} role="none">
                     <button
                       type="button"
                       role="menuitem"
-                      className={ITEM_DESTRUCTIVE}
+                      className="flex items-center gap-2 w-full px-3 py-2 text-sm text-left cursor-pointer transition-colors duration-150 text-danger-text hover:bg-danger-surface hover:text-danger-text"
                       onClick={handleSignOut}
                     >
                       <LogoutIcon size={16} className={ICON} aria-hidden="true" />

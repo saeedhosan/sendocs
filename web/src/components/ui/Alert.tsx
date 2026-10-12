@@ -4,9 +4,6 @@ import { AlertIcon, CheckCircleIcon, InfoIcon } from '../icons'
 
 export type AlertVariant = 'error' | 'success' | 'info' | 'warning'
 
-const ALERT =
-  'flex items-start gap-2 p-3 border rounded-md text-[0.8125rem] leading-5'
-
 const VARIANTS: Record<AlertVariant, string> = {
   error: 'bg-danger-surface border-danger-border text-danger-text',
   success: 'bg-success-surface border-success-border text-success-text',
@@ -37,7 +34,7 @@ export function Alert({
   return (
     <div
       role={variant === 'error' ? 'alert' : 'status'}
-      className={cn(ALERT, VARIANTS[variant], className)}
+      className={cn('flex items-start gap-2 p-3 border rounded-md text-[0.8125rem] leading-5', VARIANTS[variant], className)}
     >
       <span className="shrink-0 mt-px" aria-hidden="true">
         {icons[variant]}

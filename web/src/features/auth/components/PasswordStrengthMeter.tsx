@@ -3,12 +3,6 @@ import { evaluatePasswordStrength } from '../../../lib/password'
 
 const barCount = 4
 
-const BAR =
-  'flex-1 h-1.5 rounded-full transition-colors duration-300'
-const WEAK = 'bg-[#ef4444]'
-const STANDARD = 'bg-[#f59e0b]'
-const STRONG = 'bg-[#10b981]'
-
 export function PasswordStrengthMeter({
   value,
   variant = 'full',
@@ -18,7 +12,7 @@ export function PasswordStrengthMeter({
 }) {
   const { score, label } = evaluatePasswordStrength(value)
 
-  const tone = score <= 1 ? WEAK : score === 2 ? STANDARD : STRONG
+  const tone = score <= 1 ? 'bg-[#ef4444]' : score === 2 ? 'bg-[#f59e0b]' : 'bg-[#10b981]'
 
   if (variant === 'inline') {
     return (
@@ -39,7 +33,7 @@ export function PasswordStrengthMeter({
         {Array.from({ length: barCount }, (_, index) => (
           <span
             key={index}
-            className={cn(BAR, index < score ? tone : 'bg-border')}
+            className={cn('flex-1 h-1.5 rounded-full transition-colors duration-300', index < score ? tone : 'bg-border')}
           />
         ))}
       </div>

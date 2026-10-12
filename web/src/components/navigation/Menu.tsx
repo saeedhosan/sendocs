@@ -3,11 +3,6 @@ import { NavLink } from 'react-router-dom'
 import { cn } from '../../lib/cn'
 import { FOOTER_ITEMS, type MenuItemData } from './menu-items'
 
-const ITEM_HEADER = 'text-ink-body transition-colors duration-150 hover:text-ink'
-const ITEM_HEADER_ACTIVE = 'font-semibold text-primary'
-const ITEM_FOOTER = 'transition-colors duration-150'
-const ITEM_FOOTER_ACTIVE = 'font-medium text-ink-secondary'
-
 export type MenuItemProps = {
   item: MenuItemData
   className?: string
@@ -61,8 +56,12 @@ export function Menu({
 }: MenuProps) {
   const Tag = as
   const isHeader = variant === 'header'
-  const baseItem = isHeader ? ITEM_HEADER : ITEM_FOOTER
-  const baseActive = isHeader ? ITEM_HEADER_ACTIVE : ITEM_FOOTER_ACTIVE
+  const baseItem = isHeader
+    ? 'text-ink-body transition-colors duration-150 hover:text-ink'
+    : 'transition-colors duration-150'
+  const baseActive = isHeader
+    ? 'font-semibold text-primary'
+    : 'font-medium text-ink-secondary'
 
   return (
     <Tag
