@@ -5,7 +5,7 @@ import { AuthProvider } from '../../../src/app/providers/AuthProvider'
 import { app } from '../../../src/config/app'
 import { PrivacyPolicyPage } from '../../../src/features/landing/pages/PrivacyPolicyPage'
 import { TermsOfServicePage } from '../../../src/features/landing/pages/TermsOfServicePage'
-import { PublicLayout } from '../../../src/layouts/PublicLayout'
+import { GuestLayout } from '../../../src/layouts/GuestLayout'
 import { stubSession } from '../../helpers/auth'
 
 function renderAt(path: string) {
@@ -13,7 +13,7 @@ function renderAt(path: string) {
     <MemoryRouter initialEntries={[path]}>
       <AuthProvider>
         <Routes>
-          <Route element={<PublicLayout />}>
+          <Route element={<GuestLayout />}>
             <Route path="terms" element={<TermsOfServicePage />} />
             <Route path="privacy" element={<PrivacyPolicyPage />} />
           </Route>

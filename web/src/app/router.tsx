@@ -1,8 +1,8 @@
 import type { ComponentType } from 'react'
 import { createBrowserRouter } from 'react-router-dom'
 import { transitions } from '../config/transition'
-import { OwnerLayout } from '../layouts/OwnerLayout'
-import { PublicLayout } from '../layouts/PublicLayout'
+import { UserLayout } from '../layouts/UserLayout'
+import { GuestLayout } from '../layouts/GuestLayout'
 import { GuestOnly } from './guards/GuestOnly'
 import { RequireAuth } from './guards/RequireAuth'
 import { NotFoundPage } from './NotFoundPage'
@@ -27,7 +27,7 @@ export const router = createBrowserRouter([
     element: <RootLayout />,
     children: [
       {
-        element: <PublicLayout />,
+        element: <GuestLayout />,
         children: [
           {
             index: true,
@@ -124,7 +124,7 @@ export const router = createBrowserRouter([
             ),
           },
           {
-            element: <OwnerLayout />,
+            element: <UserLayout />,
             children: [
               {
                 path: 'dashboard',

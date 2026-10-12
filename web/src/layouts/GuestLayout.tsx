@@ -8,7 +8,7 @@ import { Header } from './components/Header'
  * The shell for every public page: marketing header, content, and footer.
  * It only lays out; pages own their content.
  */
-export function PublicLayout() {
+export function GuestLayout() {
   const { pathname } = useLocation()
   const isDocumentPage = pathname === '/terms' || pathname === '/privacy' || pathname === '/contact'
   const isLanding = pathname === '/'

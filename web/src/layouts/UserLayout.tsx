@@ -9,7 +9,7 @@ import { Header } from './components/Header'
  * request, and request detail pages share identical outer spacing. The palette
  * comes from the single theme applied by the auth guard.
  */
-export function OwnerLayout() {
+export function UserLayout() {
   return (
     <div className="flex flex-col min-h-screen bg-canvas">
       <Header />
