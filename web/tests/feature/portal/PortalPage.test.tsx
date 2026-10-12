@@ -2,6 +2,7 @@ import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { AuthProvider } from '../../../src/app/providers/AuthProvider'
 import { ApiError } from '../../../src/lib/api/client'
 import { portalApi } from '../../../src/features/portal/api'
 import { PortalPage } from '../../../src/features/portal/pages/PortalPage'
@@ -58,9 +59,11 @@ function uploadedView(): PortalView {
 function renderPortal() {
   return render(
     <MemoryRouter initialEntries={[`/portal/${token}`]}>
-      <Routes>
-        <Route path="/portal/:token" element={<PortalPage />} />
-      </Routes>
+      <AuthProvider>
+        <Routes>
+          <Route path="/portal/:token" element={<PortalPage />} />
+        </Routes>
+      </AuthProvider>
     </MemoryRouter>,
   )
 }
