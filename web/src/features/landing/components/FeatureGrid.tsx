@@ -54,7 +54,7 @@ export function FeatureGrid() {
   return (
     <section className="flex flex-col gap-8">
       <div className="flex flex-col gap-2 max-w-[36rem]">
-        <h2 className="text-2xl font-semibold tracking-tight text-ink sm:text-[1.625rem]">
+        <h2 className="text-[24px] leading-[1.5] font-semibold tracking-tight text-ink sm:text-[1.625rem]">
           Everything you need to collect documents.
         </h2>
         <p className="text-sm leading-[1.625] text-marketing-text-secondary">
@@ -74,7 +74,7 @@ export function FeatureGrid() {
               <span className="inline-flex items-center justify-center size-8 mb-1 border border-border rounded-[8px] bg-surface-subtle text-primary">
                 <FeatureIcon size={18} />
               </span>
-              <h3 className="text-[0.9375rem] font-semibold text-ink">
+              <h3 className="text-[15px] leading-[1.5] font-semibold text-ink">
                 {feature.title}
               </h3>
               <p className="text-[0.8125rem] leading-[1.625] text-marketing-text-secondary">
@@ -90,8 +90,8 @@ export function FeatureGrid() {
           <span className="inline-flex shrink-0 items-center justify-center size-9 mt-0.5 border border-border rounded-[8px] bg-surface text-primary">
             <LockIcon size={20} />
           </span>
-          <div>
-            <h3 className="text-[0.9375rem] font-semibold text-ink">
+          <div className="flex flex-col gap-1">
+            <h3 className="text-[15px] leading-[1.5] font-semibold text-ink">
               Private file storage
             </h3>
             <p className="text-[0.8125rem] leading-[1.625] text-marketing-text-secondary">
@@ -99,7 +99,7 @@ export function FeatureGrid() {
             </p>
           </div>
         </div>
-        <p className="inline-flex items-center gap-1.5 font-mono text-xs text-ink-muted">
+        <p className="inline-flex items-center gap-1.5 font-mono text-[12px] leading-[1.5] text-ink-muted">
           <ShieldCheckIcon size={15} className="text-marketing-success" />
           <span>Zero public buckets</span>
         </p>

@@ -31,7 +31,7 @@ export function RequestList({ requests, footer, empty }: RequestListProps) {
         </div>
       )}
       {footer ? (
-        <div className="px-5 py-3 border-t border-border-subtle bg-surface-subtle">
+        <div className="px-4 sm:px-5 py-3 border-t border-border-subtle bg-surface-subtle flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-ink-muted">
           {footer}
         </div>
       ) : null}

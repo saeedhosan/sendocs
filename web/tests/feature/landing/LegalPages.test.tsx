@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthProvider } from '../../../src/app/providers/AuthProvider'
+import { app } from '../../../src/config/app'
 import { PrivacyPolicyPage } from '../../../src/features/landing/pages/PrivacyPolicyPage'
 import { TermsOfServicePage } from '../../../src/features/landing/pages/TermsOfServicePage'
 import { PublicLayout } from '../../../src/layouts/PublicLayout'
@@ -67,7 +68,7 @@ describe('Privacy Policy page', () => {
     expect(screen.getByText(/Account Identity Data:/)).toBeInTheDocument()
 
     expect(
-      screen.getByRole('link', { name: 'privacy@sendocs.io' }),
-    ).toHaveAttribute('href', 'mailto:privacy@sendocs.io')
+      screen.getByRole('link', { name: app.emails.privacy }),
+    ).toHaveAttribute('href', `mailto:${app.emails.privacy}`)
   })
 })

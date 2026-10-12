@@ -9,7 +9,7 @@ import { Container } from '../../../components/ui'
 export function PortalHeader() {
   return (
     <header className="border-b border-border bg-surface">
-      <Container className="px-4 sm:px-6 min-[576px]:max-w-2xl min-[768px]:max-w-2xl min-[992px]:max-w-2xl min-[1200px]:max-w-2xl min-[1400px]:max-w-2xl flex items-center justify-between gap-4 py-4">
+      <Container className="!max-w-2xl px-4 sm:px-6 flex items-center justify-between gap-4 py-4">
         <span className="inline-flex items-center gap-1.5 text-base font-semibold tracking-tight text-ink">
           <svg
             className="h-4 w-4 text-primary"

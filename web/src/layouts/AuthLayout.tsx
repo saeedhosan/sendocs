@@ -1,13 +1,12 @@
 import { Fragment, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { Logo } from '../components/navigation/Logo'
 import { Container } from '../components/ui'
+import { PublicHeader } from './components/PublicHeader'
 import { cn } from '../lib/cn'
 import { app } from '../config/app'
 
 const AUTH_CONTAINER =
   'px-6 min-[576px]:max-w-5xl min-[768px]:max-w-5xl min-[992px]:max-w-5xl min-[1200px]:max-w-5xl min-[1400px]:max-w-5xl'
-const HEADER_INNER = `${AUTH_CONTAINER} flex items-center justify-between gap-4 min-h-16`
 const MAIN =
   '[view-transition-name:page-content] flex flex-1 flex-col items-center justify-center w-full px-4'
 const CARD =
@@ -40,11 +39,11 @@ export type AuthLayoutProps = {
 const legalLinks = [
   { label: 'Terms', to: '/terms' },
   { label: 'Privacy', to: '/privacy' },
-  { label: 'Security', to: '/contact' },
+  { label: 'Contact', to: '/contact' },
 ]
 
 const resetLinks = [
-  { label: 'Security', to: '/contact' },
+  { label: 'Contact', to: '/contact' },
   { label: 'Privacy', to: '/privacy' },
   { label: 'Terms', to: '/terms' },
 ]
@@ -75,19 +74,7 @@ export function AuthLayout({
 
   return (
     <div className="flex flex-col min-h-screen bg-canvas-muted">
-      <header className="w-full border-b border-border bg-surface">
-        <Container className={HEADER_INNER}>
-          <Logo variant={logoVariant} />
-          {headerAction ? (
-            <Link
-              to={headerAction.to}
-              className="text-sm font-medium text-ink-muted transition-colors duration-150 hover:text-ink"
-            >
-              {headerAction.label}
-            </Link>
-          ) : null}
-        </Container>
-      </header>
+      <PublicHeader mode="auth" authAction={headerAction} authLogoVariant={logoVariant} />
 
       <main className={cn(MAIN, layoutVariant === 'default' && 'py-6')}>
         <div

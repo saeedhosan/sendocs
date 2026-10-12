@@ -7,8 +7,8 @@ import { cn } from '../../lib/cn'
 const HEADER = 'top-0 z-50 w-full border-b border-border'
 const HEADER_HOME = 'fixed bg-white/90 backdrop-blur-[12px]'
 const INNER = 'flex items-center justify-between gap-4 min-h-16'
-const INNER_HOME = 'min-h-14'
-const CONTAINER_HOME = 'px-4 sm:px-6 min-[576px]:max-w-6xl min-[768px]:max-w-6xl min-[992px]:max-w-6xl min-[1200px]:max-w-6xl min-[1400px]:max-w-6xl'
+const INNER_HOME = '!min-h-14'
+const CONTAINER_HOME = '!max-w-6xl px-4 sm:px-6'
 const CONTAINER_DOCUMENT = 'px-6 min-[576px]:max-w-5xl min-[768px]:max-w-5xl min-[992px]:max-w-5xl min-[1200px]:max-w-5xl min-[1400px]:max-w-5xl'
 const ACTIONS = 'flex items-center gap-3'
 const LOGIN_LINK =
@@ -23,8 +23,16 @@ const NAV_SIGN_IN = 'pl-2'
 const documentLinks = [
   { label: 'Terms', to: '/terms' },
   { label: 'Privacy', to: '/privacy' },
-  { label: 'Security', to: '/contact' },
+  { label: 'Contact', to: '/contact' },
 ]
+
+export type PublicHeaderMode = 'auto' | 'auth'
+
+export type PublicHeaderProps = {
+  mode?: PublicHeaderMode
+  authAction?: { label: string; to: string }
+  authLogoVariant?: 'auth' | 'auth-login' | 'auth-register'
+}
 
 /**
  * The minimal public header shared by the landing and legal pages.
@@ -34,30 +42,46 @@ const documentLinks = [
  * visitors see a dashboard link instead of the sign-up actions, since the
  * public pages stay reachable once authenticated.
  */
-export function PublicHeader() {
+export function PublicHeader({
+  mode = 'auto',
+  authAction,
+  authLogoVariant = 'auth',
+}: PublicHeaderProps) {
   const { pathname } = useLocation()
   const { status } = useAuth()
   const isAuthenticated = status === 'authenticated'
-  const isLanding = pathname === '/'
+  const isAuth = mode === 'auth'
+  const isLanding = pathname === '/' && !isAuth
   const isDocument = documentLinks.some((link) => link.to === pathname)
 
   return (
     <header
       className={cn(
         HEADER,
-        !isLanding && 'sticky',
+        !isLanding && !isAuth && 'sticky',
         isLanding ? HEADER_HOME : 'bg-surface',
       )}
     >
       <Container
         className={cn(
           INNER,
-          isLanding ? cn(INNER_HOME, CONTAINER_HOME) : CONTAINER_DOCUMENT,
+          isLanding
+            ? cn(INNER_HOME, CONTAINER_HOME)
+            : CONTAINER_DOCUMENT,
         )}
       >
-        <Logo variant={isLanding ? 'brand' : 'auth'} />
+        <Logo variant={isLanding ? 'brand' : authLogoVariant} />
 
-        {isDocument ? (
+        {isAuth ? (
+          authAction ? (
+            <Link
+              to={authAction.to}
+              className="text-sm font-medium text-ink-muted transition-colors duration-150 hover:text-ink"
+            >
+              {authAction.label}
+            </Link>
+          ) : null
+        ) : isDocument ? (
           <nav className={NAV} aria-label="Legal">
             {documentLinks.map((link) => (
               <NavLink

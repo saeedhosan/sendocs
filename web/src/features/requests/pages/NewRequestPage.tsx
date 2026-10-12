@@ -21,8 +21,8 @@ export function NewRequestPage() {
   }
 
   return (
-    <Container className="px-4 sm:px-6 py-6 sm:py-10 min-[576px]:max-w-2xl min-[768px]:max-w-2xl min-[992px]:max-w-2xl min-[1200px]:max-w-2xl min-[1400px]:max-w-2xl flex flex-col gap-6 sm:gap-8">
-      <h1 className="text-xl leading-7 font-semibold tracking-tight text-ink sm:text-[1.375rem] sm:leading-7">
+    <Container className="!max-w-2xl px-4 sm:px-6 py-6 sm:py-10 flex flex-col gap-6 sm:gap-8">
+      <h1 className="text-xl leading-[1.5] font-semibold tracking-tight text-ink sm:text-[1.375rem]">
         New document request
       </h1>
       <NewRequestForm onSubmit={handleCreate} />

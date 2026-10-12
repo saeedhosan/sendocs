@@ -4,18 +4,18 @@ import type { LegalDocumentContent } from "./legal";
 export const termsOfService: LegalDocumentContent = {
     title: "Terms of Service",
     updated: "January 15, 2026",
-    intro: "This Master Regulatory Framework outlines the mandatory obligations, mutual covenants, cryptographic protocols, and ingestion rules governing the usage of Sendocs confidential document transmission infrastructure.",
+    intro: `This Master Regulatory Framework outlines the mandatory obligations, mutual covenants, cryptographic protocols, and ingestion rules governing the usage of ${app.name} confidential document transmission infrastructure.`,
     sections: [
         {
             heading: "1. Scope of Service & Magic Links",
             blocks: [
                 {
                     type: "paragraph",
-                    text: 'Sendocs Technologies Inc. ("Sendocs", "we", or "the Platform") provides an asynchronous, zero-knowledge verifiable transmission system engineered for institutional professionals including registered public accountants, legal counsel, trust executives, and corporate treasuries.',
+                    text: `${app.name} Technologies Inc. ("${app.name}", "we", or "the Platform") provides an asynchronous, zero-knowledge verifiable transmission system engineered for institutional professionals including registered public accountants, legal counsel, trust executives, and corporate treasuries.`,
                 },
                 {
                     type: "paragraph",
-                    text: "Access to transactional ingestion containers is provisioned primarily through time-gated, cryptographic Magic Links. A Magic Link acts as a single-use bearer token incorporating short-lived cryptographic assertions signed by our global authorization authority. By deploying, delivering, or accessing a Sendocs Magic Link, you confirm acceptance of this automated agreement.",
+                    text: `Access to transactional ingestion containers is provisioned primarily through time-gated, cryptographic Magic Links. A Magic Link acts as a single-use bearer token incorporating short-lived cryptographic assertions signed by our global authorization authority. By deploying, delivering, or accessing a ${app.name} Magic Link, you confirm acceptance of this automated agreement.`,
                 },
             ],
         },
@@ -37,7 +37,7 @@ export const termsOfService: LegalDocumentContent = {
             blocks: [
                 {
                     type: "paragraph",
-                    text: "To guarantee instant micro-sandboxing, zero-latency parsing, and deterministic heuristic malware analysis at the WAN edge, Sendocs executes immutable computational boundaries on every incoming payload. Raw file binaries exceeding exactly 25.0 megabytes (26,214,400 bytes) are rejected at the edge gateway via HTTP 413 (Payload Too Large). Multipart chunking cannot bypass individual file evaluation boundaries.",
+                    text: `To guarantee instant micro-sandboxing, zero-latency parsing, and deterministic heuristic malware analysis at the WAN edge, ${app.name} executes immutable computational boundaries on every incoming payload. Raw file binaries exceeding exactly 25.0 megabytes (26,214,400 bytes) are rejected at the edge gateway via HTTP 413 (Payload Too Large). Multipart chunking cannot bypass individual file evaluation boundaries.`,
                 },
                 {
                     type: "paragraph",
@@ -63,11 +63,11 @@ export const termsOfService: LegalDocumentContent = {
             blocks: [
                 {
                     type: "paragraph",
-                    text: "Sendocs acts strictly as a zero-knowledge confidential pipe. Payload encryption relies upon client-side derived envelope keys combined with asymmetric elliptic-curve key pairs (Ed25519 for signing, X25519 for key exchange, and AES-GCM-256 for symmetric chunk encryption).",
+                    text: `${app.name} acts strictly as a zero-knowledge confidential pipe. Payload encryption relies upon client-side derived envelope keys combined with asymmetric elliptic-curve key pairs (Ed25519 for signing, X25519 for key exchange, and AES-GCM-256 for symmetric chunk encryption).`,
                 },
                 {
                     type: "paragraph",
-                    text: "Because Sendocs does not hold escrow over Tenant private keys, Sendocs employees cannot decrypt, inspect, reconstitute, or provide cleartext records pursuant to subpoena or judicial discovery requests where keys remain exclusively in Tenant control.",
+                    text: `Because ${app.name} does not hold escrow over Tenant private keys, ${app.name} employees cannot decrypt, inspect, reconstitute, or provide cleartext records pursuant to subpoena or judicial discovery requests where keys remain exclusively in Tenant control.`,
                 },
             ],
         },
@@ -76,7 +76,7 @@ export const termsOfService: LegalDocumentContent = {
             blocks: [
                 {
                     type: "paragraph",
-                    text: "Sendocs provides instantaneous, owner-controlled revocation authority. A tenant administrator may issue an unrecoverable revocation request at any microsecond. Upon triggering, the specific AES master decryption key is purged from volatile HSM memory and overwritten using cryptographic pseudorandom noise. All associated URLs and pending magic links across global edge locations drop transmission routes within 600 milliseconds.",
+                    text: `${app.name} provides instantaneous, owner-controlled revocation authority. A tenant administrator may issue an unrecoverable revocation request at any microsecond. Upon triggering, the specific AES master decryption key is purged from volatile HSM memory and overwritten using cryptographic pseudorandom noise. All associated URLs and pending magic links across global edge locations drop transmission routes within 600 milliseconds.`,
                 },
             ],
         },
@@ -85,11 +85,11 @@ export const termsOfService: LegalDocumentContent = {
             blocks: [
                 {
                     type: "paragraph",
-                    text: "To the fullest extent permitted by applicable jurisprudential statutes, Sendocs Technologies Inc. expressly disclaims all warranties of any kind, whether express or implied, including but not limited to the implied warranties of merchantability, fitness for a particular transactional purpose, and non-infringement.",
+                    text: `To the fullest extent permitted by applicable jurisprudential statutes, ${app.name} Technologies Inc. expressly disclaims all warranties of any kind, whether express or implied, including but not limited to the implied warranties of merchantability, fitness for a particular transactional purpose, and non-infringement.`,
                 },
                 {
                     type: "paragraph",
-                    text: "Under no legal theory shall Sendocs aggregate liability exceed the total fees paid by the tenant in the twelve (12) calendar months preceding the occurrence of the event giving rise to liability. Sendocs disclaims direct liability for loss of tenant-managed private recovery passkeys.",
+                    text: `Under no legal theory shall ${app.name} aggregate liability exceed the total fees paid by the tenant in the twelve (12) calendar months preceding the occurrence of the event giving rise to liability. ${app.name} disclaims direct liability for loss of tenant-managed private recovery passkeys.`,
                 },
             ],
         },
@@ -98,7 +98,7 @@ export const termsOfService: LegalDocumentContent = {
             blocks: [
                 {
                     type: "paragraph",
-                    text: `All official notices under this agreement must be transmitted in digital, cryptographically signed format to ${app.emails.privacy} or via certified mail addressed to Sendocs Technologies Inc., Attention: General Counsel & Data Protection Officer, 548 Market Street, Suite 89201, San Francisco, CA 94104-5401.`,
+                    text: `All official notices under this agreement must be transmitted in digital, cryptographically signed format to ${app.emails.privacy} or via certified mail addressed to ${app.name} Technologies Inc., Attention: General Counsel & Data Protection Officer, 548 Market Street, Suite 89201, San Francisco, CA 94104-5401.`,
                 },
                 {
                     type: "paragraph",

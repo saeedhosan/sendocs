@@ -9,12 +9,24 @@ import { PublicHeader } from './components/PublicHeader'
  */
 export function PublicLayout() {
   const { pathname } = useLocation()
-  const isLegalDocument = pathname === '/terms' || pathname === '/privacy'
+  const isDocumentPage = pathname === '/terms' || pathname === '/privacy' || pathname === '/contact'
+  const isLanding = pathname === '/'
 
   return (
-    <div className="flex flex-col min-h-screen bg-canvas">
+    <div
+      className={cn(
+        'flex flex-col min-h-screen',
+        isLanding ? 'bg-surface font-sans text-base leading-6 text-ink' : 'bg-canvas',
+      )}
+    >
       <PublicHeader />
-      <main className={cn("[view-transition-name:page-content] flex-1 w-full", isLegalDocument && "bg-surface")}>
+      <main
+        className={cn(
+          '[view-transition-name:page-content] flex-1 w-full',
+          isLanding && 'max-w-6xl mx-auto px-4 sm:px-6 pt-14 bg-surface',
+          isDocumentPage && 'bg-surface',
+        )}
+      >
         <Outlet />
       </main>
       <PublicFooter />

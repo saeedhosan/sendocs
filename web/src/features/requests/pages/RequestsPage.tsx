@@ -132,12 +132,14 @@ export function RequestsPage() {
     : `${pageNumber} / ${pageNumber}`
 
   return (
-    <Container className="px-4 sm:px-6 py-6 sm:py-8 min-[576px]:max-w-5xl min-[768px]:max-w-5xl min-[992px]:max-w-5xl min-[1200px]:max-w-5xl min-[1400px]:max-w-5xl flex flex-col gap-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+    <Container className="!max-w-5xl px-4 sm:px-6 py-6 sm:py-8 flex flex-col gap-0">
+      <div className="flex flex-col gap-3 pb-6 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-xl leading-7 font-semibold tracking-tight text-ink sm:text-2xl sm:leading-8">
-            Document Requests
-          </h1>
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-xl leading-7 font-semibold tracking-tight text-ink sm:text-2xl sm:leading-8">
+              Document Requests
+            </h1>
+          </div>
           <p className="mt-1 text-sm text-ink-secondary">
             Collect and track client documentation
           </p>
@@ -220,6 +222,7 @@ export function RequestsPage() {
                   <Button
                     variant="secondary"
                     size="sm"
+                    className="sm:h-auto sm:min-h-0 sm:py-1.5"
                     iconLeft={<ChevronLeftIcon size={16} />}
                     onClick={goPrevious}
                     disabled={!canGoPrevious}
@@ -232,6 +235,7 @@ export function RequestsPage() {
                   <Button
                     variant="secondary"
                     size="sm"
+                    className="sm:h-auto sm:min-h-0 sm:py-1.5"
                     iconRight={<ChevronRightIcon size={16} />}
                     onClick={goNext}
                     disabled={!pageCursor}
