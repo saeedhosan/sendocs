@@ -36,7 +36,7 @@ export function LinkReveal({ open, link, onClose }: LinkRevealProps) {
             title="Your request is ready."
             description="Copy this link and send it to your client. The raw link is shown once only."
             variant="centered"
-            className="border-border-subtle"
+            className="border-border max-w-md shadow-2xl"
             initialFocusRef={inputRef}
             footer={
                 <Button
@@ -67,7 +67,7 @@ export function LinkReveal({ open, link, onClose }: LinkRevealProps) {
                     {copied ? "Copied" : "Copy link"}
                 </Button>
             </div>
-            <p className="mt-2 text-xs text-ink-secondary">This link is shown only once.</p>
+            <p className="mt-2 text-xs text-info-text">This link is shown only once.</p>
             {copyFailed ? (
                 <p className="mt-2 text-xs text-ink-secondary" role="alert">
                     Copy failed — select the link above and copy it manually.
