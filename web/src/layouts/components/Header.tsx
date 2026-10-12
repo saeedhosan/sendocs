@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../app/providers/useAuth'
 import { Logo } from '../../components/navigation/Logo'
 import { Container } from '../../components/ui'
+import { Link } from '../../components/ui'
 import { ChevronDownIcon, LockResetIcon, LogoutIcon, TrashIcon } from '../../components/icons'
 import { cn } from '../../lib/cn'
 
@@ -11,17 +12,10 @@ const HEADER_HOME = 'fixed bg-white/90 backdrop-blur-[12px]'
 const INNER = 'flex items-center justify-between gap-4 min-h-16'
 const INNER_HOME = '!min-h-14'
 const ACTIONS = 'flex items-center gap-3'
-const LOGIN_LINK =
-  'px-3 py-1.5 text-[0.8125rem] font-medium text-marketing-text-secondary transition-colors duration-150 hover:text-ink'
-const GET_STARTED =
-  'inline-flex items-center justify-center min-h-[2.125rem] px-3.5 rounded-md bg-primary text-on-primary text-[0.8125rem] font-medium shadow-sm transition-colors duration-150 hover:bg-primary-hover'
-const AUTH_ACTION =
-  'text-sm font-medium text-ink-muted transition-colors duration-150 hover:text-ink'
-
 const TRIGGER_BASE = 'inline-flex items-center cursor-pointer transition-colors duration-150 hover:text-ink'
 const TRIGGER_DASHBOARD = cn(
   TRIGGER_BASE,
-  'gap-1.5 min-h-11 px-3 py-2 rounded-md bg-transparent text-[0.8125rem] font-medium text-ink-secondary hover:bg-surface-subtle',
+  'gap-1.5 min-h-8 px-3 py-2 rounded-md bg-transparent text-[0.8125rem] font-medium text-ink-secondary hover:bg-surface-subtle',
 )
 const AVATAR =
   'inline-flex items-center justify-center size-6 rounded-full bg-surface-sunken font-mono text-[0.6875rem] font-medium text-ink-secondary'
@@ -30,7 +24,7 @@ const MENU_DASHBOARD =
 const EMAIL =
   'px-3 py-2 border-b border-border-subtle/80 font-mono text-[0.6875rem] text-ink-muted overflow-hidden text-ellipsis whitespace-nowrap'
 const ITEM_BASE =
-  'flex items-center gap-2 w-full min-h-11 px-3.5 py-2.5 border-t border-border-subtle bg-transparent text-[0.8125rem] text-left cursor-pointer transition-colors duration-150'
+  'flex items-center gap-2 w-full min-h-8 px-3.5 py-2.5 border-t border-border-subtle bg-transparent text-[0.8125rem] text-left cursor-pointer transition-colors duration-150'
 const ITEM = cn(ITEM_BASE, 'text-ink-secondary hover:bg-surface-muted hover:text-ink')
 const SIGN_OUT = cn(ITEM_BASE, 'text-danger-text hover:bg-danger-surface')
 
@@ -115,7 +109,7 @@ export function Header({ mode = 'auto', authAction }: HeaderProps) {
 
         {isAuth ? (
           authAction ? (
-            <Link to={authAction.to} className={AUTH_ACTION}>
+            <Link to={authAction.to} variant="ghost" size="sm">
               {authAction.label}
             </Link>
           ) : null
@@ -140,7 +134,7 @@ export function Header({ mode = 'auto', authAction }: HeaderProps) {
                 role="menu"
               >
                 <p className={EMAIL}>{user?.email}</p>
-                <Link
+                <RouterLink
                   to="/settings/password"
                   role="menuitem"
                   className={ITEM}
@@ -148,8 +142,8 @@ export function Header({ mode = 'auto', authAction }: HeaderProps) {
                 >
                   <LockResetIcon size={16} />
                   Change password
-                </Link>
-                <Link
+                </RouterLink>
+                <RouterLink
                   to="/settings/delete"
                   role="menuitem"
                   className={ITEM}
@@ -157,7 +151,7 @@ export function Header({ mode = 'auto', authAction }: HeaderProps) {
                 >
                   <TrashIcon size={16} />
                   Delete account
-                </Link>
+                </RouterLink>
                 <button
                   type="button"
                   role="menuitem"
@@ -172,16 +166,16 @@ export function Header({ mode = 'auto', authAction }: HeaderProps) {
           </div>
         ) : isAuthenticated ? (
           <div className={ACTIONS}>
-            <Link to="/dashboard" className={GET_STARTED}>
+            <Link to="/dashboard" variant="primary" size="sm">
               Dashboard
             </Link>
           </div>
         ) : (
           <div className={ACTIONS}>
-            <Link to="/login" className={LOGIN_LINK}>
+            <Link to="/login" variant="ghost" size="sm">
               Log in
             </Link>
-            <Link to="/register" className={GET_STARTED}>
+            <Link to="/register" variant="primary" size="sm">
               Get started
             </Link>
           </div>

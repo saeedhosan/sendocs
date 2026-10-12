@@ -266,7 +266,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
         ) : (
           <Link
             to="/dashboard"
-            className="flex items-center justify-center min-h-11 text-[0.8125rem] text-ink-secondary hover:text-ink"
+            className="flex items-center justify-center h-8 text-[0.8125rem] text-ink-secondary hover:text-ink mr-20"
           >
             Cancel
           </Link>

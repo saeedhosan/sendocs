@@ -9,7 +9,7 @@ const TITLE =
   'text-xl leading-7 font-semibold tracking-tight text-ink sm:text-2xl sm:leading-8'
 const SUBTITLE = 'mt-1 text-sm text-ink-secondary'
 const ACTIONS =
-  'flex flex-col gap-2 sm:flex-row sm:items-center sm:flex-shrink-0 [&>*]:w-full [&>*]:min-h-11 sm:[&>*]:min-h-9 sm:[&>*]:w-auto'
+  'flex flex-col gap-2 sm:flex-row sm:items-center sm:flex-shrink-0 [&>*]:w-full [&>*]:min-h-8 sm:[&>*]:min-h-8 sm:[&>*]:w-auto'
 
 export type PageHeaderProps = {
   title: ReactNode
