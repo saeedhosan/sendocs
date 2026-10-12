@@ -9,8 +9,7 @@ import { cn } from '../../lib/cn'
 const HEADER =
   'sticky top-0 z-30 w-full border-b border-border bg-surface'
 const INNER = 'flex items-center justify-between gap-4'
-const INNER_DASHBOARD =
-  'min-h-16 py-3 px-4 sm:px-6 min-[576px]:max-w-5xl min-[768px]:max-w-5xl min-[992px]:max-w-5xl min-[1200px]:max-w-5xl min-[1400px]:max-w-5xl'
+const INNER_DASHBOARD = 'min-h-16 py-3'
 const TRIGGER_BASE = 'inline-flex items-center cursor-pointer transition-colors duration-150 hover:text-ink'
 const TRIGGER_DASHBOARD = cn(
   TRIGGER_BASE,

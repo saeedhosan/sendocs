@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { Button, Container } from '../../../components/ui'
+import { Button, PageHeader } from '../../../components/ui'
 import { EmptyState, ErrorState, LoadingState } from '../../../components/feedback'
 import {
   ChevronLeftIcon,
@@ -132,26 +132,20 @@ export function RequestsPage() {
     : `${pageNumber} / ${pageNumber}`
 
   return (
-    <Container className="!max-w-5xl px-4 sm:px-6 py-6 sm:py-8 flex flex-col gap-0">
-      <div className="flex flex-col gap-3 pb-6 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <h1 className="text-xl leading-7 font-semibold tracking-tight text-ink sm:text-2xl sm:leading-8">
-              Document Requests
-            </h1>
-          </div>
-          <p className="mt-1 text-sm text-ink-secondary">
-            Collect and track client documentation
-          </p>
-        </div>
-        <Button
-          iconLeft={<PlusIcon size={18} />}
-          className="w-full min-h-11 rounded-[10px] sm:w-auto sm:h-9 sm:min-h-9"
-          onClick={() => navigate('/requests/new')}
-        >
-          New request
-        </Button>
-      </div>
+    <div className="flex flex-col">
+      <PageHeader
+        title="Document Requests"
+        subtitle="Collect and track client documentation"
+        actions={
+          <Button
+            iconLeft={<PlusIcon size={18} />}
+            className="rounded-[10px]"
+            onClick={() => navigate('/requests/new')}
+          >
+            New request
+          </Button>
+        }
+      />
 
       {status === 'loading' && requests.length === 0 ? (
         <LoadingState title="Loading requests" />
@@ -256,6 +250,6 @@ export function RequestsPage() {
           onDismiss={() => setNotice(null)}
         />
       ) : null}
-    </Container>
+    </div>
   )
 }

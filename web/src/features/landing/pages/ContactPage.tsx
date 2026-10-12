@@ -1,4 +1,3 @@
-import { Container } from '../../../components/ui'
 import { app } from '../../../config/app'
 
 /**
@@ -8,7 +7,7 @@ import { app } from '../../../config/app'
  */
 export function ContactPage() {
   return (
-    <Container as="article" className="!max-w-4xl px-6 py-10 bg-surface">
+    <article className="py-10">
       <h1 className="mb-2 text-[1.875rem] font-bold leading-9 tracking-[-0.025em] text-ink">
         Contact
       </h1>
@@ -30,6 +29,6 @@ export function ContactPage() {
           </a>
         </p>
       </div>
-    </Container>
+    </article>
   )
 }

@@ -19,5 +19,12 @@ export function RequireAuth() {
     return <Navigate to="/login" replace state={{ from: location }} />
   }
 
-  return <Outlet />
+  // One theme for every authenticated surface, so the shared header, controls,
+  // and container render identically on the dashboard, request pages, and
+  // settings without each page re-declaring a palette.
+  return (
+    <div className="owner-dashboard-theme">
+      <Outlet />
+    </div>
+  )
 }

@@ -1,4 +1,5 @@
 import { Outlet, useLocation } from 'react-router-dom'
+import { Container } from '../components/ui'
 import { cn } from '../lib/cn'
 import { PublicFooter } from './components/PublicFooter'
 import { PublicHeader } from './components/PublicHeader'
@@ -23,11 +24,13 @@ export function PublicLayout() {
       <main
         className={cn(
           '[view-transition-name:page-content] flex-1 w-full',
-          isLanding && 'max-w-6xl mx-auto px-4 sm:px-6 pt-14 bg-surface',
+          isLanding && 'bg-surface',
           isDocumentPage && 'bg-surface',
         )}
       >
-        <Outlet />
+        <Container className={isLanding ? 'pt-14' : undefined}>
+          <Outlet />
+        </Container>
       </main>
       <PublicFooter />
     </div>

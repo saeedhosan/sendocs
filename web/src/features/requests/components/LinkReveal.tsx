@@ -36,13 +36,13 @@ export function LinkReveal({ open, link, onClose }: LinkRevealProps) {
       title="Your request is ready."
       description="Copy this link and send it to your client. The raw link is shown once only."
       variant="centered"
-      className="create-request-theme border-border-subtle"
+      className="border-border-subtle"
       initialFocusRef={inputRef}
       footer={
         <Button
           variant="secondary"
           onClick={onClose}
-          className="min-h-11 h-11 px-6 rounded-[10px] !border-[#e2e8f0] bg-surface text-[#334155] !text-[13px] hover:bg-[#f8fafc] w-full sm:w-auto"
+          className="min-h-11 h-11 px-6 rounded-[10px] border-border bg-surface text-ink-secondary text-[13px] hover:bg-surface-muted w-full sm:w-auto"
         >
           Done
         </Button>
@@ -51,7 +51,7 @@ export function LinkReveal({ open, link, onClose }: LinkRevealProps) {
       <div className="flex flex-col gap-2.5 mt-5 sm:flex-row sm:items-center">
         <input
           ref={inputRef}
-          className="w-full min-w-0 min-h-11 h-11 px-3 border border-border-subtle rounded-[10px] bg-[#f4f4f6] text-ink font-mono text-[13px] truncate focus:outline-none focus-visible:outline-2 focus-visible:outline-focus focus-visible:outline-offset-1"
+          className="w-full min-w-0 min-h-11 h-11 px-3 border border-border-subtle rounded-[10px] bg-surface-muted text-ink font-mono text-[13px] truncate focus:outline-none focus-visible:outline-2 focus-visible:outline-focus focus-visible:outline-offset-1"
           type="text"
           readOnly
           value={link?.url ?? ''}

@@ -81,6 +81,17 @@ afterEach(() => {
 })
 
 describe('DeleteAccountPage', () => {
+  it('shows the shared dashboard header for a signed-in visitor', async () => {
+    renderPage()
+
+    expect(
+      await screen.findByRole('button', { name: 'Account' }),
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByRole('link', { name: 'Back to account' }),
+    ).not.toBeInTheDocument()
+  })
+
   it('requires the account email typed exactly as confirmation', async () => {
     renderPage()
 

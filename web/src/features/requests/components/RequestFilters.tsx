@@ -46,8 +46,8 @@ export function RequestFilters({
                 className={cn(
                   'size-1.5 rounded-full',
                   chip.value === 'waiting'
-                    ? 'bg-[#f59e0b]'
-                    : 'bg-[#10b981]',
+                    ? 'bg-warning-text'
+                    : 'bg-success',
                 )}
                 aria-hidden="true"
               />

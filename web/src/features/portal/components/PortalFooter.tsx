@@ -1,15 +1,11 @@
 import { Link } from 'react-router-dom'
 import { Container } from '../../../components/ui'
-import { cn } from '../../../lib/cn'
 import { app } from '../../../config/app'
-
-const WIDTH =
-  '!max-w-2xl px-4 sm:px-6'
 
 export function PortalFooter() {
   return (
     <footer className="mt-8 border-t border-border-subtle py-6 text-center text-xs text-ink-muted sm:mt-12 sm:py-8 sm:text-sm">
-      <Container className={cn(WIDTH, 'flex flex-wrap items-center justify-center gap-1.5')}>
+      <Container className="flex flex-wrap items-center justify-center gap-1.5">
         <span>© 2026 {app.name}</span>
         <span className="text-border-strong" aria-hidden="true">
           ·

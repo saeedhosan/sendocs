@@ -39,7 +39,7 @@ export function ConfirmDialog({
       title={title}
       tone="default"
       variant="centered"
-      className="request-detail-theme border-neutral-200 shadow-[0_4px_12px_rgba(18,17,19,0.08)]"
+      className="border-border shadow-md"
       initialFocusRef={cancelRef}
       footer={
         <>
@@ -58,7 +58,7 @@ export function ConfirmDialog({
             size="sm"
             className={
               tone === 'danger'
-                ? 'min-h-11 rounded-[10px] sm:h-8 sm:min-h-8 sm:px-3 sm:text-xs !border-[#e11d48] !bg-[#e11d48] !text-white enabled:hover:!border-[#be123c] enabled:hover:!bg-[#be123c] enabled:hover:!text-white'
+                ? 'min-h-11 rounded-[10px] sm:h-8 sm:min-h-8 sm:px-3 sm:text-xs border-danger bg-danger text-on-primary enabled:hover:border-danger-strong enabled:hover:bg-danger-strong enabled:hover:text-on-primary'
                 : 'min-h-11 sm:h-8 sm:min-h-8 sm:px-3 sm:text-xs'
             }
             onClick={onConfirm}

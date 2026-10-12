@@ -26,9 +26,9 @@ export function Notice({ tone, message, onDismiss, duration = 4000 }: NoticeProp
       aria-live={tone === 'error' ? 'assertive' : 'polite'}
     >
       {tone === 'error' ? (
-        <AlertIcon size={16} className="shrink-0 text-[#fca5a5]" />
+        <AlertIcon size={16} className="shrink-0 text-danger" />
       ) : (
-        <CheckCircleIcon size={16} className="shrink-0 text-[#4ade80]" />
+        <CheckCircleIcon size={16} className="shrink-0 text-success" />
       )}
       <span>{message}</span>
     </div>
