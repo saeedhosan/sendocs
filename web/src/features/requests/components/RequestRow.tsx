@@ -15,7 +15,7 @@ export function RequestRow({ request }: RequestRowProps) {
   const href = `/requests/${request.id}`
 
   return (
-    <div className="flex flex-col gap-3 p-4 border-b border-border-subtle transition-colors duration-150 last:border-b-0 hover:bg-[#fbfbfb] md:grid md:grid-cols-12 md:items-center md:gap-3 md:px-5 md:py-3.5">
+    <div className="flex flex-col gap-3 p-4 border-b border-border-subtle transition-colors duration-150 last:border-b-0 hover:bg-surface-muted md:grid md:grid-cols-12 md:items-center md:gap-3 md:px-5 md:py-3.5">
       <div className="flex items-start justify-between gap-2 md:col-span-5 md:block">
         <Link
           to={href}

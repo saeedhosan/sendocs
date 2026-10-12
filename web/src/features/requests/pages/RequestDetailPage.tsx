@@ -207,7 +207,7 @@ export function RequestDetailPage() {
 
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between text-xs">
-          <span className="font-medium text-neutral-800">
+          <span className="font-medium text-ink">
             {progressLabel(request.uploaded, request.total)}
           </span>
           <span className="font-mono text-ink-muted">
@@ -217,7 +217,7 @@ export function RequestDetailPage() {
         <ProgressBar
           value={percent(request.uploaded, request.total)}
           tone="waiting"
-          className="rounded-[10px] [&>span]:bg-[#304fcf]"
+          className="rounded-[10px] [&>span]:bg-primary"
           label={progressLabel(request.uploaded, request.total)}
         />
       </div>
