@@ -82,7 +82,7 @@ export function LoginPage() {
   }
 
   return (
-    <AuthLayout footerVariant="login" layoutVariant="login">
+    <AuthLayout>
       <div className={cn(s.heading, s.center)}>
         <h1 className={s.title}>Sign in</h1>
         <p className={s.subtitle}>Sign in to your account to continue.</p>

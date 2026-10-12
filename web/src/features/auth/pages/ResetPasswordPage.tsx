@@ -68,11 +68,7 @@ export function ResetPasswordPage() {
 
   if (token === '' || invalidLink) {
     return (
-      <AuthLayout
-        headerAction={{ label: 'Help', to: '/contact' }}
-        footerVariant="reset-password"
-        layoutVariant="reset"
-      >
+      <AuthLayout headerAction={{ label: 'Help', to: '/contact' }}>
         <div className={s.heading}>
           <h1 className={s.title}>Reset link unavailable</h1>
           <p className={s.subtitle}>
@@ -92,11 +88,7 @@ export function ResetPasswordPage() {
   }
 
   return (
-    <AuthLayout
-      headerAction={{ label: 'Help', to: '/contact' }}
-      footerVariant="reset-password"
-      layoutVariant="reset"
-    >
+    <AuthLayout headerAction={{ label: 'Help', to: '/contact' }}>
       <div className={s.heading}>
         <h1 className={s.title}>Create a new password</h1>
         <p className={s.subtitle}>
