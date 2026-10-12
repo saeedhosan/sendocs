@@ -1,25 +1,22 @@
-import { render, screen } from '@testing-library/react'
-import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import { screen } from '@testing-library/react'
+import { Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { AuthProvider } from '../../../src/app/providers/AuthProvider'
 import { app } from '../../../src/config/app'
 import { PrivacyPolicyPage } from '../../../src/features/landing/pages/PrivacyPolicyPage'
 import { TermsOfServicePage } from '../../../src/features/landing/pages/TermsOfServicePage'
 import { GuestLayout } from '../../../src/layouts/GuestLayout'
 import { stubSession } from '../../helpers/auth'
+import { renderWithProviders } from '../../helpers/render'
 
 function renderAt(path: string) {
-  return render(
-    <MemoryRouter initialEntries={[path]}>
-      <AuthProvider>
-        <Routes>
-          <Route element={<GuestLayout />}>
-            <Route path="terms" element={<TermsOfServicePage />} />
-            <Route path="privacy" element={<PrivacyPolicyPage />} />
-          </Route>
-        </Routes>
-      </AuthProvider>
-    </MemoryRouter>,
+  return renderWithProviders(
+    <Routes>
+      <Route element={<GuestLayout />}>
+        <Route path="terms" element={<TermsOfServicePage />} />
+        <Route path="privacy" element={<PrivacyPolicyPage />} />
+      </Route>
+    </Routes>,
+    { initialEntries: [path] },
   )
 }
 

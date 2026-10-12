@@ -35,10 +35,6 @@ export const authApi = {
     return apiRequest<void>('/auth/logout', { method: 'POST' })
   },
 
-  session(signal?: AbortSignal): Promise<SessionPayload> {
-    return apiRequest<SessionPayload>('/auth/session', { signal })
-  },
-
   forgotPassword(email: string): Promise<void> {
     return apiRequest<void>('/auth/password/forgot', {
       method: 'POST',

@@ -17,7 +17,7 @@ describe('Logo', () => {
   it.each(['brand', 'owner'] as const)('renders the wordmark for the %s variant', (variant) => {
     renderLogo({ variant })
     expect(screen.getByText(app.name)).toBeInTheDocument()
-    expect(screen.getByText('S', { selector: 'span' })).toBeInTheDocument()
+    expect(screen.getByAltText('')).toHaveAttribute('src', '/favicon.svg')
   })
 
   it('links to the configured destination by default', () => {
@@ -38,6 +38,6 @@ describe('Logo', () => {
     renderLogo({ imageSrc: '/mark.svg', imageAlt: 'Sendocs mark' })
     const image = screen.getByRole('img', { name: 'Sendocs mark' })
     expect(image).toHaveAttribute('src', '/mark.svg')
-    expect(screen.queryByText('S', { selector: 'span' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('img', { name: '' })).not.toBeInTheDocument()
   })
 })

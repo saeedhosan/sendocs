@@ -254,6 +254,22 @@ export function KeyIcon(props: IconProps) {
   )
 }
 
+export function UserIcon(props: IconProps) {
+  return (
+    <MaterialIcon {...props}>
+      <path d="M480-480q-140-35-230-162.5T160-523v-238l320-120 320 120v238q0 152-90 279.5T480-81Zm0-399Zm0-337-260 98v196q0 63 17.5 120.5T287-296q46-25 93.5-37.5T480-346q52 0 99.5 12.5T673-296q32-49 49.5-106.5T740-523v-196l-260-98Zm-78 541q-39 10-77 30 32 35 71 61.5t84 41.5q45-15 84-41.5t71-61.5q-38-20-77-30t-78-10q-39 0-78 10Z" />
+    </MaterialIcon>
+  )
+}
+
+export function SettingsIcon(props: IconProps) {
+  return (
+    <MaterialIcon {...props}>
+      <path d="M576-160l-42-42 111-111-111-111 42-42 111 111 111-111 42 42-111 111 111 111-42 42-111-111-111 111Zm83-374L517-676l42-42 100 99 179-179 42 43-221 221ZM80-290v-60h360v60H80Zm0-320v-60h360v60H80Z" />
+    </MaterialIcon>
+  )
+}
+
 export function TrendingUpIcon(props: IconProps) {
   return (
     <MaterialIcon {...props}>
@@ -331,6 +347,59 @@ export function ShieldCheckIcon(props: IconProps) {
     <MaterialIcon {...props}>
       <path d="m436-347 228-228-42-41-183 183-101-101-44 44 142 143Zm44 266q-140-35-230-162.5T160-523v-238l320-120 320 120v238q0 152-90 279.5T480-81Zm0-62q115-38 187.5-143.5T740-523v-196l-260-98-260 98v196q0 131 72.5 236.5T480-143Zm0-337Z" />
     </MaterialIcon>
+  )
+}
+
+export function SunIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path
+        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M12 6a6 6 0 110 12 6 6 0 010-12z"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
+    </Icon>
+  )
+}
+
+export function MoonIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path
+        d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
+    </Icon>
+  )
+}
+
+export function MonitorIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path
+        d="M22 12.5H4a1 1 0 010-2h18a1 1 0 010 2z"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
+      <path
+        d="M12 14.5V20a1 1 0 01-1 1h-4a1 1 0 01-1-1v-6"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
+    </Icon>
   )
 }
 

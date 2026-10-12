@@ -1,23 +1,20 @@
-import { render, screen } from '@testing-library/react'
-import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import { screen } from '@testing-library/react'
+import { Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { AuthProvider } from '../../../src/app/providers/AuthProvider'
 import { app } from '../../../src/config/app'
 import { ContactPage } from '../../../src/features/landing/pages/ContactPage'
 import { GuestLayout } from '../../../src/layouts/GuestLayout'
 import { stubSession } from '../../helpers/auth'
+import { renderWithProviders } from '../../helpers/render'
 
 function renderContact() {
-  return render(
-    <MemoryRouter initialEntries={['/contact']}>
-      <AuthProvider>
-        <Routes>
-          <Route element={<GuestLayout />}>
-            <Route path="contact" element={<ContactPage />} />
-          </Route>
-        </Routes>
-      </AuthProvider>
-    </MemoryRouter>,
+  return renderWithProviders(
+    <Routes>
+      <Route element={<GuestLayout />}>
+        <Route path="contact" element={<ContactPage />} />
+      </Route>
+    </Routes>,
+    { initialEntries: ['/contact'] },
   )
 }
 

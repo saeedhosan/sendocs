@@ -1,15 +1,7 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowBackIcon } from '../icons'
 import { cn } from '../../lib/cn'
-
-const WRAP =
-  'flex flex-col gap-3 pb-6 border-b border-border sm:flex-row sm:items-start sm:justify-between'
-const TITLE =
-  'text-xl leading-7 font-semibold tracking-tight text-ink sm:text-2xl sm:leading-8'
-const SUBTITLE = 'mt-1 text-sm text-ink-secondary'
-const ACTIONS =
-  'flex flex-col gap-2 sm:flex-row sm:items-center sm:flex-shrink-0 [&>*]:w-full [&>*]:min-h-8 sm:[&>*]:min-h-8 sm:[&>*]:w-auto'
+import { ArrowBackIcon } from '../icons'
 
 export type PageHeaderProps = {
   title: ReactNode
@@ -46,16 +38,16 @@ export function PageHeader({
         </Link>
       ) : null}
 
-      <div className={WRAP}>
+      <div className="flex flex-col gap-3 pb-6  sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2.5">
-            <h1 className={TITLE}>{title}</h1>
+            <h1 className="text-xl leading-7 font-semibold tracking-tight text-ink sm:text-2xl sm:leading-8">{title}</h1>
             {badge}
           </div>
-          {subtitle ? <p className={SUBTITLE}>{subtitle}</p> : null}
+          {subtitle ? <p className="mt-1 text-sm text-ink-secondary">{subtitle}</p> : null}
         </div>
 
-        {actions ? <div className={ACTIONS}>{actions}</div> : null}
+        {actions ? <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:flex-shrink-0 [&>*]:w-full [&>*]:min-h-8 sm:[&>*]:min-h-8 sm:[&>*]:w-auto">{actions}</div> : null}
       </div>
     </div>
   )

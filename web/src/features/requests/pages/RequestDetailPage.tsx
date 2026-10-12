@@ -1,22 +1,22 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Badge, Button, PageHeader, ProgressBar } from '../../../components/ui'
 import { ErrorState, LoadingState } from '../../../components/feedback'
 import { LinkOffIcon, TrashIcon } from '../../../components/icons'
+import { Badge, Button, PageHeader, ProgressBar } from '../../../components/ui'
 import { ApiError } from '../../../lib/api/client'
 import { errorMessage } from '../../../lib/api/errors'
 import { formatDate } from '../../../lib/format'
+import { requestsApi } from '../api'
+import { ConfirmDialog } from '../components/ConfirmDialog'
+import { ItemList } from '../components/ItemList'
+import type { NoticeTone } from '../components/Notice'
+import { Notice } from '../components/Notice'
 import {
   linkState,
   linkStateLabel,
   percent,
   progressLabel,
 } from '../progress'
-import { ConfirmDialog } from '../components/ConfirmDialog'
-import { ItemList } from '../components/ItemList'
-import { Notice } from '../components/Notice'
-import type { NoticeTone } from '../components/Notice'
-import { requestsApi } from '../api'
 import type { RequestDetail, RequestItem } from '../types'
 
 type ConfirmState =
@@ -161,7 +161,7 @@ export function RequestDetailPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 mb-20">
       <PageHeader
         back={{ to: '/dashboard', label: 'Back to requests' }}
         title={request.title}
@@ -263,9 +263,9 @@ export function RequestDetailPage() {
             ? 'Are you sure you want to revoke this link? The client will immediately lose access. This action cannot be undone.'
             : confirm?.kind === 'delete-request'
               ? `Are you sure you want to delete this request? This permanently removes the request and all ${request.uploaded} uploaded document${request.uploaded === 1 ? '' : 's'}. This action cannot be undone.`
-            : confirm?.kind === 'delete-document'
-              ? `Are you sure you want to permanently delete "${confirm.item.document?.originalName ?? confirm.item.label}"?`
-              : ''
+              : confirm?.kind === 'delete-document'
+                ? `Are you sure you want to permanently delete "${confirm.item.document?.originalName ?? confirm.item.label}"?`
+                : ''
         }
         confirmLabel={
           confirm?.kind === 'revoke'

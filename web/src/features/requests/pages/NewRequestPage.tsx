@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { PageHeader } from '../../../components/ui'
-import { NewRequestForm } from '../components/NewRequestForm'
-import { LinkReveal } from '../components/LinkReveal'
 import { requestsApi } from '../api'
+import { LinkReveal } from '../components/LinkReveal'
+import { NewRequestForm } from '../components/NewRequestForm'
 import type { CreatedRequest, CreateRequestInput } from '../types'
 
 export function NewRequestPage() {
@@ -21,7 +21,7 @@ export function NewRequestPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 mb-20">
       <PageHeader
         title="New document request"
         subtitle="Create a secure link so a client can upload the documents you need."

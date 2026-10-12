@@ -6,8 +6,6 @@ export type PasswordRule = {
   met: boolean
 }
 
-const LIST = 'flex flex-col gap-1 text-xs text-ink-muted'
-
 export function PasswordRequirementsList({
   rules,
   panel = false,
@@ -18,7 +16,7 @@ export function PasswordRequirementsList({
   title?: string
 }) {
   const list = (
-    <ul className={cn(LIST, !panel && 'pt-1')}>
+    <ul className={cn('flex flex-col gap-1 text-xs text-ink-muted', !panel && 'pt-1')}>
       {rules.map((rule) => (
         <li
           key={rule.id}

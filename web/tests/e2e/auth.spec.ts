@@ -1,5 +1,4 @@
 import { expect, test } from '@playwright/test'
-import type { Page } from '@playwright/test'
 
 /*
  * End-to-end coverage for the Phase 1 auth journeys.
@@ -21,10 +20,6 @@ const sessionPayload = {
   expiresAt: '2099-01-01T00:00:00Z',
 }
 
-const unauthEnvelope = {
-  error: { code: 'unauthenticated', message: 'Not signed in.' },
-}
-
 function json(status: number, body: unknown): {
   status: number
   contentType: string
@@ -33,17 +28,7 @@ function json(status: number, body: unknown): {
   return { status, contentType: 'application/json', body: JSON.stringify(body) }
 }
 
-async function stubUnauthenticated(page: Page) {
-  await page.route('**/api/v1/auth/session', (route) =>
-    route.fulfill(json(401, unauthEnvelope)),
-  )
-}
-
 test.describe('unauthenticated shell', () => {
-  test.beforeEach(async ({ page }) => {
-    await stubUnauthenticated(page)
-  })
-
   test('a guest is redirected from the dashboard to sign in', async ({ page }) => {
     await page.goto('/dashboard')
 
@@ -89,9 +74,6 @@ test.describe('unauthenticated shell', () => {
 
 test.describe('authenticated shell', () => {
   test('sign in moves a guest to the dashboard', async ({ page }) => {
-    await page.route('**/api/v1/auth/session', (route) =>
-      route.fulfill(json(401, unauthEnvelope)),
-    )
     await page.route('**/api/v1/auth/login', (route) =>
       route.fulfill(json(200, sessionPayload)),
     )
@@ -112,13 +94,17 @@ test.describe('authenticated shell', () => {
   })
 
   test('an owner can delete their account', async ({ page }) => {
-    await page.route('**/api/v1/auth/session', (route) =>
-      route.fulfill(json(200, sessionPayload)),
-    )
     await page.route('**/api/v1/auth/account', (route) =>
       route.fulfill({ status: 204 }),
     )
 
+    await page.route('**/api/v1/auth/login', (route) =>
+      route.fulfill(json(200, sessionPayload)),
+    )
+    await page.goto('/login')
+    await page.getByLabel('Email address').fill('alex@example.com')
+    await page.getByLabel('Password', { exact: true }).fill('correcthorsebattery')
+    await page.getByRole('button', { name: /^sign in$/i }).click()
     await page.goto('/settings/delete')
 
     await expect(
@@ -136,7 +122,7 @@ test.describe('authenticated shell', () => {
   })
 
   test('an unverified owner can resend the verification email', async ({ page }) => {
-    await page.route('**/api/v1/auth/session', (route) =>
+    await page.route('**/api/v1/auth/login', (route) =>
       route.fulfill(json(200, sessionPayload)),
     )
     await page.route(/\/api\/v1\/requests(\?.*)?$/, (route) =>
@@ -146,6 +132,10 @@ test.describe('authenticated shell', () => {
       route.fulfill(json(202, {})),
     )
 
+    await page.goto('/login')
+    await page.getByLabel('Email address').fill('alex@example.com')
+    await page.getByLabel('Password', { exact: true }).fill('correcthorsebattery')
+    await page.getByRole('button', { name: /^sign in$/i }).click()
     await page.goto('/dashboard')
 
     await expect(page.getByText('Verify your email address')).toBeVisible()

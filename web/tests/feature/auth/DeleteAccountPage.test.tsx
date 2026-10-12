@@ -1,9 +1,9 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { AuthProvider } from '../../../src/app/providers/AuthProvider'
 import { DeleteAccountPage } from '../../../src/features/auth/pages/DeleteAccountPage'
+import { renderWithProviders } from '../../helpers/render'
 
 const fetchMock = vi.fn()
 
@@ -30,15 +30,15 @@ function errorEnvelope(status: number, code: string, message: string): Response 
 }
 
 function renderPage() {
-  return render(
-    <MemoryRouter initialEntries={['/settings/delete']}>
-      <AuthProvider>
-        <Routes>
-          <Route path="/settings/delete" element={<DeleteAccountPage />} />
-          <Route path="/login" element={<h1>Sign in</h1>} />
-        </Routes>
-      </AuthProvider>
-    </MemoryRouter>,
+  return renderWithProviders(
+    <Routes>
+      <Route path="/settings/delete" element={<DeleteAccountPage />} />
+      <Route path="/login" element={<h1>Sign in</h1>} />
+    </Routes>,
+    {
+      initialEntries: ['/settings/delete'],
+      initialSession: sessionPayload,
+    },
   )
 }
 
@@ -63,10 +63,6 @@ beforeEach(() => {
   fetchMock.mockImplementation((input: RequestInfo | URL) => {
     const url = String(input)
 
-    if (url.endsWith('/auth/session')) {
-      return Promise.resolve(json(200, sessionPayload))
-    }
-
     if (url.endsWith('/auth/account')) {
       return Promise.resolve(new Response(null, { status: 204 }))
     }
@@ -85,7 +81,7 @@ describe('DeleteAccountPage', () => {
     renderPage()
 
     expect(
-      await screen.findByRole('button', { name: 'Account' }),
+      await screen.findByRole('button', { name: "Alex Morgan's account menu" }),
     ).toBeInTheDocument()
     expect(
       screen.queryByRole('link', { name: 'Back to account' }),
@@ -105,12 +101,7 @@ describe('DeleteAccountPage', () => {
 
   it('surfaces an incorrect password from the API', async () => {
     fetchMock.mockImplementation((input: RequestInfo | URL) => {
-      const url = String(input)
-
-      if (url.endsWith('/auth/session')) {
-        return Promise.resolve(json(200, sessionPayload))
-      }
-
+      void input
       return Promise.resolve(
         errorEnvelope(401, 'invalid_credentials', 'Password is incorrect.'),
       )

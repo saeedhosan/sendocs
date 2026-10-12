@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthProvider } from '../../../src/app/providers/AuthProvider'
+import { ThemeProvider } from '../../../src/app/providers/ThemeProvider'
 import { LoginPage } from '../../../src/features/auth/pages/LoginPage'
 
 const fetchMock = vi.fn()
@@ -33,12 +34,14 @@ function errorEnvelope(
 function renderLogin() {
   return render(
     <MemoryRouter initialEntries={['/login']}>
-      <AuthProvider>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/dashboard" element={<h1>Dashboard</h1>} />
-        </Routes>
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/dashboard" element={<h1>Dashboard</h1>} />
+          </Routes>
+        </AuthProvider>
+      </ThemeProvider>
     </MemoryRouter>,
   )
 }
@@ -47,10 +50,6 @@ beforeEach(() => {
   fetchMock.mockReset()
   fetchMock.mockImplementation((input: RequestInfo | URL) => {
     const url = String(input)
-
-    if (url.endsWith('/auth/session')) {
-      return Promise.resolve(errorEnvelope(401, 'unauthenticated', 'Not signed in.'))
-    }
 
     if (url.endsWith('/auth/login')) {
       return Promise.resolve(

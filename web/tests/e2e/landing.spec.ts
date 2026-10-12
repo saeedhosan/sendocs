@@ -1,4 +1,3 @@
-import type { Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
 import { app } from "../../src/config/app.ts";
 
@@ -6,13 +5,8 @@ import { app } from "../../src/config/app.ts";
  * End-to-end coverage for the Phase 4 public pages.
  *
  * These are browser smoke tests for the client-side journeys, so the API is
- * faked at the network boundary: the SPA sees an unauthenticated session and
- * renders the public surface without the compose stack.
+ * faked at the network boundary so the public surface renders without compose.
  */
-
-const unauthEnvelope = {
-    error: { code: "unauthenticated", message: "Not signed in." },
-};
 
 const sessionPayload = {
     user: {
@@ -36,15 +30,7 @@ function json(
     return { status, contentType: "application/json", body: JSON.stringify(body) };
 }
 
-async function stubUnauthenticated(page: Page) {
-    await page.route("**/api/v1/auth/session", (route) => route.fulfill(json(401, unauthEnvelope)));
-}
-
 test.describe("public landing", () => {
-    test.beforeEach(async ({ page }) => {
-        await stubUnauthenticated(page);
-    });
-
     test("a guest sees the landing page and can start sign up", async ({ page }) => {
         await page.goto("/");
 
@@ -87,10 +73,14 @@ test.describe("public landing", () => {
         );
     });
     test("a signed-in owner can still reach the landing page", async ({ page }) => {
-        await page.route("**/api/v1/auth/session", (route) =>
+        await page.route("**/api/v1/auth/login", (route) =>
             route.fulfill(json(200, sessionPayload)),
         );
 
+        await page.goto("/login");
+        await page.getByLabel("Email address").fill("alex@example.com");
+        await page.getByLabel("Password", { exact: true }).fill("correcthorsebattery");
+        await page.getByRole("button", { name: /^sign in$/i }).click();
         await page.goto("/");
 
         await expect(
@@ -98,6 +88,10 @@ test.describe("public landing", () => {
                 name: "Collect client documents without the back-and-forth.",
             }),
         ).toBeVisible();
-        await expect(page.getByRole("link", { name: "Dashboard" })).toBeVisible();
+
+        // Open the profile menu to access Dashboard link
+        await page.getByRole("button", { name: "Alex Morgan's account menu" }).click({ force: true });
+        await page.waitForTimeout(500); // wait for dropdown animation
+        await expect(page.getByRole("menuitem", { name: "Dashboard" })).toBeVisible({ timeout: 10000 });
     });
 });

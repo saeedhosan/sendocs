@@ -1,22 +1,17 @@
-import { render, screen } from '@testing-library/react'
-import { MemoryRouter, Route, Routes } from 'react-router-dom'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { AuthProvider } from '../../../src/app/providers/AuthProvider'
+import { screen } from '@testing-library/react'
+import { Route, Routes } from 'react-router-dom'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { LandingPage } from '../../../src/features/landing/pages/LandingPage'
 import { GuestLayout } from '../../../src/layouts/GuestLayout'
-import { stubSession } from '../../helpers/auth'
+import { renderWithProviders } from '../../helpers/render'
 
 function renderHome() {
-  return render(
-    <MemoryRouter initialEntries={['/']}>
-      <AuthProvider>
-        <Routes>
-          <Route element={<GuestLayout />}>
-            <Route index element={<LandingPage />} />
-          </Route>
-        </Routes>
-      </AuthProvider>
-    </MemoryRouter>,
+  return renderWithProviders(
+    <Routes>
+      <Route element={<GuestLayout />}>
+        <Route index element={<LandingPage />} />
+      </Route>
+    </Routes>,
   )
 }
 
@@ -26,10 +21,6 @@ describe('LandingPage', () => {
   })
 
   describe('as a guest', () => {
-    beforeEach(() => {
-      stubSession(false)
-    })
-
     it('presents the hero and the sign-up actions', () => {
       renderHome()
 
@@ -89,12 +80,26 @@ describe('LandingPage', () => {
   })
 
   describe('as an authenticated owner', () => {
-    beforeEach(() => {
-      stubSession(true)
-    })
-
-    it('still renders the landing page with a dashboard action', async () => {
-      renderHome()
+    it('shows the profile menu button for authenticated owner', async () => {
+      renderWithProviders(
+        <Routes>
+          <Route element={<GuestLayout />}>
+            <Route index element={<LandingPage />} />
+          </Route>
+        </Routes>,
+        {
+          initialSession: {
+            user: {
+              id: '1',
+              name: 'Alex Morgan',
+              email: 'alex@example.com',
+              emailVerifiedAt: null,
+            },
+            csrfToken: 'csrf-123',
+            expiresAt: '2099-01-01T00:00:00Z',
+          },
+        },
+      )
 
       expect(
         screen.getByRole('heading', {
@@ -102,9 +107,10 @@ describe('LandingPage', () => {
         }),
       ).toBeInTheDocument()
 
+      // Profile menu button should be present
       expect(
-        await screen.findByRole('link', { name: 'Dashboard' }),
-      ).toHaveAttribute('href', '/dashboard')
+        await screen.findByRole('button', { name: "Alex Morgan's account menu" }),
+      ).toBeInTheDocument()
       expect(
         screen.queryByRole('link', { name: 'Log in' }),
       ).not.toBeInTheDocument()
