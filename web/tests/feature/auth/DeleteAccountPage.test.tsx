@@ -1,9 +1,9 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { AuthProvider } from '../../../src/app/providers/AuthProvider'
 import { DeleteAccountPage } from '../../../src/features/auth/pages/DeleteAccountPage'
+import { renderWithProviders } from '../../helpers/render'
 
 const fetchMock = vi.fn()
 
@@ -30,15 +30,12 @@ function errorEnvelope(status: number, code: string, message: string): Response 
 }
 
 function renderPage() {
-  return render(
-    <MemoryRouter initialEntries={['/settings/delete']}>
-      <AuthProvider>
-        <Routes>
-          <Route path="/settings/delete" element={<DeleteAccountPage />} />
-          <Route path="/login" element={<h1>Sign in</h1>} />
-        </Routes>
-      </AuthProvider>
-    </MemoryRouter>,
+  return renderWithProviders(
+    <Routes>
+      <Route path="/settings/delete" element={<DeleteAccountPage />} />
+      <Route path="/login" element={<h1>Sign in</h1>} />
+    </Routes>,
+    { initialEntries: ['/settings/delete'] },
   )
 }
 

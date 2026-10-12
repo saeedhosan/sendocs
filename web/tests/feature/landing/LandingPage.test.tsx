@@ -1,22 +1,18 @@
-import { render, screen } from '@testing-library/react'
-import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import { screen } from '@testing-library/react'
+import { Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { AuthProvider } from '../../../src/app/providers/AuthProvider'
 import { LandingPage } from '../../../src/features/landing/pages/LandingPage'
 import { GuestLayout } from '../../../src/layouts/GuestLayout'
 import { stubSession } from '../../helpers/auth'
+import { renderWithProviders } from '../../helpers/render'
 
 function renderHome() {
-  return render(
-    <MemoryRouter initialEntries={['/']}>
-      <AuthProvider>
-        <Routes>
-          <Route element={<GuestLayout />}>
-            <Route index element={<LandingPage />} />
-          </Route>
-        </Routes>
-      </AuthProvider>
-    </MemoryRouter>,
+  return renderWithProviders(
+    <Routes>
+      <Route element={<GuestLayout />}>
+        <Route index element={<LandingPage />} />
+      </Route>
+    </Routes>,
   )
 }
 

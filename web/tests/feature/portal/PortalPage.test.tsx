@@ -1,12 +1,12 @@
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { AuthProvider } from '../../../src/app/providers/AuthProvider'
 import { ApiError } from '../../../src/lib/api/client'
 import { portalApi } from '../../../src/features/portal/api'
 import { PortalPage } from '../../../src/features/portal/pages/PortalPage'
 import type { PortalView } from '../../../src/features/portal/types'
+import { renderWithProviders } from '../../helpers/render'
 
 vi.mock('../../../src/features/portal/api', () => ({
   portalApi: { view: vi.fn(), upload: vi.fn() },
@@ -57,14 +57,11 @@ function uploadedView(): PortalView {
 }
 
 function renderPortal() {
-  return render(
-    <MemoryRouter initialEntries={[`/portal/${token}`]}>
-      <AuthProvider>
-        <Routes>
-          <Route path="/portal/:token" element={<PortalPage />} />
-        </Routes>
-      </AuthProvider>
-    </MemoryRouter>,
+  return renderWithProviders(
+    <Routes>
+      <Route path="/portal/:token" element={<PortalPage />} />
+    </Routes>,
+    { initialEntries: [`/portal/${token}`] },
   )
 }
 

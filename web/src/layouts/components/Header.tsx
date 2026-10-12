@@ -3,11 +3,11 @@ import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../app/providers/useAuth'
 import { ChevronDownIcon, LockResetIcon, LogoutIcon, TrashIcon, UserIcon } from '../../components/icons'
 import { Logo } from '../../components/navigation/Logo'
-import { Container, Link } from '../../components/ui'
+import { Container, Link, ThemeToggle } from '../../components/ui'
 import { cn } from '../../lib/cn'
 
 const HEADER = 'top-0 z-50 w-full border-b border-border'
-const HEADER_HOME = 'fixed bg-white/90 backdrop-blur-[12px]'
+const HEADER_HOME = 'fixed  backdrop-blur-[12px]'
 const INNER = 'flex items-center justify-between gap-4 min-h-16'
 const INNER_HOME = '!min-h-14'
 const ACTIONS = 'flex items-center gap-3'
@@ -118,79 +118,83 @@ export function Header({ mode = 'auto', authAction }: HeaderProps) {
             </Link>
           ) : null
         ) : isAuthenticated ? (
-          <div className="relative" ref={menuRef}>
-            <button
-              type="button"
-              className={TRIGGER_DASHBOARD}
-              aria-haspopup="menu"
-              aria-expanded={open}
-              aria-label={`${displayName}'s account menu`}
-              onClick={() => setOpen((value) => !value)}
-            >
-              <span className={AVATAR} aria-hidden="true">
-                {initials(displayName)}
-              </span>
-              <ChevronDownIcon size={14} className="text-ink-muted" />
-            </button>
-            {open ? (
-              <div
-                className={MENU_DASHBOARD}
-                role="menu"
-                aria-orientation="vertical"
+          <div className={ACTIONS}>
+            <ThemeToggle />
+            <div className="relative" ref={menuRef}>
+              <button
+                type="button"
+                className={TRIGGER_DASHBOARD}
+                aria-haspopup="menu"
+                aria-expanded={open}
+                aria-label={`${displayName}'s account menu`}
+                onClick={() => setOpen((value) => !value)}
               >
-                <div className={USER_INFO}>
-                  <p className={USER_NAME}>{displayName}</p>
-                  <p className={USER_EMAIL}>{user?.email}</p>
-                </div>
+                <span className={AVATAR} aria-hidden="true">
+                  {initials(displayName)}
+                </span>
+                <ChevronDownIcon size={14} className="text-ink-muted" />
+              </button>
+              {open ? (
+                <div
+                  className={MENU_DASHBOARD}
+                  role="menu"
+                  aria-orientation="vertical"
+                >
+                  <div className={USER_INFO}>
+                    <p className={USER_NAME}>{displayName}</p>
+                    <p className={USER_EMAIL}>{user?.email}</p>
+                  </div>
 
-                <div className={MENU_GROUP} role="none">
-                  <RouterLink
-                    to="/dashboard"
-                    role="menuitem"
-                    className={ITEM}
-                    onClick={() => setOpen(false)}
-                  >
-                    <UserIcon size={16} className={ICON} aria-hidden="true" />
-                    Dashboard
-                  </RouterLink>
-                  <RouterLink
-                    to="/settings/password"
-                    role="menuitem"
-                    className={ITEM}
-                    onClick={() => setOpen(false)}
-                  >
-                    <LockResetIcon size={16} className={ICON} aria-hidden="true" />
-                    Change password
-                  </RouterLink>
-                  <RouterLink
-                    to="/settings/delete"
-                    role="menuitem"
-                    className={ITEM}
-                    onClick={() => setOpen(false)}
-                  >
-                    <TrashIcon size={16} className={ICON} aria-hidden="true" />
-                    Delete account
-                  </RouterLink>
-                </div>
+                  <div className={MENU_GROUP} role="none">
+                    <RouterLink
+                      to="/dashboard"
+                      role="menuitem"
+                      className={ITEM}
+                      onClick={() => setOpen(false)}
+                    >
+                      <UserIcon size={16} className={ICON} aria-hidden="true" />
+                      Dashboard
+                    </RouterLink>
+                    <RouterLink
+                      to="/settings/password"
+                      role="menuitem"
+                      className={ITEM}
+                      onClick={() => setOpen(false)}
+                    >
+                      <LockResetIcon size={16} className={ICON} aria-hidden="true" />
+                      Change password
+                    </RouterLink>
+                    <RouterLink
+                      to="/settings/delete"
+                      role="menuitem"
+                      className={ITEM}
+                      onClick={() => setOpen(false)}
+                    >
+                      <TrashIcon size={16} className={ICON} aria-hidden="true" />
+                      Delete account
+                    </RouterLink>
+                  </div>
 
-                <div className={DIVIDER} role="separator" />
+                  <div className={DIVIDER} role="separator" />
 
-                <div className={MENU_GROUP} role="none">
-                  <button
-                    type="button"
-                    role="menuitem"
-                    className={ITEM_DESTRUCTIVE}
-                    onClick={handleSignOut}
-                  >
-                    <LogoutIcon size={16} className={ICON} aria-hidden="true" />
-                    Sign out
-                  </button>
+                  <div className={MENU_GROUP} role="none">
+                    <button
+                      type="button"
+                      role="menuitem"
+                      className={ITEM_DESTRUCTIVE}
+                      onClick={handleSignOut}
+                    >
+                      <LogoutIcon size={16} className={ICON} aria-hidden="true" />
+                      Sign out
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ) : null}
+              ) : null}
+            </div>
           </div>
         ) : (
           <div className={ACTIONS}>
+            <ThemeToggle />
             <Link to="/login" variant="ghost" size="sm">
               Log in
             </Link>

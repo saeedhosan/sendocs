@@ -1,10 +1,10 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowBackIcon } from '../icons'
 import { cn } from '../../lib/cn'
+import { ArrowBackIcon } from '../icons'
 
 const WRAP =
-  'flex flex-col gap-3 pb-6 border-b border-border sm:flex-row sm:items-start sm:justify-between'
+  'flex flex-col gap-3 pb-6  sm:flex-row sm:items-start sm:justify-between'
 const TITLE =
   'text-xl leading-7 font-semibold tracking-tight text-ink sm:text-2xl sm:leading-8'
 const SUBTITLE = 'mt-1 text-sm text-ink-secondary'

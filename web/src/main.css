@@ -14,7 +14,7 @@
  */
 
 :root {
-  /* Surfaces */
+  /* Surfaces (light) */
   --color-canvas: #f8f9ff;
   --color-canvas-muted: #f8fafc;
   --color-surface: #ffffff;
@@ -91,8 +91,69 @@
   --color-marketing-success-border: rgba(22, 163, 74, 0.2);
 }
 
+/* Dark mode tokens */
+.dark {
+  /* Surfaces (dark) */
+  --color-canvas: #0f172a;
+  --color-canvas-muted: #111827;
+  --color-surface: #1e293b;
+  --color-surface-muted: #1e293b;
+  --color-surface-subtle: #1e293b;
+  --color-surface-sunken: #0f172a;
+
+  /* Text */
+  --color-text: #f8fafc;
+  --color-text-secondary: #cbd5e1;
+  --color-text-body: #94a3b8;
+  --color-text-emphasis: #f1f5f9;
+  --color-text-muted: #64748b;
+  --color-text-placeholder: #475569;
+
+  /* Borders */
+  --color-border: #334155;
+  --color-border-strong: #475569;
+  --color-border-subtle: #1e293b;
+
+  /* Primary action */
+  --color-primary: #6366f1;
+  --color-primary-hover: #818cf8;
+  --color-primary-active: #4f46e5;
+  --color-primary-soft: #312e81;
+  --color-on-primary: #ffffff;
+
+  /* Feedback */
+  --color-danger: #ef4444;
+  --color-danger-strong: #dc2626;
+  --color-danger-text: #fca5a5;
+  --color-danger-surface: #7f1d1d;
+  --color-danger-border: #991b1b;
+  --color-success: #22c55e;
+  --color-success-text: #86efac;
+  --color-success-surface: #14532d;
+  --color-success-border: #166534;
+  --color-warning-text: #fbbf24;
+  --color-warning-surface: #78350f;
+  --color-warning-border: #854d0e;
+  --color-info-text: #a5b4fc;
+  --color-info-surface: #1e1b4b;
+  --color-info-border: #312e81;
+
+  /* Focus */
+  --color-focus: #6366f1;
+  --color-focus-ring: rgba(99, 102, 241, 0.4);
+
+  /* Marketing */
+  --color-marketing-text-secondary: #94a3b8;
+  --color-marketing-success: #4ade80;
+  --color-marketing-success-surface: #14532d;
+  --color-marketing-success-border: rgba(74, 222, 128, 0.3);
+}
+
 /* Tailwind theme bridge */
 @import 'tailwindcss';
+
+/* Dark mode variant - uses class strategy */
+@custom-variant dark (&:where(.dark, .dark *));
 
 /*
  * Bridge the design tokens in tokens.css into Tailwind's theme.
