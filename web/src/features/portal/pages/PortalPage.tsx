@@ -7,8 +7,8 @@ import { portalApi } from '../api'
 import { CompleteBanner } from '../components/CompleteBanner'
 import { CompletedItemsList } from '../components/CompletedItemsList'
 import { DeadLinkScreen } from '../components/DeadLinkScreen'
-import { PortalHeader } from '../components/PortalHeader'
-import { PortalFooter } from '../components/PortalFooter'
+import { Header } from '../../../layouts/components/Header'
+import { Footer } from '../../../layouts/components/Footer'
 import { PortalItemRow } from '../components/PortalItemRow'
 import { progressLabel, remainingLabel, uploadPercent } from '../progress'
 import { useUploadQueue } from '../useUploadQueue'
@@ -134,14 +134,14 @@ export function PortalPage() {
   if (status === 'dead') {
     return (
       <div className="flex flex-col min-h-screen bg-surface-muted">
-        <PortalHeader />
+<Header />
         <Container
           as="main"
           className="flex-1 py-6 sm:py-10 md:py-12"
         >
           <DeadLinkScreen />
         </Container>
-        <PortalFooter />
+<Footer />
       </div>
     )
   }
@@ -182,7 +182,7 @@ export function PortalPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-surface-muted">
-      <PortalHeader />
+      <Header />
 
       <Container as="main" className="flex-1 py-6 sm:py-10 md:py-12">
         <p className="sr-only" role="status" aria-live="polite">
@@ -254,7 +254,7 @@ export function PortalPage() {
         )}
       </Container>
 
-      <PortalFooter />
+      <Footer />
     </div>
   )
 }
