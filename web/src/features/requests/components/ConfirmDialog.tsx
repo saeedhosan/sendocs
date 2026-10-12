@@ -47,7 +47,7 @@ export function ConfirmDialog({
             ref={cancelRef}
             variant="secondary"
             size="sm"
-            className="min-h-11 rounded-[10px] sm:h-8 sm:min-h-8 sm:px-3 sm:text-xs"
+            className="min-h-11 rounded-md sm:h-8 sm:min-h-8 sm:px-3 sm:text-xs"
             onClick={onCancel}
             disabled={busy}
           >
@@ -58,7 +58,7 @@ export function ConfirmDialog({
             size="sm"
             className={
               tone === 'danger'
-                ? 'min-h-11 rounded-[10px] sm:h-8 sm:min-h-8 sm:px-3 sm:text-xs border-danger bg-danger text-on-primary enabled:hover:border-danger-strong enabled:hover:bg-danger-strong enabled:hover:text-on-primary'
+                ? 'min-h-11 rounded-md sm:h-8 sm:min-h-8 sm:px-3 sm:text-xs border-danger bg-danger text-on-primary enabled:hover:border-danger-strong enabled:hover:bg-danger-strong enabled:hover:text-on-primary'
                 : 'min-h-11 sm:h-8 sm:min-h-8 sm:px-3 sm:text-xs'
             }
             onClick={onConfirm}

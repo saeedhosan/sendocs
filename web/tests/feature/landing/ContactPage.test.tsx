@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthProvider } from '../../../src/app/providers/AuthProvider'
 import { app } from '../../../src/config/app'
 import { ContactPage } from '../../../src/features/landing/pages/ContactPage'
-import { PublicLayout } from '../../../src/layouts/PublicLayout'
+import { GuestLayout } from '../../../src/layouts/GuestLayout'
 import { stubSession } from '../../helpers/auth'
 
 function renderContact() {
@@ -12,7 +12,7 @@ function renderContact() {
     <MemoryRouter initialEntries={['/contact']}>
       <AuthProvider>
         <Routes>
-          <Route element={<PublicLayout />}>
+          <Route element={<GuestLayout />}>
             <Route path="contact" element={<ContactPage />} />
           </Route>
         </Routes>

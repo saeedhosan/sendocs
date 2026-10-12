@@ -5,8 +5,8 @@ import { app } from '../../config/app'
 
 const LINK = 'transition-colors duration-150 hover:text-ink'
 
-/** The one footer shared by every public page (landing and legal). */
-export function PublicFooter() {
+/** Single footer used across the entire app. */
+export function Footer() {
   return (
     <footer className="w-full mt-auto border-t border-border bg-canvas-muted">
       <Container className="flex flex-wrap items-center justify-center gap-2 min-h-14 text-[0.8125rem] leading-5 text-ink-muted text-center">

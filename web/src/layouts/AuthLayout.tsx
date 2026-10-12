@@ -1,8 +1,7 @@
 import type { ReactNode } from 'react'
 import { Container } from '../components/ui'
-import { PublicHeader } from './components/PublicHeader'
-import { PublicFooter } from './components/PublicFooter'
-import { OwnerHeader } from './components/OwnerHeader'
+import { Header } from './components/Header'
+import { Footer } from './components/Footer'
 import { useAuth } from '../app/providers/useAuth'
 
 const MAIN =
@@ -29,9 +28,9 @@ export function AuthLayout({ children, headerAction }: AuthLayoutProps) {
   return (
     <div className="flex flex-col min-h-screen bg-canvas-muted">
       {isAuthenticated ? (
-        <OwnerHeader />
+        <Header />
       ) : (
-        <PublicHeader mode="auth" authAction={headerAction} />
+        <Header mode="auth" authAction={headerAction} />
       )}
 
       <main className={MAIN}>
@@ -40,7 +39,7 @@ export function AuthLayout({ children, headerAction }: AuthLayoutProps) {
         </Container>
       </main>
 
-      <PublicFooter />
+      <Footer />
     </div>
   )
 }

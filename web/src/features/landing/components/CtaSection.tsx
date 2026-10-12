@@ -15,7 +15,7 @@ export function CtaSection() {
       <div className="shrink-0">
         <Link
           to="/register"
-          className="inline-flex items-center justify-center min-h-11 px-6 rounded-[10px] bg-primary text-on-primary text-[0.8125rem] font-medium shadow-sm transition-colors duration-150 hover:bg-primary-hover"
+          className="inline-flex items-center justify-center h-10 px-6 rounded-md bg-primary text-on-primary text-[0.8125rem] font-medium shadow-sm transition-colors duration-150 hover:bg-primary-hover"
         >
           Get started
         </Link>

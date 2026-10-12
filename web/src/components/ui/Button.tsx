@@ -1,5 +1,5 @@
-import { forwardRef } from 'react'
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
+import { forwardRef } from 'react'
 import { cn } from '../../lib/cn'
 import { SpinnerIcon } from '../icons'
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger'
@@ -9,8 +9,8 @@ const BASE =
   'inline-flex items-center justify-center gap-1.5 rounded-md border font-medium leading-5 whitespace-nowrap cursor-pointer transition-colors duration-150 disabled:opacity-[0.65] disabled:cursor-not-allowed'
 
 const SIZES: Record<ButtonSize, string> = {
-  md: 'h-10 px-4 text-sm',
-  sm: 'h-9 px-3 text-[0.8125rem]',
+  md: 'h-8 px-4 text-sm',
+  sm: 'h-7 px-3 text-[0.8125rem]',
 }
 
 const VARIANTS: Record<ButtonVariant, string> = {
@@ -73,9 +73,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
         iconLeft && <span className="inline-flex items-center">{iconLeft}</span>
       )}
       {children}
-      {!loading &&         iconRight && (
-          <span className="inline-flex items-center">{iconRight}</span>
-        )}
+      {!loading && iconRight && (
+        <span className="inline-flex items-center">{iconRight}</span>
+      )}
     </button>
   )
 })
