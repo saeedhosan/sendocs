@@ -57,7 +57,7 @@ final readonly class UploadDocument
 
         $portalRequest->loadMissing('items');
         $item = $portalRequest->items->first(
-            static fn (RequestItem $requestItem): bool => $requestItem->getKey() === $itemId,
+            static fn(RequestItem $requestItem): bool => $requestItem->getKey() === $itemId,
         );
 
         if ($item === null) {
@@ -74,11 +74,11 @@ final readonly class UploadDocument
             );
         }
 
-        $storageKey = $portalRequest->getKey().'/'.Str::random(64);
+        $storageKey = $portalRequest->getKey() . '/' . Str::random(64);
         $stored     = null;
 
         try {
-            $storedKey = Storage::disk('s3')->putFileAs(
+            $storedKey = Storage::putFileAs(
                 $portalRequest->getKey(),
                 $file,
                 basename($storageKey),
@@ -150,7 +150,7 @@ final readonly class UploadDocument
         }
 
         try {
-            if (Storage::disk('s3')->delete($storageKey)) {
+            if (Storage::delete($storageKey)) {
                 return;
             }
         } catch (Throwable $throwable) {

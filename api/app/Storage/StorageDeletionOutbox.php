@@ -43,7 +43,7 @@ final class StorageDeletionOutbox
 
         foreach ($entries as $entry) {
             try {
-                if (! Storage::disk('s3')->delete($entry->storage_key)) {
+                if (! Storage::delete($entry->storage_key)) {
                     throw new RuntimeException('The stored object could not be deleted.');
                 }
 

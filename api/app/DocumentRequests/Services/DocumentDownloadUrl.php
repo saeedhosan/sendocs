@@ -13,11 +13,11 @@ final class DocumentDownloadUrl
 
     public function for(Document $document): string
     {
-        return Storage::disk('s3')->temporaryUrl(
+        return Storage::temporaryUrl(
             $document->storage_key,
             now()->addMinutes(self::TTL_MINUTES),
             [
-                'ResponseContentDisposition' => 'attachment; filename="'.addcslashes($document->original_name, '\\"').'"',
+                'ResponseContentDisposition' => 'attachment; filename="' . addcslashes($document->original_name, '\\"') . '"',
                 'ResponseContentType'        => $document->mime_type,
             ],
         );
