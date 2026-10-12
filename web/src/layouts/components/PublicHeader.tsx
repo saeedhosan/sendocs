@@ -31,7 +31,6 @@ export type PublicHeaderMode = 'auto' | 'auth'
 export type PublicHeaderProps = {
   mode?: PublicHeaderMode
   authAction?: { label: string; to: string }
-  authLogoVariant?: 'auth' | 'auth-login' | 'auth-register'
 }
 
 /**
@@ -45,7 +44,6 @@ export type PublicHeaderProps = {
 export function PublicHeader({
   mode = 'auto',
   authAction,
-  authLogoVariant = 'auth',
 }: PublicHeaderProps) {
   const { pathname } = useLocation()
   const { status } = useAuth()
@@ -70,7 +68,7 @@ export function PublicHeader({
             : CONTAINER_DOCUMENT,
         )}
       >
-        <Logo variant={isLanding ? 'brand' : authLogoVariant} />
+        <Logo variant="brand" />
 
         {isAuth ? (
           authAction ? (

@@ -32,7 +32,6 @@ export type AuthLayoutProps = {
   headerAction?: { label: string; to: string }
   /** Page-specific footer copy/order/layout when a reference differs. */
   footerVariant?: FooterVariant
-  logoVariant?: 'auth' | 'auth-login' | 'auth-register'
   layoutVariant?: 'default' | 'login' | 'reset' | 'change'
 }
 
@@ -58,7 +57,6 @@ export function AuthLayout({
   children,
   headerAction,
   footerVariant = 'default',
-  logoVariant = 'auth',
   layoutVariant = 'default',
 }: AuthLayoutProps) {
   const isReset = footerVariant === 'reset-password'
@@ -74,7 +72,7 @@ export function AuthLayout({
 
   return (
     <div className="flex flex-col min-h-screen bg-canvas-muted">
-      <PublicHeader mode="auth" authAction={headerAction} authLogoVariant={logoVariant} />
+      <PublicHeader mode="auth" authAction={headerAction} />
 
       <main className={cn(MAIN, layoutVariant === 'default' && 'py-6')}>
         <div

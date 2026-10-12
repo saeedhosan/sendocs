@@ -1,69 +1,56 @@
 import { Link } from 'react-router-dom'
 import { cn } from '../../lib/cn'
 import { app } from '../../config/app'
-import { FileTextIcon, LockIcon } from '../icons'
 
 const LOGO = 'inline-flex items-center gap-2.5 text-ink'
-const MARK_BRAND =
+const MARK_TILE =
   'inline-flex items-center justify-center size-7 rounded-[8px] bg-primary text-on-primary text-sm font-semibold tracking-[-0.01em]'
-const MARK_AUTH =
-  'inline-flex items-center justify-center size-8 rounded-[10px] bg-primary text-on-primary'
-const MARK_AUTH_LOGIN = 'inline-flex items-center justify-center text-primary'
-const MARK_OWNER =
+const MARK_TILE_OWNER =
   'inline-flex items-center justify-center size-6 rounded-[6px] bg-primary text-on-primary font-mono text-xs font-bold shadow-sm'
-const MARK_PORTAL = 'inline-flex items-center justify-center text-primary'
+const MARK_IMAGE = 'size-7 object-contain'
+const MARK_IMAGE_OWNER = 'size-6 object-contain'
 const WORDMARK_BRAND = 'text-[0.9375rem] font-semibold tracking-[-0.025em]'
-const WORDMARK_AUTH = 'text-lg font-semibold tracking-tight'
-const WORDMARK_AUTH_REGISTER = 'text-base font-semibold tracking-tight'
 const WORDMARK_OWNER = 'text-[0.9375rem] font-medium tracking-tight'
-const WORDMARK_PORTAL = 'text-base font-semibold tracking-tight'
 
 export type LogoProps = {
   /** Where the mark links. Pass `null` for non-navigating surfaces. */
   to?: string | null
   className?: string
-  variant?: 'brand' | 'auth' | 'auth-login' | 'auth-register' | 'owner' | 'portal'
+  variant?: 'brand' | 'owner'
+  /**
+   * Optional mark image. When set it replaces the default brand tile/letter,
+   * e.g. once a real logo asset exists.
+   */
+  imageSrc?: string
+  imageAlt?: string
 }
 
-/** The shared wordmark supports the distinct treatments used by each reference. */
-export function Logo({ to = '/', className, variant = 'brand' }: LogoProps) {
-  const isPortal = variant === 'portal'
-  const isAuth = variant === 'auth' || variant === 'auth-register' || variant === 'auth-login'
-  const markClass =
-    isPortal
-      ? MARK_PORTAL
-      : variant === 'auth-login'
-        ? MARK_AUTH_LOGIN
-        : variant === 'auth' || variant === 'auth-register'
-          ? MARK_AUTH
-          : variant === 'owner'
-            ? MARK_OWNER
-            : MARK_BRAND
-  const wordmarkClass =
-    isPortal
-      ? WORDMARK_PORTAL
-      : variant === 'auth-register'
-        ? WORDMARK_AUTH_REGISTER
-        : variant === 'auth' || variant === 'auth-login'
-          ? WORDMARK_AUTH
-          : variant === 'owner'
-            ? WORDMARK_OWNER
-            : WORDMARK_BRAND
-  const mark =
-    isPortal ? (
-      <FileTextIcon size={16} />
-    ) : isAuth ? (
-      <LockIcon size={variant === 'auth-login' ? 20 : 18} />
-    ) : (
-      'S'
-    )
-  const gapClass =
-    isPortal ? 'gap-1.5' : variant === 'owner' || variant === 'auth-login' ? 'gap-2' : undefined
+/** The single shared logo: the brand mark and wordmark used across every surface. */
+export function Logo({
+  to = '/',
+  className,
+  variant = 'brand',
+  imageSrc,
+  imageAlt,
+}: LogoProps) {
+  const isOwner = variant === 'owner'
+  const mark = imageSrc ? (
+    <img
+      src={imageSrc}
+      alt={imageAlt ?? ''}
+      aria-hidden={!imageAlt}
+      className={isOwner ? MARK_IMAGE_OWNER : MARK_IMAGE}
+    />
+  ) : (
+    <span className={isOwner ? MARK_TILE_OWNER : MARK_TILE} aria-hidden="true">
+      S
+    </span>
+  )
+  const wordmarkClass = isOwner ? WORDMARK_OWNER : WORDMARK_BRAND
+  const gapClass = isOwner ? 'gap-2' : undefined
   const content = (
     <>
-      <span className={markClass} aria-hidden="true">
-        {mark}
-      </span>
+      {mark}
       <span className={wordmarkClass}>{app.name}</span>
     </>
   )

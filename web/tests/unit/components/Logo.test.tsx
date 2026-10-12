@@ -14,13 +14,11 @@ function renderLogo(props: ComponentProps<typeof Logo> = {}) {
 }
 
 describe('Logo', () => {
-  it.each(['brand', 'auth', 'auth-login', 'auth-register', 'owner', 'portal'] as const)(
-    'renders the wordmark for the %s variant',
-    (variant) => {
-      renderLogo({ variant })
-      expect(screen.getByText(app.name)).toBeInTheDocument()
-    },
-  )
+  it.each(['brand', 'owner'] as const)('renders the wordmark for the %s variant', (variant) => {
+    renderLogo({ variant })
+    expect(screen.getByText(app.name)).toBeInTheDocument()
+    expect(screen.getByText('S', { selector: 'span' })).toBeInTheDocument()
+  })
 
   it('links to the configured destination by default', () => {
     renderLogo({ to: '/terms' })
@@ -36,9 +34,10 @@ describe('Logo', () => {
     expect(screen.getByText(app.name)).toBeInTheDocument()
   })
 
-  it('renders the portal mark as a bare document glyph', () => {
-    const { container } = renderLogo({ to: null, variant: 'portal' })
-    expect(container.querySelector('svg')).toBeInTheDocument()
-    expect(screen.getByText(app.name)).toBeInTheDocument()
+  it('renders the mark image instead of the letter when imageSrc is set', () => {
+    renderLogo({ imageSrc: '/mark.svg', imageAlt: 'Sendocs mark' })
+    const image = screen.getByRole('img', { name: 'Sendocs mark' })
+    expect(image).toHaveAttribute('src', '/mark.svg')
+    expect(screen.queryByText('S', { selector: 'span' })).not.toBeInTheDocument()
   })
 })
