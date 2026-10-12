@@ -32,7 +32,7 @@ export function ItemRow({ item, onDelete, onDownload }: ItemRowProps) {
         <div className="flex items-center gap-2 w-full pt-1 border-t border-border-subtle sm:w-auto sm:pt-0 sm:border-t-0 sm:shrink-0">
           {file.downloadUrl ? (
             <a
-              className="inline-flex flex-1 items-center justify-center gap-1.5 min-h-9 px-3 rounded-[10px] bg-surface-muted text-[0.8125rem] font-medium text-primary hover:bg-surface-muted sm:flex-none sm:bg-transparent"
+              className="inline-flex flex-1 items-center justify-center gap-1.5 min-h-9 px-3 rounded-md bg-surface-muted text-[0.8125rem] font-medium text-primary hover:bg-surface-muted sm:flex-none sm:bg-transparent"
               href={file.downloadUrl}
               download={file.originalName}
               onClick={() => onDownload(item)}
@@ -46,7 +46,7 @@ export function ItemRow({ item, onDelete, onDownload }: ItemRowProps) {
           <Button
             variant="ghost"
             size="sm"
-            className="flex-1 min-h-11 px-3 rounded-[10px] !bg-danger-surface !text-danger-text enabled:hover:!bg-danger-surface enabled:hover:!text-danger-text sm:flex-none sm:min-h-0 sm:!h-auto sm:!px-0 sm:!bg-transparent"
+            className="flex-1 min-h-11 px-3 rounded-md !bg-danger-surface !text-danger-text enabled:hover:!bg-danger-surface enabled:hover:!text-danger-text sm:flex-none sm:min-h-0 sm:!h-auto sm:!px-0 sm:!bg-transparent"
             onClick={() => onDelete(item)}
           >
             Delete

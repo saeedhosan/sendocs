@@ -14,19 +14,19 @@ const ACTIONS = 'flex items-center gap-3'
 const LOGIN_LINK =
   'px-3 py-1.5 text-[0.8125rem] font-medium text-marketing-text-secondary transition-colors duration-150 hover:text-ink'
 const GET_STARTED =
-  'inline-flex items-center justify-center min-h-[2.125rem] px-3.5 rounded-[10px] bg-primary text-on-primary text-[0.8125rem] font-medium shadow-sm transition-colors duration-150 hover:bg-primary-hover'
+  'inline-flex items-center justify-center min-h-[2.125rem] px-3.5 rounded-md bg-primary text-on-primary text-[0.8125rem] font-medium shadow-sm transition-colors duration-150 hover:bg-primary-hover'
 const AUTH_ACTION =
   'text-sm font-medium text-ink-muted transition-colors duration-150 hover:text-ink'
 
 const TRIGGER_BASE = 'inline-flex items-center cursor-pointer transition-colors duration-150 hover:text-ink'
 const TRIGGER_DASHBOARD = cn(
   TRIGGER_BASE,
-  'gap-1.5 min-h-11 px-3 py-2 rounded-[8px] bg-transparent text-[0.8125rem] font-medium text-ink-secondary hover:bg-surface-subtle',
+  'gap-1.5 min-h-11 px-3 py-2 rounded-md bg-transparent text-[0.8125rem] font-medium text-ink-secondary hover:bg-surface-subtle',
 )
 const AVATAR =
   'inline-flex items-center justify-center size-6 rounded-full bg-surface-sunken font-mono text-[0.6875rem] font-medium text-ink-secondary'
 const MENU_DASHBOARD =
-  'absolute right-0 top-[calc(100%+0.25rem)] z-50 w-48 p-1 border border-border-subtle rounded-[10px] bg-surface shadow-lg'
+  'absolute right-0 top-[calc(100%+0.25rem)] z-50 w-48 p-1 border border-border-subtle rounded-md bg-surface shadow-lg'
 const EMAIL =
   'px-3 py-2 border-b border-border-subtle/80 font-mono text-[0.6875rem] text-ink-muted overflow-hidden text-ellipsis whitespace-nowrap'
 const ITEM_BASE =

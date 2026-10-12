@@ -42,7 +42,7 @@ export function LinkReveal({ open, link, onClose }: LinkRevealProps) {
         <Button
           variant="secondary"
           onClick={onClose}
-          className="min-h-11 h-11 px-6 rounded-[10px] border-border bg-surface text-ink-secondary text-[13px] hover:bg-surface-muted w-full sm:w-auto"
+          className="min-h-11 h-11 px-6 rounded-md border-border bg-surface text-ink-secondary text-[13px] hover:bg-surface-muted w-full sm:w-auto"
         >
           Done
         </Button>
@@ -51,7 +51,7 @@ export function LinkReveal({ open, link, onClose }: LinkRevealProps) {
       <div className="flex flex-col gap-2.5 mt-5 sm:flex-row sm:items-center">
         <input
           ref={inputRef}
-          className="w-full min-w-0 min-h-11 h-11 px-3 border border-border-subtle rounded-[10px] bg-surface-muted text-ink font-mono text-[13px] truncate focus:outline-none focus-visible:outline-2 focus-visible:outline-focus focus-visible:outline-offset-1"
+          className="w-full min-w-0 min-h-11 h-11 px-3 border border-border-subtle rounded-md bg-surface-muted text-ink font-mono text-[13px] truncate focus:outline-none focus-visible:outline-2 focus-visible:outline-focus focus-visible:outline-offset-1"
           type="text"
           readOnly
           value={link?.url ?? ''}
@@ -62,7 +62,7 @@ export function LinkReveal({ open, link, onClose }: LinkRevealProps) {
           type="button"
           iconLeft={copied ? <CheckIcon size={16} /> : <CopyIcon size={16} />}
           onClick={() => void copy()}
-          className="min-h-11 h-11 w-full rounded-[10px] !text-[13px] sm:w-auto"
+          className="min-h-11 h-11 w-full rounded-md !text-[13px] sm:w-auto"
         >
           {copied ? 'Copied' : 'Copy link'}
         </Button>
