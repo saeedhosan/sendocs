@@ -1,12 +1,12 @@
 import { useNavigate } from 'react-router-dom'
 import { Logo } from '../components/navigation/Logo'
-import { Button, Container } from '../components/ui'
+import { Button } from '../components/ui'
 
 export function NotFoundPage() {
   const navigate = useNavigate()
 
   return (
-    <Container className="flex flex-col items-center justify-center min-h-screen py-6 text-center">
+    <div className="w-full mx-auto px-3 min-[576px]:max-w-135 min-[768px]:max-w-180 min-[992px]:max-w-240 min-[1200px]:max-w-285 min-[1400px]:max-w-330 flex flex-col items-center justify-center min-h-screen py-6 text-center">
       <Logo />
       <p className="font-mono text-sm tracking-[0.1em] uppercase text-primary">
         Error 404
@@ -23,6 +23,6 @@ export function NotFoundPage() {
         </Button>
         <Button onClick={() => navigate('/')}>Back to home</Button>
       </div>
-    </Container>
+    </div>
   )
 }

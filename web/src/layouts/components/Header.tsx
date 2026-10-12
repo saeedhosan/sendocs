@@ -1,6 +1,5 @@
 import { useAuth } from "../../app/providers/useAuth";
 import { Logo } from "../../components/navigation/Logo";
-import { Container } from "../../components/ui";
 import { cn } from "../../lib/cn";
 import { AuthMenu } from "./headers/AuthMenu";
 import { GuestMenu } from "./headers/GuestMenu";
@@ -28,7 +27,7 @@ export function Header({ mode = "auto", authAction }: HeaderProps) {
                 "top-0 z-50 w-full border-b border-border fixed backdrop-blur-md bg-surface",
             )}
         >
-            <Container className={cn("flex items-center justify-between gap-4 h-14")}>
+            <div className="w-full mx-auto px-3 min-[576px]:max-w-135 min-[768px]:max-w-180 min-[992px]:max-w-240 min-[1200px]:max-w-285 min-[1400px]:max-w-330 flex items-center justify-between gap-4 h-14">
                 <Logo variant="brand" />
 
                 {isAuth ? (
@@ -38,7 +37,7 @@ export function Header({ mode = "auto", authAction }: HeaderProps) {
                 ) : (
                     <GuestMenu />
                 )}
-            </Container>
+            </div>
         </header>
     );
 }

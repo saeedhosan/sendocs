@@ -1,5 +1,4 @@
 import { Outlet } from "react-router-dom";
-import { Container } from "../components/ui";
 import { cn } from "../lib/cn";
 import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
@@ -19,9 +18,9 @@ export function GuestLayout() {
           "[view-transition-name:page-content] flex-1 w-full"
         )}
       >
-        <Container className={"flex flex-col gap-6 mt-20"}>
+        <div className="w-full mx-auto px-3 min-[576px]:max-w-135 min-[768px]:max-w-180 min-[992px]:max-w-240 min-[1200px]:max-w-285 min-[1400px]:max-w-330 flex flex-col gap-6 mt-20">
           <Outlet />
-        </Container>
+        </div>
       </main>
       <Footer />
     </div>

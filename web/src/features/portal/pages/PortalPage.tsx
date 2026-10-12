@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { ErrorState } from '../../../components/feedback'
-import { Container, ProgressBar, Spinner } from '../../../components/ui'
+import { ProgressBar, Spinner } from '../../../components/ui'
 import { ApiError } from '../../../lib/api/client'
 import { portalApi } from '../api'
 import { CompleteBanner } from '../components/CompleteBanner'
@@ -135,12 +135,9 @@ export function PortalPage() {
     return (
       <div className="flex flex-col min-h-screen bg-surface-muted">
 <Header />
-        <Container
-          as="main"
-          className="flex-1 py-6 sm:py-10 md:py-12"
-        >
+        <main className="w-full mx-auto px-3 min-[576px]:max-w-135 min-[768px]:max-w-180 min-[992px]:max-w-240 min-[1200px]:max-w-285 min-[1400px]:max-w-330 flex-1 py-6 sm:py-10 md:py-12">
           <DeadLinkScreen />
-        </Container>
+        </main>
 <Footer />
       </div>
     )
@@ -184,7 +181,7 @@ export function PortalPage() {
     <div className="flex flex-col min-h-screen bg-surface-muted">
       <Header />
 
-      <Container as="main" className="flex-1 py-6 sm:py-10 md:py-12">
+      <main className="w-full mx-auto px-3 min-[576px]:max-w-135 min-[768px]:max-w-180 min-[992px]:max-w-240 min-[1200px]:max-w-285 min-[1400px]:max-w-330 flex-1 py-6 sm:py-10 md:py-12">
         <p className="sr-only" role="status" aria-live="polite">
           {announcement}
         </p>
@@ -252,7 +249,7 @@ export function PortalPage() {
             </ul>
           </>
         )}
-      </Container>
+      </main>
 
       <Footer />
     </div>

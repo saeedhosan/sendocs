@@ -38,7 +38,7 @@ export function ConfirmDialog({
             title={title}
             tone="default"
             variant="centered"
-            className="border-border shadow-md"
+            className="w-[calc(100vw-2rem)] max-w-md border-border shadow-md"
             initialFocusRef={cancelRef}
             footer={
                 <>
