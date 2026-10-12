@@ -7,6 +7,13 @@ const MAIN =
   '[view-transition-name:page-content] flex flex-1 flex-col items-center justify-center w-full px-4'
 const CARD =
   'w-full max-w-md mx-auto p-8 bg-surface border border-border rounded-[10px] shadow-sm [&_input:not([type=checkbox]):not([type=radio])]:rounded-[10px] [&_button:not(.absolute)]:rounded-[10px]'
+const FOOTER_INNER =
+  `${AUTH_CONTAINER} flex flex-wrap items-center justify-center gap-2 text-xs text-ink-muted text-center`
+const FOOTER_RESET_INNER =
+  `${AUTH_CONTAINER} flex flex-col items-center justify-center gap-4 text-[0.8125rem] leading-[1.125rem] text-ink-body text-center sm:flex-row`
+const FOOTER_RESET_LINK = 'transition-colors duration-150 hover:text-ink'
+const CHANGE_FOOTER_INNER = `${AUTH_CONTAINER} text-center text-xs text-ink-muted`
+const EXTRA_LINK = 'transition-colors duration-150'
 
 export type FooterVariant =
   | 'default'
@@ -36,6 +43,17 @@ export function AuthLayout({
   logoVariant = 'auth',
   layoutVariant = 'default',
 }: AuthLayoutProps) {
+  const isReset = footerVariant === 'reset-password'
+  const isChange = footerVariant === 'change'
+  const footerLinks = isReset ? resetLinks : legalLinks
+  const copyright = isReset
+    ? `© 2025 ${app.name} Technologies Inc.`
+    : `© 2025 ${app.name} Inc.`
+  const linkClass =
+    footerVariant === 'login'
+      ? `${EXTRA_LINK} hover:text-ink-secondary`
+      : `${EXTRA_LINK} hover:text-ink-emphasis`
+
   return (
     <div className="flex flex-col min-h-screen bg-canvas-muted">
       <PublicHeader mode="auth" authAction={headerAction} authLogoVariant={logoVariant} />
@@ -63,7 +81,71 @@ export function AuthLayout({
         </div>
       </main>
 
-      <PublicFooter mode="auth" variant={footerVariant} />
+      {isReset ? (
+        <footer className="w-full py-6">
+          <Container className={FOOTER_RESET_INNER}>
+            <span>{copyright}</span>
+            <div className="flex items-center gap-4">
+              {footerLinks.map((link, index) => (
+                <Fragment key={link.to}>
+                  {index > 0 ? (
+                    <span
+                      aria-hidden="true"
+                      className="transition-colors duration-150"
+                    >
+                      •
+                    </span>
+                  ) : null}
+                  <Link to={link.to} className={FOOTER_RESET_LINK}>
+                    {link.label}
+                  </Link>
+                </Fragment>
+              ))}
+            </div>
+          </Container>
+        </footer>
+      ) : isChange ? (
+        <footer className="w-full border-t border-border bg-surface py-6">
+          <Container className={CHANGE_FOOTER_INNER}>
+            <p>
+              © 2025 {app.name} Inc. ·{' '}
+              {footerLinks.map((link, index) => (
+                <Fragment key={link.to}>
+                  {index > 0 ? ' · ' : null}
+                  <Link to={link.to} className={linkClass}>
+                    {link.label}
+                  </Link>
+                </Fragment>
+              ))}
+            </p>
+          </Container>
+        </footer>
+      ) : (
+        <footer
+          className={cn(
+            'w-full border-t border-border py-6',
+            whiteFooters.includes(footerVariant) && 'bg-surface',
+            whiteFooters.includes(footerVariant) && '[&>div]:max-sm:flex-col',
+          )}
+        >
+          <Container className={FOOTER_INNER}>
+            <span>{copyright}</span>
+            {footerLinks.map((link) => (
+              <Fragment key={link.to}>
+                <span
+                  aria-hidden="true"
+                  className={whiteFooters.includes(footerVariant) ? 'max-sm:hidden' : undefined}
+                >
+                  ·
+                </span>
+                <Link to={link.to} className={linkClass}>
+                  {link.label}
+                </Link>
+              </Fragment>
+            ))}
+          </Container>
+        </footer>
+      )}
     </div>
   )
 }
