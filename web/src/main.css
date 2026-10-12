@@ -34,6 +34,7 @@
   --color-border: #e2e8f0;
   --color-border-strong: #cbd5e1;
   --color-border-subtle: #e2e8f0;
+  --code-block-border-color: #c8cdd3;
 
   /* Primary action */
   --color-primary: #4f46e5;
@@ -113,6 +114,7 @@
   --color-border: #334155;
   --color-border-strong: #475569;
   --color-border-subtle: #1e293b;
+  --code-block-border-color: rgba(255, 255, 255, 0.12);
 
   /* Primary action */
   --color-primary: #6366f1;
@@ -439,4 +441,37 @@ select:-webkit-autofill:focus {
   ::view-transition-new(page-content) {
     animation: none;
   }
+}
+
+/* Scrollbar - NeetCode exact style */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--code-block-border-color) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--code-block-border-color);
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.dark-theme *::-webkit-scrollbar-thumb,
+.dark-theme *::-webkit-scrollbar-thumb:hover {
+  background: #636363;
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
 }
