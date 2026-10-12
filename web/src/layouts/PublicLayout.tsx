@@ -17,7 +17,7 @@ export function PublicLayout() {
     <div
       className={cn(
         'flex flex-col min-h-screen',
-        isLanding ? 'bg-surface font-sans text-base leading-6 text-ink' : 'bg-canvas',
+        isLanding ? 'bg-surface font-sans text-ink' : 'bg-canvas',
       )}
     >
       <PublicHeader />
