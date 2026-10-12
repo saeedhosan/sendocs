@@ -3,6 +3,8 @@ import { Container } from '../components/ui'
 import { Menu } from '../components/navigation/Menu'
 import { FOOTER_ITEMS } from '../components/navigation/menu-items'
 import { PublicHeader } from './components/PublicHeader'
+import { OwnerHeader } from './components/OwnerHeader'
+import { useAuth } from '../app/providers/useAuth'
 import { cn } from '../lib/cn'
 import { app } from '../config/app'
 
@@ -38,7 +40,9 @@ const whiteFooters: FooterVariant[] = ['login', 'forget', 'change']
 
 /**
  * The shared shell for every unauthenticated page: brand header, a centered
- * card, and the legal footer. It only lays out; pages own their content.
+ * card, and the legal footer. It only lays out; pages own their content. The
+ * signed-in settings pages reuse it, and get the dashboard header instead so
+ * every authenticated surface shares one header.
  */
 export function AuthLayout({
   children,
@@ -46,6 +50,8 @@ export function AuthLayout({
   footerVariant = 'default',
   layoutVariant = 'default',
 }: AuthLayoutProps) {
+  const { status } = useAuth()
+  const isAuthenticated = status === 'authenticated'
   const isReset = footerVariant === 'reset-password'
   const isChange = footerVariant === 'change'
   const footerItems = isReset ? [...FOOTER_ITEMS].reverse() : FOOTER_ITEMS
@@ -59,7 +65,11 @@ export function AuthLayout({
 
   return (
     <div className="flex flex-col min-h-screen bg-canvas-muted">
-      <PublicHeader mode="auth" authAction={headerAction} />
+      {isAuthenticated ? (
+        <OwnerHeader />
+      ) : (
+        <PublicHeader mode="auth" authAction={headerAction} />
+      )}
 
       <main className={cn(MAIN, layoutVariant === 'default' && 'py-6')}>
         <Container className="flex flex-1 items-center justify-center w-full">
