@@ -16,22 +16,18 @@ const GET_STARTED =
 const AUTH_ACTION =
   'text-sm font-medium text-ink-muted transition-colors duration-150 hover:text-ink'
 
-export type PublicHeaderMode = 'auto' | 'auth'
+export type HeaderMode = 'auto' | 'auth'
 
-export type PublicHeaderProps = {
-  mode?: PublicHeaderMode
+export type HeaderProps = {
+  mode?: HeaderMode
   authAction?: { label: string; to: string }
 }
 
 /**
- * The one public header, shared unchanged by the landing and legal pages: the
- * brand mark plus the conversion actions (or a dashboard link once signed in).
- * The auth shell passes an `authAction` and gets a single muted link instead.
+ * Single header used across the entire app. For auth pages, pass mode="auth" and
+ * optionally authAction; for authenticated users on public surfaces show Dashboard.
  */
-export function PublicHeader({
-  mode = 'auto',
-  authAction,
-}: PublicHeaderProps) {
+export function Header({ mode = 'auto', authAction }: HeaderProps) {
   const { pathname } = useLocation()
   const { status } = useAuth()
   const isAuthenticated = status === 'authenticated'

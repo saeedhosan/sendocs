@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { Container } from '../components/ui'
-import { PublicHeader } from './components/PublicHeader'
-import { PublicFooter } from './components/PublicFooter'
+import { Header } from './components/Header'
+import { Footer } from './components/Footer'
 import { OwnerHeader } from './components/OwnerHeader'
 import { useAuth } from '../app/providers/useAuth'
 
@@ -31,7 +31,7 @@ export function AuthLayout({ children, headerAction }: AuthLayoutProps) {
       {isAuthenticated ? (
         <OwnerHeader />
       ) : (
-        <PublicHeader mode="auth" authAction={headerAction} />
+        <Header mode="auth" authAction={headerAction} />
       )}
 
       <main className={MAIN}>
@@ -40,7 +40,7 @@ export function AuthLayout({ children, headerAction }: AuthLayoutProps) {
         </Container>
       </main>
 
-      <PublicFooter />
+      <Footer />
     </div>
   )
 }

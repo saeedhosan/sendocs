@@ -1,8 +1,8 @@
 import { Outlet, useLocation } from 'react-router-dom'
 import { Container } from '../components/ui'
 import { cn } from '../lib/cn'
-import { PublicFooter } from './components/PublicFooter'
-import { PublicHeader } from './components/PublicHeader'
+import { Footer } from './components/Footer'
+import { Header } from './components/Header'
 
 /**
  * The shell for every public page: marketing header, content, and footer.
@@ -20,7 +20,7 @@ export function PublicLayout() {
         isLanding ? 'bg-surface font-sans text-ink' : 'bg-canvas',
       )}
     >
-      <PublicHeader />
+      <Header />
       <main
         className={cn(
           '[view-transition-name:page-content] flex-1 w-full',
@@ -32,7 +32,7 @@ export function PublicLayout() {
           <Outlet />
         </Container>
       </main>
-      <PublicFooter />
+      <Footer />
     </div>
   )
 }
