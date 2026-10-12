@@ -132,7 +132,7 @@ export function RequestsPage() {
     : `${pageNumber} / ${pageNumber}`
 
   return (
-    <div className="flex flex-col gap-0 py-6 sm:py-8">
+    <div className="flex flex-col">
       <div className="flex flex-col gap-3 pb-6 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="flex items-center gap-2.5">

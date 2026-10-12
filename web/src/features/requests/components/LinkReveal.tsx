@@ -36,7 +36,7 @@ export function LinkReveal({ open, link, onClose }: LinkRevealProps) {
       title="Your request is ready."
       description="Copy this link and send it to your client. The raw link is shown once only."
       variant="centered"
-      className="create-request-theme border-border-subtle"
+      className="border-border-subtle"
       initialFocusRef={inputRef}
       footer={
         <Button

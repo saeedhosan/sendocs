@@ -39,7 +39,7 @@ export function ConfirmDialog({
       title={title}
       tone="default"
       variant="centered"
-      className="request-detail-theme border-neutral-200 shadow-[0_4px_12px_rgba(18,17,19,0.08)]"
+      className="border-neutral-200 shadow-[0_4px_12px_rgba(18,17,19,0.08)]"
       initialFocusRef={cancelRef}
       footer={
         <>

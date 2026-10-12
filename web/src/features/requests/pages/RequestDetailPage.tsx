@@ -165,7 +165,7 @@ export function RequestDetailPage() {
   }
 
   return (
-    <div className="request-detail-theme flex flex-col gap-6 py-8">
+    <div className="flex flex-col gap-6">
       <Link
         to="/dashboard"
         className="inline-flex items-center gap-1 self-start -mb-2 text-xs text-ink-muted hover:text-ink"
