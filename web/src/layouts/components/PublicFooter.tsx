@@ -1,5 +1,6 @@
-import { Fragment } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
+import { Menu } from '../../components/navigation/Menu'
+import { FOOTER_ITEMS } from '../../components/navigation/menu-items'
 import { Container } from '../../components/ui'
 import { cn } from '../../lib/cn'
 import { app } from '../../config/app'
@@ -17,17 +18,6 @@ const CHANGE_FOOTER_INNER = `${CONTAINER_DOCUMENT} text-center text-xs text-ink-
 const LINK = 'transition-colors duration-150 hover:text-ink'
 const LINK_ACTIVE = 'text-ink-secondary font-medium'
 
-const links = [
-  { label: 'Terms', to: '/terms' },
-  { label: 'Privacy', to: '/privacy' },
-  { label: 'Contact', to: '/contact' },
-]
-
-const landingLinks = [
-  { label: 'Terms', to: '/terms' },
-  { label: 'Privacy', to: '/privacy' },
-]
-
 export type PublicFooterMode = 'auto' | 'auth'
 export type PublicAuthFooterVariant = 'default' | 'login' | 'forget' | 'change' | 'reset-password'
 
@@ -36,7 +26,7 @@ export type PublicFooterProps = {
   variant?: PublicAuthFooterVariant
 }
 
-/** The minimal public footer shared by the landing and legal pages. */
+/** The minimal public footer shared by the landing, legal, and auth pages. */
 export function PublicFooter({
   mode = 'auto',
   variant = 'default',
@@ -44,17 +34,10 @@ export function PublicFooter({
   const { pathname } = useLocation()
   const isAuth = mode === 'auth'
   const isLanding = pathname === '/' && !isAuth
-  const visibleLinks = isLanding ? landingLinks : links
   const isReset = variant === 'reset-password'
   const isChange = variant === 'change'
   const whiteFooter = variant === 'login' || variant === 'forget' || isChange
-  const footerLinks = isReset
-    ? [
-        { label: 'Contact', to: '/contact' },
-        { label: 'Privacy', to: '/privacy' },
-        { label: 'Terms', to: '/terms' },
-      ]
-    : links
+  const visibleLinks = isReset ? [...FOOTER_ITEMS].reverse() : FOOTER_ITEMS
   const copyright = isReset
     ? `© 2025 ${app.name} Technologies Inc.`
     : `© 2025 ${app.name} Inc.`
@@ -68,12 +51,13 @@ export function PublicFooter({
         <Container className={FOOTER_RESET_INNER}>
           <span>{copyright}</span>
           <div className="flex items-center gap-4">
-            {footerLinks.map((link, index) => (
-              <Fragment key={link.to}>
-                {index > 0 ? <span aria-hidden="true">•</span> : null}
-                <Link to={link.to} className={FOOTER_RESET_LINK}>{link.label}</Link>
-              </Fragment>
-            ))}
+            <Menu
+              as="span"
+              items={visibleLinks}
+              separator="•"
+              itemClassName={FOOTER_RESET_LINK}
+              highlightActive={false}
+            />
           </div>
         </Container>
       </footer>
@@ -86,12 +70,14 @@ export function PublicFooter({
         <Container className={CHANGE_FOOTER_INNER}>
           <p>
             © 2025 {app.name} Inc. ·{' '}
-            {links.map((link, index) => (
-              <Fragment key={link.to}>
-                {index > 0 ? ' · ' : null}
-                <Link to={link.to} className={linkClass}>{link.label}</Link>
-              </Fragment>
-            ))}
+            <Menu
+              as="span"
+              className="inline"
+              items={FOOTER_ITEMS}
+              separator=" · "
+              itemClassName={linkClass}
+              highlightActive={false}
+            />
           </p>
         </Container>
       </footer>
@@ -103,12 +89,16 @@ export function PublicFooter({
       <footer className={cn('w-full border-t border-border py-6', whiteFooter && 'bg-surface', whiteFooter && '[&>div]:max-sm:flex-col')}>
         <Container className={FOOTER_INNER}>
           <span>{copyright}</span>
-          {links.map((link) => (
-            <Fragment key={link.to}>
-              <span aria-hidden="true" className={whiteFooter ? 'max-sm:hidden' : undefined}>·</span>
-              <Link to={link.to} className={linkClass}>{link.label}</Link>
-            </Fragment>
-          ))}
+          <Menu
+            as="span"
+            items={FOOTER_ITEMS}
+            separator="·"
+            leadingSeparator
+            className="inline-flex items-center gap-2"
+            itemClassName={linkClass}
+            highlightActive={false}
+            separatorClassName={whiteFooter ? 'max-sm:hidden' : undefined}
+          />
         </Container>
       </footer>
     )
@@ -131,20 +121,15 @@ export function PublicFooter({
         )}
       >
         <span>{isLanding ? `© 2026 ${app.name}` : `© 2025 ${app.name} Inc.`}</span>
-        {visibleLinks.map((link) => (
-          <Fragment key={link.to}>
-            <span aria-hidden="true">·</span>
-            <Link
-              to={link.to}
-              className={cn(
-                LINK,
-                !isLanding && pathname === '/privacy' && pathname === link.to && LINK_ACTIVE,
-              )}
-            >
-              {link.label}
-            </Link>
-          </Fragment>
-        ))}
+        <Menu
+          as="span"
+          className="inline-flex items-center gap-2"
+          items={FOOTER_ITEMS}
+          separator="·"
+          leadingSeparator
+          itemClassName={LINK}
+          activeClassName={LINK_ACTIVE}
+        />
       </Container>
     </footer>
   )

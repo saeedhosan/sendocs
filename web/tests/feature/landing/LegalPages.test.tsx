@@ -45,10 +45,9 @@ describe('Terms of Service page', () => {
       }),
     ).toBeInTheDocument()
 
-    expect(screen.getByRole('link', { name: 'Sign in' })).toHaveAttribute(
-      'href',
-      '/login',
-    )
+    for (const link of screen.getAllByRole('link', { name: 'Sign in' })) {
+      expect(link).toHaveAttribute('href', '/login')
+    }
     expect(screen.queryByRole('link', { name: 'Log in' })).not.toBeInTheDocument()
   })
 })

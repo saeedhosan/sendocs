@@ -1,6 +1,8 @@
-import { Link, NavLink, useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../../app/providers/useAuth'
 import { Logo } from '../../components/navigation/Logo'
+import { Menu } from '../../components/navigation/Menu'
+import { MENU_ITEMS } from '../../components/navigation/menu-items'
 import { Container } from '../../components/ui'
 import { cn } from '../../lib/cn'
 
@@ -16,15 +18,13 @@ const LOGIN_LINK =
 const GET_STARTED =
   'inline-flex items-center justify-center min-h-[2.125rem] px-3.5 rounded-[10px] bg-primary text-on-primary text-[0.8125rem] font-medium shadow-sm transition-colors duration-150 hover:bg-primary-hover'
 const NAV = 'flex items-center gap-6 text-sm max-[480px]:gap-4'
-const NAV_LINK = 'text-ink-body transition-colors duration-150 hover:text-ink'
-const NAV_LINK_ACTIVE = 'font-semibold'
-const NAV_SIGN_IN = 'pl-2'
 
-const documentLinks = [
-  { label: 'Terms', to: '/terms' },
-  { label: 'Privacy', to: '/privacy' },
-  { label: 'Contact', to: '/contact' },
-]
+const documentPaths = MENU_ITEMS.slice(0, 3).map(({ to }) => to)
+
+const headerItems = (isAuthenticated: boolean) =>
+  isAuthenticated
+    ? [...MENU_ITEMS.slice(0, 3), { label: 'Dashboard', to: '/dashboard' }]
+    : MENU_ITEMS
 
 export type PublicHeaderMode = 'auto' | 'auth'
 
@@ -50,7 +50,7 @@ export function PublicHeader({
   const isAuthenticated = status === 'authenticated'
   const isAuth = mode === 'auth'
   const isLanding = pathname === '/' && !isAuth
-  const isDocument = documentLinks.some((link) => link.to === pathname)
+  const isDocument = documentPaths.includes(pathname)
 
   return (
     <header
@@ -80,53 +80,12 @@ export function PublicHeader({
             </Link>
           ) : null
         ) : isDocument ? (
-          <nav className={NAV} aria-label="Legal">
-            {documentLinks.map((link) => (
-              <NavLink
-                key={link.to}
-                to={link.to}
-                className={({ isActive }) =>
-                  cn(
-                    NAV_LINK,
-                    isActive && NAV_LINK_ACTIVE,
-                    isActive && pathname === '/terms' && 'text-primary',
-                    isActive && pathname === '/privacy' && 'text-ink',
-                  )
-                }
-              >
-                {link.label}
-              </NavLink>
-            ))}
-            {isAuthenticated ? (
-              <NavLink
-                to="/dashboard"
-                className={({ isActive }) =>
-                  cn(
-                    NAV_LINK,
-                    NAV_SIGN_IN,
-                    isActive && NAV_LINK_ACTIVE,
-                    isActive && 'text-primary',
-                  )
-                }
-              >
-                Dashboard
-              </NavLink>
-            ) : (
-              <NavLink
-                to="/login"
-                className={({ isActive }) =>
-                  cn(
-                    NAV_LINK,
-                    NAV_SIGN_IN,
-                    pathname === '/privacy' && 'text-primary hover:text-primary-hover',
-                    isActive && NAV_LINK_ACTIVE,
-                  )
-                }
-              >
-                Sign in
-              </NavLink>
-            )}
-          </nav>
+          <Menu
+            variant="header"
+            ariaLabel="Menu"
+            className={NAV}
+            items={headerItems(isAuthenticated)}
+          />
         ) : isAuthenticated ? (
           <div className={ACTIONS}>
             <Link to="/dashboard" className={GET_STARTED}>

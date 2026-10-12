@@ -81,7 +81,10 @@ describe('LandingPage', () => {
         'href',
         '/privacy',
       )
-      expect(screen.queryByRole('link', { name: 'Contact' })).not.toBeInTheDocument()
+      expect(screen.getByRole('link', { name: 'Contact' })).toHaveAttribute(
+        'href',
+        '/contact',
+      )
     })
   })
 

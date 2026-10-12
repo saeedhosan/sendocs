@@ -1,6 +1,7 @@
-import { Fragment, type ReactNode } from 'react'
-import { Link } from 'react-router-dom'
+import type { ReactNode } from 'react'
 import { Container } from '../components/ui'
+import { Menu } from '../components/navigation/Menu'
+import { FOOTER_ITEMS } from '../components/navigation/menu-items'
 import { PublicHeader } from './components/PublicHeader'
 import { cn } from '../lib/cn'
 import { app } from '../config/app'
@@ -35,18 +36,6 @@ export type AuthLayoutProps = {
   layoutVariant?: 'default' | 'login' | 'reset' | 'change'
 }
 
-const legalLinks = [
-  { label: 'Terms', to: '/terms' },
-  { label: 'Privacy', to: '/privacy' },
-  { label: 'Contact', to: '/contact' },
-]
-
-const resetLinks = [
-  { label: 'Contact', to: '/contact' },
-  { label: 'Privacy', to: '/privacy' },
-  { label: 'Terms', to: '/terms' },
-]
-
 const whiteFooters: FooterVariant[] = ['login', 'forget', 'change']
 
 /**
@@ -61,7 +50,7 @@ export function AuthLayout({
 }: AuthLayoutProps) {
   const isReset = footerVariant === 'reset-password'
   const isChange = footerVariant === 'change'
-  const footerLinks = isReset ? resetLinks : legalLinks
+  const footerItems = isReset ? [...FOOTER_ITEMS].reverse() : FOOTER_ITEMS
   const copyright = isReset
     ? `© 2025 ${app.name} Technologies Inc.`
     : `© 2025 ${app.name} Inc.`
@@ -102,21 +91,13 @@ export function AuthLayout({
           <Container className={FOOTER_RESET_INNER}>
             <span>{copyright}</span>
             <div className="flex items-center gap-4">
-              {footerLinks.map((link, index) => (
-                <Fragment key={link.to}>
-                  {index > 0 ? (
-                    <span
-                      aria-hidden="true"
-                      className="transition-colors duration-150"
-                    >
-                      •
-                    </span>
-                  ) : null}
-                  <Link to={link.to} className={FOOTER_RESET_LINK}>
-                    {link.label}
-                  </Link>
-                </Fragment>
-              ))}
+              <Menu
+                as="span"
+                items={footerItems}
+                separator="•"
+                itemClassName={FOOTER_RESET_LINK}
+                highlightActive={false}
+              />
             </div>
           </Container>
         </footer>
@@ -125,14 +106,14 @@ export function AuthLayout({
           <Container className={CHANGE_FOOTER_INNER}>
             <p>
               © 2025 {app.name} Inc. ·{' '}
-              {footerLinks.map((link, index) => (
-                <Fragment key={link.to}>
-                  {index > 0 ? ' · ' : null}
-                  <Link to={link.to} className={linkClass}>
-                    {link.label}
-                  </Link>
-                </Fragment>
-              ))}
+              <Menu
+                as="span"
+                className="inline"
+                items={footerItems}
+                separator=" · "
+                itemClassName={linkClass}
+                highlightActive={false}
+              />
             </p>
           </Container>
         </footer>
@@ -146,19 +127,18 @@ export function AuthLayout({
         >
           <Container className={FOOTER_INNER}>
             <span>{copyright}</span>
-            {footerLinks.map((link) => (
-              <Fragment key={link.to}>
-                <span
-                  aria-hidden="true"
-                  className={whiteFooters.includes(footerVariant) ? 'max-sm:hidden' : undefined}
-                >
-                  ·
-                </span>
-                <Link to={link.to} className={linkClass}>
-                  {link.label}
-                </Link>
-              </Fragment>
-            ))}
+            <Menu
+              as="span"
+              className="inline-flex items-center gap-2"
+              items={footerItems}
+              separator="·"
+              leadingSeparator
+              itemClassName={linkClass}
+              highlightActive={false}
+              separatorClassName={
+                whiteFooters.includes(footerVariant) ? 'max-sm:hidden' : undefined
+              }
+            />
           </Container>
         </footer>
       )}
