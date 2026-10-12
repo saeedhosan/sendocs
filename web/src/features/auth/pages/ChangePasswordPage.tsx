@@ -33,8 +33,8 @@ export function ChangePasswordPage() {
   const rules = [
     {
       id: 'length',
-      label: 'Minimum 8 characters',
-      met: password.length >= 8,
+      label: 'Minimum 6 characters',
+      met: password.length >= 6,
     },
     {
       id: 'different',
@@ -89,7 +89,11 @@ export function ChangePasswordPage() {
   }
 
   return (
-    <AuthLayout footerVariant="change" headerAction={{ label: 'Back to account', to: '/dashboard' }}>
+    <AuthLayout
+      footerVariant="change"
+      headerAction={{ label: 'Back to account', to: '/dashboard' }}
+      layoutVariant="change"
+    >
       <div className={s.heading}>
         <h1 className={s.title}>Change password</h1>
         <p className={s.subtitle}>
@@ -193,7 +197,7 @@ export function ChangePasswordPage() {
 
         <PasswordRequirementsList rules={rules} panel title="Requirements" />
 
-        <div className={s.actionsFlush}>
+        <div className={`${s.actionsFlush} pt-2`}>
           <Button
             type="submit"
             fullWidth
@@ -202,10 +206,14 @@ export function ChangePasswordPage() {
           >
             Save new password
           </Button>
-          <div className={s.cancelRow}>
-            <Button variant="ghost" onClick={() => navigate('/dashboard')}>
+          <div className={`${s.cancelRow} min-h-6`}>
+            <button
+              type="button"
+              className="text-sm font-medium text-ink-secondary transition-colors hover:text-ink"
+              onClick={() => navigate('/dashboard')}
+            >
               Cancel
-            </Button>
+            </button>
           </div>
         </div>
       </form>

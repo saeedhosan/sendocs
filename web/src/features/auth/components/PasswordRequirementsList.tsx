@@ -6,7 +6,7 @@ export type PasswordRule = {
   met: boolean
 }
 
-const LIST = 'flex flex-col gap-1.5 text-xs text-ink-muted'
+const LIST = 'flex flex-col gap-1 text-xs text-ink-muted'
 
 export function PasswordRequirementsList({
   rules,
@@ -47,7 +47,7 @@ export function PasswordRequirementsList({
   }
 
   return (
-    <div className="flex flex-col gap-2 p-3 border border-border rounded-[10px] bg-surface-subtle">
+    <div className="flex h-[88.5px] flex-col gap-2 p-3 border border-border rounded-[10px] bg-surface-subtle">
       <span className="block text-[0.6875rem] font-semibold tracking-[0.05em] uppercase text-ink-muted">
         {title}
       </span>

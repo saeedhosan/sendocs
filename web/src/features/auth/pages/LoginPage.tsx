@@ -82,7 +82,11 @@ export function LoginPage() {
   }
 
   return (
-    <AuthLayout footerVariant="login" logoVariant="auth-login">
+    <AuthLayout
+      footerVariant="login"
+      logoVariant="auth-login"
+      layoutVariant="login"
+    >
       <div className={cn(s.heading, s.center)}>
         <h1 className={s.title}>Sign in</h1>
         <p className={s.subtitle}>Sign in to your account to continue.</p>
@@ -140,7 +144,7 @@ export function LoginPage() {
           }}
         />
 
-        <div className={s.actions}>
+        <div className={s.actionsFlush}>
           <Button
             type="submit"
             fullWidth
