@@ -11,6 +11,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Middleware\HandleCors;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
@@ -27,6 +28,10 @@ return Application::configure(basePath: dirname(__DIR__))
         // the stored value is a hash of the raw token the caller must present.
         $middleware->encryptCookies(except: [
             'sendocs_session',
+        ]);
+
+        $middleware->api(prepend: [
+            HandleCors::class,
         ]);
 
         $middleware->api(append: [
