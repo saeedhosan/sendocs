@@ -77,6 +77,12 @@ Buttons and links are `cursor: pointer` by default; disabled buttons are
   recipe), e.g. `bg-green-50 text-green-700 dark:bg-green-950
   dark:text-green-300`. Do not use `--color-*` token classes (`bg-warning-surface`,
   `text-danger-text`, …) on badges.
+- **Toasts**: the stock shadcn base Toast, mounted once as `<Toaster />` in
+  `App.tsx` and fired imperatively with `toast.add({ type, title })`. The status
+  types are coloured with the Tailwind palette inside `ToastIcon`
+  (success green, info blue, warning amber, error red) — a documented deviation
+  in the vendored `ui/toast.tsx`; re-apply it after a CLI upgrade. There is no
+  custom `Notice`/sonner toast in the app.
 - **Links as buttons**: use `buttonVariants` from `@/components/ui/button`,
   e.g. `className={buttonVariants({ variant: "ghost", size: "sm" })}` on a
   react-router `Link`.
@@ -86,9 +92,9 @@ Buttons and links are `cursor: pointer` by default; disabled buttons are
 `eslint.config.js` ignores `src/components/ui` wholesale: vendored shadcn
 files export constants (`buttonVariants`, `badgeVariants`) besides components,
 which trips `react-refresh/only-export-components`. Vendored code is regenerated
-by the CLI, not hand-edited — except `button.tsx`, which carries the cursor
-deviation above (re-apply it after a CLI upgrade). `.agents/` (the shadcn agent
-skill) is also ignored.
+by the CLI, not hand-edited — except `button.tsx` and `toast.tsx`, which carry
+documented deviations (the cursor story above and the toast type colours).
+`.agents/` (the shadcn agent skill) is also ignored.
 
 ## Styles
 
@@ -116,4 +122,6 @@ Typography is Geist, the shadcn default.
 ## Removing components
 
 Unused shadcn components are simply deleted (`ui/form.tsx`, `ui/sonner.tsx`,
-etc.); the CLI re-adds them later. Do not keep dead vendored files.
+etc.); the CLI re-adds them later. Do not keep dead vendored files. The `sonner`
+npm package is likewise dead — the app uses the base Toast — but it is still
+listed in `package.json`/`bun.lock`; prune it on the next dependency pass.

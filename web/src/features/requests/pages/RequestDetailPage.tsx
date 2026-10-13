@@ -4,6 +4,7 @@ import { ErrorState, LoadingState } from '../../../components/feedback'
 import { LinkOffIcon, TrashIcon } from '../../../components/icons'
 import { PageHeader } from "@/components/PageHeader"
 import { Progress } from "@/components/ui/progress"
+import { toast } from "@/components/ui/toast"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ApiError } from '../../../lib/api/client'
@@ -13,8 +14,6 @@ import { progressIndicatorClass } from '../../../lib/progressStyles'
 import { requestsApi } from '../api'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { ItemList } from '../components/ItemList'
-import type { NoticeTone } from '../components/Notice'
-import { Notice } from '../components/Notice'
 import {
   linkState,
   linkStateLabel,
@@ -29,8 +28,6 @@ type ConfirmState =
   | { kind: 'delete-request' }
   | { kind: 'delete-document'; item: RequestItem }
   | null
-
-type NoticeState = { tone: NoticeTone; message: string } | null
 
 function expiresLabel(iso: string, now: number = Date.now()): string {
   const days = Math.ceil((new Date(iso).getTime() - now) / 86_400_000)
@@ -51,7 +48,6 @@ export function RequestDetailPage() {
   )
   const [confirm, setConfirm] = useState<ConfirmState>(null)
   const [busy, setBusy] = useState(false)
-  const [notice, setNotice] = useState<NoticeState>(null)
 
   const load = useCallback(
     (requestId: string) => {
@@ -92,7 +88,7 @@ export function RequestDetailPage() {
       // error and keep the confirmation open to retry.
       setConfirm(null)
     } catch (error) {
-      setNotice({ tone: 'error', message: errorMessage(error) })
+      toast.add({ type: 'error', title: errorMessage(error) })
     } finally {
       setBusy(false)
     }
@@ -102,7 +98,7 @@ export function RequestDetailPage() {
     void run(async () => {
       const updated = await requestsApi.revoke(id)
       setRequest(updated)
-      setNotice({ tone: 'ok', message: 'Magic link revoked' })
+      toast.add({ type: 'success', title: 'Magic link revoked' })
     })
   }
 
@@ -120,17 +116,17 @@ export function RequestDetailPage() {
     void run(async () => {
       await requestsApi.removeDocument(id, item.id)
       await load(id)
-      setNotice({
-        tone: 'ok',
-        message: `Deleted ${item.document?.originalName ?? item.label}`,
+      toast.add({
+        type: 'success',
+        title: `Deleted ${item.document?.originalName ?? item.label}`,
       })
     })
   }
 
   function downloadDocument(item: RequestItem) {
-    setNotice({
-      tone: 'ok',
-      message: `Downloading ${item.document?.originalName ?? item.label}`,
+    toast.add({
+      type: 'success',
+      title: `Downloading ${item.document?.originalName ?? item.label}`,
     })
   }
 
@@ -288,14 +284,6 @@ export function RequestDetailPage() {
           }
         }}
       />
-
-      {notice ? (
-        <Notice
-          tone={notice.tone}
-          message={notice.message}
-          onDismiss={() => setNotice(null)}
-        />
-      ) : null}
     </div>
   )
 }

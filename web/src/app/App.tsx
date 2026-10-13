@@ -1,4 +1,5 @@
 import { RouterProvider } from 'react-router-dom'
+import { Toaster } from "@/components/ui/toast"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { AuthProvider } from './providers/AuthProvider'
 import { ThemeProvider } from './providers/ThemeProvider'
@@ -10,6 +11,7 @@ export function App() {
       <ThemeProvider>
         <AuthProvider>
           <RouterProvider router={router} />
+          <Toaster />
         </AuthProvider>
       </ThemeProvider>
     </TooltipProvider>

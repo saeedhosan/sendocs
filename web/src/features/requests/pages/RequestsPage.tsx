@@ -11,9 +11,9 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
+import { toast } from "@/components/ui/toast"
 import { ApiError } from '../../../lib/api/client'
 import { requestsApi } from '../api'
-import { Notice } from '../components/Notice'
 import type { RequestFilter } from '../components/RequestFilters'
 import { RequestFilters } from '../components/RequestFilters'
 import { RequestList } from '../components/RequestList'
@@ -32,14 +32,14 @@ export function RequestsPage() {
   const [pageNumber, setPageNumber] = useState(1)
   const [filter, setFilter] = useState<RequestFilter>('all')
   const [query, setQuery] = useState('')
-  const [notice, setNotice] = useState<string | null>(
-    () => (location.state as { notice?: string } | null)?.notice ?? null,
-  )
   const historyRef = useRef<Array<string | null>>([])
   const cursorRef = useRef<string | null>(cursor)
 
   useEffect(() => {
-    if ((location.state as { notice?: string } | null)?.notice) {
+    const notice = (location.state as { notice?: string } | null)?.notice
+
+    if (notice) {
+      toast.add({ type: 'success', title: notice })
       navigate(`${location.pathname}${location.search}`, {
         replace: true,
         state: null,
@@ -254,14 +254,6 @@ export function RequestsPage() {
             }
           />
         </>
-      ) : null}
-
-      {notice ? (
-        <Notice
-          tone="ok"
-          message={notice}
-          onDismiss={() => setNotice(null)}
-        />
       ) : null}
     </div>
   )
