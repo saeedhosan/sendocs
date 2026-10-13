@@ -1,0 +1,14 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "bradlc.vscode-tailwindcss",
+    "vitest.explorer",
+    "ms-playwright.playwright",
+    "EditorConfig.EditorConfig",
+    "laravel.vscode-laravel",
+    "bmewburn.vscode-intelephense-client",
+    "mikestead.dotenv",
+    "ms-azuretools.vscode-docker"
+  ],
+  "unwantedRecommendations": ["esbenp.prettier-vscode"]
+}
