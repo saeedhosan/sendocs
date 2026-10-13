@@ -102,21 +102,20 @@ jobs:
               with:
                   name: api-build
                   path: |
-                      app/
-                      bootstrap/
-                      config/
-                      database/
-                      public/
-                      resources/
-                      routes/
-                      storage/
-                      tests/
-                      vendor/
-                      artisan
-                      composer.json
-                      composer.lock
-                      .env.example
-                  working-directory: api
+                      api/app/
+                      api/bootstrap/
+                      api/config/
+                      api/database/
+                      api/public/
+                      api/resources/
+                      api/routes/
+                      api/storage/
+                      api/tests/
+                      api/vendor/
+                      api/artisan
+                      api/composer.json
+                      api/composer.lock
+                      api/.env.example
                   retention-days: 1
 
     deploy:
@@ -158,7 +157,7 @@ jobs:
                   username: ${{ env.SSH_USER }}
                   key: ${{ env.SSH_KEY }}
                   port: ${{ env.SSH_PORT }}
-                  source: "api-artifact/*"
+                  source: "api-artifact/api/*"
                   target: ${{ env.SSH_PATH }}/api
                   strip_components: 1
                   overwrite: true
