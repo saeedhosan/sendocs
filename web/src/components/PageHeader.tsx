@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { cn } from '../../lib/cn'
-import { ArrowBackIcon } from '../icons'
+import { cn } from '../lib/cn'
 
 export type PageHeaderProps = {
   title: ReactNode
@@ -31,14 +30,13 @@ export function PageHeader({
       {back ? (
         <Link
           to={back.to}
-          className="inline-flex items-center gap-1 self-start text-xs text-ink-muted transition-colors duration-150 hover:text-ink"
+          className="flex items-center gap-1 text-xs text-ink-muted transition-colors duration-150 hover:text-ink"
         >
-          <ArrowBackIcon size={14} />
-          <span>{back.label}</span>
+          ← {back.label}
         </Link>
       ) : null}
 
-      <div className="flex flex-col gap-3 pb-6  sm:flex-row sm:items-start sm:justify-between">
+      <div className={cn('flex flex-col gap-3 pb-6 sm:flex-row sm:items-start sm:justify-between', className)}>
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2.5">
             <h1 className="text-xl leading-7 font-semibold tracking-tight text-ink sm:text-2xl sm:leading-8">{title}</h1>

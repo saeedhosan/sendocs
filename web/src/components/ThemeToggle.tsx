@@ -1,5 +1,5 @@
-import { useTheme } from '../../app/providers/useTheme'
-import { MonitorIcon, MoonIcon, SunIcon } from '../../components/icons'
+import { useTheme } from '../app/providers/useTheme'
+import { MonitorIcon, MoonIcon, SunIcon } from './icons'
 
 export function ThemeToggle() {
   const { theme, resolvedTheme, setTheme } = useTheme()

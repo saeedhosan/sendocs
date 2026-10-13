@@ -1,40 +1,48 @@
-import { forwardRef, useState } from 'react'
-import type { InputHTMLAttributes } from 'react'
-import { cn } from '../../lib/cn'
-import { VisibilityIcon, VisibilityOffIcon } from '../icons'
-import { IconButton } from './IconButton'
-import { Input } from './Input'
+import { forwardRef, useState } from "react";
+import type { ComponentProps } from "react";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { cn } from "../lib/cn";
+import { Input } from "./ui/input";
 
-export type PasswordInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> & {
-  invalid?: boolean
-  visibilityButtonClassName?: string
-}
+export type PasswordInputProps = Omit<ComponentProps<typeof Input>, "type"> & {
+  visibilityButtonClassName?: string;
+};
 
+/**
+ * Password field with a show/hide toggle, built on shadcn's `Input`.
+ */
 export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
-  function PasswordInput({ className, visibilityButtonClassName, ...props }, ref) {
-    const [visible, setVisible] = useState(false)
+  function PasswordInput(
+    { className, visibilityButtonClassName, ...props },
+    ref,
+  ) {
+    const [visible, setVisible] = useState(false);
 
     return (
       <div className="relative flex items-center w-full">
         <Input
           ref={ref}
-          type={visible ? 'text' : 'password'}
-          className={cn('pr-10', className)}
+          type={visible ? "text" : "password"}
+          className={cn("pr-10", className)}
           {...props}
         />
-        <IconButton
-          label={visible ? 'Hide password' : 'Show password'}
-          className={cn('absolute right-2.5', visibilityButtonClassName)}
+        <button
+          type="button"
+          className={cn(
+            "absolute right-1.5 inline-flex size-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            visibilityButtonClassName,
+          )}
           aria-pressed={visible}
+          aria-label={visible ? "Hide password" : "Show password"}
           onClick={() => setVisible((current) => !current)}
         >
           {visible ? (
-            <VisibilityOffIcon size={18} />
+            <EyeOffIcon className="size-4" />
           ) : (
-            <VisibilityIcon size={18} />
+            <EyeIcon className="size-4" />
           )}
-        </IconButton>
+        </button>
       </div>
-    )
+    );
   },
-)
+);
