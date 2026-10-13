@@ -41,7 +41,7 @@
   --color-primary-hover: #4338ca;
   --color-primary-active: #3730a3;
   --color-primary-soft: #eef2ff;
-  --color-on-primary: #ffffff;
+  --color-on-primary: #f1f5f9;
 
   /* Feedback */
   --color-danger: #dc2626;
@@ -70,12 +70,6 @@
   --font-mono: 'JetBrains Mono', 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas,
     monospace;
 
-  /* Radii */
-  --radius-sm: 4px;
-  --radius-md: 10px;
-  --radius-lg: 12px;
-  --radius-full: 9999px;
-
   /* Elevation */
   --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.07),
@@ -96,8 +90,8 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
+  --primary: var(--color-primary);
+  --primary-foreground: var(--color-on-primary);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
@@ -153,7 +147,7 @@
   --color-primary-hover: #818cf8;
   --color-primary-active: #4f46e5;
   --color-primary-soft: #312e81;
-  --color-on-primary: #ffffff;
+  --color-on-primary: #f1f5f9;
 
   /* Feedback */
   --color-danger: #ef4444;
@@ -187,8 +181,8 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
+  --primary: var(--color-primary);
+  --primary-foreground: var(--color-on-primary);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
@@ -289,12 +283,6 @@
   /* Typography */
   --font-sans: 'Geist Variable', sans-serif;
   --font-mono: var(--font-mono);
-
-  /* Radii */
-  --radius-sm: var(--radius-sm);
-  --radius-md: var(--radius-md);
-  --radius-lg: var(--radius-lg);
-  --radius-full: var(--radius-full);
 
   /* Elevation */
   --shadow-sm: var(--shadow-sm);
