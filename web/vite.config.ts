@@ -25,16 +25,18 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 3000,
     strictPort: true,
-    proxy: {
-      '/api': {
-        target: apiProxyTarget,
-        changeOrigin: true,
-      },
-      '/health': {
-        target: apiProxyTarget,
-        changeOrigin: true,
-      },
-    },
+    proxy: process.env.PLAYWRIGHT
+      ? undefined
+      : {
+          '/api': {
+            target: apiProxyTarget,
+            changeOrigin: true,
+          },
+          '/health': {
+            target: apiProxyTarget,
+            changeOrigin: true,
+          },
+        },
   },
   test: {
     environment: 'jsdom',
