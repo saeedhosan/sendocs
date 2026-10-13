@@ -22,10 +22,11 @@ env:
     SSH_PORT: ${{ secrets.SSH_PORT }}
 
 jobs:
-    build:
-        name: Build
+    build-and-deploy:
+        name: Build & Deploy
         runs-on: ubuntu-latest
-        timeout-minutes: 20
+        timeout-minutes: 25
+        environment: stage
 
         steps:
             - name: Check out repository
@@ -74,67 +75,11 @@ jobs:
                   VITE_API_URL: ${{ secrets.API_URL }}
               run: bun run build
 
-            - name: Debug web build output
-              run: ls -la web/dist/
-
             - name: Install API production dependencies
               working-directory: api
               run: composer install --prefer-dist --no-dev --no-interaction --no-progress --optimize-autoloader
 
-            - name: Upload web build artifact
-              uses: actions/upload-artifact@v4
-              with:
-                  name: web-build
-                  path: web/dist/
-                  retention-days: 1
-
-            - name: Upload API artifact
-              uses: actions/upload-artifact@v4
-              with:
-                  name: api-build
-                  path: |
-                      api/app/
-                      api/bootstrap/
-                      api/config/
-                      api/database/
-                      api/public/
-                      api/resources/
-                      api/routes/
-                      api/storage/
-                      api/vendor/
-                      api/artisan
-                      api/composer.json
-                      api/composer.lock
-                      api/.env.example
-                  retention-days: 1
-
-    deploy:
-        name: Deploy to Stage Server
-        needs: build
-        runs-on: ubuntu-latest
-        timeout-minutes: 20
-        environment: stage
-
-        steps:
-            - name: Download web build artifact
-              uses: actions/download-artifact@v4
-              with:
-                  name: web-build
-                  path: dist/
-
-            - name: Debug web artifact
-              run: |
-                echo "=== dist/ contents after download ==="
-                ls -la dist/
-                echo "=== dist/* expands to ==="
-                ls -la dist/* 2>/dev/null || echo "No matches"
-
-            - name: Download API artifact
-              uses: actions/download-artifact@v4
-              with:
-                  name: api-build
-                  path: api-artifact/
-
+            # Deploy web assets directly from build output
             - name: Deploy web assets to server (SCP)
               uses: appleboy/scp-action@v1.0.0
               with:
@@ -142,11 +87,12 @@ jobs:
                   username: ${{ env.SSH_USER }}
                   key: ${{ env.SSH_KEY }}
                   port: ${{ env.SSH_PORT }}
-                  source: "dist/*"
+                  source: "web/dist/*"
                   target: ${{ env.SSH_PATH }}/web
-                  strip_components: 1
+                  strip_components: 2
                   overwrite: true
 
+            # Deploy API code directly from repo (with vendor built above)
             - name: Deploy API code to server (SCP)
               uses: appleboy/scp-action@v1.0.0
               with:
@@ -154,7 +100,7 @@ jobs:
                   username: ${{ env.SSH_USER }}
                   key: ${{ env.SSH_KEY }}
                   port: ${{ env.SSH_PORT }}
-                  source: "api-artifact/api/*"
+                  source: "api/*"
                   target: ${{ env.SSH_PATH }}/api
                   strip_components: 1
                   overwrite: true
