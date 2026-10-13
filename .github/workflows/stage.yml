@@ -119,6 +119,9 @@ jobs:
                   name: web-build
                   path: dist/
 
+            - name: Debug web artifact
+              run: ls -la dist/
+
             - name: Download API artifact
               uses: actions/download-artifact@v4
               with:
