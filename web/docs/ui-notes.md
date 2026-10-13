@@ -123,5 +123,4 @@ Typography is Geist, the shadcn default.
 
 Unused shadcn components are simply deleted (`ui/form.tsx`, `ui/sonner.tsx`,
 etc.); the CLI re-adds them later. Do not keep dead vendored files. The `sonner`
-npm package is likewise dead — the app uses the base Toast — but it is still
-listed in `package.json`/`bun.lock`; prune it on the next dependency pass.
+npm package is likewise gone — the app uses the base Toast.
