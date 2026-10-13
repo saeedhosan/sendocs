@@ -71,6 +71,19 @@ export const authApi = {
     return apiRequest<{ authUrl: string }>('/auth/oauth/google')
   },
 
+  googleCallback(
+    code: string,
+    state: string,
+    signal?: AbortSignal,
+  ): Promise<SessionPayload> {
+    const params = new URLSearchParams({ code, state })
+
+    return apiRequest<SessionPayload>(
+      `/auth/oauth/google/callback?${params.toString()}`,
+      { signal },
+    )
+  },
+
   deleteAccount(input: DeleteAccountInput): Promise<void> {
     return apiRequest<void>('/auth/account', {
       method: 'DELETE',
