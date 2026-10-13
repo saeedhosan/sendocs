@@ -55,7 +55,7 @@ function sizedPdf(int $bytes): UploadedFile
 }
 
 beforeEach(function (): void {
-    Storage::fake('s3');
+    Storage::fake('local');
 });
 
 test('uploads one file and returns the updated portal view', function (): void {
@@ -79,7 +79,7 @@ test('uploads one file and returns the updated portal view', function (): void {
     expect($document->storage_key)
         ->toStartWith($request->getKey().'/')
         ->and($document->sha256)
-        ->toBe(hash('sha256', Storage::disk('s3')->get($document->storage_key)));
+        ->toBe(hash('sha256', Storage::disk('local')->get($document->storage_key)));
 });
 
 test('rejects a second upload for the same item and keeps the first file', function (): void {
@@ -97,7 +97,7 @@ test('rejects a second upload for the same item and keeps the first file', funct
         ]);
 
     expect(Document::query()->where('request_item_id', $items[0]->getKey())->count())->toBe(1);
-    Storage::disk('s3')->assertCount($request->getKey(), 1);
+    Storage::disk('local')->assertCount($request->getKey(), 1);
 });
 
 test('returns 404 when the item is not on the resolved request', function (): void {
@@ -141,7 +141,7 @@ test('rejects a file over the 25 MB cap', function (): void {
         ]);
 
     expect(Document::query()->count())->toBe(0);
-    Storage::disk('s3')->assertEmpty();
+    Storage::disk('local')->assertEmpty();
 });
 
 test('returns the file size error when PHP rejects a file above its upload limit', function (): void {
@@ -166,7 +166,7 @@ test('returns the file size error when PHP rejects a file above its upload limit
         ]);
 
     expect(Document::query()->count())->toBe(0);
-    Storage::disk('s3')->assertEmpty();
+    Storage::disk('local')->assertEmpty();
 });
 
 test('accepts a file at the 25 MB cap', function (): void {
@@ -196,7 +196,7 @@ test('rejects a renamed file when its content type disagrees with its extension'
         ]);
 
     expect(Document::query()->count())->toBe(0);
-    Storage::disk('s3')->assertEmpty();
+    Storage::disk('local')->assertEmpty();
 });
 
 test('returns the same invalid link response for upload requests', function (): void {
@@ -245,9 +245,7 @@ test('rate limits uploads to 30 attempts per hour per ip', function (): void {
 test('returns a consistent internal error when object storage rejects an upload', function (): void {
     [$request, $items, $token] = portalUploadFixture();
 
-    $disk = Mockery::mock();
-    $disk->shouldReceive('putFileAs')->once()->andReturn(false);
-    Storage::shouldReceive('disk')->once()->with('s3')->andReturn($disk);
+    Storage::shouldReceive('putFileAs')->once()->andReturn(false);
 
     uploadPortal($token, $items[0]->getKey(), validPdf())
         ->assertStatus(500)

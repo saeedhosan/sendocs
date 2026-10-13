@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 test('deletes pending storage objects and removes completed outbox entries', function (): void {
-    Storage::fake('s3');
-    Storage::disk('s3')->put('requests/pending.pdf', 'pdf');
+    Storage::fake();
+    Storage::put('requests/pending.pdf', 'pdf');
 
     DB::table('storage_deletion_outbox')->insert([
         'storage_key' => 'requests/pending.pdf',
@@ -17,7 +17,7 @@ test('deletes pending storage objects and removes completed outbox entries', fun
 
     test()->artisan('storage:cleanup')->assertExitCode(0);
 
-    Storage::disk('s3')->assertMissing('requests/pending.pdf');
+    Storage::assertMissing('requests/pending.pdf');
     expect(DB::table('storage_deletion_outbox')->count())->toBe(0);
 });
 
@@ -28,9 +28,7 @@ test('keeps failed storage deletions queued for a later retry', function (): voi
         'created_at'  => now(),
     ]);
 
-    $disk = Mockery::mock();
-    $disk->shouldReceive('delete')->once()->with($key)->andThrow(new RuntimeException('Storage unavailable.'));
-    Storage::shouldReceive('disk')->once()->with('s3')->andReturn($disk);
+    Storage::shouldReceive('delete')->once()->with($key)->andThrow(new RuntimeException('Storage unavailable.'));
 
     test()->artisan('storage:cleanup')->assertExitCode(0);
 
@@ -42,7 +40,7 @@ test('keeps failed storage deletions queued for a later retry', function (): voi
 });
 
 test('defers failed storage deletions until their retry time', function (): void {
-    Storage::fake('s3');
+    Storage::fake();
 
     $now = now()->startOfSecond();
     Carbon::setTestNow($now);
@@ -57,7 +55,7 @@ test('defers failed storage deletions until their retry time', function (): void
         test()->artisan('storage:cleanup')->assertExitCode(0);
 
         expect(DB::table('storage_deletion_outbox')->count())->toBe(1);
-        Storage::disk('s3')->assertMissing('requests/not-yet-due.pdf');
+        Storage::assertMissing('requests/not-yet-due.pdf');
     } finally {
         Carbon::setTestNow();
     }
@@ -77,10 +75,8 @@ test('caps storage deletion retry backoff at one hour', function (): void {
             'available_at' => now(),
         ]);
 
-        $disk = Mockery::mock();
-        $disk->shouldReceive('delete')->once()->with($key)
+        Storage::shouldReceive('delete')->once()->with($key)
             ->andThrow(new RuntimeException('Storage unavailable.'));
-        Storage::shouldReceive('disk')->once()->with('s3')->andReturn($disk);
 
         test()->artisan('storage:cleanup')->assertExitCode(0);
 

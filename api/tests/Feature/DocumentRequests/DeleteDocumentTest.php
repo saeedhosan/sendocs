@@ -43,7 +43,7 @@ test('deletes an uploaded document and returns no content', function (): void {
     $owner   = User::factory()->create();
     $request = makeDeleteDocumentRequest($owner, 'Tax Documents', 1);
     $item    = $request->items()->firstOrFail();
-    Storage::disk('s3')->put('requests/file.pdf', 'pdf');
+    Storage::disk('local')->put('requests/file.pdf', 'pdf');
     $item->document()->create([
         'storage_key'   => 'requests/file.pdf',
         'original_name' => 'tax.pdf',
@@ -58,7 +58,7 @@ test('deletes an uploaded document and returns no content', function (): void {
 
     expect($item->fresh()->document)->toBeNull();
     test()->artisan('storage:cleanup')->assertExitCode(0);
-    Storage::disk('s3')->assertMissing('requests/file.pdf');
+    Storage::disk('local')->assertMissing('requests/file.pdf');
 });
 
 test('returns 404 when the item belongs to another request', function (): void {
