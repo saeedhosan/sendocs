@@ -123,7 +123,11 @@ jobs:
                   path: dist/
 
             - name: Debug web artifact
-              run: ls -la dist/
+              run: |
+                echo "=== dist/ contents after download ==="
+                ls -la dist/
+                echo "=== dist/* expands to ==="
+                ls -la dist/* 2>/dev/null || echo "No matches"
 
             - name: Download API artifact
               uses: actions/download-artifact@v4
