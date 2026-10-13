@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import globalCss from '../../../src/main.css?raw'
+import globalCss from '../../../src/styles/global.css?raw'
 import { transitions } from '../../../src/config/transition'
 import {
   TRANSITION_STYLES,

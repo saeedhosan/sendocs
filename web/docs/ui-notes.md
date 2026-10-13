@@ -50,7 +50,7 @@ Buttons and links are `cursor: pointer` by default; disabled buttons are
   variant and uses `disabled:cursor-not-allowed` in place of stock shadcn's
   `disabled:pointer-events-none` (so the disabled style is visible; the native
   `disabled` attribute still blocks activation).
-- `main.css` `@layer base` — a global `a { cursor: pointer }` and
+- `styles/global.css` `@layer base` — a global `a { cursor: pointer }` and
   `button:not(:disabled)`/`:disabled` rules as a backstop for non-shadcn
   buttons and plain links.
 - **Icons in buttons**: pass the icon as the first/last child with
@@ -84,16 +84,26 @@ by the CLI, not hand-edited — except `button.tsx`, which carries the cursor
 deviation above (re-apply it after a CLI upgrade). `.agents/` (the shadcn agent
 skill) is also ignored.
 
-## Design tokens
+## Styles
 
-`src/main.css` keeps the Sendocs `:root` tokens (indigo `--color-primary`,
-slate borders/ink text, `--color-danger`/`success`/`warning`/`info` palette).
+`src/styles/` is split three ways; `src/styles/index.css` is the entry imported
+by `src/main.tsx` and does nothing but control import order:
+
+- `index.css` — imports Tailwind, `tw-animate-css`, `shadcn/tailwind.css`, the
+  Geist fontsource package, then `tokens.css` and `global.css` (brand definitions
+  must come last so they win). `components.json` points its `css` field here.
+- `tokens.css` — the Sendocs `:root` tokens (indigo `--color-primary`, slate
+  borders/ink text, `--color-danger`/`success`/`warning`/`info` palette), the
+  `.dark` overrides, the `dark` custom variant, and the `@theme` bridge.
+- `global.css` — `@font-face`, element resets, view-transition keyframes,
+  scrollbar, and the `@layer base` rules.
+
 The shadcn unprefixed variables (`--primary`, `--background`, `--border`, …) are
-**aliases of those brand tokens**, declared once in `:root`; because the brand
-tokens are redefined under `.dark`, the aliases resolve to the active theme on
-their own (no second shadcn block in `.dark`). This is the single source of
-truth — never hard-code `oklch` neutrals for these tokens, or light and dark
-drift apart. Body theming goes through the shadcn `@layer base` rule
+**aliases of the brand tokens**, declared once in `:root` inside `tokens.css`;
+because the brand tokens are redefined under `.dark`, the aliases resolve to the
+active theme on their own (no second shadcn block in `.dark`). This is the single
+source of truth — never hard-code `oklch` neutrals for these tokens, or light and
+dark drift apart. Body theming goes through the shadcn `@layer base` rule
 (`bg-background text-foreground`); the plain `body` rule only sets metrics.
 Typography is Geist, the shadcn default.
 
