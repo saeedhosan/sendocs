@@ -109,8 +109,5 @@ jobs:
                       # Run migrations
                       php artisan migrate --force
 
-                      # Run seeders (if any)
-                      php artisan db:seed --force || true
-
                       # Clear and cache config
                       php artisan optimize:clear
