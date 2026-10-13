@@ -4,6 +4,10 @@ import { useAuth } from '../providers/useAuth'
 export function GuestOnly() {
   const { status } = useAuth()
 
+  if (status === 'checking') {
+    return null
+  }
+
   if (status === 'authenticated') {
     return <Navigate to="/dashboard" replace />
   }

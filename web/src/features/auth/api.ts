@@ -77,4 +77,8 @@ export const authApi = {
       body: input,
     })
   },
+
+  session(): Promise<SessionPayload> {
+    return apiRequest<SessionPayload>('/auth/session')
+  },
 }
