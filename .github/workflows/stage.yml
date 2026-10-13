@@ -83,6 +83,10 @@ jobs:
               working-directory: web
               run: bun run build
 
+            - name: Install API production dependencies
+              working-directory: api
+              run: composer install --prefer-dist --no-dev --no-interaction --no-progress --optimize-autoloader
+
             - name: Upload web build artifact
               uses: actions/upload-artifact@v4
               with:
@@ -104,6 +108,7 @@ jobs:
                       api/routes/
                       api/storage/
                       api/tests/
+                      api/vendor/
                       api/artisan
                       api/composer.json
                       api/composer.lock
@@ -164,9 +169,6 @@ jobs:
                   script: |
                       set -e
                       cd ${{ env.SSH_PATH }}/api
-
-                      # Install production dependencies
-                      composer install --prefer-dist --no-dev --no-interaction --no-progress --optimize-autoloader
 
                       # Create .env if not exists
                       if [ ! -f .env ]; then
