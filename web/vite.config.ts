@@ -17,7 +17,7 @@ const apiProxyTarget = process.env.VITE_API_PROXY ?? 'http://127.0.0.1:8000'
 export default defineConfig({
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, 'src'),
+      '@': path.resolve(import.meta.dirname, 'src'),
     },
   },
   plugins: [tailwindcss(), react()],
@@ -37,7 +37,7 @@ export default defineConfig({
     },
   },
   test: {
-    environment: 'happy-dom',
+    environment: 'jsdom',
     setupFiles: ['./tests/setup.ts'],
     css: true,
     include: ['tests/{unit,feature}/**/*.{test,spec}.{ts,tsx}'],
