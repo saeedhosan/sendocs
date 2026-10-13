@@ -135,9 +135,6 @@ jobs:
                   name: api-build
                   path: api-artifact/
 
-            - name: Debug API artifact
-              run: ls -la api-artifact/
-
             - name: Deploy web assets to server (SCP)
               uses: appleboy/scp-action@v1.0.0
               with:
@@ -172,6 +169,8 @@ jobs:
                   script: |
                       set -e
                       cd ${{ env.SSH_PATH }}/api
+
+                      ls -la
 
                       # Create .env if not exists
                       if [ ! -f .env ]; then
