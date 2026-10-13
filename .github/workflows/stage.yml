@@ -43,14 +43,6 @@ jobs:
                   cache: composer
                   working-directory: api
 
-            - name: Create API environment file
-              working-directory: api
-              run: cp .env.example .env
-
-            - name: Install API dependencies
-              working-directory: api
-              run: composer install --prefer-dist --no-interaction --no-progress
-
             # Web: Setup Bun and install dependencies
             - name: Set up Bun
               uses: oven-sh/setup-bun@v2
@@ -75,11 +67,10 @@ jobs:
                   VITE_API_URL: ${{ secrets.API_URL }}
               run: bun run build
 
-            - name: Install API production dependencies
+            - name: Install API dependencies
               working-directory: api
               run: composer install --prefer-dist --no-dev --no-interaction --no-progress --optimize-autoloader
 
-            # Deploy web assets directly from build output
             - name: Deploy web assets to server (SCP)
               uses: appleboy/scp-action@v1.0.0
               with:
@@ -92,7 +83,6 @@ jobs:
                   strip_components: 2
                   overwrite: true
 
-            # Deploy API code directly from repo (with vendor built above)
             - name: Deploy API code to server (SCP)
               uses: appleboy/scp-action@v1.0.0
               with:
@@ -116,18 +106,6 @@ jobs:
                       set -e
                       cd ${{ env.SSH_PATH }}/api
 
-                      ls -la
-
-                      # Create .env if not exists
-                      if [ ! -f .env ]; then
-                        cp .env.example .env
-                      fi
-
-                      # Generate app key if not set
-                      if ! grep -q "APP_KEY=base64:" .env; then
-                        php artisan key:generate --force
-                      fi
-
                       # Run migrations
                       php artisan migrate --force
 
@@ -135,13 +113,4 @@ jobs:
                       php artisan db:seed --force || true
 
                       # Clear and cache config
-                      php artisan config:clear
-                      php artisan config:cache
-                      php artisan route:cache
-                      php artisan view:cache
-
-                      # Set permissions
-                      chown -R ${{ env.SSH_USER }}:${{ env.SSH_USER }} storage bootstrap/cache
-                      chmod -R 775 storage bootstrap/cache
-
-                      echo "Deployment completed successfully"
+                      php artisan optimize:clear
