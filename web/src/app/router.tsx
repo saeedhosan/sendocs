@@ -63,6 +63,13 @@ export const router = createBrowserRouter([
         element: <GuestOnly />,
         children: [
           {
+            path: 'auth/google/callback',
+            lazy: lazyPage(
+              () => import('../features/auth/pages/GoogleCallbackPage'),
+              'GoogleCallbackPage',
+            ),
+          },
+          {
             path: 'login',
             lazy: lazyPage(
               () => import('../features/auth/pages/LoginPage'),
