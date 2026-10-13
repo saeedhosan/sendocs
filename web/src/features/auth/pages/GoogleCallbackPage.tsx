@@ -45,26 +45,16 @@ export function GoogleCallbackPage() {
       return
     }
 
-    const controller = new AbortController()
-
     authApi
-      .googleCallback(code, oauthState, controller.signal)
+      .googleCallback(code, oauthState)
       .then((payload) => {
         setSession(payload)
         navigate('/dashboard', { replace: true })
       })
       .catch((error: unknown) => {
-        if (controller.signal.aborted) {
-          return
-        }
-
         setState('error')
         setMessage(errorMessage(error))
       })
-
-    return () => {
-      controller.abort()
-    }
   }, [code, navigate, oauthState, providerError, setSession])
 
   if (state === 'loading') {
