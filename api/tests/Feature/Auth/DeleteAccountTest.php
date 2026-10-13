@@ -66,7 +66,7 @@ it('deletes the account and everything hanging off it', function (): void {
 });
 
 it('queues owned file cleanup when deleting an account', function (): void {
-    Storage::fake('s3');
+    Storage::fake();
     [$session] = signInAndKeepToken();
 
     $request = DocumentRequest::create([

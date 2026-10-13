@@ -55,7 +55,7 @@ function sizedPdf(int $bytes): UploadedFile
 }
 
 beforeEach(function (): void {
-    Storage::fake('local');
+    Storage::fake();
 });
 
 test('uploads one file and returns the updated portal view', function (): void {

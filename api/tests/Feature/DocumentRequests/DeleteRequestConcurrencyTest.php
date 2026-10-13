@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 test('queues documents added after the request relation was loaded', function (): void {
-    Storage::fake('s3');
+    Storage::fake();
 
     $owner   = User::factory()->create();
     $request = DocumentRequest::create([

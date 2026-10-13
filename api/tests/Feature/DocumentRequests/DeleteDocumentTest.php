@@ -38,7 +38,7 @@ function deleteDocumentRequest(User $owner, string $requestId, string $itemId): 
 }
 
 test('deletes an uploaded document and returns no content', function (): void {
-    Storage::fake('s3');
+    Storage::fake();
 
     $owner   = User::factory()->create();
     $request = makeDeleteDocumentRequest($owner, 'Tax Documents', 1);

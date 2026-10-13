@@ -58,7 +58,7 @@ function addDeleteRequestDocument($item, string $storageKey): void
 }
 
 test('deletes a request, its items, documents, and stored files', function (): void {
-    Storage::fake('s3');
+    Storage::fake();
 
     $owner   = User::factory()->create();
     $request = makeDeleteRequest($owner, 'Tax Documents', 3);
@@ -85,7 +85,7 @@ test('deletes a request, its items, documents, and stored files', function (): v
 });
 
 test('queues a document created after the request was loaded', function (): void {
-    Storage::fake('s3');
+    Storage::fake();
 
     $owner         = User::factory()->create();
     $request       = makeDeleteRequest($owner, 'Tax Documents', 1);
@@ -101,7 +101,7 @@ test('queues a document created after the request was loaded', function (): void
 });
 
 test('returns 404 for another owners request and preserves it', function (): void {
-    Storage::fake('s3');
+    Storage::fake();
 
     $owner      = User::factory()->create();
     $otherOwner = User::factory()->create();
