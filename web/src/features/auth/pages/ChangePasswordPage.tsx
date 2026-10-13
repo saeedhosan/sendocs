@@ -118,13 +118,13 @@ export function ChangePasswordPage() {
       </div>
 
       {success ? (
-        <Alert className="border-success-border bg-success-surface text-success-text">
+        <Alert>
           Password updated. All sessions have been terminated.
         </Alert>
       ) : null}
 
       {formError ? (
-        <Alert variant="destructive" className="mb-4 rounded-lg">
+        <Alert variant="destructive" className="mb-4">
           {formError}
         </Alert>
       ) : null}

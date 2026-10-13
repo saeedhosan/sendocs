@@ -41,11 +41,9 @@ export function VerifyEmailBanner() {
   }
 
   return (
-    <Alert
-      className="mb-4 border-warning-border bg-warning-surface text-warning-text"
-    >
+    <Alert className="mb-4">
       <AlertTitle>Verify your email address</AlertTitle>
-      <AlertDescription className="text-warning-text">
+      <AlertDescription>
         <p>
           {sent
             ? `Verification email sent to ${user.email}. Check your inbox.`

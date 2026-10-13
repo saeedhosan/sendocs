@@ -108,7 +108,7 @@ export function RegisterPage() {
       <AuthDivider label="or register with email" compact />
 
       {formError ? (
-        <Alert variant="destructive" className="mb-4 rounded-lg">
+        <Alert variant="destructive" className="mb-4">
           {formError}
         </Alert>
       ) : null}

@@ -101,7 +101,7 @@ export function VerifyEmailPage() {
         <h1 className="mb-2 text-2xl leading-8 font-semibold tracking-[-0.025em] text-foreground">Verification failed</h1>
         <p className="text-sm leading-5 text-muted-foreground">{message}</p>
       </div>
-      <Alert variant="destructive" className="mb-4 rounded-lg">
+      <Alert variant="destructive" className="mb-4">
         {status === 'authenticated'
           ? 'You can send a new verification email from your dashboard.'
           : 'Sign in to send a new verification email from your dashboard.'}

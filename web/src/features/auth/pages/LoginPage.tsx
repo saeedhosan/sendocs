@@ -99,7 +99,7 @@ export function LoginPage() {
             <AuthDivider label="or continue with email" uppercase />
 
             {formError ? (
-                <Alert variant="destructive" className="mb-4 rounded-lg">
+                <Alert variant="destructive" className="mb-4">
                     {formError}
                 </Alert>
             ) : null}

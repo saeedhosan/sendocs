@@ -79,7 +79,7 @@ export function ResetPasswordPage() {
               : 'This link is missing its reset token.'}
           </p>
         </div>
-        <Alert variant="destructive" className="mb-4 rounded-lg">
+        <Alert variant="destructive" className="mb-4">
           Request a new link to choose a password.
         </Alert>
         <Button className="w-full" onClick={() => navigate('/forgot-password')}>
@@ -99,7 +99,7 @@ export function ResetPasswordPage() {
       </div>
 
       {formError ? (
-        <Alert variant="destructive" className="mb-4 rounded-lg">
+        <Alert variant="destructive" className="mb-4">
           {formError}
         </Alert>
       ) : null}
