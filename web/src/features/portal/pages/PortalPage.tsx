@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ErrorState } from "../../../components/feedback";
-import { ProgressBar } from "@/components/ProgressBar";
+import { Progress } from "@/components/ui/progress";
 import { Spinner } from "@/components/ui/spinner";
 import { Footer } from "../../../layouts/components/Footer";
 import { Header } from "../../../layouts/components/Header";
@@ -216,11 +216,9 @@ export function PortalPage() {
                                         {remainingLabel(remaining)}
                                     </span>
                                 </div>
-                                <ProgressBar
+                                <Progress
                                     value={uploadPercent(view.uploaded, view.total)}
-                                    tone="waiting"
-                                    label={progressLabel(view.uploaded, view.total)}
-                                    className=" sm:h-2"
+                                    aria-label={progressLabel(view.uploaded, view.total)}
                                 />
                             </div>
                         </section>

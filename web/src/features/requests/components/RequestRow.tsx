@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { ChevronRightIcon } from "../../../components/icons";
-import { ProgressBar } from "@/components/ProgressBar";
+import { Progress } from "@/components/ui/progress";
 import { formatDateTime, timeAgo } from "../../../lib/format";
 import { percent, progressLabel } from "../progress";
 import type { RequestSummary } from "../types";
@@ -37,11 +37,9 @@ export function RequestRow({ request }: RequestRowProps) {
                     <span>{progressLabel(request.uploaded, request.total)}</span>
                     <span className="text-ink-muted md:hidden">{value}%</span>
                 </div>
-                <ProgressBar
+                <Progress
                     value={value}
-                    tone={request.status === "complete" ? "complete" : "waiting"}
-                    label={progressLabel(request.uploaded, request.total)}
-                    className="border border-border-subtle/50 bg-surface-muted"
+                    aria-label={progressLabel(request.uploaded, request.total)}
                 />
             </div>
 

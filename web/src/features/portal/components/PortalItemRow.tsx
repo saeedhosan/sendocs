@@ -1,6 +1,6 @@
 import type { ChangeEvent } from "react";
 import { useRef } from "react";
-import { ProgressBar } from "@/components/ProgressBar";
+import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { cn } from "../../../lib/cn";
 import { ACCEPT_ATTRIBUTE } from "../precheck";
@@ -71,10 +71,9 @@ export function PortalItemRow({
                             </span>
                         </div>
                         <div className="mt-2">
-                            <ProgressBar
+                            <Progress
                                 value={percent ?? 0}
-                                label={`Uploading ${item.label}`}
-                                className="[&_[data-slot=progress-track]]:bg-border"
+                                aria-label={`Uploading ${item.label}`}
                             />
                         </div>
                     </>

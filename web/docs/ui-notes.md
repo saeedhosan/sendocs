@@ -15,8 +15,6 @@ The web app uses [shadcn/ui](https://ui.shadcn.com) as its component system.
   - `PageHeader.tsx` — page title / back link / actions header.
   - `PasswordInput.tsx` — `Input` with a show/hide toggle (the documented
     shadcn "password input" pattern).
-  - `ProgressBar.tsx` — `Progress` with a `tone` prop mapped onto the
-    `progress-indicator` colour, plus the Sendocs track styling.
   - `ThemeToggle.tsx` — light/dark/system switcher.
 
 ## Import style
@@ -60,9 +58,12 @@ Buttons and links are `cursor: pointer` by default; disabled buttons are
   adjusts. Icons without a size class are set to `size-4` by the button.
 - **Loading buttons**: render `<Spinner data-icon="inline-start" />` as the
   first child and set `disabled`, so the button is inert while work runs.
-- **Alerts**: `variant="destructive"` is the error alert. Semantic colours
-  (`success`/`warning`/`info`) use the documented "custom colours" pattern —
-  `border-*`/`bg-*`/`text-*` classes on the default variant.
+- **Alerts**: use the stock variants — `variant="destructive"` for errors,
+  otherwise the default neutral alert. Do not layer custom colour classes on
+  top; the component already ships the styling callers need.
+- **Progress**: use stock `Progress` with `value` and `aria-label`; the
+  indicator colour is the theme default. There is no `ProgressBar` wrapper or
+  `tone` prop.
 - **Badges**: same idea — `variant="outline"` plus colour classes for the
   app's semantic states.
 - **Links as buttons**: use `buttonVariants` from `@/components/ui/button`,

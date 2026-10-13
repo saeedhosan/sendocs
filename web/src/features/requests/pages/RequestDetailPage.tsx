@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { ErrorState, LoadingState } from '../../../components/feedback'
 import { LinkOffIcon, TrashIcon } from '../../../components/icons'
 import { PageHeader } from "@/components/PageHeader"
-import { ProgressBar } from "@/components/ProgressBar"
+import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ApiError } from '../../../lib/api/client'
@@ -217,10 +217,9 @@ export function RequestDetailPage() {
             {percent(request.uploaded, request.total)}%
           </span>
         </div>
-        <ProgressBar
+        <Progress
           value={percent(request.uploaded, request.total)}
-          tone="waiting"
-          label={progressLabel(request.uploaded, request.total)}
+          aria-label={progressLabel(request.uploaded, request.total)}
         />
       </div>
 
