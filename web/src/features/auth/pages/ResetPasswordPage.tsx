@@ -13,7 +13,6 @@ import { errorMessage, validationErrors } from '../../../lib/api/errors'
 import { authApi } from '../api'
 import { PasswordStrengthMeter } from '../components/PasswordStrengthMeter'
 import { fieldErrors, resetPasswordSchema } from '../schemas'
-import { authStyles as s } from './authStyles'
 import { app } from '../../../config/app'
 
 export function ResetPasswordPage() {
@@ -72,15 +71,15 @@ export function ResetPasswordPage() {
   if (token === '' || invalidLink) {
     return (
       <AuthLayout headerAction={{ label: 'Help', to: '/contact' }}>
-        <div className={s.heading}>
-          <h1 className={s.title}>Reset link unavailable</h1>
-          <p className={s.subtitle}>
+        <div className="mb-6">
+          <h1 className="mb-2 text-2xl leading-8 font-semibold tracking-[-0.025em] text-foreground">Reset link unavailable</h1>
+          <p className="text-sm leading-5 text-muted-foreground">
             {invalidLink
               ? 'This link has expired or has already been used.'
               : 'This link is missing its reset token.'}
           </p>
         </div>
-        <Alert variant="destructive" className={s.formError}>
+        <Alert variant="destructive" className="mb-4 rounded-lg">
           Request a new link to choose a password.
         </Alert>
         <Button className="w-full" onClick={() => navigate('/forgot-password')}>
@@ -92,20 +91,20 @@ export function ResetPasswordPage() {
 
   return (
     <AuthLayout headerAction={{ label: 'Help', to: '/contact' }}>
-      <div className={s.heading}>
-        <h1 className={s.title}>Create a new password</h1>
-        <p className={s.subtitle}>
+      <div className="mb-6">
+        <h1 className="mb-2 text-2xl leading-8 font-semibold tracking-[-0.025em] text-foreground">Create a new password</h1>
+        <p className="text-sm leading-5 text-muted-foreground">
           Choose a secure password for your {app.name} account.
         </p>
       </div>
 
       {formError ? (
-        <Alert variant="destructive" className={s.formError}>
+        <Alert variant="destructive" className="mb-4 rounded-lg">
           {formError}
         </Alert>
       ) : null}
 
-      <form className={s.formReset} onSubmit={handleSubmit} noValidate>
+      <form className="flex flex-col gap-5" onSubmit={handleSubmit} noValidate>
         <div>
           <FormField
             label="New password"
@@ -141,7 +140,7 @@ export function ResetPasswordPage() {
           />
         </FormField>
 
-        <div className={s.actionsFlush}>
+        <div className="mt-0">
           <Button type="submit" className="w-full" disabled={submitting}>
             {submitting ? <Spinner data-icon="inline-start" /> : null}
             Reset password

@@ -1,6 +1,6 @@
 import { PasswordInput } from "@/components/PasswordInput";
 import { Alert } from "@/components/ui/alert";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,11 +13,9 @@ import { FormField } from "../../../components/forms/FormField";
 import { ArrowForwardIcon } from "../../../components/icons";
 import { AuthLayout } from "../../../layouts/AuthLayout";
 import { errorMessage, validationErrors } from "../../../lib/api/errors";
-import { cn } from "../../../lib/cn";
 import { AuthDivider } from "../components/AuthDivider";
 import { GoogleButton } from "../components/GoogleButton";
 import { fieldErrors, loginSchema } from "../schemas";
-import { authStyles as s } from "./authStyles";
 
 type LoginValues = {
     email: string;
@@ -89,24 +87,24 @@ export function LoginPage() {
 
     return (
         <AuthLayout>
-            <div className={cn(s.heading, s.center)}>
-                <h1 className={s.title}>Sign in</h1>
-                <p className={s.subtitle}>Sign in to your account to continue.</p>
+            <div className="mb-6 text-center">
+                <h1 className="mb-2 text-2xl leading-8 font-semibold tracking-[-0.025em] text-foreground">Sign in</h1>
+                <p className="text-sm leading-5 text-muted-foreground">Sign in to your account to continue.</p>
             </div>
 
-            <div className={s.social}>
+            <div className="mb-6">
                 <GoogleButton label="Continue with Google" />
             </div>
 
             <AuthDivider label="or continue with email" uppercase />
 
             {formError ? (
-                <Alert variant="destructive" className={s.formError}>
+                <Alert variant="destructive" className="mb-4 rounded-lg">
                     {formError}
                 </Alert>
             ) : null}
 
-            <form className={s.form} onSubmit={handleSubmit} noValidate>
+            <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
                 <FormField label="Email address" error={errors.email}>
                     <Input
                         type="email"
@@ -122,7 +120,7 @@ export function LoginPage() {
                     label="Password"
                     error={errors.password}
                     labelAction={
-                        <Link to="/forgot-password" className={s.link}>
+                        <Link to="/forgot-password" className="text-primary hover:text-primary/80 transition-colors">
                             Forgot password?
                         </Link>
                     }
@@ -145,12 +143,12 @@ export function LoginPage() {
                             setValues((current) => ({ ...current, remember: checked === true }));
                         }}
                     />
-                    <Label htmlFor="remember" className="text-sm text-ink-secondary">
+                    <Label htmlFor="remember" className="text-sm text-muted-foreground">
                         Remember this device for 30 days
                     </Label>
                 </div>
 
-                <div className={s.actionsFlush}>
+                <div className="mt-0">
                     <Button type="submit" disabled={submitting} className="w-full">
                         {submitting ? <Spinner data-icon="inline-start" /> : null}
                         Sign in
@@ -159,9 +157,12 @@ export function LoginPage() {
                 </div>
             </form>
 
-            <p className={s.footerText}>
+            <p className="mt-6 text-center text-sm text-muted-foreground">
                 Don&apos;t have an account?{" "}
-                <Link to="/register" className={buttonVariants({ size: "lg" })}>
+                <Link
+                    to="/register"
+                    className="text-primary hover:text-primary/80 transition-colors"
+                >
                     Create account
                 </Link>
             </p>

@@ -14,9 +14,7 @@ import { passwordRequirements } from '../../../lib/password'
 import { AuthDivider } from '../components/AuthDivider'
 import { GoogleButton } from '../components/GoogleButton'
 import { PasswordRequirementsList } from '../components/PasswordRequirementsList'
-import { cn } from '../../../lib/cn'
 import { fieldErrors, registerSchema } from '../schemas'
-import { authStyles as s } from './authStyles'
 import { app } from '../../../config/app'
 
 type RegisterValues = {
@@ -96,26 +94,26 @@ export function RegisterPage() {
 
   return (
     <AuthLayout>
-      <div className={cn(s.heading, s.center)}>
-        <h1 className={s.title}>Create your account</h1>
-        <p className={s.subtitle}>
+      <div className="mb-6 text-center">
+        <h1 className="mb-2 text-2xl leading-8 font-semibold tracking-[-0.025em] text-foreground">Create your account</h1>
+        <p className="text-sm leading-5 text-muted-foreground">
           Start collecting documents securely with {app.name}.
         </p>
       </div>
 
-      <div className={s.social}>
+      <div className="mb-6">
         <GoogleButton label="Sign up with Google" />
       </div>
 
       <AuthDivider label="or register with email" compact />
 
       {formError ? (
-        <Alert variant="destructive" className={s.formError}>
+        <Alert variant="destructive" className="mb-4 rounded-lg">
           {formError}
         </Alert>
       ) : null}
 
-      <form className={s.form} onSubmit={handleSubmit} noValidate>
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
         <FormField label="Full name" error={errors.name}>
           <Input
             name="name"
@@ -167,21 +165,21 @@ export function RegisterPage() {
         </div>
       </form>
 
-      <p className={s.legal}>
+      <p className="my-4 text-center text-xs leading-4 text-muted-foreground">
         By creating an account, you agree to our{' '}
-        <Link to="/terms" className={s.legalLink}>
+        <Link to="/terms" className="text-primary underline-offset-4 hover:underline">
           Terms of Service
         </Link>{' '}
         and{' '}
-        <Link to="/privacy" className={s.legalLink}>
+        <Link to="/privacy" className="text-primary underline-offset-4 hover:underline">
           Privacy Policy
         </Link>
         .
       </p>
 
-      <div className={s.footerBox}>
+      <div className="mt-6 pt-5 border-t border-border text-center text-sm text-muted-foreground">
         Already have an account?{' '}
-        <Link to="/login" className={s.link}>
+        <Link to="/login" className="text-primary hover:text-primary/80 transition-colors">
           Sign in
         </Link>
       </div>
