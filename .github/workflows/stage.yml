@@ -74,6 +74,9 @@ jobs:
                   VITE_API_URL: ${{ secrets.API_URL }}
               run: bun run build
 
+            - name: Debug web build output
+              run: ls -la web/dist/
+
             - name: Install API production dependencies
               working-directory: api
               run: composer install --prefer-dist --no-dev --no-interaction --no-progress --optimize-autoloader
