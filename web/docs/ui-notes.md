@@ -88,10 +88,14 @@ skill) is also ignored.
 
 `src/main.css` keeps the Sendocs `:root` tokens (indigo `--color-primary`,
 slate borders/ink text, `--color-danger`/`success`/`warning`/`info` palette).
-The shadcn init appended its own unprefixed variables (`--primary`,
-`--background`, …) and `@theme` bridge entries; the app's `--color-*` values are
-not overwritten, so Sendocs branding survives while shadcn components get the
-tokens they expect. Typography is Geist, the shadcn default.
+The shadcn unprefixed variables (`--primary`, `--background`, `--border`, …) are
+**aliases of those brand tokens**, declared once in `:root`; because the brand
+tokens are redefined under `.dark`, the aliases resolve to the active theme on
+their own (no second shadcn block in `.dark`). This is the single source of
+truth — never hard-code `oklch` neutrals for these tokens, or light and dark
+drift apart. Body theming goes through the shadcn `@layer base` rule
+(`bg-background text-foreground`); the plain `body` rule only sets metrics.
+Typography is Geist, the shadcn default.
 
 ## Removing components
 
