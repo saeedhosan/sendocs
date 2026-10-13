@@ -123,17 +123,6 @@ export function SearchIcon(props: IconProps) {
   )
 }
 
-export function SpinnerIcon(props: IconProps) {
-  return (
-    <Icon {...props}>
-      <path
-        d="M12 4a8 8 0 1 0 8 8h-2a6 6 0 1 1-6-6z"
-        fillRule="evenodd"
-      />
-    </Icon>
-  )
-}
-
 export function PlusIcon(props: IconProps) {
   return (
     <MaterialIcon {...props}>
