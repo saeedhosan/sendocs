@@ -14,6 +14,7 @@ concurrency:
     cancel-in-progress: true
 
 env:
+    API_URL: ${{ secrets.API_URL }}
     SSH_KEY: ${{ secrets.SSH_KEY }}
     SSH_HOST: ${{ secrets.SSH_HOST }}
     SSH_USER: ${{ secrets.SSH_USER }}
@@ -81,6 +82,8 @@ jobs:
 
             - name: Build web assets
               working-directory: web
+              env:
+                VITE_API_URL: ${{ secrets.API_URL }}
               run: bun run build
 
             - name: Install API production dependencies
