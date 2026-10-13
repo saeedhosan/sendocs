@@ -1,16 +1,19 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { EmptyState, ErrorState, LoadingState } from '../../../components/feedback'
+import { DescriptionIcon, PlusIcon } from '../../../components/icons'
+import { PageHeader } from "@/components/PageHeader"
+import { Button } from "@/components/ui/button"
 import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  DescriptionIcon,
-  PlusIcon,
-} from '../../../components/icons'
-import { Button, PageHeader } from '../../../components/ui'
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
+import { toast } from "@/components/ui/toast"
 import { ApiError } from '../../../lib/api/client'
 import { requestsApi } from '../api'
-import { Notice } from '../components/Notice'
 import type { RequestFilter } from '../components/RequestFilters'
 import { RequestFilters } from '../components/RequestFilters'
 import { RequestList } from '../components/RequestList'
@@ -29,14 +32,14 @@ export function RequestsPage() {
   const [pageNumber, setPageNumber] = useState(1)
   const [filter, setFilter] = useState<RequestFilter>('all')
   const [query, setQuery] = useState('')
-  const [notice, setNotice] = useState<string | null>(
-    () => (location.state as { notice?: string } | null)?.notice ?? null,
-  )
   const historyRef = useRef<Array<string | null>>([])
   const cursorRef = useRef<string | null>(cursor)
 
   useEffect(() => {
-    if ((location.state as { notice?: string } | null)?.notice) {
+    const notice = (location.state as { notice?: string } | null)?.notice
+
+    if (notice) {
+      toast.add({ type: 'success', title: notice })
       navigate(`${location.pathname}${location.search}`, {
         replace: true,
         state: null,
@@ -138,10 +141,10 @@ export function RequestsPage() {
         subtitle="Collect and track client documentation"
         actions={
           <Button
-            iconLeft={<PlusIcon size={18} />}
             className="rounded-[10px]"
             onClick={() => navigate('/requests/new')}
           >
+            <PlusIcon data-icon="inline-start" size={18} />
             New request
           </Button>
         }
@@ -175,10 +178,10 @@ export function RequestsPage() {
           message="Create your first request link to start gathering files from clients securely."
           action={
             <Button
-              iconLeft={<PlusIcon size={18} />}
               className="rounded-[10px]"
               onClick={() => navigate('/requests/new')}
             >
+              <PlusIcon data-icon="inline-start" size={18} />
               Create request
             </Button>
           }
@@ -212,43 +215,45 @@ export function RequestsPage() {
                     All synced
                   </span>
                 </div>
-                <div className="flex items-center justify-between gap-2 w-full sm:w-auto">
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="sm:h-auto sm:min-h-0 sm:py-1.5"
-                    iconLeft={<ChevronLeftIcon size={16} />}
-                    onClick={goPrevious}
-                    disabled={!canGoPrevious}
-                  >
-                    Previous
-                  </Button>
-                  <span className="px-2 font-mono text-[0.6875rem] text-ink-secondary">
-                    {pageLabel}
-                  </span>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="sm:h-auto sm:min-h-0 sm:py-1.5"
-                    iconRight={<ChevronRightIcon size={16} />}
-                    onClick={goNext}
-                    disabled={!pageCursor}
-                  >
-                    Next
-                  </Button>
-                </div>
+                <Pagination className="w-auto justify-end">
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        href="#"
+                        aria-disabled={!canGoPrevious}
+                        className="aria-disabled:pointer-events-none aria-disabled:opacity-50"
+                        onClick={(event) => {
+                          event.preventDefault()
+                          if (canGoPrevious) {
+                            goPrevious()
+                          }
+                        }}
+                      />
+                    </PaginationItem>
+                    <PaginationItem>
+                      <span className="px-2 font-mono text-[0.6875rem] text-ink-secondary">
+                        {pageLabel}
+                      </span>
+                    </PaginationItem>
+                    <PaginationItem>
+                      <PaginationNext
+                        href="#"
+                        aria-disabled={!pageCursor}
+                        className="aria-disabled:pointer-events-none aria-disabled:opacity-50"
+                        onClick={(event) => {
+                          event.preventDefault()
+                          if (pageCursor) {
+                            goNext()
+                          }
+                        }}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
               </div>
             }
           />
         </>
-      ) : null}
-
-      {notice ? (
-        <Notice
-          tone="ok"
-          message={notice}
-          onDismiss={() => setNotice(null)}
-        />
       ) : null}
     </div>
   )

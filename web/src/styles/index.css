@@ -1,0 +1,14 @@
+/*
+ * Sendocs web - styles entry
+ *
+ * Import order matters: Tailwind and its layers first, then the Sendocs design
+ * tokens and global styles so the brand definitions win over the defaults.
+ */
+
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+@import '@fontsource-variable/geist';
+
+@import './tokens.css';
+@import './global.css';

@@ -14,13 +14,25 @@ vi.mock('../../../src/features/requests/api', () => ({
   },
 }))
 
+vi.mock('@/components/ui/toast', () => ({
+  toast: { add: vi.fn() },
+}))
+
 import { ApiError } from '../../../src/lib/api/client'
 import { requestsApi } from '../../../src/features/requests/api'
+import { toast } from '../../../src/components/ui/toast'
 import { RequestDetailPage } from '../../../src/features/requests/pages/RequestDetailPage'
 import type { RequestDetail } from '../../../src/features/requests/types'
 
 const get = vi.mocked(requestsApi.get)
 const remove = vi.mocked(requestsApi.remove)
+const toastAdd = vi.mocked(toast.add)
+
+beforeEach(() => {
+  get.mockReset()
+  remove.mockReset()
+  toastAdd.mockReset()
+})
 
 const request: RequestDetail = {
   id: 'r1',
@@ -46,11 +58,6 @@ function renderPage() {
   )
 }
 
-beforeEach(() => {
-  get.mockReset()
-  remove.mockReset()
-})
-
 describe('RequestDetailPage', () => {
   it('keeps the confirmation open when a delete fails', async () => {
     get.mockResolvedValue(request)
@@ -65,7 +72,12 @@ describe('RequestDetailPage', () => {
     const dialog = screen.getByRole('dialog')
     await user.click(within(dialog).getByRole('button', { name: 'Delete request' }))
 
-    expect(await screen.findByText('Boom.')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(toastAdd).toHaveBeenCalledWith({
+        type: 'error',
+        title: 'Boom.',
+      })
+    })
     expect(screen.getByRole('dialog')).toBeInTheDocument()
   })
 

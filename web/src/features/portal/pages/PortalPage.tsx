@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ErrorState } from "../../../components/feedback";
-import { ProgressBar, Spinner } from "../../../components/ui";
+import { Progress } from "@/components/ui/progress";
+import { Spinner } from "@/components/ui/spinner";
 import { Footer } from "../../../layouts/components/Footer";
 import { Header } from "../../../layouts/components/Header";
 import { ApiError } from "../../../lib/api/client";
+import { progressIndicatorClass } from "../../../lib/progressStyles";
 import { portalApi } from "../api";
 import { CompleteBanner } from "../components/CompleteBanner";
 import { CompletedItemsList } from "../components/CompletedItemsList";
@@ -169,7 +171,7 @@ export function PortalPage() {
     if (status === "loading" || view === null) {
         return (
             <div className="flex items-center justify-center min-h-screen py-8 px-4 bg-surface-muted">
-                <Spinner size={24} label="Loading your documents" />
+                <Spinner aria-label="Loading your documents" className="size-6" />
             </div>
         );
     }
@@ -215,11 +217,12 @@ export function PortalPage() {
                                         {remainingLabel(remaining)}
                                     </span>
                                 </div>
-                                <ProgressBar
+                                <Progress
                                     value={uploadPercent(view.uploaded, view.total)}
-                                    tone="waiting"
-                                    label={progressLabel(view.uploaded, view.total)}
-                                    className=" sm:h-2"
+                                    aria-label={progressLabel(view.uploaded, view.total)}
+                                    className={progressIndicatorClass(
+                                        remaining === 0 ? "complete" : "waiting",
+                                    )}
                                 />
                             </div>
                         </section>

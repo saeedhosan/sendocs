@@ -15,6 +15,7 @@ export type SessionPayload = {
 export type LoginInput = {
   email: string
   password: string
+  remember?: boolean
 }
 
 export type RegisterInput = {

@@ -1,6 +1,12 @@
 import { useState } from 'react'
 import { useAuth } from '../../../app/providers/useAuth'
-import { Alert, Button } from '../../../components/ui'
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
+import { Spinner } from "@/components/ui/spinner"
 import { errorMessage } from '../../../lib/api/errors'
 import { authApi } from '../api'
 
@@ -35,28 +41,28 @@ export function VerifyEmailBanner() {
   }
 
   return (
-    <Alert
-      variant="warning"
-      title="Verify your email address"
-      className="mb-4"
-    >
-      <p>
-        {sent
-          ? `Verification email sent to ${user.email}. Check your inbox.`
-          : `We sent a verification link to ${user.email}.`}
-      </p>
-      {error ? <p className="mt-1">{error}</p> : null}
-      {sent ? null : (
-        <Button
-          variant="secondary"
-          size="sm"
-          loading={sending}
-          onClick={handleResend}
-          className="mt-2"
-        >
-          Resend email
-        </Button>
-      )}
+    <Alert className="mb-4">
+      <AlertTitle>Verify your email address</AlertTitle>
+      <AlertDescription>
+        <p>
+          {sent
+            ? `Verification email sent to ${user.email}. Check your inbox.`
+            : `We sent a verification link to ${user.email}.`}
+        </p>
+        {error ? <p className="mt-1">{error}</p> : null}
+        {sent ? null : (
+          <Button
+            variant="secondary"
+            size="sm"
+            disabled={sending}
+            onClick={handleResend}
+            className="mt-2"
+          >
+            {sending ? <Spinner data-icon="inline-start" /> : null}
+            Resend email
+          </Button>
+        )}
+      </AlertDescription>
     </Alert>
   )
 }

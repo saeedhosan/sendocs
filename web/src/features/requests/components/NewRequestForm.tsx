@@ -7,7 +7,9 @@ import {
     KeyboardArrowUpIcon,
     PlusIcon,
 } from "../../../components/icons";
-import { Alert, Button } from "../../../components/ui";
+import { Alert } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { ApiError } from "../../../lib/api/client";
 import { errorMessage, validationErrors } from "../../../lib/api/errors";
 import { cn } from "../../../lib/cn";
@@ -130,7 +132,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
             onSubmit={handleSubmit}
             noValidate
         >
-            {formError ? <Alert variant="error">{formError}</Alert> : null}
+            {formError ? <Alert variant="destructive">{formError}</Alert> : null}
 
             <div className="flex flex-col gap-2">
                 <label className="text-[0.8125rem] font-medium text-ink" htmlFor="request-title">
@@ -262,7 +264,8 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
                         Cancel
                     </Link>
                 )}
-                <Button type="submit" loading={busy}>
+                <Button type="submit" disabled={busy}>
+                    {busy ? <Spinner data-icon="inline-start" /> : null}
                     Create request
                 </Button>
             </div>

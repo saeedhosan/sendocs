@@ -1,9 +1,4 @@
 /*
- * Sendocs web - merged styles
- * This file combines tokens.css, tailwind.css, and global.css
- */
-
-/*
  * Design tokens for the Sendocs web surface.
  *
  * Values come from the committed UI references: the Tailwind slate/indigo
@@ -41,7 +36,7 @@
   --color-primary-hover: #4338ca;
   --color-primary-active: #3730a3;
   --color-primary-soft: #eef2ff;
-  --color-on-primary: #ffffff;
+  --color-on-primary: #f1f5f9;
 
   /* Feedback */
   --color-danger: #dc2626;
@@ -70,12 +65,6 @@
   --font-mono: 'JetBrains Mono', 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas,
     monospace;
 
-  /* Radii */
-  --radius-sm: 4px;
-  --radius-md: 10px;
-  --radius-lg: 12px;
-  --radius-full: 9999px;
-
   /* Elevation */
   --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.07),
@@ -90,6 +79,44 @@
   --color-marketing-success: #16a34a;
   --color-marketing-success-surface: #f0fdf4;
   --color-marketing-success-border: rgba(22, 163, 74, 0.2);
+
+  /*
+   * shadcn/ui tokens are aliases of the brand tokens above so both systems
+   * share one source of truth. They are declared only once: because the brand
+   * tokens change under `.dark`, these resolve to the active theme on their own.
+   */
+  --background: var(--color-canvas);
+  --foreground: var(--color-text);
+  --card: var(--color-surface);
+  --card-foreground: var(--color-text);
+  --popover: var(--color-surface);
+  --popover-foreground: var(--color-text);
+  --primary: var(--color-primary);
+  --primary-foreground: var(--color-on-primary);
+  --secondary: var(--color-surface-muted);
+  --secondary-foreground: var(--color-text-emphasis);
+  --muted: var(--color-surface-muted);
+  --muted-foreground: var(--color-text-muted);
+  --accent: var(--color-surface-muted);
+  --accent-foreground: var(--color-text-emphasis);
+  --destructive: var(--color-danger);
+  --border: var(--color-border);
+  --input: var(--color-border);
+  --ring: var(--color-focus);
+  --chart-1: var(--color-primary);
+  --chart-2: var(--color-success);
+  --chart-3: var(--color-warning-text);
+  --chart-4: var(--color-info-text);
+  --chart-5: var(--color-text-secondary);
+  --radius: 0.625rem;
+  --sidebar: var(--color-surface);
+  --sidebar-foreground: var(--color-text);
+  --sidebar-primary: var(--color-primary);
+  --sidebar-primary-foreground: var(--color-on-primary);
+  --sidebar-accent: var(--color-surface-muted);
+  --sidebar-accent-foreground: var(--color-text-emphasis);
+  --sidebar-border: var(--color-border);
+  --sidebar-ring: var(--color-focus);
 }
 
 /* Dark mode tokens */
@@ -121,7 +148,7 @@
   --color-primary-hover: #818cf8;
   --color-primary-active: #4f46e5;
   --color-primary-soft: #312e81;
-  --color-on-primary: #ffffff;
+  --color-on-primary: #f1f5f9;
 
   /* Feedback */
   --color-danger: #ef4444;
@@ -151,17 +178,14 @@
   --color-marketing-success-border: rgba(74, 222, 128, 0.3);
 }
 
-/* Tailwind theme bridge */
-@import 'tailwindcss';
-
 /* Dark mode variant - uses class strategy */
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
- * Bridge the design tokens in tokens.css into Tailwind's theme.
+ * Bridge the design tokens above into Tailwind's theme.
  *
  * `inline` keeps the utilities pointing at the CSS variables instead of inlining
- * their resolved values, so tokens.css stays the single source of truth and any
+ * their resolved values, so this file stays the single source of truth and any
  * runtime override of a token still flows through.
  */
 @theme inline {
@@ -221,24 +245,53 @@
   --color-marketing-success-border: var(--color-marketing-success-border);
 
   /* Typography */
-  --font-sans: var(--font-sans);
+  --font-sans: 'Geist Variable', sans-serif;
   --font-mono: var(--font-mono);
-
-  /* Radii */
-  --radius-sm: var(--radius-sm);
-  --radius-md: var(--radius-md);
-  --radius-lg: var(--radius-lg);
-  --radius-full: var(--radius-full);
 
   /* Elevation */
   --shadow-sm: var(--shadow-sm);
   --shadow-md: var(--shadow-md);
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
 @theme {
   --animate-skeleton: skeleton 1.4s ease-in-out infinite;
 
   @keyframes skeleton {
+
     0%,
     100% {
       opacity: 1;
@@ -248,230 +301,4 @@
       opacity: 0.55;
     }
   }
-}
-
-/* Global base styles */
-@font-face {
-  font-family: 'Geist';
-  font-style: normal;
-  font-weight: 100 900;
-  font-display: swap;
-  src: url('/fonts/Geist-var.woff2') format('woff2');
-}
-
-@font-face {
-  font-family: 'Geist Mono';
-  font-style: normal;
-  font-weight: 100 900;
-  font-display: swap;
-  src: url('/fonts/GeistMono-var.woff2') format('woff2');
-}
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-html {
-  -webkit-text-size-adjust: 100%;
-}
-
-body {
-  margin: 0;
-  min-height: 100vh;
-  font-family: var(--font-sans);
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  color: var(--color-text);
-  background-color: var(--color-canvas);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  overscroll-behavior: none;
-}
-
-#root {
-  min-height: 100vh;
-}
-
-a {
-  text-decoration: none;
-}
-
-button {
-  font-family: inherit;
-}
-
-input,
-button,
-textarea,
-select {
-  font: inherit;
-}
-
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus,
-textarea:-webkit-autofill,
-textarea:-webkit-autofill:hover,
-textarea:-webkit-autofill:focus,
-select:-webkit-autofill,
-select:-webkit-autofill:hover,
-select:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 1000px var(--color-surface) inset !important;
-  box-shadow: 0 0 0 1000px var(--color-surface) inset !important;
-  -webkit-text-fill-color: var(--color-text) !important;
-  caret-color: var(--color-text);
-  transition: background-color 5000s ease-in-out 0s;
-}
-
-.dark input:-webkit-autofill,
-.dark input:-webkit-autofill:hover,
-.dark input:-webkit-autofill:focus,
-.dark textarea:-webkit-autofill,
-.dark textarea:-webkit-autofill:hover,
-.dark textarea:-webkit-autofill:focus,
-.dark select:-webkit-autofill,
-.dark select:-webkit-autofill:hover,
-.dark select:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 1000px var(--color-surface) inset !important;
-  box-shadow: 0 0 0 1000px var(--color-surface) inset !important;
-}
-
-:focus-visible {
-  outline: 2px solid var(--color-focus);
-  outline-offset: 2px;
-}
-
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation: none;
-}
-
-::view-transition-old(page-content) {
-  animation: var(--page-transition-out-duration, 160ms) var(--page-transition-easing, ease-out) both var(--page-transition-out-name, route-fade-out);
-}
-
-::view-transition-new(page-content) {
-  animation: var(--page-transition-in-duration, 180ms) var(--page-transition-easing, ease-out) both var(--page-transition-in-name, route-fade-in);
-}
-
-@keyframes route-fade-out {
-  to {
-    opacity: 0;
-  }
-}
-
-@keyframes route-fade-in {
-  from {
-    opacity: 0;
-  }
-}
-
-@keyframes route-slide-out-up {
-  to {
-    opacity: 0;
-    transform: translateY(calc(-1 * var(--page-transition-enter-offset, 4px)));
-  }
-}
-
-@keyframes route-slide-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(var(--page-transition-enter-offset, 4px));
-  }
-}
-
-@keyframes route-slide-out-down {
-  to {
-    opacity: 0;
-    transform: translateY(var(--page-transition-enter-offset, 4px));
-  }
-}
-
-@keyframes route-slide-in-down {
-  from {
-    opacity: 0;
-    transform: translateY(calc(-1 * var(--page-transition-enter-offset, 4px)));
-  }
-}
-
-@keyframes route-slide-out-left {
-  to {
-    opacity: 0;
-    transform: translateX(calc(-1 * var(--page-transition-enter-offset, 4px)));
-  }
-}
-
-@keyframes route-slide-in-left {
-  from {
-    opacity: 0;
-    transform: translateX(var(--page-transition-enter-offset, 4px));
-  }
-}
-
-@keyframes route-slide-out-right {
-  to {
-    opacity: 0;
-    transform: translateX(var(--page-transition-enter-offset, 4px));
-  }
-}
-
-@keyframes route-slide-in-right {
-  from {
-    opacity: 0;
-    transform: translateX(calc(-1 * var(--page-transition-enter-offset, 4px)));
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-
-  ::view-transition-old(root),
-  ::view-transition-new(root),
-  ::view-transition-old(page-content),
-  ::view-transition-new(page-content) {
-    animation: none;
-  }
-}
-
-/* Scrollbar - NeetCode exact style */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--code-block-border-color) transparent;
-}
-
-*::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-*::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-*::-webkit-scrollbar-thumb {
-  background: var(--code-block-border-color);
-  border-radius: 4px;
-}
-
-*::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-
-.dark-theme *::-webkit-scrollbar-thumb,
-.dark-theme *::-webkit-scrollbar-thumb:hover {
-  background: #636363;
-}
-
-*::-webkit-scrollbar-corner {
-  background: transparent;
 }

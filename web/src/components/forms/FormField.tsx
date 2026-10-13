@@ -5,7 +5,6 @@ import { FormError } from './FormError'
 
 type FieldChildProps = {
   id?: string
-  invalid?: boolean
   'aria-describedby'?: string
   'aria-invalid'?: boolean
 }
@@ -54,7 +53,6 @@ export function FormField({
       id: fieldId,
       'aria-describedby': describedBy,
       'aria-invalid': error ? true : undefined,
-      invalid: error ? true : undefined,
     })
   }
 

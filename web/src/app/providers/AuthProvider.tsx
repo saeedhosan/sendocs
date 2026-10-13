@@ -51,7 +51,7 @@ export function AuthProvider({
 }) {
   const [restoredSession] = useState(() => initialSession ?? readStoredSession())
   const [status, setStatus] = useState<AuthStatus>(
-    restoredSession ? 'authenticated' : 'unauthenticated',
+    restoredSession ? 'authenticated' : 'checking',
   )
   const [user, setUser] = useState<AuthUser | null>(restoredSession?.user ?? null)
   const [expiresAt, setExpiresAt] = useState<string | null>(
@@ -94,6 +94,32 @@ export function AuthProvider({
       setCsrfToken(restoredSession.csrfToken)
     }
   }, [restoredSession])
+
+  // Boot: if no stored session, try to restore from the server via cookie.
+  useEffect(() => {
+    if (restoredSession) {
+      return
+    }
+
+    let cancelled = false
+
+    authApi
+      .session()
+      .then((payload) => {
+        if (!cancelled) {
+          setSession(payload)
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setStatus('unauthenticated')
+        }
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [restoredSession, setSession, setStatus])
 
   const login = useCallback(
     async (input: LoginInput) => {

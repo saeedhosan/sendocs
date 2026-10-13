@@ -5,14 +5,17 @@ import { useAuth } from '../../../app/providers/useAuth'
 import { FormField } from '../../../components/forms/FormField'
 import { FormError } from '../../../components/forms/FormError'
 import { ArrowForwardIcon, CheckCircleIcon, InfoIcon } from '../../../components/icons'
-import { Alert, Button, Input, PasswordInput } from '../../../components/ui'
+import { PasswordInput } from "@/components/PasswordInput"
+import { Alert } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Spinner } from "@/components/ui/spinner"
 import { AuthLayout } from '../../../layouts/AuthLayout'
 import { ApiError } from '../../../lib/api/client'
 import { errorMessage, validationErrors } from '../../../lib/api/errors'
 import { PasswordRequirementsList } from '../components/PasswordRequirementsList'
 import { PasswordStrengthMeter } from '../components/PasswordStrengthMeter'
 import { changePasswordSchema, fieldErrors } from '../schemas'
-import { authStyles as s } from './authStyles'
 import { app } from '../../../config/app'
 
 export function ChangePasswordPage() {
@@ -90,44 +93,51 @@ export function ChangePasswordPage() {
 
   return (
     <AuthLayout headerAction={{ label: 'Back to account', to: '/dashboard' }}>
-      <div className={s.heading}>
-        <h1 className={s.title}>Change password</h1>
-        <p className={s.subtitle}>
+      <div className="mb-6">
+        <h1 className="mb-2 text-2xl leading-8 font-semibold tracking-[-0.025em] text-foreground">Change password</h1>
+        <p className="text-sm leading-5 text-muted-foreground">
           Update the password used to sign in to your {app.name} account.
         </p>
       </div>
 
-      <div className={s.changeInfoBox}>
-        <InfoIcon size={18} aria-hidden="true" className={s.changeInfoIcon} />
-        <div className={s.changeInfoBoxText}>
+      <div className="flex items-start gap-2.5 mb-5 p-3 bg-muted border border-border rounded-lg text-xs leading-[1.125rem] text-muted-foreground">
+        <InfoIcon
+          size={18}
+          aria-hidden="true"
+          className="shrink-0 mt-0.5 text-primary"
+        />
+        <div className="flex-1 leading-relaxed">
           <p>
             Updating your password will automatically terminate all active
             sessions on other devices.
           </p>
-          <span className={s.infoBoxNote}>
+          <span className="block mt-0.5 font-mono text-[0.6875rem] text-muted-foreground">
             SOC2 compliant session termination
           </span>
         </div>
       </div>
 
       {success ? (
-        <Alert variant="success" className={s.formError}>
+        <Alert>
           Password updated. All sessions have been terminated.
         </Alert>
       ) : null}
 
       {formError ? (
-        <Alert variant="error" className={s.formError}>
+        <Alert variant="destructive" className="mb-4">
           {formError}
         </Alert>
       ) : null}
 
-      <form className={s.form} onSubmit={handleSubmit} noValidate>
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
         <FormField
           label="Current password"
           error={errors.currentPassword}
           labelAction={
-            <Link to="/forgot-password" className={`${s.link} text-xs`}>
+            <Link
+              to="/forgot-password"
+              className="text-primary hover:text-primary/80 transition-colors text-xs"
+            >
               Forgot password?
             </Link>
           }
@@ -163,14 +173,14 @@ export function ChangePasswordPage() {
 
         <div>
           <FormField label="Confirm new password" error={errors.confirmPassword}>
-            <div className={s.confirmPasswordInput}>
+            <div className="relative">
               <Input
                 type="password"
                 name="confirmPassword"
                 autoComplete="new-password"
                 placeholder="Re-enter new password"
                 value={confirmPassword}
-                className={s.confirmPasswordField}
+                className="pr-10"
                 onChange={(event) => {
                   setConfirmPassword(event.target.value)
                   setErrors({})
@@ -181,7 +191,7 @@ export function ChangePasswordPage() {
                 <CheckCircleIcon
                   size={18}
                   aria-hidden="true"
-                  className={s.confirmPasswordCheck}
+                  className="absolute right-2.5 text-success pointer-events-none"
                 />
               ) : null}
             </div>
@@ -193,19 +203,20 @@ export function ChangePasswordPage() {
 
         <PasswordRequirementsList rules={rules} panel title="Requirements" />
 
-        <div className={`${s.actionsFlush} pt-2`}>
+        <div className="mt-0 pt-2">
           <Button
             type="submit"
-            fullWidth
-            loading={submitting}
-            iconRight={<ArrowForwardIcon size={18} />}
+            disabled={submitting}
+            className="w-full"
           >
+            {submitting ? <Spinner data-icon="inline-start" /> : null}
             Save new password
+            <ArrowForwardIcon data-icon="inline-end" size={18} />
           </Button>
-          <div className={`${s.cancelRow} min-h-6`}>
+          <div className="mt-3 text-center min-h-6">
             <button
               type="button"
-              className="text-sm font-medium text-ink-secondary transition-colors hover:text-ink"
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               onClick={() => navigate('/dashboard')}
             >
               Cancel

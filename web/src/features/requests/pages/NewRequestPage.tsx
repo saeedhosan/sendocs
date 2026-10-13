@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { PageHeader } from '../../../components/ui'
+import { PageHeader } from "@/components/PageHeader"
 import { requestsApi } from '../api'
 import { LinkReveal } from '../components/LinkReveal'
 import { NewRequestForm } from '../components/NewRequestForm'
