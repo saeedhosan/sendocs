@@ -11,11 +11,9 @@ export type GoogleButtonProps = {
 };
 
 /**
- * Starts the documented Google OAuth flow.
- *
- * The authorization URL is fetched from the API and the browser is sent to
- * Google. The callback is API-owned; see the phase notes for its current
- * JSON-only response.
+ * Starts Google sign-in and sends the browser to Google's authorization page.
+ * Google returns to the frontend callback route, which completes sign-in
+ * through the existing API.
  */
 export function GoogleButton({ label }: GoogleButtonProps) {
     const [loading, setLoading] = useState(false);
