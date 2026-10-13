@@ -130,15 +130,27 @@ jobs:
                   name: api-build
                   path: api/
 
-            - name: Deploy to server (SCP)
+            - name: Deploy web assets to server (SCP)
               uses: appleboy/scp-action@v1.0.0
               with:
                   host: ${{ env.SSH_HOST }}
                   username: ${{ env.SSH_USER }}
                   key: ${{ env.SSH_KEY }}
                   port: ${{ env.SSH_PORT }}
-                  source: "dist/*,api/*"
-                  target: ${{ env.SSH_PATH }}
+                  source: "dist/*"
+                  target: ${{ env.SSH_PATH }}/web
+                  strip_components: 1
+                  overwrite: true
+
+            - name: Deploy API code to server (SCP)
+              uses: appleboy/scp-action@v1.0.0
+              with:
+                  host: ${{ env.SSH_HOST }}
+                  username: ${{ env.SSH_USER }}
+                  key: ${{ env.SSH_KEY }}
+                  port: ${{ env.SSH_PORT }}
+                  source: "api/*"
+                  target: ${{ env.SSH_PATH }}/api
                   strip_components: 1
                   overwrite: true
 
