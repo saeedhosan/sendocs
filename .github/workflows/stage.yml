@@ -102,20 +102,21 @@ jobs:
               with:
                   name: api-build
                   path: |
-                      api/app/
-                      api/bootstrap/
-                      api/config/
-                      api/database/
-                      api/public/
-                      api/resources/
-                      api/routes/
-                      api/storage/
-                      api/tests/
-                      api/vendor/
-                      api/artisan
-                      api/composer.json
-                      api/composer.lock
-                      api/.env.example
+                      app/
+                      bootstrap/
+                      config/
+                      database/
+                      public/
+                      resources/
+                      routes/
+                      storage/
+                      tests/
+                      vendor/
+                      artisan
+                      composer.json
+                      composer.lock
+                      .env.example
+                  working-directory: api
                   retention-days: 1
 
     deploy:
