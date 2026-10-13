@@ -141,7 +141,7 @@ jobs:
                       php artisan view:cache
 
                       # Set permissions
-                      chown -R www-data:www-data storage bootstrap/cache
+                      chown -R ${{ env.SSH_USER }}:${{ env.SSH_USER }} storage bootstrap/cache
                       chmod -R 775 storage bootstrap/cache
 
                       echo "Deployment completed successfully"
