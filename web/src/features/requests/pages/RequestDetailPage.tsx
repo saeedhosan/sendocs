@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { ApiError } from '../../../lib/api/client'
 import { errorMessage } from '../../../lib/api/errors'
 import { formatDate } from '../../../lib/format'
+import { progressIndicatorClass } from '../../../lib/progressStyles'
 import { requestsApi } from '../api'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { ItemList } from '../components/ItemList'
@@ -19,6 +20,7 @@ import {
   linkStateLabel,
   percent,
   progressLabel,
+  statusTone,
 } from '../progress'
 import type { RequestDetail, RequestItem } from '../types'
 
@@ -219,6 +221,7 @@ export function RequestDetailPage() {
         <Progress
           value={percent(request.uploaded, request.total)}
           aria-label={progressLabel(request.uploaded, request.total)}
+          className={progressIndicatorClass(statusTone(request))}
         />
       </div>
 

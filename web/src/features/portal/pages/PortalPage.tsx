@@ -6,6 +6,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Footer } from "../../../layouts/components/Footer";
 import { Header } from "../../../layouts/components/Header";
 import { ApiError } from "../../../lib/api/client";
+import { progressIndicatorClass } from "../../../lib/progressStyles";
 import { portalApi } from "../api";
 import { CompleteBanner } from "../components/CompleteBanner";
 import { CompletedItemsList } from "../components/CompletedItemsList";
@@ -219,6 +220,9 @@ export function PortalPage() {
                                 <Progress
                                     value={uploadPercent(view.uploaded, view.total)}
                                     aria-label={progressLabel(view.uploaded, view.total)}
+                                    className={progressIndicatorClass(
+                                        remaining === 0 ? "complete" : "waiting",
+                                    )}
                                 />
                             </div>
                         </section>

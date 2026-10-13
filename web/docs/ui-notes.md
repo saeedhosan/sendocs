@@ -61,9 +61,12 @@ Buttons and links are `cursor: pointer` by default; disabled buttons are
 - **Alerts**: use the stock variants — `variant="destructive"` for errors,
   otherwise the default neutral alert. Do not layer custom colour classes on
   top; the component already ships the styling callers need.
-- **Progress**: use stock `Progress` with `value` and `aria-label`; the
-  indicator colour is the theme default. There is no `ProgressBar` wrapper or
-  `tone` prop.
+- **Progress**: use stock `Progress` with `value` and `aria-label`. Colour the
+  indicator by status with `progressIndicatorClass` from
+  `src/lib/progressStyles.ts` — green when complete, amber while waiting, the
+  same Tailwind palette as the badges. The vendored component stays untouched;
+  the helper targets the indicator through its `data-slot`. There is no
+  `ProgressBar` wrapper or `tone` prop.
 - **Pagination**: the requests list uses the stock `Pagination` composition
   (`PaginationPrevious` / `PaginationNext`). Navigation is cursor-based and
   client-side, so the links bind `onClick` and signal the no-more-pages state

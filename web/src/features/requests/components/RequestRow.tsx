@@ -2,7 +2,8 @@ import { Progress } from "@/components/ui/progress";
 import { Link } from "react-router-dom";
 import { ChevronRightIcon } from "../../../components/icons";
 import { formatDateTime, timeAgo } from "../../../lib/format";
-import { percent, progressLabel } from "../progress";
+import { progressIndicatorClass } from "../../../lib/progressStyles";
+import { percent, progressLabel, statusTone } from "../progress";
 import type { RequestSummary } from "../types";
 import { StatusBadge } from "./StatusBadge";
 
@@ -40,6 +41,7 @@ export function RequestRow({ request }: RequestRowProps) {
                 <Progress
                     value={value}
                     aria-label={progressLabel(request.uploaded, request.total)}
+                    className={progressIndicatorClass(statusTone(request))}
                 />
             </div>
 

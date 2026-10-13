@@ -3,6 +3,7 @@ import { useRef } from "react";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { cn } from "../../../lib/cn";
+import { progressIndicatorClass } from "../../../lib/progressStyles";
 import { ACCEPT_ATTRIBUTE } from "../precheck";
 import type { PortalItem } from "../types";
 import type { ItemFailure } from "../useUploadQueue";
@@ -74,6 +75,7 @@ export function PortalItemRow({
                             <Progress
                                 value={percent ?? 0}
                                 aria-label={`Uploading ${item.label}`}
+                                className={progressIndicatorClass("waiting")}
                             />
                         </div>
                     </>
