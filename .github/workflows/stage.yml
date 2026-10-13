@@ -133,7 +133,7 @@ jobs:
               uses: actions/download-artifact@v4
               with:
                   name: api-build
-                  path: api/
+                  path: .
 
             - name: Deploy web assets to server (SCP)
               uses: appleboy/scp-action@v1.0.0
