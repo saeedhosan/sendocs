@@ -1,0 +1,185 @@
+name: Stage Deployment
+
+on:
+    workflow_dispatch:
+    push:
+        branches:
+            - stage
+
+permissions:
+    contents: read
+
+concurrency:
+    group: deploy-stage
+    cancel-in-progress: true
+
+env:
+    SSH_KEY: ${{ secrets.SSH_KEY }}
+    SSH_HOST: ${{ secrets.SSH_HOST }}
+    SSH_USER: ${{ secrets.SSH_USER }}
+    SSH_PATH: ${{ secrets.SSH_PATH }}
+    SSH_PORT: ${{ secrets.SSH_PORT }}
+
+jobs:
+    test-and-build:
+        name: Test & Build
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+
+        steps:
+            - name: Check out repository
+              uses: actions/checkout@v4
+
+            # API: Setup PHP and install dependencies
+            - name: Set up PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: "8.4"
+                  extensions: bcmath, intl, mbstring, pcntl, pdo_pgsql, zip
+                  tools: composer:v2
+                  coverage: none
+                  cache: composer
+                  working-directory: api
+
+            - name: Create API environment file
+              working-directory: api
+              run: cp .env.example .env
+
+            - name: Install API dependencies
+              working-directory: api
+              run: composer install --prefer-dist --no-interaction --no-progress
+
+            - name: Run API tests
+              working-directory: api
+              run: composer test
+
+            # Web: Setup Bun and install dependencies
+            - name: Set up Bun
+              uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version: 1.x
+
+            - name: Cache Bun
+              uses: actions/cache@v4
+              with:
+                  path: ~/.bun/install/cache
+                  key: bun-${{ runner.os }}-${{ hashFiles('web/bun.lock') }}
+                  restore-keys: |
+                      bun-${{ runner.os }}-
+
+            - name: Install web dependencies
+              working-directory: web
+              run: bun install --frozen-lockfile
+
+            - name: Install Playwright browsers
+              working-directory: web
+              run: bunx playwright install --with-deps chromium
+
+            - name: Run web tests
+              working-directory: web
+              run: bun run test
+
+            - name: Build web assets
+              working-directory: web
+              run: bun run build
+
+            - name: Upload web build artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: web-build
+                  path: web/dist/
+                  retention-days: 1
+
+            - name: Upload API artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: api-build
+                  path: |
+                      api/app/
+                      api/bootstrap/
+                      api/config/
+                      api/database/
+                      api/public/
+                      api/resources/
+                      api/routes/
+                      api/storage/
+                      api/tests/
+                      api/artisan
+                      api/composer.json
+                      api/composer.lock
+                      api/.env.example
+                  retention-days: 1
+
+    deploy:
+        name: Deploy to Stage Server
+        needs: test-and-build
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+        environment: stage
+
+        steps:
+            - name: Download web build artifact
+              uses: actions/download-artifact@v4
+              with:
+                  name: web-build
+                  path: dist/
+
+            - name: Download API artifact
+              uses: actions/download-artifact@v4
+              with:
+                  name: api-build
+                  path: api/
+
+            - name: Deploy to server (SCP)
+              uses: appleboy/scp-action@v1.0.0
+              with:
+                  host: ${{ env.SSH_HOST }}
+                  username: ${{ env.SSH_USER }}
+                  key: ${{ env.SSH_KEY }}
+                  port: ${{ env.SSH_PORT }}
+                  source: "dist/*,api/*"
+                  target: ${{ env.SSH_PATH }}
+                  strip_components: 1
+                  overwrite: true
+
+            - name: Run post-deployment scripts
+              uses: appleboy/ssh-action@v1.0.3
+              with:
+                  host: ${{ env.SSH_HOST }}
+                  username: ${{ env.SSH_USER }}
+                  key: ${{ env.SSH_KEY }}
+                  port: ${{ env.SSH_PORT }}
+                  script: |
+                      set -e
+                      cd ${{ env.SSH_PATH }}/api
+
+                      # Install production dependencies
+                      composer install --prefer-dist --no-dev --no-interaction --no-progress --optimize-autoloader
+
+                      # Create .env if not exists
+                      if [ ! -f .env ]; then
+                        cp .env.example .env
+                      fi
+
+                      # Generate app key if not set
+                      if ! grep -q "APP_KEY=base64:" .env; then
+                        php artisan key:generate --force
+                      fi
+
+                      # Run migrations
+                      php artisan migrate --force
+
+                      # Run seeders (if any)
+                      php artisan db:seed --force || true
+
+                      # Clear and cache config
+                      php artisan config:clear
+                      php artisan config:cache
+                      php artisan route:cache
+                      php artisan view:cache
+
+                      # Set permissions
+                      chown -R www-data:www-data storage bootstrap/cache
+                      chmod -R 775 storage bootstrap/cache
+
+                      echo "Deployment completed successfully"
