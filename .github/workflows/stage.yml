@@ -18,12 +18,14 @@ env:
     SSH_KEY: ${{ secrets.SSH_KEY }}
     SSH_HOST: ${{ secrets.SSH_HOST }}
     SSH_USER: ${{ secrets.SSH_USER }}
-    SSH_PATH: ${{ secrets.SSH_PATH }}
     SSH_PORT: ${{ secrets.SSH_PORT }}
+    SSH_PATH: ${{ secrets.SSH_PATH }}
+    WEB_PATH: ${{ secrets.WEB_PATH }}
+    API_PATH: ${{ secrets.API_PATH }}
 
 jobs:
-    build-and-deploy:
-        name: Build & Deploy
+    web-deployment:
+        name: Web Deployment
         runs-on: ubuntu-latest
         timeout-minutes: 25
         environment: stage
@@ -31,17 +33,6 @@ jobs:
         steps:
             - name: Check out repository
               uses: actions/checkout@v4
-
-            # API: Setup PHP and install dependencies
-            - name: Set up PHP
-              uses: shivammathur/setup-php@v2
-              with:
-                  php-version: "8.4"
-                  extensions: bcmath, intl, mbstring, pcntl, pdo_pgsql, zip
-                  tools: composer:v2
-                  coverage: none
-                  cache: composer
-                  working-directory: api
 
             # Web: Setup Bun and install dependencies
             - name: Set up Bun
@@ -67,7 +58,40 @@ jobs:
                   VITE_API_URL: ${{ secrets.API_URL }}
               run: bun run build
 
-            - name: Install API dependencies
+            - name: Deploy web assets to server (SCP)
+              uses: appleboy/scp-action@v1.0.0
+              with:
+                  host: ${{ env.SSH_HOST }}
+                  username: ${{ env.SSH_USER }}
+                  key: ${{ env.SSH_KEY }}
+                  port: ${{ env.SSH_PORT }}
+                  source: "web/dist/*"
+                  target: ${{ env.WEB_PATH }}
+                  strip_components: 1
+                  overwrite: true
+
+    api-deployment:
+        name: API Deployment
+        runs-on: ubuntu-latest
+        timeout-minutes: 25
+        environment: stage
+
+        steps:
+            - name: Check out repository
+              uses: actions/checkout@v4
+
+            # API: Setup PHP and install dependencies
+            - name: Set up PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: "8.4"
+                  extensions: bcmath, intl, mbstring, pcntl, pdo_pgsql, zip
+                  tools: composer:v2
+                  coverage: none
+                  cache: composer
+                  working-directory: api
+
+            - name: Install dependencies
               working-directory: api
               run: composer install --prefer-dist --no-dev --no-interaction --no-progress --optimize-autoloader
 
@@ -79,8 +103,8 @@ jobs:
                   key: ${{ env.SSH_KEY }}
                   port: ${{ env.SSH_PORT }}
                   source: "web/dist/*"
-                  target: ${{ env.SSH_PATH }}/web
-                  strip_components: 2
+                  target: ${{ env.API_PATH }}
+                  strip_components: 1
                   overwrite: true
 
             - name: Deploy API code to server (SCP)
