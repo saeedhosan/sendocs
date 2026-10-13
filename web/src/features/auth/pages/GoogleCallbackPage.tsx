@@ -8,42 +8,32 @@ import { AuthLayout } from '../../../layouts/AuthLayout'
 import { errorMessage } from '../../../lib/api/errors'
 import { authApi } from '../api'
 
-type CallbackState = 'loading' | 'error'
-
 export function GoogleCallbackPage() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const { setSession } = useAuth()
   const started = useRef(false)
-  const [state, setState] = useState<CallbackState>('loading')
-  const [message, setMessage] = useState('')
+  const [requestError, setRequestError] = useState<string | null>(null)
 
   const code = searchParams.get('code')
   const oauthState = searchParams.get('state')
   const providerError = searchParams.get('error')
+  const callbackMessage = providerError
+    ? providerError === 'access_denied'
+      ? 'Google sign-in was cancelled. You can try again when you are ready.'
+      : 'Google could not complete sign-in. Please try again.'
+    : !code || !oauthState
+      ? 'This Google sign-in link is incomplete or has expired. Please try again.'
+      : null
+  const message = callbackMessage ?? requestError
+  const hasError = message !== null
 
   useEffect(() => {
-    if (started.current) {
+    if (started.current || providerError || !code || !oauthState) {
       return
     }
 
     started.current = true
-
-    if (providerError) {
-      setState('error')
-      setMessage(
-        providerError === 'access_denied'
-          ? 'Google sign-in was cancelled. You can try again when you are ready.'
-          : 'Google could not complete sign-in. Please try again.',
-      )
-      return
-    }
-
-    if (!code || !oauthState) {
-      setState('error')
-      setMessage('This Google sign-in link is incomplete or has expired. Please try again.')
-      return
-    }
 
     authApi
       .googleCallback(code, oauthState)
@@ -52,12 +42,11 @@ export function GoogleCallbackPage() {
         navigate('/dashboard', { replace: true })
       })
       .catch((error: unknown) => {
-        setState('error')
-        setMessage(errorMessage(error))
+        setRequestError(errorMessage(error))
       })
   }, [code, navigate, oauthState, providerError, setSession])
 
-  if (state === 'loading') {
+  if (!hasError) {
     return (
       <AuthLayout>
         <LoadingState
