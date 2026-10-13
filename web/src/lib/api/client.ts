@@ -1,6 +1,8 @@
 import { getCsrfToken } from './csrf'
 
-export const API_BASE = '/api/v1'
+const envBase = import.meta.env.VITE_API_URL?.replace(/\/+$/, '')
+
+export const API_BASE = envBase ? `${envBase}/api/v1` : '/api/v1'
 
 export type ApiErrorCode = string
 
@@ -133,11 +135,12 @@ export async function apiRequest<T>(
   let response: Response
 
   try {
+    const isAbsolute = envBase !== ''
     response = await fetch(`${API_BASE}${path}`, {
       method,
       headers,
       body: body === undefined ? undefined : JSON.stringify(body),
-      credentials: 'same-origin',
+      credentials: isAbsolute ? 'include' : 'same-origin',
       signal,
     })
   } catch (cause) {
