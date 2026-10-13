@@ -45,7 +45,7 @@ function deleteRequest(User $owner, string $requestId): TestResponse
 
 function addDeleteRequestDocument($item, string $storageKey): void
 {
-    Storage::disk('local')->put($storageKey, 'pdf');
+    Storage::put($storageKey, 'pdf');
 
     $item->document()->create([
         'storage_key'   => $storageKey,
@@ -80,7 +80,7 @@ test('deletes a request, its items, documents, and stored files', function (): v
     test()->artisan('storage:cleanup')->assertExitCode(0);
 
     foreach ($request->items as $index => $item) {
-        Storage::disk('local')->assertMissing("requests/{$request->getKey()}/file-{$index}.pdf");
+        Storage::assertMissing("requests/{$request->getKey()}/file-{$index}.pdf");
     }
 });
 
@@ -97,7 +97,7 @@ test('queues a document created after the request was loaded', function (): void
     app(DeleteRequest::class)->execute($loadedRequest);
 
     test()->artisan('storage:cleanup')->assertExitCode(0);
-    Storage::disk('local')->assertMissing($storageKey);
+    Storage::assertMissing($storageKey);
 });
 
 test('returns 404 for another owners request and preserves it', function (): void {
@@ -132,7 +132,7 @@ test('returns 404 for another owners request and preserves it', function (): voi
 
     expect($request->fresh())->not->toBeNull();
     expect($item->fresh()->document)->not->toBeNull();
-    Storage::disk('local')->assertExists("requests/{$request->getKey()}/file.pdf");
+    Storage::assertExists("requests/{$request->getKey()}/file.pdf");
 });
 
 test('returns 404 for an unknown request', function (): void {

@@ -28,7 +28,7 @@ test('queues documents added after the request relation was loaded', function ()
     $request->load('items.document');
 
     $storageKey = "requests/{$request->getKey()}/passport.pdf";
-    Storage::disk('local')->put($storageKey, 'pdf');
+    Storage::put($storageKey, 'pdf');
 
     $item->document()->create([
         'storage_key'   => $storageKey,
@@ -47,6 +47,6 @@ test('queues documents added after the request relation was loaded', function ()
 
     test()->artisan('storage:cleanup')->assertExitCode(0);
 
-    Storage::disk('local')->assertMissing($storageKey);
+    Storage::assertMissing($storageKey);
     expect(DocumentRequest::query()->find($request->getKey()))->toBeNull();
 });
