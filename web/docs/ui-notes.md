@@ -64,6 +64,11 @@ Buttons and links are `cursor: pointer` by default; disabled buttons are
 - **Progress**: use stock `Progress` with `value` and `aria-label`; the
   indicator colour is the theme default. There is no `ProgressBar` wrapper or
   `tone` prop.
+- **Pagination**: the requests list uses the stock `Pagination` composition
+  (`PaginationPrevious` / `PaginationNext`). Navigation is cursor-based and
+  client-side, so the links bind `onClick` and signal the no-more-pages state
+  with `aria-disabled` (`aria-disabled:pointer-events-none
+  aria-disabled:opacity-50`); there is no numbered page list.
 - **Badges**: same idea — `variant="outline"` plus colour classes for the
   app's semantic states.
 - **Links as buttons**: use `buttonVariants` from `@/components/ui/button`,

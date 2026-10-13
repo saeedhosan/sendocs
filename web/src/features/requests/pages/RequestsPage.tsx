@@ -1,14 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { EmptyState, ErrorState, LoadingState } from '../../../components/feedback'
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  DescriptionIcon,
-  PlusIcon,
-} from '../../../components/icons'
+import { DescriptionIcon, PlusIcon } from '../../../components/icons'
 import { PageHeader } from "@/components/PageHeader"
 import { Button } from "@/components/ui/button"
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
 import { ApiError } from '../../../lib/api/client'
 import { requestsApi } from '../api'
 import { Notice } from '../components/Notice'
@@ -213,31 +215,41 @@ export function RequestsPage() {
                     All synced
                   </span>
                 </div>
-                <div className="flex items-center justify-between gap-2 w-full sm:w-auto">
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="sm:h-auto sm:min-h-0 sm:py-1.5"
-                    onClick={goPrevious}
-                    disabled={!canGoPrevious}
-                  >
-                    <ChevronLeftIcon data-icon="inline-start" size={16} />
-                    Previous
-                  </Button>
-                  <span className="px-2 font-mono text-[0.6875rem] text-ink-secondary">
-                    {pageLabel}
-                  </span>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="sm:h-auto sm:min-h-0 sm:py-1.5"
-                    onClick={goNext}
-                    disabled={!pageCursor}
-                  >
-                    Next
-                    <ChevronRightIcon data-icon="inline-end" size={16} />
-                  </Button>
-                </div>
+                <Pagination className="w-auto justify-end">
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        href="#"
+                        aria-disabled={!canGoPrevious}
+                        className="aria-disabled:pointer-events-none aria-disabled:opacity-50"
+                        onClick={(event) => {
+                          event.preventDefault()
+                          if (canGoPrevious) {
+                            goPrevious()
+                          }
+                        }}
+                      />
+                    </PaginationItem>
+                    <PaginationItem>
+                      <span className="px-2 font-mono text-[0.6875rem] text-ink-secondary">
+                        {pageLabel}
+                      </span>
+                    </PaginationItem>
+                    <PaginationItem>
+                      <PaginationNext
+                        href="#"
+                        aria-disabled={!pageCursor}
+                        className="aria-disabled:pointer-events-none aria-disabled:opacity-50"
+                        onClick={(event) => {
+                          event.preventDefault()
+                          if (pageCursor) {
+                            goNext()
+                          }
+                        }}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
               </div>
             }
           />
