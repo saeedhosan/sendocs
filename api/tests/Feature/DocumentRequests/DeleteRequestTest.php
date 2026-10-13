@@ -45,7 +45,7 @@ function deleteRequest(User $owner, string $requestId): TestResponse
 
 function addDeleteRequestDocument($item, string $storageKey): void
 {
-    Storage::disk('s3')->put($storageKey, 'pdf');
+    Storage::put($storageKey, 'pdf');
 
     $item->document()->create([
         'storage_key'   => $storageKey,
@@ -58,7 +58,7 @@ function addDeleteRequestDocument($item, string $storageKey): void
 }
 
 test('deletes a request, its items, documents, and stored files', function (): void {
-    Storage::fake('s3');
+    Storage::fake();
 
     $owner   = User::factory()->create();
     $request = makeDeleteRequest($owner, 'Tax Documents', 3);
@@ -80,12 +80,12 @@ test('deletes a request, its items, documents, and stored files', function (): v
     test()->artisan('storage:cleanup')->assertExitCode(0);
 
     foreach ($request->items as $index => $item) {
-        Storage::disk('s3')->assertMissing("requests/{$request->getKey()}/file-{$index}.pdf");
+        Storage::assertMissing("requests/{$request->getKey()}/file-{$index}.pdf");
     }
 });
 
 test('queues a document created after the request was loaded', function (): void {
-    Storage::fake('s3');
+    Storage::fake();
 
     $owner         = User::factory()->create();
     $request       = makeDeleteRequest($owner, 'Tax Documents', 1);
@@ -97,11 +97,11 @@ test('queues a document created after the request was loaded', function (): void
     app(DeleteRequest::class)->execute($loadedRequest);
 
     test()->artisan('storage:cleanup')->assertExitCode(0);
-    Storage::disk('s3')->assertMissing($storageKey);
+    Storage::assertMissing($storageKey);
 });
 
 test('returns 404 for another owners request and preserves it', function (): void {
-    Storage::fake('s3');
+    Storage::fake();
 
     $owner      = User::factory()->create();
     $otherOwner = User::factory()->create();
@@ -132,7 +132,7 @@ test('returns 404 for another owners request and preserves it', function (): voi
 
     expect($request->fresh())->not->toBeNull();
     expect($item->fresh()->document)->not->toBeNull();
-    Storage::disk('s3')->assertExists("requests/{$request->getKey()}/file.pdf");
+    Storage::assertExists("requests/{$request->getKey()}/file.pdf");
 });
 
 test('returns 404 for an unknown request', function (): void {

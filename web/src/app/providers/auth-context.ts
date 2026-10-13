@@ -8,7 +8,7 @@ import type {
   SessionPayload,
 } from '../../features/auth/types'
 
-export type AuthStatus = 'authenticated' | 'unauthenticated'
+export type AuthStatus = 'checking' | 'authenticated' | 'unauthenticated'
 
 export type AuthContextValue = {
   status: AuthStatus

@@ -1,4 +1,4 @@
-import { ThemeToggle } from "../../../components/ui";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function ThemeMenu() {
     return <ThemeToggle />;

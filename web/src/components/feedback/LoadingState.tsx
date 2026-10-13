@@ -1,4 +1,4 @@
-import { Spinner } from '../ui'
+import { Spinner } from "@/components/ui/spinner"
 import { StateMessage } from './StateMessage'
 
 export type LoadingStateProps = {
@@ -10,5 +10,5 @@ export function LoadingState({
   title = 'Loading',
   message,
 }: LoadingStateProps) {
-  return <StateMessage title={title} message={message} icon={<Spinner size={24} />} />
+  return <StateMessage title={title} message={message} icon={<Spinner className="size-6" />} />
 }

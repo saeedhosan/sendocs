@@ -57,7 +57,7 @@ final readonly class UploadDocument
 
         $portalRequest->loadMissing('items');
         $item = $portalRequest->items->first(
-            static fn(RequestItem $requestItem): bool => $requestItem->getKey() === $itemId,
+            static fn (RequestItem $requestItem): bool => $requestItem->getKey() === $itemId,
         );
 
         if ($item === null) {
@@ -74,7 +74,7 @@ final readonly class UploadDocument
             );
         }
 
-        $storageKey = $portalRequest->getKey() . '/' . Str::random(64);
+        $storageKey = $portalRequest->getKey().'/'.Str::random(64);
         $stored     = null;
 
         try {

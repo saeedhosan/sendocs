@@ -1,7 +1,9 @@
 import type { ChangeEvent } from "react";
 import { useRef } from "react";
-import { Button, ProgressBar } from "../../../components/ui";
+import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
 import { cn } from "../../../lib/cn";
+import { progressIndicatorClass } from "../../../lib/progressStyles";
 import { ACCEPT_ATTRIBUTE } from "../precheck";
 import type { PortalItem } from "../types";
 import type { ItemFailure } from "../useUploadQueue";
@@ -70,10 +72,10 @@ export function PortalItemRow({
                             </span>
                         </div>
                         <div className="mt-2">
-                            <ProgressBar
+                            <Progress
                                 value={percent ?? 0}
-                                label={`Uploading ${item.label}`}
-                                className="bg-[#e2e8f0]"
+                                aria-label={`Uploading ${item.label}`}
+                                className={progressIndicatorClass("waiting")}
                             />
                         </div>
                     </>
@@ -126,7 +128,7 @@ export function PortalItemRow({
                                 "w-full min-h-8 px-4 rounded-md text-[0.75rem]! sm:w-auto sm:min-h-9.5 sm:text-[0.875rem]!",
                                 failure && "border-border! enabled:hover:bg-surface-muted",
                             )}
-                            variant={failure ? "secondary" : "primary"}
+                            variant={failure ? "secondary" : "default"}
                             size="sm"
                             onClick={openPicker}
                             disabled={queued}

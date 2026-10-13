@@ -66,7 +66,7 @@ it('deletes the account and everything hanging off it', function (): void {
 });
 
 it('queues owned file cleanup when deleting an account', function (): void {
-    Storage::fake('s3');
+    Storage::fake();
     [$session] = signInAndKeepToken();
 
     $request = DocumentRequest::create([
@@ -79,7 +79,7 @@ it('queues owned file cleanup when deleting an account', function (): void {
         'label'    => 'Tax return',
         'position' => 1,
     ]);
-    Storage::disk('s3')->put('account/file.pdf', 'pdf');
+    Storage::put('account/file.pdf', 'pdf');
     $item->document()->create([
         'storage_key'   => 'account/file.pdf',
         'original_name' => 'file.pdf',
@@ -95,7 +95,7 @@ it('queues owned file cleanup when deleting an account', function (): void {
     expect(DB::table('storage_deletion_outbox')->where('storage_key', 'account/file.pdf')->exists())->toBeTrue();
 
     test()->artisan('storage:cleanup')->assertExitCode(0);
-    Storage::disk('s3')->assertMissing('account/file.pdf');
+    Storage::assertMissing('account/file.pdf');
 });
 
 it('expires the session cookie so the browser stops sending it', function (): void {

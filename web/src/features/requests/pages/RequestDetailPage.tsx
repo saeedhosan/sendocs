@@ -2,20 +2,24 @@ import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ErrorState, LoadingState } from '../../../components/feedback'
 import { LinkOffIcon, TrashIcon } from '../../../components/icons'
-import { Badge, Button, PageHeader, ProgressBar } from '../../../components/ui'
+import { PageHeader } from "@/components/PageHeader"
+import { Progress } from "@/components/ui/progress"
+import { toast } from "@/components/ui/toast"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { ApiError } from '../../../lib/api/client'
 import { errorMessage } from '../../../lib/api/errors'
 import { formatDate } from '../../../lib/format'
+import { progressIndicatorClass } from '../../../lib/progressStyles'
 import { requestsApi } from '../api'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { ItemList } from '../components/ItemList'
-import type { NoticeTone } from '../components/Notice'
-import { Notice } from '../components/Notice'
 import {
   linkState,
   linkStateLabel,
   percent,
   progressLabel,
+  statusTone,
 } from '../progress'
 import type { RequestDetail, RequestItem } from '../types'
 
@@ -24,8 +28,6 @@ type ConfirmState =
   | { kind: 'delete-request' }
   | { kind: 'delete-document'; item: RequestItem }
   | null
-
-type NoticeState = { tone: NoticeTone; message: string } | null
 
 function expiresLabel(iso: string, now: number = Date.now()): string {
   const days = Math.ceil((new Date(iso).getTime() - now) / 86_400_000)
@@ -46,7 +48,6 @@ export function RequestDetailPage() {
   )
   const [confirm, setConfirm] = useState<ConfirmState>(null)
   const [busy, setBusy] = useState(false)
-  const [notice, setNotice] = useState<NoticeState>(null)
 
   const load = useCallback(
     (requestId: string) => {
@@ -87,7 +88,7 @@ export function RequestDetailPage() {
       // error and keep the confirmation open to retry.
       setConfirm(null)
     } catch (error) {
-      setNotice({ tone: 'error', message: errorMessage(error) })
+      toast.add({ type: 'error', title: errorMessage(error) })
     } finally {
       setBusy(false)
     }
@@ -97,7 +98,7 @@ export function RequestDetailPage() {
     void run(async () => {
       const updated = await requestsApi.revoke(id)
       setRequest(updated)
-      setNotice({ tone: 'ok', message: 'Magic link revoked' })
+      toast.add({ type: 'success', title: 'Magic link revoked' })
     })
   }
 
@@ -115,17 +116,17 @@ export function RequestDetailPage() {
     void run(async () => {
       await requestsApi.removeDocument(id, item.id)
       await load(id)
-      setNotice({
-        tone: 'ok',
-        message: `Deleted ${item.document?.originalName ?? item.label}`,
+      toast.add({
+        type: 'success',
+        title: `Deleted ${item.document?.originalName ?? item.label}`,
       })
     })
   }
 
   function downloadDocument(item: RequestItem) {
-    setNotice({
-      tone: 'ok',
-      message: `Downloading ${item.document?.originalName ?? item.label}`,
+    toast.add({
+      type: 'success',
+      title: `Downloading ${item.document?.originalName ?? item.label}`,
     })
   }
 
@@ -167,13 +168,12 @@ export function RequestDetailPage() {
         title={request.title}
         badge={
           <Badge
-            className="rounded-[10px]"
-            variant={
+            className={
               linkState(request) === 'active'
-                ? 'success'
+                ? 'bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300'
                 : linkState(request) === 'revoked'
-                  ? 'danger'
-                  : 'warning'
+                  ? 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300'
+                  : 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300'
             }
           >
             {linkStateLabel(linkState(request))}
@@ -185,20 +185,20 @@ export function RequestDetailPage() {
             <Button
               variant="secondary"
               size="sm"
-              iconLeft={<LinkOffIcon size={16} />}
               className="rounded-[10px]"
               onClick={() => setConfirm({ kind: 'revoke' })}
               disabled={linkState(request) !== 'active'}
             >
+              <LinkOffIcon data-icon="inline-start" size={16} />
               Revoke link
             </Button>
             <Button
-              variant="danger"
+              variant="destructive"
               size="sm"
-              iconLeft={<TrashIcon size={16} />}
               className="rounded-[10px]"
               onClick={() => setConfirm({ kind: 'delete-request' })}
             >
+              <TrashIcon data-icon="inline-start" size={16} />
               Delete request
             </Button>
           </>
@@ -214,11 +214,10 @@ export function RequestDetailPage() {
             {percent(request.uploaded, request.total)}%
           </span>
         </div>
-        <ProgressBar
+        <Progress
           value={percent(request.uploaded, request.total)}
-          tone="waiting"
-          className="rounded-[10px] [&>span]:bg-primary"
-          label={progressLabel(request.uploaded, request.total)}
+          aria-label={progressLabel(request.uploaded, request.total)}
+          className={progressIndicatorClass(statusTone(request))}
         />
       </div>
 
@@ -285,14 +284,6 @@ export function RequestDetailPage() {
           }
         }}
       />
-
-      {notice ? (
-        <Notice
-          tone={notice.tone}
-          message={notice.message}
-          onDismiss={() => setNotice(null)}
-        />
-      ) : null}
     </div>
   )
 }

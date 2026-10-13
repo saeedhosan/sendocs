@@ -28,4 +28,4 @@ playwright/.cache
 *.njsproj
 *.sln
 *.sw?
-ui/
+/ui/

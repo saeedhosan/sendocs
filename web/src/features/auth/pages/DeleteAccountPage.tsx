@@ -4,12 +4,15 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../../app/providers/useAuth'
 import { FormField } from '../../../components/forms/FormField'
 import { AlertIcon, TrashIcon } from '../../../components/icons'
-import { Alert, Button, Input, PasswordInput } from '../../../components/ui'
+import { PasswordInput } from "@/components/PasswordInput"
+import { Alert } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Spinner } from "@/components/ui/spinner"
 import { AuthLayout } from '../../../layouts/AuthLayout'
 import { ApiError } from '../../../lib/api/client'
 import { errorMessage, validationErrors } from '../../../lib/api/errors'
 import { deleteAccountSchema, fieldErrors } from '../schemas'
-import { authStyles as s } from './authStyles'
 import { app } from '../../../config/app'
 
 /**
@@ -76,32 +79,32 @@ export function DeleteAccountPage() {
 
   return (
     <AuthLayout headerAction={{ label: 'Back to account', to: '/dashboard' }}>
-      <div className={s.heading}>
-        <h1 className={s.title}>Delete account</h1>
-        <p className={s.subtitle}>
+      <div className="mb-6">
+        <h1 className="mb-2 text-2xl leading-8 font-semibold tracking-[-0.025em] text-foreground">Delete account</h1>
+        <p className="text-sm leading-5 text-muted-foreground">
           Permanently close your {app.name} account.
         </p>
       </div>
 
-      <div className={s.dangerBox}>
-        <div className={s.dangerBoxTitle}>
+      <div className="mb-6 p-4 bg-danger-surface border border-danger-border rounded-[10px] text-xs leading-[1.375rem] text-danger-text">
+        <div className="flex items-start gap-1.5 mb-1 font-semibold text-danger-text">
           <AlertIcon size={16} aria-hidden="true" />
           This cannot be undone.
         </div>
         Deleting your account removes the account and everything it owns — every
         document request and uploaded file.
-        <span className={s.dangerBoxNote}>
+        <span className="block mt-1 text-muted-foreground">
           Stored files are removed afterwards by a cleanup job.
         </span>
       </div>
 
       {formError ? (
-        <Alert variant="error" className={s.formError}>
+        <Alert variant="destructive" className="mb-4">
           {formError}
         </Alert>
       ) : null}
 
-      <form className={s.form} onSubmit={handleSubmit} noValidate>
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
         <FormField label="Password" error={errors.password}>
           <PasswordInput
             name="password"
@@ -120,7 +123,7 @@ export function DeleteAccountPage() {
           error={errors.confirm}
           hint={
             <>
-              Type <span className={s.strong}>{accountEmail}</span> to
+              Type <span className="font-medium text-foreground">{accountEmail}</span> to
               confirm.
             </>
           }
@@ -138,21 +141,28 @@ export function DeleteAccountPage() {
           />
         </FormField>
 
-        <div className={s.actions}>
+        <div className="mt-2">
           <Button
             type="submit"
-            variant="danger"
-            fullWidth
-            loading={submitting}
-            iconLeft={<TrashIcon size={16} />}
+            variant="destructive"
+            disabled={submitting}
+            className="w-full"
           >
+            {submitting ? (
+              <Spinner data-icon="inline-start" />
+            ) : (
+              <TrashIcon data-icon="inline-start" size={16} />
+            )}
             Delete account
           </Button>
         </div>
       </form>
 
-      <div className={s.cancelRow}>
-        <Link to="/dashboard" className={s.link}>
+      <div className="mt-3 text-center">
+        <Link
+          to="/dashboard"
+          className="text-primary hover:text-primary/80 transition-colors"
+        >
           Cancel
         </Link>
       </div>

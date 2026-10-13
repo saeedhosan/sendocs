@@ -58,7 +58,7 @@ export function statusLabel(
 
 export function statusTone(
   request: Pick<RequestSummary, 'status'>,
-): RequestTone {
+): Extract<RequestTone, 'waiting' | 'complete'> {
   return request.status === 'complete' ? 'complete' : 'waiting'
 }
 

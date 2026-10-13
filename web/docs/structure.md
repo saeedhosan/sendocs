@@ -13,7 +13,7 @@ web/src/
 ├── styles/
 │   ├── tokens.css
 │   ├── global.css
-│   └── utilities.css
+│   └── index.css (main)
 │
 ├── components/
 │   ├── ui/                    # Generic, reusable primitives
