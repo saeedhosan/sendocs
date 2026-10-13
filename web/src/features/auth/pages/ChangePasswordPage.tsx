@@ -5,7 +5,11 @@ import { useAuth } from '../../../app/providers/useAuth'
 import { FormField } from '../../../components/forms/FormField'
 import { FormError } from '../../../components/forms/FormError'
 import { ArrowForwardIcon, CheckCircleIcon, InfoIcon } from '../../../components/icons'
-import { Alert, Button, Input, PasswordInput } from '../../../components/ui'
+import { PasswordInput } from "@/components/PasswordInput"
+import { Alert } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Spinner } from "@/components/ui/spinner"
 import { AuthLayout } from '../../../layouts/AuthLayout'
 import { ApiError } from '../../../lib/api/client'
 import { errorMessage, validationErrors } from '../../../lib/api/errors'
@@ -111,13 +115,13 @@ export function ChangePasswordPage() {
       </div>
 
       {success ? (
-        <Alert variant="success" className={s.formError}>
+        <Alert className="border-success-border bg-success-surface text-success-text">
           Password updated. All sessions have been terminated.
         </Alert>
       ) : null}
 
       {formError ? (
-        <Alert variant="error" className={s.formError}>
+        <Alert variant="destructive" className={s.formError}>
           {formError}
         </Alert>
       ) : null}
@@ -196,11 +200,12 @@ export function ChangePasswordPage() {
         <div className={`${s.actionsFlush} pt-2`}>
           <Button
             type="submit"
-            fullWidth
-            loading={submitting}
-            iconRight={<ArrowForwardIcon size={18} />}
+            disabled={submitting}
+            className="w-full"
           >
+            {submitting ? <Spinner data-icon="inline-start" /> : null}
             Save new password
+            <ArrowForwardIcon data-icon="inline-end" size={18} />
           </Button>
           <div className={`${s.cancelRow} min-h-6`}>
             <button

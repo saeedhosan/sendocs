@@ -4,7 +4,11 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../../app/providers/useAuth'
 import { FormField } from '../../../components/forms/FormField'
 import { AlertIcon, TrashIcon } from '../../../components/icons'
-import { Alert, Button, Input, PasswordInput } from '../../../components/ui'
+import { PasswordInput } from "@/components/PasswordInput"
+import { Alert } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Spinner } from "@/components/ui/spinner"
 import { AuthLayout } from '../../../layouts/AuthLayout'
 import { ApiError } from '../../../lib/api/client'
 import { errorMessage, validationErrors } from '../../../lib/api/errors'
@@ -96,7 +100,7 @@ export function DeleteAccountPage() {
       </div>
 
       {formError ? (
-        <Alert variant="error" className={s.formError}>
+        <Alert variant="destructive" className={s.formError}>
           {formError}
         </Alert>
       ) : null}
@@ -141,11 +145,15 @@ export function DeleteAccountPage() {
         <div className={s.actions}>
           <Button
             type="submit"
-            variant="danger"
-            fullWidth
-            loading={submitting}
-            iconLeft={<TrashIcon size={16} />}
+            variant="destructive"
+            disabled={submitting}
+            className="w-full"
           >
+            {submitting ? (
+              <Spinner data-icon="inline-start" />
+            ) : (
+              <TrashIcon data-icon="inline-start" size={16} />
+            )}
             Delete account
           </Button>
         </div>

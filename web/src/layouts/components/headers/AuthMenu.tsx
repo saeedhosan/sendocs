@@ -1,4 +1,5 @@
-import { Link } from "../../../components/ui";
+import { Link } from "react-router-dom";
+import { buttonVariants } from "@/components/ui/button";
 import { ThemeMenu } from "./ThemeMenu";
 
 export type AuthMenuProps = {
@@ -13,7 +14,10 @@ export function AuthMenu({ authAction }: AuthMenuProps) {
     return (
         <div className="flex items-center gap-3">
             <ThemeMenu />
-            <Link to={authAction.to} variant="ghost" size="sm">
+            <Link
+                to={authAction.to}
+                className={buttonVariants({ variant: "ghost", size: "sm" })}
+            >
                 {authAction.label}
             </Link>
         </div>

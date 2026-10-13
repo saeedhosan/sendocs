@@ -7,7 +7,8 @@ import {
   DescriptionIcon,
   PlusIcon,
 } from '../../../components/icons'
-import { Button, PageHeader } from '../../../components/ui'
+import { PageHeader } from "@/components/PageHeader"
+import { Button } from "@/components/ui/button"
 import { ApiError } from '../../../lib/api/client'
 import { requestsApi } from '../api'
 import { Notice } from '../components/Notice'
@@ -138,10 +139,10 @@ export function RequestsPage() {
         subtitle="Collect and track client documentation"
         actions={
           <Button
-            iconLeft={<PlusIcon size={18} />}
             className="rounded-[10px]"
             onClick={() => navigate('/requests/new')}
           >
+            <PlusIcon data-icon="inline-start" size={18} />
             New request
           </Button>
         }
@@ -175,10 +176,10 @@ export function RequestsPage() {
           message="Create your first request link to start gathering files from clients securely."
           action={
             <Button
-              iconLeft={<PlusIcon size={18} />}
               className="rounded-[10px]"
               onClick={() => navigate('/requests/new')}
             >
+              <PlusIcon data-icon="inline-start" size={18} />
               Create request
             </Button>
           }
@@ -217,10 +218,10 @@ export function RequestsPage() {
                     variant="secondary"
                     size="sm"
                     className="sm:h-auto sm:min-h-0 sm:py-1.5"
-                    iconLeft={<ChevronLeftIcon size={16} />}
                     onClick={goPrevious}
                     disabled={!canGoPrevious}
                   >
+                    <ChevronLeftIcon data-icon="inline-start" size={16} />
                     Previous
                   </Button>
                   <span className="px-2 font-mono text-[0.6875rem] text-ink-secondary">
@@ -230,11 +231,11 @@ export function RequestsPage() {
                     variant="secondary"
                     size="sm"
                     className="sm:h-auto sm:min-h-0 sm:py-1.5"
-                    iconRight={<ChevronRightIcon size={16} />}
                     onClick={goNext}
                     disabled={!pageCursor}
                   >
                     Next
+                    <ChevronRightIcon data-icon="inline-end" size={16} />
                   </Button>
                 </div>
               </div>

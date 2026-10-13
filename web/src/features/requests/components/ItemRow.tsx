@@ -1,4 +1,4 @@
-import { Button } from "../../../components/ui";
+import { Button } from "@/components/ui/button";
 
 import { formatBytes } from "../../../lib/format";
 import type { RequestItem } from "../types";

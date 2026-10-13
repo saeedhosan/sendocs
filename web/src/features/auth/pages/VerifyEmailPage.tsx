@@ -3,7 +3,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../../app/providers/useAuth'
 import { CheckCircleIcon, MailIcon } from '../../../components/icons'
 import { LoadingState } from '../../../components/feedback/LoadingState'
-import { Alert, Button } from '../../../components/ui'
+import { Alert } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
 import { AuthLayout } from '../../../layouts/AuthLayout'
 import { ApiError } from '../../../lib/api/client'
 import { errorMessage } from '../../../lib/api/errors'
@@ -75,7 +76,7 @@ export function VerifyEmailPage() {
           </p>
         </div>
         <Button
-          fullWidth
+          className="w-full"
           onClick={() =>
             navigate(status === 'authenticated' ? '/dashboard' : '/login')
           }
@@ -95,14 +96,14 @@ export function VerifyEmailPage() {
         <h1 className={s.title}>Verification failed</h1>
         <p className={s.subtitle}>{message}</p>
       </div>
-      <Alert variant="error" className={s.formError}>
+      <Alert variant="destructive" className={s.formError}>
         {status === 'authenticated'
           ? 'You can send a new verification email from your dashboard.'
           : 'Sign in to send a new verification email from your dashboard.'}
       </Alert>
       <div className={s.buttonStack}>
         <Button
-          fullWidth
+          className="w-full"
           onClick={() =>
             navigate(status === 'authenticated' ? '/dashboard' : '/login')
           }

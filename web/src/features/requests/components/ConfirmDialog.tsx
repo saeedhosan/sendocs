@@ -1,6 +1,15 @@
 import type { ReactNode } from "react";
 import { useRef } from "react";
-import { Button, Dialog } from "../../../components/ui";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 
 export type ConfirmDialogProps = {
     open: boolean;
@@ -34,41 +43,42 @@ export function ConfirmDialog({
     return (
         <Dialog
             open={open}
-            onClose={onCancel}
-            title={title}
-            tone="default"
-            variant="centered"
-            className="w-[calc(100vw-2rem)] max-w-md border-border shadow-md"
-            initialFocusRef={cancelRef}
-            footer={
-                <>
+            onOpenChange={(next) => {
+                if (!next) {
+                    onCancel();
+                }
+            }}
+        >
+            <DialogContent
+                showCloseButton={false}
+                initialFocus={cancelRef}
+                className="w-[calc(100vw-2rem)] max-w-md"
+            >
+                <DialogHeader>
+                    <DialogTitle>{title}</DialogTitle>
+                    <DialogDescription>{description}</DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
                     <Button
                         ref={cancelRef}
                         variant="secondary"
                         size="sm"
-                        className="min-h-8 rounded-md sm:h-8 sm:min-h-8 sm:px-3 sm:text-xs"
                         onClick={onCancel}
                         disabled={busy}
                     >
                         Cancel
                     </Button>
                     <Button
-                        variant={tone === "danger" ? "danger" : "primary"}
+                        variant={tone === "danger" ? "destructive" : "default"}
                         size="sm"
-                        className={
-                            tone === "danger"
-                                ? "min-h-8 rounded-md sm:h-8 sm:min-h-8 sm:px-3 sm:text-xs border-danger bg-danger text-on-primary enabled:hover:border-danger-strong enabled:hover:bg-danger-strong enabled:hover:text-on-primary"
-                                : "min-h-8 sm:h-8 sm:min-h-8 sm:px-3 sm:text-xs"
-                        }
                         onClick={onConfirm}
-                        loading={busy}
+                        disabled={busy}
                     >
+                        {busy ? <Spinner data-icon="inline-start" /> : null}
                         {confirmLabel}
                     </Button>
-                </>
-            }
-        >
-            <p>{description}</p>
+                </DialogFooter>
+            </DialogContent>
         </Dialog>
     );
 }

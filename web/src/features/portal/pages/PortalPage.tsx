@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ErrorState } from "../../../components/feedback";
-import { ProgressBar, Spinner } from "../../../components/ui";
+import { ProgressBar } from "@/components/ProgressBar";
+import { Spinner } from "@/components/ui/spinner";
 import { Footer } from "../../../layouts/components/Footer";
 import { Header } from "../../../layouts/components/Header";
 import { ApiError } from "../../../lib/api/client";
@@ -169,7 +170,7 @@ export function PortalPage() {
     if (status === "loading" || view === null) {
         return (
             <div className="flex items-center justify-center min-h-screen py-8 px-4 bg-surface-muted">
-                <Spinner size={24} label="Loading your documents" />
+                <Spinner aria-label="Loading your documents" className="size-6" />
             </div>
         );
     }

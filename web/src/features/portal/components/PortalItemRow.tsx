@@ -1,6 +1,7 @@
 import type { ChangeEvent } from "react";
 import { useRef } from "react";
-import { Button, ProgressBar } from "../../../components/ui";
+import { ProgressBar } from "@/components/ProgressBar";
+import { Button } from "@/components/ui/button";
 import { cn } from "../../../lib/cn";
 import { ACCEPT_ATTRIBUTE } from "../precheck";
 import type { PortalItem } from "../types";
@@ -73,7 +74,7 @@ export function PortalItemRow({
                             <ProgressBar
                                 value={percent ?? 0}
                                 label={`Uploading ${item.label}`}
-                                className="bg-[#e2e8f0]"
+                                className="[&_[data-slot=progress-track]]:bg-border"
                             />
                         </div>
                     </>
@@ -126,7 +127,7 @@ export function PortalItemRow({
                                 "w-full min-h-8 px-4 rounded-md text-[0.75rem]! sm:w-auto sm:min-h-9.5 sm:text-[0.875rem]!",
                                 failure && "border-border! enabled:hover:bg-surface-muted",
                             )}
-                            variant={failure ? "secondary" : "primary"}
+                            variant={failure ? "secondary" : "default"}
                             size="sm"
                             onClick={openPicker}
                             disabled={queued}

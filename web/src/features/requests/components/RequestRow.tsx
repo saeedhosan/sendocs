@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { ChevronRightIcon } from "../../../components/icons";
-import { ProgressBar } from "../../../components/ui";
+import { ProgressBar } from "@/components/ProgressBar";
 import { formatDateTime, timeAgo } from "../../../lib/format";
 import { percent, progressLabel } from "../progress";
 import type { RequestSummary } from "../types";

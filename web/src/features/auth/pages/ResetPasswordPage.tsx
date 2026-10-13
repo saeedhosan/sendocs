@@ -3,7 +3,10 @@ import type { FormEvent } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../../app/providers/useAuth'
 import { FormField } from '../../../components/forms/FormField'
-import { Alert, Button, PasswordInput } from '../../../components/ui'
+import { PasswordInput } from "@/components/PasswordInput"
+import { Alert } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
+import { Spinner } from "@/components/ui/spinner"
 import { AuthLayout } from '../../../layouts/AuthLayout'
 import { ApiError } from '../../../lib/api/client'
 import { errorMessage, validationErrors } from '../../../lib/api/errors'
@@ -77,10 +80,10 @@ export function ResetPasswordPage() {
               : 'This link is missing its reset token.'}
           </p>
         </div>
-        <Alert variant="error" className={s.formError}>
+        <Alert variant="destructive" className={s.formError}>
           Request a new link to choose a password.
         </Alert>
-        <Button fullWidth onClick={() => navigate('/forgot-password')}>
+        <Button className="w-full" onClick={() => navigate('/forgot-password')}>
           Request a new link
         </Button>
       </AuthLayout>
@@ -97,7 +100,7 @@ export function ResetPasswordPage() {
       </div>
 
       {formError ? (
-        <Alert variant="error" className={s.formError}>
+        <Alert variant="destructive" className={s.formError}>
           {formError}
         </Alert>
       ) : null}
@@ -139,7 +142,8 @@ export function ResetPasswordPage() {
         </FormField>
 
         <div className={s.actionsFlush}>
-          <Button type="submit" fullWidth loading={submitting}>
+          <Button type="submit" className="w-full" disabled={submitting}>
+            {submitting ? <Spinner data-icon="inline-start" /> : null}
             Reset password
           </Button>
         </div>

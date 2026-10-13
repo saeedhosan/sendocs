@@ -3,7 +3,10 @@ import type { FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { FormField } from '../../../components/forms/FormField'
 import { ArrowBackIcon, MailIcon } from '../../../components/icons'
-import { Alert, Button, Input } from '../../../components/ui'
+import { Alert } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Spinner } from "@/components/ui/spinner"
 import { AuthLayout } from '../../../layouts/AuthLayout'
 import { errorMessage, validationErrors } from '../../../lib/api/errors'
 import { authApi } from '../api'
@@ -71,12 +74,12 @@ export function ForgotPasswordPage() {
         </div>
 
         <div className={s.buttonStack}>
-          <Button fullWidth onClick={() => navigate('/login')}>
+          <Button className="w-full" onClick={() => navigate('/login')}>
             Return to sign in
           </Button>
           <Button
             variant="secondary"
-            fullWidth
+            className="w-full"
             onClick={() => {
               setSentTo(null)
               setSubmitting(false)
@@ -99,7 +102,7 @@ export function ForgotPasswordPage() {
       </div>
 
       {formError ? (
-        <Alert variant="error" className={s.formError}>
+        <Alert variant="destructive" className={s.formError}>
           {formError}
         </Alert>
       ) : null}
@@ -120,7 +123,8 @@ export function ForgotPasswordPage() {
         </FormField>
 
         <div className={s.actions}>
-          <Button type="submit" fullWidth loading={submitting}>
+          <Button type="submit" className="w-full" disabled={submitting}>
+            {submitting ? <Spinner data-icon="inline-start" /> : null}
             Send reset link
           </Button>
         </div>

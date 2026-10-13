@@ -2,7 +2,10 @@ import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ErrorState, LoadingState } from '../../../components/feedback'
 import { LinkOffIcon, TrashIcon } from '../../../components/icons'
-import { Badge, Button, PageHeader, ProgressBar } from '../../../components/ui'
+import { PageHeader } from "@/components/PageHeader"
+import { ProgressBar } from "@/components/ProgressBar"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { ApiError } from '../../../lib/api/client'
 import { errorMessage } from '../../../lib/api/errors'
 import { formatDate } from '../../../lib/format'
@@ -167,13 +170,13 @@ export function RequestDetailPage() {
         title={request.title}
         badge={
           <Badge
-            className="rounded-[10px]"
-            variant={
+            variant="outline"
+            className={
               linkState(request) === 'active'
-                ? 'success'
+                ? 'rounded-[10px] border-success/20 bg-success/10 text-success'
                 : linkState(request) === 'revoked'
-                  ? 'danger'
-                  : 'warning'
+                  ? 'rounded-[10px] border-danger-border bg-danger-surface text-danger-text'
+                  : 'rounded-[10px] border-warning-border bg-warning-surface text-warning-text'
             }
           >
             {linkStateLabel(linkState(request))}
@@ -185,20 +188,20 @@ export function RequestDetailPage() {
             <Button
               variant="secondary"
               size="sm"
-              iconLeft={<LinkOffIcon size={16} />}
               className="rounded-[10px]"
               onClick={() => setConfirm({ kind: 'revoke' })}
               disabled={linkState(request) !== 'active'}
             >
+              <LinkOffIcon data-icon="inline-start" size={16} />
               Revoke link
             </Button>
             <Button
-              variant="danger"
+              variant="destructive"
               size="sm"
-              iconLeft={<TrashIcon size={16} />}
               className="rounded-[10px]"
               onClick={() => setConfirm({ kind: 'delete-request' })}
             >
+              <TrashIcon data-icon="inline-start" size={16} />
               Delete request
             </Button>
           </>
@@ -217,7 +220,6 @@ export function RequestDetailPage() {
         <ProgressBar
           value={percent(request.uploaded, request.total)}
           tone="waiting"
-          className="rounded-[10px] [&>span]:bg-primary"
           label={progressLabel(request.uploaded, request.total)}
         />
       </div>

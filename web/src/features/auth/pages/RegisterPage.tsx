@@ -3,7 +3,11 @@ import type { ChangeEvent, FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../../app/providers/useAuth'
 import { FormField } from '../../../components/forms/FormField'
-import { Alert, Button, Input, PasswordInput } from '../../../components/ui'
+import { PasswordInput } from "@/components/PasswordInput"
+import { Alert } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Spinner } from "@/components/ui/spinner"
 import { AuthLayout } from '../../../layouts/AuthLayout'
 import { errorMessage, validationErrors } from '../../../lib/api/errors'
 import { passwordRequirements } from '../../../lib/password'
@@ -106,7 +110,7 @@ export function RegisterPage() {
       <AuthDivider label="or register with email" compact />
 
       {formError ? (
-        <Alert variant="error" className={s.formError}>
+        <Alert variant="destructive" className={s.formError}>
           {formError}
         </Alert>
       ) : null}
@@ -156,7 +160,8 @@ export function RegisterPage() {
         <PasswordRequirementsList rules={rules} />
 
         <div className="pt-2">
-          <Button type="submit" fullWidth loading={submitting}>
+          <Button type="submit" className="w-full" disabled={submitting}>
+            {submitting ? <Spinner data-icon="inline-start" /> : null}
             Create account
           </Button>
         </div>
