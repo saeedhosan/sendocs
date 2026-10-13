@@ -170,13 +170,12 @@ export function RequestDetailPage() {
         title={request.title}
         badge={
           <Badge
-            variant="outline"
             className={
               linkState(request) === 'active'
-                ? 'rounded-[10px] border-success/20 bg-success/10 text-success'
+                ? 'bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300'
                 : linkState(request) === 'revoked'
-                  ? 'rounded-[10px] border-danger-border bg-danger-surface text-danger-text'
-                  : 'rounded-[10px] border-warning-border bg-warning-surface text-warning-text'
+                  ? 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300'
+                  : 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300'
             }
           >
             {linkStateLabel(linkState(request))}

@@ -69,8 +69,11 @@ Buttons and links are `cursor: pointer` by default; disabled buttons are
   client-side, so the links bind `onClick` and signal the no-more-pages state
   with `aria-disabled` (`aria-disabled:pointer-events-none
   aria-disabled:opacity-50`); there is no numbered page list.
-- **Badges**: same idea — `variant="outline"` plus colour classes for the
-  app's semantic states.
+- **Badges**: semantic states use Tailwind palette colour classes on the stock
+  Badge (shadcn's [custom colors](https://ui.shadcn.com/docs/components/radix/badge#custom-colors)
+  recipe), e.g. `bg-green-50 text-green-700 dark:bg-green-950
+  dark:text-green-300`. Do not use `--color-*` token classes (`bg-warning-surface`,
+  `text-danger-text`, …) on badges.
 - **Links as buttons**: use `buttonVariants` from `@/components/ui/button`,
   e.g. `className={buttonVariants({ variant: "ghost", size: "sm" })}` on a
   react-router `Link`.
