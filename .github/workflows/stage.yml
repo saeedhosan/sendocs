@@ -60,5 +60,5 @@ jobs:
                   username: ${{ env.SSH_USER }}
                   source: "web/dist"
                   target: ${{ env.WEB_PATH }}
-                  strip_components: 1
+                  strip_components: 2
                   overwrite: true
