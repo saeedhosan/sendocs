@@ -16,6 +16,9 @@ export default defineConfig({
     url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 30_000,
+    env: {
+      PLAYWRIGHT: 'true',
+    },
   },
   use: {
     baseURL,

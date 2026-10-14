@@ -1,0 +1,112 @@
+name: Stage deploy
+
+on:
+    workflow_dispatch:
+    push:
+        branches:
+            - stage
+
+permissions:
+    contents: read
+
+concurrency:
+    group: deploy
+    cancel-in-progress: true
+
+env:
+    API_URL: ${{ secrets.API_URL }}
+    SSH_KEY: ${{ secrets.SSH_KEY }}
+    SSH_HOST: ${{ secrets.SSH_HOST }}
+    SSH_USER: ${{ secrets.SSH_USER }}
+    SSH_PORT: ${{ secrets.SSH_PORT }}
+    WEB_PATH: ${{ secrets.WEB_PATH }}
+    API_PATH: ${{ secrets.API_PATH }}
+
+jobs:
+    web:
+        runs-on: ubuntu-latest
+        environment: stage
+        timeout-minutes: 30
+
+        steps:
+            - name: Check out repository
+              uses: actions/checkout@v4
+
+            - name: Set up Bun
+              uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version: 1.x
+
+            - name: Cache Bun
+              uses: actions/cache@v4
+              with:
+                  path: ~/.bun/install/cache
+                  key: bun-${{ runner.os }}-${{ hashFiles('web/bun.lock') }}
+                  restore-keys: |
+                      bun-${{ runner.os }}-
+
+            - name: Install & Build UI
+              working-directory: web
+              env:
+                  VITE_API_URL: ${{ env.API_URL }}
+              run: |
+                  bun install --frozen-lockfile
+                  bun run build
+
+            - name: Deploy UI (SCP)
+              uses: appleboy/scp-action@v1.0.0
+              with:
+                  key: ${{ env.SSH_KEY }}
+                  host: ${{ env.SSH_HOST }}
+                  port: ${{ env.SSH_PORT }}
+                  username: ${{ env.SSH_USER }}
+                  source: "web/dist"
+                  target: ${{ env.WEB_PATH }}
+                  strip_components: 2
+                  overwrite: true
+
+    api:
+        runs-on: ubuntu-latest
+        environment: stage
+        timeout-minutes: 30
+
+        steps:
+            - name: Check out repository
+              uses: actions/checkout@v4
+
+            - name: Set up PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: "8.4"
+                  extensions: bcmath, intl, mbstring, pcntl, pdo_sqlite, zip
+                  tools: composer:v2
+                  coverage: none
+
+            - name: Install dependencies
+              working-directory: api
+              run: composer install --no-progress -o -n
+
+            - name: Deploy API (SCP)
+              uses: appleboy/scp-action@v1.0.0
+              with:
+                  key: ${{ env.SSH_KEY }}
+                  host: ${{ env.SSH_HOST }}
+                  port: ${{ env.SSH_PORT }}
+                  username: ${{ env.SSH_USER }}
+                  source: "api"
+                  target: ${{ env.API_PATH }}
+                  strip_components: 1
+                  overwrite: true
+
+            - name: Migrate & reload (SSH)
+              uses: appleboy/ssh-action@v1.2.5
+              with:
+                  key: ${{ env.SSH_KEY }}
+                  host: ${{ env.SSH_HOST }}
+                  port: ${{ env.SSH_PORT }}
+                  username: ${{ env.SSH_USER }}
+                  script: |
+                      set -e
+                      cd "${{ env.API_PATH }}"
+                      php artisan migrate --force || true
+                      php artisan optimize:clear
