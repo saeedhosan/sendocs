@@ -100,9 +100,11 @@ The [production image workflow](.github/workflows/build.yml) builds the API and 
 
 Workflow files describe what is configured to run. Check the latest Actions run for the result on a particular commit.
 
-## Demo
+## Live preview
 
-A public demo and a short walkthrough will be added here when the demo environment is ready. No demo URL is published yet.
+Try the live Sendocs preview at [sendocs.saeedhosan.com](https://sendocs.saeedhosan.com/).
+
+This is a demo environment. Please avoid uploading sensitive or real client documents.
 
 ## Project status
 
