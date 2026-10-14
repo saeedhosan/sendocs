@@ -14,18 +14,17 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
-    env:
-        API_URL: ${{ secrets.API_URL }}
-        SSH_KEY: ${{ secrets.SSH_KEY }}
-        SSH_HOST: ${{ secrets.SSH_HOST }}
-        SSH_USER: ${{ secrets.SSH_USER }}
-        SSH_PORT: ${{ secrets.SSH_PORT }}
-        SSH_PATH: ${{ secrets.SSH_PATH }}
-        WEB_PATH: ${{ secrets.WEB_PATH }}
     web:
         runs-on: ubuntu-latest
         environment: stage
         timeout-minutes: 30
+
+        env:
+            SSH_KEY: ${{ secrets.SSH_KEY }}
+            SSH_HOST: ${{ secrets.SSH_HOST }}
+            SSH_USER: ${{ secrets.SSH_USER }}
+            SSH_PORT: ${{ secrets.SSH_PORT }}
+            WEB_PATH: ${{ secrets.WEB_PATH }}
 
         steps:
             - name: Check out repository
@@ -33,6 +32,8 @@ jobs:
 
             - name: Set up Bun
               uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version: 1.x
 
             - name: Cache Bun
               uses: actions/cache@v4
@@ -45,7 +46,7 @@ jobs:
             - name: Install & Build UI
               working-directory: web
               env:
-                  VITE_API_URL: ${{ env.API_URL }}
+                  VITE_API_URL: ${{ secrets.API_URL }}
               run: |
                   bun install --frozen-lockfile
                   bun run build
