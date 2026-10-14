@@ -1,27 +1,30 @@
 name: Build
 
 on:
-  workflow_dispatch:
+    workflow_dispatch:
+    push:
+        branches:
+            - main
 
 permissions:
-  contents: read
+    contents: read
 
 concurrency:
-  group: build-${{ github.ref }}
-  cancel-in-progress: true
+    group: build-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
-  production-images:
-    name: Production images
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
+    production-images:
+        name: Production images
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
 
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
+        steps:
+            - name: Check out repository
+              uses: actions/checkout@v4
 
-      - name: Build API production image
-        run: docker build --target prod -t sendocs-api-ci ./api
+            - name: Build API production image
+              run: docker build --target prod -t sendocs-api-ci ./api
 
-      - name: Build web production image
-        run: docker build --target prod -t sendocs-web-ci ./web
+            - name: Build web production image
+              run: docker build --target prod -t sendocs-web-ci ./web
