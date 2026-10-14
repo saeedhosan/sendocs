@@ -62,7 +62,7 @@ jobs:
                   port: ${{ env.SSH_PORT }}
                   source: "web/dist"
                   target: ${{ env.SSH_PATH }}/web
-                  strip_components: 1
+                  strip_components: 2
                   overwrite: true
 
             - name: Set up PHP
