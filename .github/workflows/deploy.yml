@@ -1,0 +1,145 @@
+name: Deploy production
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Test and deploy release
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: production
+
+    env:
+      API_URL: ${{ secrets.API_URL }}
+      SSH_KEY: ${{ secrets.SSH_KEY }}
+      SSH_HOST: ${{ secrets.SSH_HOST }}
+      SSH_USER: ${{ secrets.SSH_USER }}
+      SSH_PORT: ${{ secrets.SSH_PORT }}
+      WEB_PATH: ${{ secrets.WEB_PATH }}
+      API_PATH: ${{ secrets.API_PATH }}
+
+    steps:
+      - name: Check out tagged release
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref }}
+
+      - name: Verify release is on main
+        run: |
+          git fetch origin main --no-tags
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/main || {
+            echo "::error::Production tags must point to a commit already merged into main."
+            exit 1
+          }
+
+      - name: Validate deployment secrets
+        shell: bash
+        run: |
+          for name in API_URL SSH_KEY SSH_HOST SSH_USER SSH_PORT WEB_PATH API_PATH; do
+            if [[ -z "${!name}" ]]; then
+              echo "::error::Missing required secret: $name"
+              exit 1
+            fi
+          done
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: bcmath, intl, mbstring, pcntl, pdo_sqlite, zip
+          tools: composer:v2
+          coverage: none
+          working-directory: api
+
+      - name: Install API dependencies
+        working-directory: api
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Test API
+        working-directory: api
+        run: |
+          cp .env.example .env
+          composer test
+
+      - name: Install production API dependencies
+        working-directory: api
+        run: composer install --no-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.x
+
+      - name: Install web dependencies
+        working-directory: web
+        run: bun install --frozen-lockfile
+
+      - name: Install Playwright browser
+        working-directory: web
+        run: bunx playwright install --with-deps chromium
+
+      - name: Test web application
+        working-directory: web
+        run: bun run test
+
+      - name: Build web application
+        working-directory: web
+        env:
+          VITE_API_URL: ${{ secrets.API_URL }}
+        run: bun run build
+
+      - name: Deploy API
+        uses: appleboy/scp-action@v1.0.0
+        with:
+          key: ${{ env.SSH_KEY }}
+          host: ${{ env.SSH_HOST }}
+          port: ${{ env.SSH_PORT }}
+          username: ${{ env.SSH_USER }}
+          source: api
+          target: ${{ env.API_PATH }}
+          strip_components: 1
+          overwrite: true
+
+      - name: Run migrations and clear Laravel caches
+        uses: appleboy/ssh-action@v1.2.5
+        env:
+          API_PATH: ${{ env.API_PATH }}
+        with:
+          key: ${{ env.SSH_KEY }}
+          host: ${{ env.SSH_HOST }}
+          port: ${{ env.SSH_PORT }}
+          username: ${{ env.SSH_USER }}
+          envs: API_PATH
+          script: |
+            set -eu
+            cd "$API_PATH"
+            php artisan migrate --force
+            php artisan optimize:clear
+
+      - name: Deploy web application
+        uses: appleboy/scp-action@v1.0.0
+        with:
+          key: ${{ env.SSH_KEY }}
+          host: ${{ env.SSH_HOST }}
+          port: ${{ env.SSH_PORT }}
+          username: ${{ env.SSH_USER }}
+          source: web/dist
+          target: ${{ env.WEB_PATH }}
+          strip_components: 2
+          overwrite: true
+
+      - name: Verify deployed API
+        env:
+          API_URL: ${{ env.API_URL }}
+        run: curl --fail --silent --show-error --retry 5 --retry-delay 2 --retry-connrefused "${API_URL%/}/up"
