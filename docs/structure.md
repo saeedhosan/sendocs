@@ -116,34 +116,14 @@ Production is the same commands with production values in `.env`: set the variab
 
 ## Workflow Files
 
-| Workflow file                   | Purpose                               | Trigger                    |
-| :------------------------------ | :------------------------------------ | :------------------------- |
-| `.github/workflows/tests.yml`   | Run all tests and checks              | Push, pull request, manual |
-| `.github/workflows/codeql.yml`  | Scan client code and workflow files   | Future work                |
-| `.github/workflows/build.yml`   | Build all available applications      | Future work                |
-| `.github/workflows/release.yml` | Create releases and release artifacts | Future work                |
-| `.github/workflows/deploy.yml`  | Deploy applications to production     | Future work                |
-| `.github/workflows/stage.yml`   | Deploy applications to staging        | Future work                |
+| Workflow file | Purpose | Trigger |
+| :--- | :--- | :--- |
+| `.github/workflows/ci.yml` | Run API and web checks | Pull requests and pushes to `main`; manual |
+| `.github/workflows/build.yml` | Build production Docker images | Pushes to `main`; manual |
+| `.github/workflows/stage.yml` | Deploy the exact successful CI commit to staging | Successful CI run on `main` |
+| `.github/workflows/deploy.yml` | Test and deploy a versioned production release | Push a `v*` tag |
 
-`tests.yml` runs on a push to `main` and on any pull request, so branch
-protection needs one required check. It also keeps `workflow_dispatch`, so the
-run can be repeated alone. CodeQL waits until the web client holds real code
-and a workflow interpolates an expression into a shell step.
-
-**Workflow Templates**
-
-Future work. Added per surface when a second surface repeats the same steps.
-
-| Workflow file                         | Purpose                           |
-| :------------------------------------ | :-------------------------------- |
-| `.github/workflows/api-tests.yml`     | API-specific tests and checks     |
-| `.github/workflows/api-build.yml`     | API-specific build steps          |
-| `.github/workflows/web-tests.yml`     | Web-specific tests and checks     |
-| `.github/workflows/web-build.yml`     | Web-specific build steps          |
-| `.github/workflows/mobile-tests.yml`  | Mobile-specific tests and checks  |
-| `.github/workflows/mobile-build.yml`  | Mobile-specific build steps       |
-| `.github/workflows/desktop-tests.yml` | Desktop-specific tests and checks |
-| `.github/workflows/desktop-build.yml` | Desktop-specific build steps      |
+Staging deployment is triggered by a successful `CI` workflow run on `main`, and checks out that run's commit SHA. Production deployment is tag-driven and rejects a tag unless its commit is already contained in `main`. See [deployment.md](deployment.md) for required environment secrets, release steps, health checks, and limitations of the current SCP-based deployment.
 
 ## Root Commands
 
