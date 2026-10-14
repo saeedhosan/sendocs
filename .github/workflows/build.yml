@@ -31,3 +31,63 @@ jobs:
 
             - name: Build web production image
               run: docker build --target prod -t sendocs-web-ci ./web
+
+            - name: Verify production web security headers and log redaction
+              shell: bash
+              run: |
+                  set -euo pipefail
+
+                  container_name=sendocs-web-security-smoke
+                  token=sendocs-secret-token-smoke
+                  cleanup() {
+                      docker rm --force "$container_name" >/dev/null 2>&1 || true
+                  }
+                  trap cleanup EXIT
+
+                  docker run --detach --name "$container_name" \
+                      --publish 127.0.0.1:8080:80 sendocs-web-ci >/dev/null
+
+                  for attempt in $(seq 1 30); do
+                      if curl --silent --fail "http://127.0.0.1:8080/portal/$token" -o /dev/null; then
+                          break
+                      fi
+                      sleep 1
+                  done
+
+                  curl --silent --show-error --fail \
+                      --dump-header /tmp/portal-headers.txt \
+                      --output /dev/null \
+                      "http://127.0.0.1:8080/portal/$token"
+
+                  grep --ignore-case --fixed-strings \
+                      "Content-Security-Policy: default-src 'self';" /tmp/portal-headers.txt
+                  grep --ignore-case --fixed-strings \
+                      "Referrer-Policy: no-referrer" /tmp/portal-headers.txt
+                  grep --ignore-case --fixed-strings \
+                      "X-Content-Type-Options: nosniff" /tmp/portal-headers.txt
+                  grep --ignore-case --fixed-strings \
+                      "X-Frame-Options: DENY" /tmp/portal-headers.txt
+
+                  curl --silent --show-error --fail \
+                      --dump-header /tmp/index-headers.txt \
+                      --output /dev/null \
+                      "http://127.0.0.1:8080/index.html"
+
+                  grep --ignore-case --fixed-strings \
+                      "Content-Security-Policy: default-src 'self';" /tmp/index-headers.txt
+
+                  for attempt in $(seq 1 10); do
+                      if docker exec "$container_name" grep --fixed-strings \
+                          "/portal/[REDACTED]" /var/log/nginx/access.log >/dev/null; then
+                          break
+                      fi
+                      sleep 1
+                  done
+
+                  docker exec "$container_name" grep --fixed-strings \
+                      "/portal/[REDACTED]" /var/log/nginx/access.log
+                  if docker exec "$container_name" grep --fixed-strings \
+                      "$token" /var/log/nginx/access.log; then
+                      echo "Magic-link token leaked into the Nginx access log." >&2
+                      exit 1
+                  fi
