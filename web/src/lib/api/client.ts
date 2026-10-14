@@ -1,6 +1,6 @@
 import { getCsrfToken } from './csrf'
 
-const envBase = import.meta.env.VITE_API_URL?.replace(/\/+$/, '')
+const envBase = import.meta.env.VITE_API_URL?.replace(/\/+$/, '') ?? ''
 
 export const API_BASE = envBase ? `${envBase}/api/v1` : '/api/v1'
 
