@@ -3,6 +3,8 @@ name: Stage deploy
 on:
     workflow_dispatch:
     push:
+        tags:
+            - "v*"
         branches:
             - stage
 
