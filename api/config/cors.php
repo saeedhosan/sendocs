@@ -33,7 +33,7 @@ return [
     /*
      * Matches the request origin. `['*']` allows all origins. Wildcards can be used, eg `*.mydomain.com`
      */
-    'allowed_origins' => [array_filter(explode(',', env('WEB_URL', '')))],
+    'allowed_origins' => array_filter(explode(',', env('WEB_URL', ''))),
 
     /*
      * Patterns that can be used with `preg_match` to match the origin.
@@ -58,5 +58,5 @@ return [
     /*
      * Sets the Access-Control-Allow-Credentials header.
      */
-    'supports_credentials' => false,
+    'supports_credentials' => true,
 ];
