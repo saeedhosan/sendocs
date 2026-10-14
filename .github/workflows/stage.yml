@@ -1,33 +1,30 @@
-name: Stage Deployment
+name: Stage deploy
 
 on:
     workflow_dispatch:
     push:
         branches:
-            - stage
+            - deploy
 
 permissions:
     contents: read
 
 concurrency:
-    group: deploy-stage
-    cancel-in-progress: false
-
-env:
-    SSH_KEY: ${{ secrets.SSH_KEY }}
-    SSH_HOST: ${{ secrets.SSH_HOST }}
-    SSH_USER: ${{ secrets.SSH_USER }}
-    SSH_PORT: ${{ secrets.SSH_PORT }}
-    SSH_PATH: ${{ secrets.SSH_PATH }}
-    WEB_PATH: ${{ secrets.WEB_PATH }}
-    API_PATH: ${{ secrets.API_PATH }}
+    group: deploy
+    cancel-in-progress: true
 
 jobs:
-    web-deployment:
-        name: Web Deployment
+    deploy:
         runs-on: ubuntu-latest
-        timeout-minutes: 25
         environment: stage
+        timeout-minutes: 30
+
+        env:
+            SSH_KEY: ${{ secrets.SSH_KEY }}
+            SSH_HOST: ${{ secrets.SSH_HOST }}
+            SSH_USER: ${{ secrets.SSH_USER }}
+            SSH_PATH: ${{ secrets.SSH_PATH }}
+            SSH_PORT: ${{ secrets.SSH_PORT }}
 
         steps:
             - name: Check out repository
@@ -56,7 +53,7 @@ jobs:
                   VITE_API_URL: ${{ secrets.API_URL }}
               run: bun run build
 
-            - name: Deploy web assets
+            - name: Deploy to server (SCP)
               uses: appleboy/scp-action@v1.0.0
               with:
                   host: ${{ env.SSH_HOST }}
@@ -64,57 +61,6 @@ jobs:
                   key: ${{ env.SSH_KEY }}
                   port: ${{ env.SSH_PORT }}
                   source: "web/dist/*"
-                  target: ${{ env.WEB_PATH }}
-                  strip_components: 2
-                  overwrite: true
-
-    api-deployment:
-        name: API Deployment
-        runs-on: ubuntu-latest
-        timeout-minutes: 25
-        environment: stage
-        needs: web-deployment
-
-        steps:
-            - name: Check out repository
-              uses: actions/checkout@v4
-
-            - name: Set up PHP
-              uses: shivammathur/setup-php@v2
-              with:
-                  php-version: "8.4"
-                  extensions: bcmath, intl, mbstring, pcntl, pdo_pgsql, zip
-                  tools: composer:v2
-                  coverage: none
-
-            - name: Install production dependencies
-              working-directory: api
-              run: composer install --prefer-dist --no-dev --no-interaction --no-progress --optimize-autoloader
-
-            - name: Deploy API code
-              uses: appleboy/scp-action@v1.0.0
-              with:
-                  host: ${{ env.SSH_HOST }}
-                  username: ${{ env.SSH_USER }}
-                  key: ${{ env.SSH_KEY }}
-                  port: ${{ env.SSH_PORT }}
-                  source: "api/*"
-                  target: ${{ env.API_PATH }}
+                  target: ${{ env.SSH_PATH }}/web
                   strip_components: 1
                   overwrite: true
-
-            - name: Run post-deployment scripts
-              uses: appleboy/ssh-action@v1.0.3
-              with:
-                  host: ${{ env.SSH_HOST }}
-                  username: ${{ env.SSH_USER }}
-                  key: ${{ env.SSH_KEY }}
-                  port: ${{ env.SSH_PORT }}
-                  script: |
-                      set -e
-                      cd "${{ env.API_PATH }}"
-
-                      php artisan migrate --force
-                      php artisan optimize:clear
-                      php artisan config:cache
-                      php artisan view:cache
