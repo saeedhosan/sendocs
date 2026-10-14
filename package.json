@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "scripts": {
     "compose": "docker compose",
-    "setup": "cp -n .env.example .env && cp -n api/.env.example api/.env && cp -n web/.env.example web/.env && npm run build && npm run migrate",
+    "setup": "cp -n .env.example .env && cp -n api/.env.example api/.env && cp -n web/.env.example web/.env && npm run build && npm run compose -- run --rm api sh -c 'grep -q ^APP_KEY=. .env || php artisan key:generate' && npm run migrate",
     "dev": "npm run compose -- up",
     "dev:api": "npm run compose -- up api worker",
     "dev:web": "npm run compose -- up web",

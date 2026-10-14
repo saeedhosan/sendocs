@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from '@testing-library/react'
+import { act, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -252,7 +252,9 @@ describe('PortalPage', () => {
     renderPortal()
 
     await screen.findByText('Passport or Government ID')
-    window.dispatchEvent(new Event('focus'))
+    await act(async () => {
+      window.dispatchEvent(new Event('focus'))
+    })
 
     expect(
       await screen.findByText('This link is no longer active'),

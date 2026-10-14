@@ -1,6 +1,6 @@
 # Sendocs
 
-Sendocs is a small document-collection app for professionals who need files from a client without asking them to create another account. An owner creates a request, shares one link, and tracks the files as they arrive.
+Sendocs is a document-collection app for professionals who need files from a client without asking them to create another account. An owner creates a request, shares one link, and tracks the files as they arrive.
 
 It is designed for work like client onboarding, where the process often ends up spread across email threads and attachments.
 
@@ -11,7 +11,7 @@ It is designed for work like client onboarding, where the process often ends up 
 - Track which items have arrived and which are still waiting.
 - Download uploaded files from the owner dashboard.
 - Revoke a client link or delete a document when it is no longer needed.
-- Support owner sign-in with email/password and Google OAuth.
+- Sign in with email/password or Google OAuth.
 
 ## How it fits together
 
@@ -23,11 +23,11 @@ flowchart LR
     API -->|Save request and items| DB[(PostgreSQL)]
     API -->|Return link once| Client[Client portal]
     Client -->|Upload files| API
-    API -->|Store file and metadata| Storage[(Private object storage)]
+    API -->|Store file and metadata| Storage[(File storage)]
     API -->|Derived progress and signed download links| Owner
 ```
 
-The web app and API are separate parts of the same repository. The browser uses one origin for the UI and API requests, while PostgreSQL stores application records and object storage holds file contents.
+The web app and API are separate parts of the same repository. PostgreSQL stores application records; file contents are handled separately by the storage layer.
 
 ## Stack
 
@@ -36,8 +36,6 @@ The web app and API are separate parts of the same repository. The browser uses 
 | API | Laravel 13, PHP 8.4 |
 | Web | React, TypeScript, Vite |
 | Database | PostgreSQL |
-| File storage | S3-compatible object storage in the intended deployment architecture |
-| Background work | Laravel queue worker and scheduler |
 | Local services | Docker Compose |
 | Automation | GitHub Actions |
 
@@ -46,12 +44,12 @@ The web app and API are separate parts of the same repository. The browser uses 
 - **A client does not need an account.** The request link is the credential for the portal.
 - **Only a hash of the magic-link token is stored.** The raw link is returned when the request is created and is not exposed by later API responses.
 - **Dead links do not disclose why they failed.** Unknown, expired, and revoked links use the same response.
-- **Files stay private.** Downloads are authorized by the API and use short-lived signed URLs rather than public object URLs.
+- **Files are not meant to be public.** Downloads are authorized by the API and use short-lived signed URLs where supported by the configured storage.
 - **Progress is derived from uploaded documents.** It is not stored as a counter, so deleting a document can correctly return an item to the waiting state.
 - **Database constraints back up application rules.** A request item can have only one document, and request creation keeps its items together in a transaction.
 - **Owner access is scoped to the signed-in owner.** A user should not be able to discover another owner's request by changing an identifier.
 
-These are design goals and implementation rules; the feature documents describe the details and trade-offs.
+The feature documents describe the behavior and trade-offs in more detail.
 
 ## Repository guide
 
@@ -71,15 +69,32 @@ Feature behavior has its own source-of-truth document:
 - [Owner dashboard](docs/features/owner-dashboard.md)
 - [Client portal](docs/features/client-portal.md)
 
-## Development
+## Run locally
 
-Sendocs is organized around Docker Compose so the API, web app, worker, scheduler, and database can be run as a local stack. The service layout and environment variables are documented in [docs/structure.md](docs/structure.md).
+You will need Docker with the Compose plugin, plus Node.js/npm to run the root commands. The API, web app, and PostgreSQL run in containers.
 
-The repository's root command manifest and the API's local database defaults still need to be reconciled with that setup, so I am not listing a copy-and-paste startup command here until it has been checked end to end. Once that is resolved, this section should be the quick-start path for a fresh checkout.
+From the repository root, run:
+
+```bash
+npm run setup
+npm run dev
+```
+
+The setup command creates local environment files from the examples if they do not already exist, builds the service images, and runs the database migrations. The development command starts the services. Open [http://localhost:3000](http://localhost:3000) for the web app.
+
+The default local PostgreSQL database is configured in both `.env.example` and `api/.env.example`. If you change the database name, username, or password in the root `.env`, update the matching `DB_DATABASE`, `DB_USERNAME`, and `DB_PASSWORD` values in `api/.env` as well.
+
+To run the configured test suites:
+
+```bash
+npm run test
+```
+
+These commands reflect the checked-in scripts. They have not been executed as part of this README change; if setup fails on a fresh checkout, please open an issue with the failing command and its output.
 
 ## Checks and delivery
 
-GitHub Actions currently defines separate checks for the API and web app in [CI](.github/workflows/ci.yml). The API job runs the Composer test suite; the web job runs its lint/type checks, unit tests, and Playwright tests.
+GitHub Actions defines separate checks for the API and web app in [CI](.github/workflows/ci.yml). The API job runs the Composer test suite; the web job runs its lint/type checks, unit tests, and Playwright tests.
 
 The [production image workflow](.github/workflows/build.yml) builds the API and web Docker production targets. Staging and production deployment workflows are also present; the release process and its operational limits are documented in [docs/deployment.md](docs/deployment.md).
 
