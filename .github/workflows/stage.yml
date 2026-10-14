@@ -62,6 +62,5 @@ jobs:
                   port: ${{ env.SSH_PORT }}
                   source: "web/dist"
                   target: ${{ env.SSH_PATH }}/web
-                  strip_components: 2
+                  strip_components: 1
                   overwrite: true
-                  rm: true
