@@ -14,17 +14,18 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
-    deploy:
+    env:
+        API_URL: ${{ secrets.API_URL }}
+        SSH_KEY: ${{ secrets.SSH_KEY }}
+        SSH_HOST: ${{ secrets.SSH_HOST }}
+        SSH_USER: ${{ secrets.SSH_USER }}
+        SSH_PORT: ${{ secrets.SSH_PORT }}
+        SSH_PATH: ${{ secrets.SSH_PATH }}
+        WEB_PATH: ${{ secrets.WEB_PATH }}
+    web:
         runs-on: ubuntu-latest
         environment: stage
         timeout-minutes: 30
-
-        env:
-            SSH_KEY: ${{ secrets.SSH_KEY }}
-            SSH_HOST: ${{ secrets.SSH_HOST }}
-            SSH_USER: ${{ secrets.SSH_USER }}
-            SSH_PATH: ${{ secrets.SSH_PATH }}
-            SSH_PORT: ${{ secrets.SSH_PORT }}
 
         steps:
             - name: Check out repository
@@ -32,8 +33,6 @@ jobs:
 
             - name: Set up Bun
               uses: oven-sh/setup-bun@v2
-              with:
-                  bun-version: 1.x
 
             - name: Cache Bun
               uses: actions/cache@v4
@@ -43,66 +42,22 @@ jobs:
                   restore-keys: |
                       bun-${{ runner.os }}-
 
-            - name: Install web dependencies
-              working-directory: web
-              run: bun install --frozen-lockfile
-
-            - name: Build web assets
+            - name: Install & Build UI
               working-directory: web
               env:
-                  VITE_API_URL: ${{ secrets.API_URL }}
-              run: bun run build
+                  VITE_API_URL: ${{ env.API_URL }}
+              run: |
+                  bun install --frozen-lockfile
+                  bun run build
 
             - name: Deploy to server (SCP)
               uses: appleboy/scp-action@v1.0.0
               with:
-                  host: ${{ env.SSH_HOST }}
-                  username: ${{ env.SSH_USER }}
                   key: ${{ env.SSH_KEY }}
+                  host: ${{ env.SSH_HOST }}
                   port: ${{ env.SSH_PORT }}
+                  username: ${{ env.SSH_USER }}
                   source: "web/dist"
-                  target: ${{ env.SSH_PATH }}/web
-                  strip_components: 2
-                  overwrite: true
-
-            - name: Set up PHP
-              uses: shivammathur/setup-php@v2
-              with:
-                  php-version: "8.4"
-                  extensions: bcmath, intl, mbstring, pcntl, pdo_sqlite, zip
-                  tools: composer:v2
-                  coverage: none
-                  cache: composer
-                  working-directory: api
-
-            - name: Install API dependencies
-              working-directory: api
-              run: composer install --prefer-dist --no-dev --no-interaction --no-progress --optimize-autoloader
-
-            - name: Deploy API to server (SCP)
-              uses: appleboy/scp-action@v1.0.0
-              with:
-                  host: ${{ env.SSH_HOST }}
-                  username: ${{ env.SSH_USER }}
-                  key: ${{ env.SSH_KEY }}
-                  port: ${{ env.SSH_PORT }}
-                  source: "api/*,!api/.env"
-                  target: ${{ env.SSH_PATH }}/api
+                  target: ${{ env.WEB_PATH }}
                   strip_components: 1
                   overwrite: true
-
-            - name: Run API post-deployment tasks
-              uses: appleboy/ssh-action@v1.0.3
-              with:
-                  host: ${{ env.SSH_HOST }}
-                  username: ${{ env.SSH_USER }}
-                  key: ${{ env.SSH_KEY }}
-                  port: ${{ env.SSH_PORT }}
-                  script: |
-                      set -e
-                      cd "${{ env.SSH_PATH }}/api"
-
-                      php artisan migrate --force
-                      php artisan optimize:clear
-                      php artisan config:cache
-                      php artisan view:cache
