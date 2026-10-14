@@ -1,89 +1,94 @@
 # Sendocs
 
-A document request service for client onboarding. One secure link lets a client upload documents without an account, and gives the owner one place to track progress and download files.
+Sendocs is a small document-collection app for professionals who need files from a client without asking them to create another account. An owner creates a request, shares one link, and tracks the files as they arrive.
 
-## Product Information
+It is designed for work like client onboarding, where the process often ends up spread across email threads and attachments.
 
-- **Name**: Sendocs
-- **Title**: Client Document Collection
-- **Slug**: sendocs
-- **Description**: A secure document request service for client onboarding.
-- **Short description**: Collect client documents with one secure link.
-- **Tags**: SaaS, docs collect, client onboarding,
+## What it does
 
-## Documentation
+- Create a request with a named list of required documents.
+- Share a client portal link that works without a client account.
+- Track which items have arrived and which are still waiting.
+- Download uploaded files from the owner dashboard.
+- Revoke a client link or delete a document when it is no longer needed.
+- Support owner sign-in with email/password and Google OAuth.
 
-Design docs live in `docs/`. Each feature has one doc and one owner, so rules are not duplicated.
+## How it fits together
 
-| Doc                                                          | Owns                                                          |
-| ------------------------------------------------------------ | ------------------------------------------------------------- |
-| [`design.md`](docs/design.md)                                | System scope, data layer, architecture, deploy, and release   |
-| [`auth-and-access.md`](docs/features/auth-and-access.md)     | Owner sessions, cookies, CSRF, passwords, and isolation       |
-| [`document-requests.md`](docs/features/document-requests.md) | Request schema, API, file validation, and storage             |
-| [`secure-magic-link.md`](docs/features/secure-magic-link.md) | Token generation, validation, expiry, revocation, and leakage |
-| [`progress-tracking.md`](docs/features/progress-tracking.md) | Derived progress and why it is never stored                   |
-| [`owner-dashboard.md`](docs/features/owner-dashboard.md)     | Owner screens, states, and interactions                       |
-| [`client-portal.md`](docs/features/client-portal.md)         | Client screens, uploads, and untrusted rendering              |
-| [`frontend.md`](docs/frontend.md)                            | Shared React rendering, loading, and data handling            |
-| [`structure.md`](docs/structure.md)                          | Repository layout, containers, and root commands               |
-| [`openapi.yaml`](docs/openapi.yaml)                          | HTTP contract: endpoints, bodies, responses, and limits       |
-| [`decisions.md`](docs/decisions.md)                          | Architectural decisions and their reasoning                   |
+The owner uses the dashboard to create a request. Sendocs returns the client link once; the client opens it, uploads the requested files, and can return to the same link until it expires or is revoked. The owner sees progress in the dashboard.
 
-## Status
+```mermaid
+flowchart LR
+    Owner[Owner dashboard] -->|Create request| API[Laravel API]
+    API -->|Save request and items| DB[(PostgreSQL)]
+    API -->|Return link once| Client[Client portal]
+    Client -->|Upload files| API
+    API -->|Store file and metadata| Storage[(Private object storage)]
+    API -->|Derived progress and signed download links| Owner
+```
 
-The API and web surfaces are scaffolded, and the container stack runs them locally. Features are still to be built against the documents below.
-
-The stack is settled in `docs/decisions.md`: Laravel on PHP 8.4 and React for both surfaces.
+The web app and API are separate parts of the same repository. The browser uses one origin for the UI and API requests, while PostgreSQL stores application records and object storage holds file contents.
 
 ## Stack
 
-- **PostgreSQL** — users, sessions, requests, items, and file metadata.
-- **Laravel on PHP 8.4** — sessions, CSRF, migrations, and queues.
-- **React** — both surfaces render as single-page apps.
-- **Queue worker** — account emails. A separate scheduler retries durable object-cleanup tasks.
-- **Docker Compose** — app and PostgreSQL locally.
+| Area | Technology |
+| --- | --- |
+| API | Laravel 13, PHP 8.4 |
+| Web | React, TypeScript, Vite |
+| Database | PostgreSQL |
+| File storage | S3-compatible object storage in the intended deployment architecture |
+| Background work | Laravel queue worker and scheduler |
+| Local services | Docker Compose |
+| Automation | GitHub Actions |
 
-## Requirements
+## Engineering decisions worth looking at
 
-- Docker with Compose.
-- Node.js, to run the root commands.
+- **A client does not need an account.** The request link is the credential for the portal.
+- **Only a hash of the magic-link token is stored.** The raw link is returned when the request is created and is not exposed by later API responses.
+- **Dead links do not disclose why they failed.** Unknown, expired, and revoked links use the same response.
+- **Files stay private.** Downloads are authorized by the API and use short-lived signed URLs rather than public object URLs.
+- **Progress is derived from uploaded documents.** It is not stored as a counter, so deleting a document can correctly return an item to the waiting state.
+- **Database constraints back up application rules.** A request item can have only one document, and request creation keeps its items together in a transaction.
+- **Owner access is scoped to the signed-in owner.** A user should not be able to discover another owner's request by changing an identifier.
 
-No host PHP, Composer, Bun, or PostgreSQL is needed.
+These are design goals and implementation rules; the feature documents describe the details and trade-offs.
 
-## Commands
+## Repository guide
 
-The root `package.json` is the command surface for the repository.
+- [Technical design](docs/design.md) — architecture, data model, and operational considerations.
+- [Technical decisions](docs/decisions.md) — why the main stack and security choices were made.
+- [Repository structure and services](docs/structure.md) — directories, containers, environment variables, and commands.
+- [Deployment and releases](docs/deployment.md) — staging, tagged production releases, and current deployment limitations.
+- [Frontend conventions](docs/frontend.md) — shared rendering and data-handling rules.
+- [OpenAPI contract](docs/openapi.yaml) — versioned API endpoints, payloads, and errors.
 
-| Command         | Purpose                            |
-| :-------------- | :--------------------------------- |
-| `npm run setup` | Create `.env`, build images, write an app key, migrate |
-| `npm run dev`   | Start all development services     |
-| `npm run test`  | Run all API and web tests          |
-| `npm run lint`  | Run all linters and static checks  |
-| `npm run build` | Build all applications             |
+Feature behavior has its own source-of-truth document:
 
-`dev` starts the API, the web UI, the account-email queue worker, the cleanup scheduler, and PostgreSQL. The application is served at `http://localhost:3000`, which also proxies `/api` and `/health`, so the browser only ever sees one origin; the API is published separately on `http://localhost:8000` for command-line clients. Containers run from built images rather than mounted source, so run `npm run build` again to see an application change.
+- [Authentication and access](docs/features/auth-and-access.md)
+- [Document requests](docs/features/document-requests.md)
+- [Secure magic links](docs/features/secure-magic-link.md)
+- [Progress tracking](docs/features/progress-tracking.md)
+- [Owner dashboard](docs/features/owner-dashboard.md)
+- [Client portal](docs/features/client-portal.md)
 
-## Local Development
+## Development
 
-```bash
-npm run setup
-npm run dev
-```
+Sendocs is organized around Docker Compose so the API, web app, worker, scheduler, and database can be run as a local stack. The service layout and environment variables are documented in [docs/structure.md](docs/structure.md).
 
-Production uses the same commands with production values in `.env`: set the `SENDOCS_*` image and target variables, `WEB_PORT`, and `WEB_BIND` as listed in [`docs/structure.md`](docs/structure.md), then run `npm run build` and `npm run start`.
+The repository's root command manifest and the API's local database defaults still need to be reconciled with that setup, so I am not listing a copy-and-paste startup command here until it has been checked end to end. Once that is resolved, this section should be the quick-start path for a fresh checkout.
 
-## Conventions
+## Checks and delivery
 
-- One doc per feature; each doc owns its rules.
-- Shared numbers have one owner.
-- Undecided items stay in Open Questions.
-- Stack choices go in `docs/decisions.md`.
-- API changes update the owning doc and `openapi.yaml`.
-- Decisions link to feature docs and do not duplicate their rules.
+GitHub Actions currently defines separate checks for the API and web app in [CI](.github/workflows/ci.yml). The API job runs the Composer test suite; the web job runs its lint/type checks, unit tests, and Playwright tests.
 
-## Open Decisions
+The [production image workflow](.github/workflows/build.yml) builds the API and web Docker production targets. Staging and production deployment workflows are also present; the release process and its operational limits are documented in [docs/deployment.md](docs/deployment.md).
 
-All entries in `docs/decisions.md` are accepted, so nothing blocks implementation.
+Workflow files describe what is configured to run. Check the latest Actions run for the result on a particular commit.
 
-Product questions, such as lost-link recovery and file replacement, stay in the owning feature doc.
+## Demo
+
+A public demo and a short walkthrough will be added here when the demo environment is ready. No demo URL is published yet.
+
+## Project status
+
+Sendocs is an active portfolio project. The focus is on making the core document-request workflow dependable, documenting the security and data-integrity decisions, and making setup and releases repeatable. The design documents are kept alongside the code so implementation changes can be reviewed against an explicit contract.
