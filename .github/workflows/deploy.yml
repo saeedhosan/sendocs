@@ -142,4 +142,4 @@ jobs:
       - name: Verify deployed API
         env:
           API_URL: ${{ env.API_URL }}
-        run: curl --fail --silent --show-error --retry 5 --retry-delay 2 --retry-connrefused "${API_URL%/}/up"
+        run: curl --fail --silent --show-error --retry 5 --retry-delay 2 --retry-connrefused "${API_URL%/}/health"
