@@ -64,3 +64,45 @@ jobs:
                   target: ${{ env.SSH_PATH }}/web
                   strip_components: 1
                   overwrite: true
+
+            - name: Set up PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: "8.4"
+                  extensions: bcmath, intl, mbstring, pcntl, pdo_sqlite, zip
+                  tools: composer:v2
+                  coverage: none
+                  cache: composer
+                  working-directory: api
+
+            - name: Install API dependencies
+              working-directory: api
+              run: composer install --prefer-dist --no-dev --no-interaction --no-progress --optimize-autoloader
+
+            - name: Deploy API to server (SCP)
+              uses: appleboy/scp-action@v1.0.0
+              with:
+                  host: ${{ env.SSH_HOST }}
+                  username: ${{ env.SSH_USER }}
+                  key: ${{ env.SSH_KEY }}
+                  port: ${{ env.SSH_PORT }}
+                  source: "api/*,!api/.env"
+                  target: ${{ env.SSH_PATH }}/api
+                  strip_components: 1
+                  overwrite: true
+
+            - name: Run API post-deployment tasks
+              uses: appleboy/ssh-action@v1.0.3
+              with:
+                  host: ${{ env.SSH_HOST }}
+                  username: ${{ env.SSH_USER }}
+                  key: ${{ env.SSH_KEY }}
+                  port: ${{ env.SSH_PORT }}
+                  script: |
+                      set -e
+                      cd "${{ env.SSH_PATH }}/api"
+
+                      php artisan migrate --force
+                      php artisan optimize:clear
+                      php artisan config:cache
+                      php artisan view:cache
