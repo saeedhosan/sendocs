@@ -4,10 +4,10 @@
 
 Sendocs deploys to two separate environments:
 
-- **Staging** deploys the exact commit tested by the CI workflow after CI succeeds on `main`.
+- **Stage** deploys the exact commit tested by the CI workflow after CI succeeds on `main`.
 - **Production** deploys a version tag such as `v1.0.0`. The workflow rejects tags whose commit has not been merged into `main`.
 
-Both workflows use the cPanel SSH/SCP deployment model. Configure the following secrets in **Settings → Environments** for both the `staging` and `production` environments. Use environment-specific values for the host paths and API URL.
+Both workflows use the cPanel SSH/SCP deployment model. Configure the following secrets in **Settings → Environments** for both the `stage` and `production` environments. Use environment-specific values for the host paths and API URL.
 
 | Secret | Purpose |
 | --- | --- |
