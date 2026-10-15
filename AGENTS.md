@@ -60,14 +60,6 @@ and Laravel's own HTTP client.
 `web/docker/nginx.conf` hardcodes the `api` service name and its `9000` PHP-FPM port. Renaming the
 compose service means editing that file.
 
-## Two known gaps — check before assuming they work
-
-- `api/bootstrap/app.php` registers **only** `routes/web.php` plus Laravel's health route at `/up`.
-  There is no `routes/api.php`, so no `/api/v1/*` route resolves until you create the file and pass
-  `api:` to `withRouting()`.
-- Vite and nginx proxy `/health`, and `docs/design.md` + `docs/openapi.yaml` specify `GET /health`,
-  but no `/health` route exists. It will 404 until implemented.
-
 ## Testing quirks
 
 - Dev runs PostgreSQL; **tests run sqlite `:memory:`** (`api/phpunit.xml`). Migrations must pass on both.
