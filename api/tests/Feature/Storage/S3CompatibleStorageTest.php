@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\DocumentRequests\Services\DocumentDownloadUrl;
+use App\Models\Document;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
