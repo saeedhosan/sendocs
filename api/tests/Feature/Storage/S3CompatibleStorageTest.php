@@ -19,14 +19,13 @@ test('stores and deletes private objects and creates a five-minute signed downlo
             ->and($disk->exists($key))->toBeTrue()
             ->and($disk->get($key))->toBe($body);
 
-        $url = $disk->temporaryUrl(
-            $key,
-            now()->addMinutes(5),
-            [
-                'ResponseContentDisposition' => 'attachment; filename="integration.txt"',
-                'ResponseContentType'        => 'text/plain',
-            ],
-        );
+        $document = new Document([
+            'storage_key'   => $key,
+            'original_name' => 'integration.txt',
+            'mime_type'     => 'text/plain',
+        ]);
+
+        $url = app(DocumentDownloadUrl::class)->for($document);
 
         expect($url)
             ->toContain('X-Amz-Algorithm=AWS4-HMAC-SHA256')
