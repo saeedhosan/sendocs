@@ -21,6 +21,7 @@ jobs:
         name: API
         runs-on: ubuntu-latest
         timeout-minutes: 15
+        
         steps:
             - name: Check out repository
               uses: actions/checkout@v4
@@ -46,6 +47,7 @@ jobs:
             - name: Test
               working-directory: api
               run: composer test
+              
     web:
         name: Web
         runs-on: ubuntu-latest
