@@ -1,13 +1,10 @@
 name: Deploy staging
 
 on:
-    workflow_run:
-        workflows:
-            - CI
-        types:
-            - completed
+    workflow_dispatch:
+    push:
         branches:
-            - main
+            - stage
 
 permissions:
     contents: read
@@ -29,16 +26,13 @@ env:
 jobs:
     api:
         name: API deployment
-        if: ${{ github.event.workflow_run.conclusion == 'success' }}
         runs-on: ubuntu-latest
         timeout-minutes: 30
         environment: stage
 
         steps:
-            - name: Check out CI commit
+            - name: Check out repository
               uses: actions/checkout@v4
-              with:
-                  ref: ${{ github.event.workflow_run.head_sha }}
 
             - name: Set up PHP
               uses: shivammathur/setup-php@v2
@@ -81,21 +75,18 @@ jobs:
                       php artisan optimize:clear
 
             - name: Health check
-              run: curl -fsS --retry 5 --retry-connrefused "${{ env.API_URL }}/up"
+              run: curl -fsS --retry 5 --retry-connrefused "${{ env.API_URL }}/health"
 
     web:
         name: Web deployment
-        if: ${{ github.event.workflow_run.conclusion == 'success' }}
         needs: api
         runs-on: ubuntu-latest
         timeout-minutes: 30
         environment: stage
 
         steps:
-            - name: Check out CI commit
+            - name: Check out repository
               uses: actions/checkout@v4
-              with:
-                  ref: ${{ github.event.workflow_run.head_sha }}
 
             - name: Set up Bun
               uses: oven-sh/setup-bun@v2

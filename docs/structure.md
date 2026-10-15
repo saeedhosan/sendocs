@@ -120,10 +120,10 @@ Production is the same commands with production values in `.env`: set the variab
 | :--- | :--- | :--- |
 | `.github/workflows/ci.yml` | Run API and web checks | Pull requests and pushes to `main`; manual |
 | `.github/workflows/build.yml` | Build production Docker images | Pushes to `main`; manual |
-| `.github/workflows/stage.yml` | Deploy the exact successful CI commit to staging | Successful CI run on `main` |
+| `.github/workflows/stage.yml` | Deploy the `stage` branch to staging | Push to `stage`; manual |
 | `.github/workflows/deploy.yml` | Test and deploy a versioned production release | Push a `v*` tag |
 
-Staging deployment is triggered by a successful `CI` workflow run on `main`, and checks out that run's commit SHA. Production deployment is tag-driven and rejects a tag unless its commit is already contained in `main`. See [deployment.md](deployment.md) for required environment secrets, release steps, health checks, and limitations of the current SCP-based deployment.
+Staging deployment runs on push to `stage` and on manual dispatch, deploying that branch. Production deployment is tag-driven and rejects a tag unless its commit is already contained in `main`. See [deployment.md](deployment.md) for required environment secrets, release steps, health checks, and limitations of the current SCP-based deployment.
 
 ## Root Commands
 
