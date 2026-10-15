@@ -21,6 +21,17 @@ jobs:
         name: API
         runs-on: ubuntu-latest
         timeout-minutes: 15
+        services:
+            rustfs:
+                image: rustfs/rustfs:1.0.1
+                ports:
+                    - 9000:9000
+                env:
+                    RUSTFS_ACCESS_KEY: sendocs-local-access
+                    RUSTFS_SECRET_KEY: local-only-change-this-secret
+                    RUSTFS_ADDRESS: 0.0.0.0:9000
+                    RUSTFS_CONSOLE_ADDRESS: 0.0.0.0:9001
+                    RUSTFS_VOLUMES: /data
 
         steps:
             - name: Check out repository
@@ -47,6 +58,41 @@ jobs:
             - name: Test
               working-directory: api
               run: composer test
+
+            - name: Wait for RustFS and create the private bucket
+              env:
+                  AWS_ACCESS_KEY_ID: sendocs-local-access
+                  AWS_SECRET_ACCESS_KEY: local-only-change-this-secret
+                  AWS_DEFAULT_REGION: us-east-1
+                  AWS_EC2_METADATA_DISABLED: "true"
+              run: |
+                  docker run --rm --network host --entrypoint /bin/sh \
+                    -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY -e AWS_DEFAULT_REGION -e AWS_EC2_METADATA_DISABLED \
+                    amazon/aws-cli:2 -c '
+                      attempt=0
+                      until aws --endpoint-url http://127.0.0.1:9000 s3api list-buckets >/dev/null 2>&1; do
+                        attempt=$((attempt + 1))
+                        if [ "$attempt" -ge 60 ]; then
+                          echo "RustFS did not become ready" >&2
+                          exit 1
+                        fi
+                        sleep 2
+                      done
+                      aws --endpoint-url http://127.0.0.1:9000 s3api create-bucket --bucket sendocs-private
+                    '
+
+            - name: Test S3-compatible storage
+              working-directory: api
+              env:
+                  OBJECT_STORAGE_INTEGRATION: "true"
+                  FILESYSTEM_DISK: s3
+                  AWS_ACCESS_KEY_ID: sendocs-local-access
+                  AWS_SECRET_ACCESS_KEY: local-only-change-this-secret
+                  AWS_DEFAULT_REGION: us-east-1
+                  AWS_BUCKET: sendocs-private
+                  AWS_ENDPOINT: http://127.0.0.1:9000
+                  AWS_USE_PATH_STYLE_ENDPOINT: "true"
+              run: vendor/bin/pest tests/Feature/Storage/S3CompatibleStorageTest.php
 
     web:
         name: Web
