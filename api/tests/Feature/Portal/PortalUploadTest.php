@@ -205,13 +205,13 @@ test('strips control characters from uploaded filenames', function (): void {
     uploadPortal(
         $token,
         $items[0]->getKey(),
-        validPdf("passport.pdf\r\nX-Injected: yes"),
+        validPdf("passport\r\nX-Injected: yes.pdf"),
     )
         ->assertOk()
-        ->assertJsonPath('items.0.file.originalName', 'passport.pdfX-Injected: yes');
+        ->assertJsonPath('items.0.file.originalName', 'passportX-Injected: yes.pdf');
 
     expect(Document::query()->firstOrFail()->original_name)
-        ->toBe('passport.pdfX-Injected: yes');
+        ->toBe('passportX-Injected: yes.pdf');
 });
 
 test('returns the same invalid link response for upload requests', function (): void {
