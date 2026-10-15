@@ -205,7 +205,7 @@ test('strips control characters from uploaded filenames', function (): void {
     uploadPortal(
         $token,
         $items[0]->getKey(),
-        validPdf("passport.pdf\\r\\nX-Injected: yes"),
+        validPdf("passport.pdf\r\nX-Injected: yes"),
     )
         ->assertOk()
         ->assertJsonPath('items.0.file.originalName', 'passport.pdfX-Injected: yes');
