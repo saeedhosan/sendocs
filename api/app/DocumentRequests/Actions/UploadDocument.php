@@ -136,7 +136,11 @@ final readonly class UploadDocument
 
     private function sanitizeOriginalName(string $name): string
     {
-        $name = str_replace('\\', '/', $name);
+        // Filenames are untrusted input and later appear in API responses and
+        // Content-Disposition metadata. Remove ASCII control characters (including
+        // CR/LF) before treating the name as display metadata.
+        $name = preg_replace('/[\\x00-\\x1F\\x7F]/', '', $name) ?? '';
+        $name = str_replace('\\\\', '/', $name);
         $name = basename($name);
         $name = trim($name);
 
