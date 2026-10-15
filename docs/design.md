@@ -399,7 +399,7 @@ Enforced server-side:
 - **UI** — owner dashboard and client portal, served as a single page application (SPA).
 - **API** — auth, authorization, and business rules, exposed as a versioned API.
 - **Relational Database** — users, sessions, requests, items, and file metadata.
-- **Object Storage** — private S3-compatible bucket (MinIO in development).
+- **Object Storage** — private S3-compatible bucket (RustFS in development).
 - **Queue Worker** — sends account emails.
 - **Cleanup Scheduler** — drains the PostgreSQL storage-deletion outbox on a one-minute schedule.
 
@@ -677,7 +677,7 @@ Measured with k6 on the deployed demo. Replace with real results.
 **Environments**
 
 - **Demo** — a production-like environment where the k6 benchmark runs.
-- **Local** — Docker Compose for the application, PostgreSQL, and MinIO.
+- **Local** — Docker Compose for the application, PostgreSQL, and RustFS.
 - **Staging** — production-like environment for deployment and integration checks.
 - **Production** — PostgreSQL and object storage with single app instance scale.
 

@@ -36,7 +36,7 @@ The web app and API are separate parts of the same repository. PostgreSQL stores
 | API | Laravel 13, PHP 8.4 |
 | Web | React, TypeScript, Vite |
 | Database | PostgreSQL |
-| Local services | Docker Compose |
+| Local services | Docker Compose, RustFS (S3-compatible object storage) |
 | Automation | GitHub Actions |
 
 ## Engineering decisions worth looking at
@@ -82,7 +82,7 @@ npm run dev
 
 The setup command creates local environment files from the examples if they do not already exist, builds the service images, and runs the database migrations. The development command starts the services. Open [http://localhost:3000](http://localhost:3000) for the web app.
 
-The default local PostgreSQL database is configured in both `.env.example` and `api/.env.example`. If you change the database name, username, or password in the root `.env`, update the matching `DB_DATABASE`, `DB_USERNAME`, and `DB_PASSWORD` values in `api/.env` as well.
+The default local PostgreSQL database is configured in both `.env.example` and `api/.env.example`. Compose also starts RustFS with a persistent volume, creates the private `sendocs-private` bucket, and binds its S3 API and console to localhost. The local S3 credentials are for development only; replace them before exposing any service. The API uses path-style S3 URLs and generates five-minute signed downloads. Production can use another S3-compatible provider by configuring the API's `AWS_*` variables for that provider. If you change the database name, username, or password in the root `.env`, update the matching `DB_DATABASE`, `DB_USERNAME`, and `DB_PASSWORD` values in `api/.env` as well.
 
 To run the configured test suites:
 

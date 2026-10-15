@@ -77,7 +77,7 @@ One managed instance is enough for this load.
 
 ### Decision
 
-Use `private S3-compatible storage`, with MinIO for local work.
+Use `private S3-compatible storage`. RustFS is the local Compose implementation; production may use another S3-compatible provider after its required operations pass integration tests.
 
 - No file has a public path.
 - Each file sits under a random key.
