@@ -1,123 +1,128 @@
 name: Deploy staging
 
 on:
-  workflow_run:
-    workflows:
-      - CI
-    types:
-      - completed
-    branches:
-      - stage
+    workflow_run:
+        workflows:
+            - CI
+        types:
+            - completed
+        branches:
+            - main
 
 permissions:
-  contents: read
+    contents: read
 
 concurrency:
-  group: deploy-staging
-  cancel-in-progress: false
+    group: deploy-staging
+    cancel-in-progress: false
+
+env:
+    API_URL: ${{ secrets.API_URL }}
+    WEB_URL: ${{ secrets.WEB_URL }}
+    SSH_KEY: ${{ secrets.SSH_KEY }}
+    SSH_HOST: ${{ secrets.SSH_HOST }}
+    SSH_USER: ${{ secrets.SSH_USER }}
+    SSH_PORT: ${{ secrets.SSH_PORT }}
+    WEB_PATH: ${{ secrets.WEB_PATH }}
+    API_PATH: ${{ secrets.API_PATH }}
 
 jobs:
-  deploy:
-    name: Deploy tested main commit
-    if: github.event.workflow_run.conclusion == 'success'
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    environment: stage
+    api:
+        name: API deployment
+        if: ${{ github.event.workflow_run.conclusion == 'success' }}
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+        environment: stage
 
-    env:
-      API_URL: ${{ secrets.API_URL }}
-      SSH_KEY: ${{ secrets.SSH_KEY }}
-      SSH_HOST: ${{ secrets.SSH_HOST }}
-      SSH_USER: ${{ secrets.SSH_USER }}
-      SSH_PORT: ${{ secrets.SSH_PORT }}
-      WEB_PATH: ${{ secrets.WEB_PATH }}
-      API_PATH: ${{ secrets.API_PATH }}
+        steps:
+            - name: Check out CI commit
+              uses: actions/checkout@v4
+              with:
+                  ref: ${{ github.event.workflow_run.head_sha }}
 
-    steps:
-      - name: Check out tested commit
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.workflow_run.head_sha }}
+            - name: Set up PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: "8.4"
+                  extensions: bcmath, intl, mbstring, pcntl, pdo_sqlite, zip
+                  tools: composer:v2
+                  coverage: none
 
-      - name: Validate deployment secrets
-        shell: bash
-        run: |
-          for name in API_URL SSH_KEY SSH_HOST SSH_USER SSH_PORT WEB_PATH API_PATH; do
-            if [[ -z "${!name}" ]]; then
-              echo "::error::Missing required secret: $name"
-              exit 1
-            fi
-          done
+            - name: Install dependencies
+              working-directory: api
+              run: composer install --no-dev --optimize-autoloader --no-interaction --no-progress
 
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: "8.4"
-          extensions: bcmath, intl, mbstring, pcntl, pdo_sqlite, zip
-          tools: composer:v2
-          coverage: none
-          working-directory: api
+            - name: Deploy
+              uses: appleboy/scp-action@v1.0.0
+              with:
+                  key: ${{ env.SSH_KEY }}
+                  host: ${{ env.SSH_HOST }}
+                  port: ${{ env.SSH_PORT }}
+                  username: ${{ env.SSH_USER }}
+                  source: api
+                  target: ${{ env.API_PATH }}
+                  strip_components: 1
+                  overwrite: true
 
-      - name: Install production API dependencies
-        working-directory: api
-        run: composer install --no-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader
+            - name: Run migrate
+              uses: appleboy/ssh-action@v1.2.5
+              env:
+                  API_PATH: ${{ env.API_PATH }}
+              with:
+                  key: ${{ env.SSH_KEY }}
+                  host: ${{ env.SSH_HOST }}
+                  port: ${{ env.SSH_PORT }}
+                  username: ${{ env.SSH_USER }}
+                  envs: API_PATH
+                  script: |
+                      set -eu
+                      cd "$API_PATH"
+                      php artisan migrate --force
+                      php artisan optimize:clear
 
-      - name: Set up Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: 1.x
+            - name: Health check
+              run: curl -fsS --retry 5 --retry-connrefused "${{ env.API_URL }}/up"
 
-      - name: Install web dependencies
-        working-directory: web
-        run: bun install --frozen-lockfile
+    web:
+        name: Web deployment
+        if: ${{ github.event.workflow_run.conclusion == 'success' }}
+        needs: api
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+        environment: stage
 
-      - name: Build web application
-        working-directory: web
-        env:
-          VITE_API_URL: ${{ secrets.API_URL }}
-        run: bun run build
+        steps:
+            - name: Check out CI commit
+              uses: actions/checkout@v4
+              with:
+                  ref: ${{ github.event.workflow_run.head_sha }}
 
-      - name: Deploy API
-        uses: appleboy/scp-action@v1.0.0
-        with:
-          key: ${{ env.SSH_KEY }}
-          host: ${{ env.SSH_HOST }}
-          port: ${{ env.SSH_PORT }}
-          username: ${{ env.SSH_USER }}
-          source: api
-          target: ${{ env.API_PATH }}
-          strip_components: 1
-          overwrite: true
+            - name: Set up Bun
+              uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version: 1.x
 
-      - name: Run migrations and clear Laravel caches
-        uses: appleboy/ssh-action@v1.2.5
-        env:
-          API_PATH: ${{ env.API_PATH }}
-        with:
-          key: ${{ env.SSH_KEY }}
-          host: ${{ env.SSH_HOST }}
-          port: ${{ env.SSH_PORT }}
-          username: ${{ env.SSH_USER }}
-          envs: API_PATH
-          script: |
-            set -eu
-            cd "$API_PATH"
-            php artisan migrate --force
-            php artisan optimize:clear
+            - name: Install dependencies
+              working-directory: web
+              run: bun install --frozen-lockfile
 
-      - name: Deploy web application
-        uses: appleboy/scp-action@v1.0.0
-        with:
-          key: ${{ env.SSH_KEY }}
-          host: ${{ env.SSH_HOST }}
-          port: ${{ env.SSH_PORT }}
-          username: ${{ env.SSH_USER }}
-          source: web/dist
-          target: ${{ env.WEB_PATH }}
-          strip_components: 2
-          overwrite: true
+            - name: Build assets
+              working-directory: web
+              env:
+                  VITE_API_URL: ${{ secrets.API_URL }}
+              run: bun run build
 
-      - name: Verify deployed API
-        env:
-          API_URL: ${{ env.API_URL }}
-        run: curl --fail --silent --show-error --retry 5 --retry-delay 2 --retry-connrefused "${API_URL%/}/health"
+            - name: Deploy
+              uses: appleboy/scp-action@v1.0.0
+              with:
+                  key: ${{ env.SSH_KEY }}
+                  host: ${{ env.SSH_HOST }}
+                  port: ${{ env.SSH_PORT }}
+                  username: ${{ env.SSH_USER }}
+                  source: web/dist
+                  target: ${{ env.WEB_PATH }}
+                  strip_components: 2
+                  overwrite: true
+
+            - name: Health check
+              run: curl -fsS --retry 5 --retry-connrefused "${{ env.WEB_URL }}"
