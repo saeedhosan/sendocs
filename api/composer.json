@@ -3,15 +3,13 @@
     "name": "laravel/laravel",
     "type": "project",
     "description": "The skeleton application for the Laravel framework.",
-    "keywords": [
-        "laravel",
-        "framework"
-    ],
+    "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {
         "php": "^8.3",
         "laravel/framework": "^13.17",
         "laravel/tinker": "^3.0",
+        "league/flysystem-aws-s3-v3": "^3.29",
         "symfony/http-client": "^8.1",
         "symfony/mailgun-mailer": "^8.1"
     },
@@ -31,82 +29,43 @@
     },
     "autoload": {
         "psr-4": {
-            "App\\": "app/",
-            "Database\\Factories\\": "database/factories/",
-            "Database\\Seeders\\": "database/seeders/"
+            "App\\\\": "app/",
+            "Database\\\\Factories\\\\": "database/factories/",
+            "Database\\\\Seeders\\\\": "database/seeders/"
         },
-        "files": [
-            "tests/Support/helpers.php"
-        ]
+        "files": ["tests/Support/helpers.php"]
     },
     "autoload-dev": {
-        "psr-4": {
-            "Tests\\": "tests/"
-        }
+        "psr-4": {"Tests\\\\": "tests/"}
     },
     "scripts": {
         "setup": [
             "composer install",
-            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
+            "@php -r \\"file_exists('.env') || copy('.env.example', '.env');\\"",
             "@php artisan key:generate",
             "@php artisan migrate --force",
             "npm install --ignore-scripts",
             "npm run build"
         ],
-        "dev": [
-            "Composer\\Config::disableProcessTimeout",
-            "@php artisan dev"
-        ],
-        "post-autoload-dump": [
-            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
-        ],
-        "post-update-cmd": [
-            "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
-            "@php artisan boost:update --ansi"
-        ],
-        "post-root-package-install": [
-            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
-        ],
-        "post-create-project-cmd": [
-            "@php artisan key:generate --ansi",
-            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
-            "@php artisan migrate --graceful --ansi"
-        ],
-        "pre-package-uninstall": [
-            "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
-        ],
-        "lint": [
-            "rector",
-            "pint --parallel"
-        ],
+        "dev": ["Composer\\\\Config::disableProcessTimeout", "@php artisan dev"],
+        "post-autoload-dump": ["Illuminate\\\\Foundation\\\\ComposerScripts::postAutoloadDump", "@php artisan package:discover --ansi"],
+        "post-update-cmd": ["@php artisan vendor:publish --tag=laravel-assets --ansi --force", "@php artisan boost:update --ansi"],
+        "post-root-package-install": ["@php -r \\"file_exists('.env') || copy('.env.example', '.env');\\""],
+        "post-create-project-cmd": ["@php artisan key:generate --ansi", "@php -r \\"file_exists('database/database.sqlite') || touch('database/database.sqlite');\\"", "@php artisan migrate --graceful --ansi"],
+        "pre-package-uninstall": ["Illuminate\\\\Foundation\\\\ComposerScripts::prePackageUninstall"],
+        "lint": ["rector", "pint --parallel"],
         "test:coverage": "pest --type-coverage --min=100",
-        "test:lint": [
-            "pint --parallel --test",
-            "rector --dry-run"
-        ],
+        "test:lint": ["pint --parallel --test", "rector --dry-run"],
         "test:unit": "pest --parallel",
         "test:types": "phpstan",
-        "test": [
-            "@test:lint",
-            "@test:types",
-            "@test:coverage",
-            "@test:unit"
-        ]
+        "test": ["@test:lint", "@test:types", "@test:coverage", "@test:unit"]
     },
-    "extra": {
-        "laravel": {
-            "dont-discover": []
-        }
-    },
+    "extra": {"laravel": {"dont-discover": []}},
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
         "sort-packages": true,
-        "allow-plugins": {
-            "pestphp/pest-plugin": true,
-            "php-http/discovery": true
-        }
+        "allow-plugins": {"pestphp/pest-plugin": true, "php-http/discovery": true}
     },
     "minimum-stability": "stable",
     "prefer-stable": true
