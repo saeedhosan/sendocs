@@ -1,0 +1,24 @@
+
+flowchart TB
+    Owner[Owner Dashboard]
+    Portal[Client Portal]
+
+    API[Backend API]
+    DB[(PostgreSQL)]
+    Storage[(Private S3-Compatible Object Storage)]
+    Queue[Queue Worker]
+    Mail[Email Provider]
+
+    Owner -->|HTTPS: session + CSRF| API
+    Portal -->|HTTPS: magic link in URL path| API
+
+    API -->|Users, requests, items,<br/>sessions and file metadata| DB
+    API -->|Upload and delete file contents| Storage
+
+    API -->|Queue account email jobs| DB
+    DB -->|Fetch queued jobs| Queue
+    Queue -->|Send account emails| Mail
+
+    API -->|Progress and signed download URLs| Owner
+    API -->|Request status and upload results| Portal
+    Owner -->|Download file via signed URL| Storage

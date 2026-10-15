@@ -1,0 +1,20 @@
+
+flowchart LR
+    Owner[Owner<br>Dashboard]
+    Client[Client Portal]
+
+    API[Laravel API]
+    DB[(PostgreSQL)]
+    Storage[(Private Object Storage)]
+
+    Owner -->|Create request| API
+    API -->|Save request| DB
+    API -->|Return magic link| Owner
+    Owner -->|Share magic link| Client
+
+    Client -->|Upload documents| API
+    API -->|Store files| Storage
+    API -->|Save metadata| DB
+
+    API -->|Progress and download links| Owner
+    Owner -->|Download via signed URL| Storage

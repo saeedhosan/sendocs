@@ -17,27 +17,19 @@ It is designed for work like client onboarding, where the process often ends up 
 
 The owner uses the dashboard to create a request. Sendocs returns the client link once; the client opens it, uploads the requested files, and can return to the same link until it expires or is revoked. The owner sees progress in the dashboard.
 
-```mermaid
-flowchart LR
-    Owner[Owner dashboard] -->|Create request| API[Laravel API]
-    API -->|Save request and items| DB[(PostgreSQL)]
-    API -->|Return link once| Client[Client portal]
-    Client -->|Upload files| API
-    API -->|Store file and metadata| Storage[(File storage)]
-    API -->|Derived progress and signed download links| Owner
-```
+![Diagram](/docs/diagram/quick-flow.png)
 
 The web app and API are separate parts of the same repository. PostgreSQL stores application records; file contents are handled separately by the storage layer.
 
 ## Stack
 
-| Area | Technology |
-| --- | --- |
-| API | Laravel 13, PHP 8.4 |
-| Web | React, TypeScript, Vite |
-| Database | PostgreSQL |
+| Area           | Technology                                            |
+| -------------- | ----------------------------------------------------- |
+| API            | Laravel 13, PHP 8.4                                   |
+| Web            | React, TypeScript, Vite                               |
+| Database       | PostgreSQL                                            |
 | Local services | Docker Compose, RustFS (S3-compatible object storage) |
-| Automation | GitHub Actions |
+| Automation     | GitHub Actions                                        |
 
 ## Engineering decisions worth looking at
 
@@ -55,8 +47,8 @@ The feature documents describe the behavior and trade-offs in more detail.
 
 - [Technical design](docs/design.md) — architecture, data model, and operational considerations.
 - [Technical decisions](docs/decisions.md) — why the main stack and security choices were made.
-- [Repository structure and services](docs/structure.md) — directories, containers, environment variables, and commands.
-- [Deployment and releases](docs/deployment.md) — staging, tagged production releases, and current deployment limitations.
+- [Repository structure](docs/structure.md) — directories, containers, environment variables, and commands.
+- [Deployment & releases](docs/deployment.md) — staging, tagged production releases, and current deployment limitations.
 - [Frontend conventions](docs/frontend.md) — shared rendering and data-handling rules.
 - [OpenAPI contract](docs/openapi.yaml) — versioned API endpoints, payloads, and errors.
 
