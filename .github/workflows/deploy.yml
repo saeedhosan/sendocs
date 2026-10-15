@@ -12,29 +12,17 @@ concurrency:
     group: deploy-production
     cancel-in-progress: false
 
-env:
-    API_URL: ${{ secrets.API_URL }}
-    WEB_URL: ${{ secrets.WEB_URL }}
-    SSH_KEY: ${{ secrets.SSH_KEY }}
-    SSH_HOST: ${{ secrets.SSH_HOST }}
-    SSH_USER: ${{ secrets.SSH_USER }}
-    SSH_PORT: ${{ secrets.SSH_PORT }}
-    WEB_PATH: ${{ secrets.WEB_PATH }}
-    API_PATH: ${{ secrets.API_PATH }}
-
 jobs:
     verify:
         name: Verify release
         runs-on: ubuntu-latest
         timeout-minutes: 5
-
         steps:
             - name: Checkout tagged release
               uses: actions/checkout@v4
               with:
                   fetch-depth: 0
                   ref: ${{ github.ref }}
-
             - name: Verify release is on main
               run: |
                   git fetch origin main --no-tags
@@ -49,13 +37,18 @@ jobs:
         runs-on: ubuntu-latest
         timeout-minutes: 30
         environment: production
-
+        env:
+            API_URL: ${{ secrets.API_URL }}
+            SSH_KEY: ${{ secrets.SSH_KEY }}
+            SSH_HOST: ${{ secrets.SSH_HOST }}
+            SSH_USER: ${{ secrets.SSH_USER }}
+            SSH_PORT: ${{ secrets.SSH_PORT }}
+            API_PATH: ${{ secrets.API_PATH }}
         steps:
             - name: Checkout tagged release
               uses: actions/checkout@v4
               with:
                   ref: ${{ github.ref }}
-
             - name: Set up PHP
               uses: shivammathur/setup-php@v2
               with:
@@ -63,11 +56,9 @@ jobs:
                   extensions: bcmath, intl, mbstring, pcntl, pdo_sqlite, zip
                   tools: composer:v2
                   coverage: none
-
             - name: Install dependencies
               working-directory: api
               run: composer install --no-dev --optimize-autoloader --no-interaction --no-progress
-
             - name: Deploy
               uses: appleboy/scp-action@v1.0.0
               with:
@@ -79,7 +70,6 @@ jobs:
                   target: ${{ env.API_PATH }}
                   strip_components: 1
                   overwrite: true
-
             - name: Run migrate
               uses: appleboy/ssh-action@v1.2.5
               env:
@@ -95,9 +85,8 @@ jobs:
                       cd "$API_PATH"
                       php artisan migrate --force
                       php artisan optimize:clear
-
             - name: Health check
-              run: curl -fsS --retry 5 --retry-connrefused "${{ env.API_URL }}/health"
+              run: curl --fail --silent --show-error --retry 5 --retry-connrefused --connect-timeout 5 --max-time 15 --retry-delay 2 --retry-max-time 60 "${API_URL%/}/health"
 
     web:
         name: Web deployment
@@ -105,28 +94,31 @@ jobs:
         runs-on: ubuntu-latest
         timeout-minutes: 30
         environment: production
-
+        env:
+            WEB_URL: ${{ secrets.WEB_URL }}
+            API_URL: ${{ secrets.API_URL }}
+            SSH_KEY: ${{ secrets.SSH_KEY }}
+            SSH_HOST: ${{ secrets.SSH_HOST }}
+            SSH_USER: ${{ secrets.SSH_USER }}
+            SSH_PORT: ${{ secrets.SSH_PORT }}
+            WEB_PATH: ${{ secrets.WEB_PATH }}
         steps:
             - name: Checkout tagged release
               uses: actions/checkout@v4
               with:
                   ref: ${{ github.ref }}
-
             - name: Set up Bun
               uses: oven-sh/setup-bun@v2
               with:
                   bun-version: 1.x
-
             - name: Install dependencies
               working-directory: web
               run: bun install --frozen-lockfile
-
             - name: Build assets
               working-directory: web
               env:
-                  VITE_API_URL: ${{ secrets.API_URL }}
+                  VITE_API_URL: ${{ env.API_URL }}
               run: bun run build
-
             - name: Deploy
               uses: appleboy/scp-action@v1.0.0
               with:
@@ -138,6 +130,5 @@ jobs:
                   target: ${{ env.WEB_PATH }}
                   strip_components: 2
                   overwrite: true
-
             - name: Health check
-              run: curl -fsS --retry 5 --retry-connrefused "${{ env.WEB_URL }}"
+              run: curl --fail --silent --show-error --retry 5 --retry-connrefused --connect-timeout 5 --max-time 15 --retry-delay 2 --retry-max-time 60 "$WEB_URL"
