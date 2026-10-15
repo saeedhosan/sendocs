@@ -20,7 +20,7 @@ jobs:
                   coverage: none
             - name: Resolve S3 adapter and lock dependencies
               working-directory: api
-              run: composer update league/flysystem-aws-s3-v3 --with-all-dependencies --no-interaction --prefer-dist
+              run: composer update league/flysystem-aws-s3-v3 --with-all-dependencies --no-interaction --prefer-dist --no-scripts
             - uses: actions/upload-artifact@v4
               with:
                   name: composer-lock
