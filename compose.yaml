@@ -133,7 +133,7 @@ services:
         restart: unless-stopped
 
     object-storage-init:
-        image: amazon/aws-cli:2
+        image: amazon/aws-cli:2.27.41
         entrypoint: ["/bin/sh", "-c"]
         command:
             - |
