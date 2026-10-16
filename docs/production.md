@@ -1,15 +1,6 @@
 # Production
 
-How production images are built and deployed. For local development, see [development.md](development.md).
-
-## Images
-
-Each surface has a `prod` Dockerfile target: `dev` carries the toolchain, `prod` carries only what runs.
-
-| Image | Dockerfile       | `dev` target              | `prod` target                                                         |
-| :---- | :--------------- | :------------------------ | :-------------------------------------------------------------------- |
-| API   | `api/Dockerfile` | `artisan serve` on `8000` | PHP-FPM on `9000`, no dev dependencies, configuration cached at start |
-| Web   | `web/Dockerfile` | Vite on `3000`            | nginx serving built assets, forwarding `/api` and `/health` to the API |
+How to run and deploy production. For local development, see [development.md](development.md).
 
 ## Production Mode
 
@@ -22,9 +13,9 @@ docker compose run --rm migrate  # run database migrations
 docker compose up -d             # start production services
 ```
 
-- Web is served at [http://localhost:3000](http://localhost:3000); nginx serves the built bundle and forwards `/api` and `/health` to PHP-FPM, keeping the browser same-origin.
-- Set `WEB_BIND=0.0.0.0` to expose the app publicly, and `API_BIND=0.0.0.0` only when the API must be reachable directly.
-- Set `APP_KEY` to a production value and never reuse the development key from `.env.example`.
+- Web: [http://localhost:3000](http://localhost:3000); nginx serves the bundle and proxies `/api` and `/health` to PHP-FPM.
+- Set `WEB_BIND=0.0.0.0` to expose publicly; `API_BIND=0.0.0.0` only to reach the API directly.
+- Set `APP_KEY` to a production value, never the development key.
 
 ## Compose Variables
 
@@ -63,10 +54,6 @@ Configure these secrets per environment under **Settings → Environments**:
 
 Each environment uses its own `API_URL` because the URL is embedded in the frontend build. Never place production credentials in the staging environment.
 
-### Staging
-
-Promote `main` into `stage` only to update staging, so repeated merges do not hammer the cPanel SSH endpoint. The workflow builds the React app, installs production Composer dependencies, uploads the API and frontend, runs migrations, clears Laravel's optimized caches, and checks `/health`.
-
 ### Release
 
 The tag must point to a commit already in `main`. The workflow runs API and web checks, then deploys through the `production` Environment, where reviewers can be required.
@@ -82,4 +69,6 @@ The tag triggers deployment; a GitHub Release is optional. Protect release tags 
 
 ### Limits
 
-Deployment copies files into the live directories over SCP, so it is not atomic or zero-downtime and does not roll back uploaded files when a health check fails. Keep migrations backward-compatible and retain a known-good copy before each production deployment.
+- SCP copies into the live directories: not atomic, not zero-downtime, no rollback when a health check fails.
+- Keep migrations backward-compatible.
+- Retain a known-good copy before each production deployment.
