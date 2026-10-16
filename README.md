@@ -52,38 +52,66 @@ The React (web) app and API are separate parts of the same repository. PostgreSQ
 
 ## Development
 
-### Prerequisites
+- **Run with Docker** - Docker Compose (recommended, no host toolchain)
+- **Without docker** - Directly with PHP, Composer, Bun, and PostgreSQL.
 
-You will need **Docker** with the Compose plugin, to run API and web servers with PostgreSQL containers
-
-### Quick Start
-
-Clone the repository and navigate to project directory:
+### Quick Start (Docker)
 
 ```bash
 git clone https://github.com/saeedhosan/sendocs.git
 cd sendocs
+
+docker compose run api composer setup    # Setup and configure .env or api/.env
+docker compose up -d --build             # Build images and start everything
 ```
+
+Open [http://localhost:3000](http://localhost:3000).
+
+Stop with `docker compose down`.
+
+To run one service instead of everything (dependencies start automatically):
 
 ```bash
-cp -n .env.example .env     ## Copy environment template once
-docker compose up --build   ## Setup and start the full application
+docker compose up -d web    # web + api + database + object storage
+docker compose up -d api    # api + database + object storage
 ```
 
-Once running, open [http://localhost:3000](http://localhost:3000).
-
-Other useful commands:
+### Tests
 
 ```bash
-docker compose run --rm test    ## Run full tests
-docker compose build            ## Build all images
-docker compose down             ## Stop and remove services
+docker compose run --rm test              # Both suites
+docker compose run --rm api composer test # API tests only
+docker compose run --rm web bun run test  # Web tests only
 ```
 
-### Quality Assurance
+- **API Tests**: Composer and Pest/PHPUnit suites.
+- **Web Checks**: Static analysis, TypeScript, unit tests, and Playwright e2e.
+- **Container**: Builds production-ready API and web images.
 
-Automated workflows via GitHub Actions ensure high code quality:
+### Running Without Docker
 
-- **API Tests**: Executes backend test suites via Composer and Pest/PHPUnit.
-- **Web Checks**: Runs frontend static analysis, TypeScript type-checking, unit tests, and Playwright end-to-end tests.
-- **Container**: Automatically builds production-ready Docker images for the API and web services.
+Start PostgreSQL locally, then:
+
+```bash
+cd api && composer setup  # Setup api and configure api/.env
+cd ../web && bun install  # Setup web and configure web/.env
+
+bun run dev               # Run react web development
+bun run build             # Build react web assets
+
+
+cd ../api                 # Navigate to api project
+composer run dev          # Run api development server
+```
+
+### Production Deployment
+
+```bash
+
+git clone https://github.com/saeedhosan/sendocs.git
+cd sendocs
+
+docker compose run setup    # Setup and configure .env
+docker compose run migrate  # Run database migration
+docker ...                  # Start production servcies
+```
