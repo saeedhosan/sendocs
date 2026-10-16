@@ -12,7 +12,37 @@ services:
               set -e
               docker compose run --rm api composer test
               docker compose run --rm web bun run test
+
+    migrate:
+        image: sendocs-api:${API_TARGET:-dev}
+        build:
+            context: ./api
+            target: ${API_TARGET:-dev}
+        env_file:
+            - .env
+            - path: api/.env
+              required: false
+        environment:
+            FILESYSTEM_DISK: s3
+            AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-sendocs-local-access}
+            AWS_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:-local-only-change-this-secret}
+            AWS_DEFAULT_REGION: ${S3_REGION:-us-east-1}
+            AWS_BUCKET: ${S3_BUCKET:-sendocs-private}
+            AWS_ENDPOINT: http://rustfs:9000
+            AWS_USE_PATH_STYLE_ENDPOINT: "true"
+        command: [ "php", "artisan", "migrate", "--force" ]
+        volumes:
+            - ./api:/var/www/html
+            - /var/www/html/vendor
+        depends_on:
+            db:
+                condition: service_healthy
+            object-storage-init:
+                condition: service_completed_successfully
+        restart: "no"
+
     api:
+        image: sendocs-api:${API_TARGET:-dev}
         build:
             context: ./api
             target: ${API_TARGET:-dev}
@@ -41,6 +71,7 @@ services:
         restart: unless-stopped
 
     worker:
+        image: sendocs-api:${API_TARGET:-dev}
         build:
             context: ./api
             target: ${API_TARGET:-dev}
@@ -74,6 +105,7 @@ services:
         restart: unless-stopped
 
     scheduler:
+        image: sendocs-api:${API_TARGET:-dev}
         build:
             context: ./api
             target: ${API_TARGET:-dev}
@@ -104,6 +136,7 @@ services:
         restart: unless-stopped
 
     web:
+        image: sendocs-web:${WEB_TARGET:-dev}
         build:
             context: ./web
             target: ${WEB_TARGET:-dev}

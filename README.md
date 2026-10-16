@@ -52,8 +52,8 @@ The React (web) app and API are separate parts of the same repository. PostgreSQ
 
 ## Development
 
-- **Run with Docker** - Docker Compose (recommended, no host toolchain)
-- **Without docker** - Directly with PHP, Composer, Bun, and PostgreSQL.
+- **With Docker** - Docker Compose (recommended, no host toolchain).
+- **Without Docker** - PHP, Composer, Bun, PostgreSQL.
 
 ### Quick Start (Docker)
 
@@ -61,57 +61,66 @@ The React (web) app and API are separate parts of the same repository. PostgreSQ
 git clone https://github.com/saeedhosan/sendocs.git
 cd sendocs
 
-docker compose run api composer setup    # Setup and configure .env or api/.env
-docker compose up -d --build             # Build images and start everything
+cp -n .env.example .env          # Configure .env for all services
+docker compose build             # Build all images
+docker compose run --rm migrate  # Run database migrations
+docker compose up -d             # Start all services
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+- Web: [http://localhost:3000](http://localhost:3000)
+- API: [http://localhost:8000](http://localhost:8000)
 
-Stop with `docker compose down`.
-
-To run one service instead of everything (dependencies start automatically):
+Single service (dependencies start automatically):
 
 ```bash
-docker compose up -d web    # web + api + database + object storage
-docker compose up -d api    # api + database + object storage
+docker compose up -d web    # Start web with its dependencies
+docker compose up -d api    # Start API with its dependencies
 ```
+
+Stop: `docker compose down`
 
 ### Tests
 
 ```bash
-docker compose run --rm test              # Both suites
-docker compose run --rm api composer test # API tests only
-docker compose run --rm web bun run test  # Web tests only
+docker compose run --rm test              # Run both test suites
+docker compose run --rm api composer test # Run API tests
+docker compose run --rm web bun run test  # Run web tests
 ```
-
-- **API Tests**: Composer and Pest/PHPUnit suites.
-- **Web Checks**: Static analysis, TypeScript, unit tests, and Playwright e2e.
-- **Container**: Builds production-ready API and web images.
 
 ### Running Without Docker
 
-Start PostgreSQL locally, then:
+Requires a local PostgreSQL. Run the API and web in separate shells.
 
 ```bash
-cd api && composer setup  # Setup api and configure api/.env
-cd ../web && bun install  # Setup web and configure web/.env
-
-bun run dev               # Run react web development
-bun run build             # Build react web assets
-
-
-cd ../api                 # Navigate to api project
-composer run dev          # Run api development server
+cd api
+composer install            # Install PHP dependencies
+cp -n .env.example .env     # Configure .env (set DB_HOST=127.0.0.1)
+php artisan key:generate    # Generate the application key
+php artisan migrate         # Run database migrations
+php artisan serve           # Start the API server
 ```
+
+API runs at [http://localhost:8000](http://localhost:8000).
+
+```bash
+cd web
+bun install                 # Install JavaScript dependencies
+bun run dev                 # Start the dev server
+```
+
+Web runs at [http://localhost:3000](http://localhost:3000); the dev server proxies /api to API server.
 
 ### Production Deployment
 
+Set `API_TARGET=prod` and `WEB_TARGET=prod` in `.env`, then:
+
 ```bash
-
-git clone https://github.com/saeedhosan/sendocs.git
-cd sendocs
-
-docker compose run setup    # Setup and configure .env
-docker compose run migrate  # Run database migration
-docker ...                  # Start production servcies
+cp -n .env.example .env          # Configure .env (set API_TARGET=prod and WEB_TARGET=prod)
+docker compose build             # Build production images
+docker compose run --rm migrate  # Run database migrations
+docker compose up -d             # Start production services
 ```
+
+Served at [http://localhost:3000](http://localhost:3000). For public access, set `WEB_BIND=0.0.0.0` in `.env`.
+
+Pushing to `stage` deploys staging; pushing a `v*` tag on `main` deploys production. See [docs/deployment.md](docs/deployment.md).
