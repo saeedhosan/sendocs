@@ -47,13 +47,15 @@ The React (web) app and API are separate parts of the same repository. PostgreSQ
 
 ## Documentation Guide
 
-- [Interactive API reference](https://saeedhosan.github.io/sendocs/) — browse endpoints, schemas, authentication, and responses.
-- [OpenAPI contract](api/docs/openapi.yaml) — the source specification used to generate the reference.
+
 - [Design](docs/design.md) — system scope, data, architecture, deployment.
 - [Decisions](docs/decisions.md) — architectural choices and their reasoning.
 - [Frontend](docs/frontend.md) — shared React rendering and data handling.
 - [Feature specs](docs/features/) — auth, document requests, magic links, progress, dashboards, portal.
+- [API reference](https://saeedhosan.github.io/sendocs/) — browse endpoints, schemas, and responses.
+- [OpenAPI contract](api/docs/openapi.yaml) — the source specification used to generate the reference.
 
+  
 ## Tech Stack
 
 | Layer              | Technologies                                    |
