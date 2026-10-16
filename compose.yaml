@@ -1,4 +1,17 @@
 services:
+
+    test:
+        image: docker:cli
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - .:/app
+        working_dir: /app
+        entrypoint: [ "/bin/sh", "-c" ]
+        command:
+            - |
+              set -e
+              docker compose run --rm api composer test
+              docker compose run --rm web bun run test
     api:
         build:
             context: ./api
