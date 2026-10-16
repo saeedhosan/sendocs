@@ -66,11 +66,18 @@ cd sendocs
 ```
 
 ```bash
-cp -n .env.example .env   ## Copy and filled env
-docker compose -- setup   ## Setup full application
-docker compose -- dev     ## Run dev server for all services
-docker compose -- test    ## Run full test suites
-docker dompose -- build   ## Build all services for production
+cp -n .env.example .env     ## Copy environment template once
+docker compose up --build   ## Setup and start the full application
+```
+
+Once running, open [http://localhost:3000](http://localhost:3000).
+
+Other useful commands:
+
+```bash
+docker compose run --rm test    ## Run full tests
+docker compose build            ## Build all images
+docker compose down             ## Stop and remove services
 ```
 
 ### Quality Assurance

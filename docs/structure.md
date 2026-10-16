@@ -131,23 +131,16 @@ The root `package.json` is the command surface for the whole repository. It orch
 
 | Command         | Purpose                            | Runs                                                    |
 | :-------------- | :--------------------------------- | :------------------------------------------------------ |
-| `npm run dev`   | Start every service                | The API, the web UI, the queue worker, the cleanup scheduler, and PostgreSQL         |
-| `npm run test`  | Run all API and web tests          | Pest for the API, the web suite for the UI               |
-| `npm run lint`  | Run all linters and static checks  | Pint for the API, ESLint and TypeScript for the UI       |
-| `npm run build` | Build all applications             | The images named in `.env`, which carry Composer dependencies and built assets |
+| `docker compose up --build` | Build images, run migrations, and start all services | API, web UI, queue worker, scheduler, PostgreSQL, RustFS |
+| `docker compose up`         | Start services (using existing images)              | Same as above                                           |
+| `docker compose build`     | Build all images                                    | Builds API (dev/prod target) and web (dev/prod)          |
+| `docker compose run --rm api composer test` | Run API tests                       | Uses Pest/PHPUnit                                        |
+| `docker compose run --rm web bun run test`  | Run web tests                        | Lint, unit, and E2E where configured                     |
+| `docker compose run --rm api composer lint` | Run API linters                     | Pint (and other configured checks)                       |
+| `docker compose run --rm web bun run lint`  | Run web linter                     | ESLint and TypeScript                                    |
 
-Supporting commands cover the steps around those four.
+All commands run inside containers, so a green pipeline is reproducible on a developer machine. Compose reads only the root `.env` file. Migrations run automatically via a one-shot `migrate` service during `up --build`.
 
-| Command              | Purpose                                                |
-| :------------------- | :----------------------------------------------------- |
-| `npm run setup`      | Create `.env`, build images, migrate                  |
-| `npm run dev:api`    | Start the API and queue worker                         |
-| `npm run dev:web`    | Start the web UI                                       |
-| `npm run dev:worker` | Start the queue worker                                 |
-| `npm run start`      | Run the configured images without rebuilding           |
-| `npm run migrate`    | Run migrations against the local database              |
-
-Every root command runs inside a container, so a green pipeline is reproducible on a developer machine and no host PHP, Bun, or PostgreSQL is needed. Each command delegates to the owning application: `composer test` and `composer lint` for the API, the Bun scripts for the web UI, and `npm run compose -- <arguments>`, which carries the shared Compose flags, for the services. The root holds no application configuration.
 
 Static analysis for the API is not configured yet, so `npm run lint` checks formatting with Pint only. The web test runner is not configured yet, so `npm run test` runs its lint checks.
 

@@ -56,22 +56,20 @@ The root `package.json` is the command surface for the repository.
 
 | Command         | Purpose                            |
 | :-------------- | :--------------------------------- |
-| `npm run setup` | Create `.env`, build images, write an app key, migrate |
-| `npm run dev`   | Start all development services     |
-| `npm run test`  | Run all API and web tests          |
-| `npm run lint`  | Run all linters and static checks  |
-| `npm run build` | Build all applications             |
+| `docker compose up --build` | Build images, run migrations, and start all services |
+| `docker compose up`         | Start services (using existing images)              |
+| `docker compose build`     | Build all service images                            |
+| `docker compose run --rm api composer test` | Run API tests                             |
+| `docker compose run --rm web bun run test`  | Run web tests                              |
 
-`dev` starts the API, the web UI, the account-email queue worker, the cleanup scheduler, and PostgreSQL. The application is served at `http://localhost:3000`, which also proxies `/api` and `/health`, so the browser only ever sees one origin; the API is published separately on `http://localhost:8000` for command-line clients. Containers run from built images rather than mounted source, so run `npm run build` again to see an application change.
+`docker compose up --build` starts the API, the web UI, the queue worker, the scheduler, PostgreSQL, RustFS, and the migration one-shot. The application is served at `http://localhost:3000`; the API is published separately on `http://localhost:8000` for command-line clients. Only the root `.env` file is used.
 
-## Local Development
+Quickstart:
 
 ```bash
-npm run setup
-npm run dev
+cp -n .env.example .env
+docker compose up --build
 ```
-
-Production uses the same commands with production values in `.env`: set the `SENDOCS_*` image and target variables, `WEB_PORT`, and `WEB_BIND` as listed in [`docs/structure.md`](docs/structure.md), then run `npm run build` and `npm run start`.
 
 ## Conventions
 

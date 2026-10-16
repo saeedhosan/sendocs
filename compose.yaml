@@ -1,27 +1,56 @@
 services:
+
+    api-test:
+        build:
+            context: ./api
+            target: ${API_TARGET:-dev}
+        env_file:
+            - .env
+        command: [ "composer", "test" ]
+        volumes:
+            - ./api:/var/www/html
+            - /var/www/html/vendor
+        depends_on:
+            - db
+        restart: "no"
+
+    web-test:
+        build:
+            context: ./web
+            target: ${WEB_TARGET:-dev}
+        env_file:
+            - .env
+        command: [ "bun", "run", "test" ]
+        volumes:
+            - ./web:/app
+            - /app/node_modules
+        restart: "no"
+
+    test:
+        image: alpine:3.22
+        command: [ "sh", "-c", "echo 'All test suites passed'" ]
+        depends_on:
+        api-test:
+            condition: service_completed_successfully
+        web-test:
+            condition: service_completed_successfully
+        profiles: [ "test" ]
+        restart: "no"
+
     api:
         build:
             context: ./api
             target: ${API_TARGET:-dev}
         env_file:
             - .env
-            - api/.env
-        environment:
-            FILESYSTEM_DISK: s3
-            AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-sendocs-local-access}
-            AWS_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:-local-only-change-this-secret}
-            AWS_DEFAULT_REGION: ${S3_REGION:-us-east-1}
-            AWS_BUCKET: ${S3_BUCKET:-sendocs-private}
-            AWS_ENDPOINT: http://rustfs:9000
-            AWS_USE_PATH_STYLE_ENDPOINT: "true"
         ports:
             - "${API_BIND:-127.0.0.1}:${API_PORT:-8000}:8000"
         volumes:
             - ./api:/var/www/html
             - /var/www/html/vendor
         depends_on:
-            db:
-                condition: service_healthy
+            migrate:
+                condition: service_completed_successfully
             object-storage-init:
                 condition: service_completed_successfully
         restart: unless-stopped
@@ -39,21 +68,12 @@ services:
             - --max-time=3600
         env_file:
             - .env
-            - api/.env
-        environment:
-            FILESYSTEM_DISK: s3
-            AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-sendocs-local-access}
-            AWS_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:-local-only-change-this-secret}
-            AWS_DEFAULT_REGION: ${S3_REGION:-us-east-1}
-            AWS_BUCKET: ${S3_BUCKET:-sendocs-private}
-            AWS_ENDPOINT: http://rustfs:9000
-            AWS_USE_PATH_STYLE_ENDPOINT: "true"
         volumes:
             - ./api:/var/www/html
             - /var/www/html/vendor
         depends_on:
-            db:
-                condition: service_healthy
+            migrate:
+                condition: service_completed_successfully
             object-storage-init:
                 condition: service_completed_successfully
         restart: unless-stopped
@@ -68,24 +88,34 @@ services:
             - schedule:work
         env_file:
             - .env
-            - api/.env
-        environment:
-            FILESYSTEM_DISK: s3
-            AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-sendocs-local-access}
-            AWS_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:-local-only-change-this-secret}
-            AWS_DEFAULT_REGION: ${S3_REGION:-us-east-1}
-            AWS_BUCKET: ${S3_BUCKET:-sendocs-private}
-            AWS_ENDPOINT: http://rustfs:9000
-            AWS_USE_PATH_STYLE_ENDPOINT: "true"
+        volumes:
+            - ./api:/var/www/html
+            - /var/www/html/vendor
+        depends_on:
+            migrate:
+                condition: service_completed_successfully
+            object-storage-init:
+                condition: service_completed_successfully
+        restart: unless-stopped
+
+    migrate:
+        build:
+            context: ./api
+            target: ${API_TARGET:-dev}
+        command:
+            - php
+            - artisan
+            - migrate
+            - --force
+        env_file:
+            - .env
         volumes:
             - ./api:/var/www/html
             - /var/www/html/vendor
         depends_on:
             db:
                 condition: service_healthy
-            object-storage-init:
-                condition: service_completed_successfully
-        restart: unless-stopped
+        restart: "no"
 
     web:
         build:
@@ -93,9 +123,6 @@ services:
             target: ${WEB_TARGET:-dev}
         env_file:
             - .env
-            - web/.env
-        environment:
-            VITE_API_PROXY: http://api:8000
         ports:
             - "${WEB_BIND:-127.0.0.1}:${WEB_PORT:-3000}:3000"
         volumes:
@@ -108,7 +135,7 @@ services:
 
     rustfs-volume-init:
         image: busybox:1.36
-        command: ["sh", "-c", "chown -R 10001:10001 /data"]
+        command: [ "sh", "-c", "chown -R 10001:10001 /data" ]
         volumes:
             - rustfs-data:/data
         restart: "no"
@@ -117,8 +144,8 @@ services:
         image: rustfs/rustfs:1.0.1
         user: "10001:10001"
         environment:
-            RUSTFS_ACCESS_KEY: ${S3_ACCESS_KEY_ID:-sendocs-local-access}
-            RUSTFS_SECRET_KEY: ${S3_SECRET_ACCESS_KEY:-local-only-change-this-secret}
+            RUSTFS_ACCESS_KEY: ${RUSTFS_ACCESS_KEY:-sendocs-local-access}
+            RUSTFS_SECRET_KEY: ${RUSTFS_SECRET_KEY:-local-only-change-this-secret}
             RUSTFS_ADDRESS: 0.0.0.0:9000
             RUSTFS_CONSOLE_ADDRESS: 0.0.0.0:9001
             RUSTFS_VOLUMES: /data
@@ -134,28 +161,28 @@ services:
 
     object-storage-init:
         image: amazon/aws-cli:2.27.41
-        entrypoint: ["/bin/sh", "-c"]
+        entrypoint: [ "/bin/sh", "-c" ]
         command:
             - |
-                attempt=0
-                until aws --endpoint-url "$$AWS_ENDPOINT" s3api list-buckets >/dev/null 2>&1; do
-                    attempt=$$((attempt + 1))
-                    if [ "$$attempt" -ge 60 ]; then
-                        echo "RustFS did not become ready" >&2
-                        exit 1
-                    fi
-                    sleep 2
-                done
-                if ! aws --endpoint-url "$$AWS_ENDPOINT" s3api head-bucket --bucket "$$AWS_BUCKET" >/dev/null 2>&1; then
-                    aws --endpoint-url "$$AWS_ENDPOINT" s3api create-bucket --bucket "$$AWS_BUCKET"
-                fi
+              attempt=0
+              until aws --endpoint-url "$$AWS_ENDPOINT" s3api list-buckets >/dev/null 2>&1; do
+                  attempt=$$((attempt + 1))
+                  if [ "$$attempt" -ge 60 ]; then
+                      echo "RustFS did not become ready" >&2
+                      exit 1
+                  fi
+                  sleep 2
+              done
+              if ! aws --endpoint-url "$$AWS_ENDPOINT" s3api head-bucket --bucket "$$AWS_BUCKET" >/dev/null 2>&1; then
+                  aws --endpoint-url "$$AWS_ENDPOINT" s3api create-bucket --bucket "$$AWS_BUCKET"
+              fi
         environment:
-            AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-sendocs-local-access}
-            AWS_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:-local-only-change-this-secret}
-            AWS_DEFAULT_REGION: ${S3_REGION:-us-east-1}
+            AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-sendocs-local-access}
+            AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-local-only-change-this-secret}
+            AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION:-us-east-1}
             AWS_EC2_METADATA_DISABLED: "true"
-            AWS_ENDPOINT: http://rustfs:9000
-            AWS_BUCKET: ${S3_BUCKET:-sendocs-private}
+            AWS_ENDPOINT: ${AWS_ENDPOINT:-http://rustfs:9000}
+            AWS_BUCKET: ${AWS_BUCKET:-sendocs-private}
         depends_on:
             rustfs:
                 condition: service_started
