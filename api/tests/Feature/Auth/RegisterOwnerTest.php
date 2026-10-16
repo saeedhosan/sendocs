@@ -47,7 +47,9 @@ test('register sets an http only session cookie that expires in seven days', fun
 
     $session = Session::query()->sole();
 
-    expect($session->expires_at->timestamp - now()->timestamp)->toBeGreaterThan(604799)
+    // The session expiry is set seven days ahead; by the time this assertion
+    // runs, the current timestamp may have advanced by one second.
+    expect($session->expires_at->timestamp - now()->timestamp)->toBeGreaterThanOrEqual(604799)
         ->and($session->user_id)->toBe(User::query()->sole()->id);
 });
 

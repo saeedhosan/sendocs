@@ -25,6 +25,8 @@ RUN apk add --no-cache \
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
+COPY docker/php.ini /usr/local/etc/php/conf.d/zz-api.ini
+
 ENV COMPOSER_ALLOW_SUPERUSER=1 \
     COMPOSER_NO_INTERACTION=1
 
@@ -49,7 +51,6 @@ RUN composer dump-autoload \
     --no-dev \
     --classmap-authoritative
 
-COPY docker/php.ini /usr/local/etc/php/conf.d/zz-api.ini
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint
 
 RUN chmod +x /usr/local/bin/entrypoint
