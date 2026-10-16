@@ -95,7 +95,7 @@ sendocs/
 | Workflow file                  | Purpose                        |
 | :----------------------------- | :----------------------------- |
 | `.github/workflows/ci.yml`     | Run API and web checks         |
-| `.github/workflows/build.yml`  | Build production Docker images |
+| `.github/workflows/build.yml`  | Container tests and production image build |
 | `.github/workflows/stage.yml`  | Stage deployment               |
 | `.github/workflows/deploy.yml` | Test and production deploy     |
 
