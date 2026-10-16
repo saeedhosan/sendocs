@@ -199,6 +199,21 @@ test('rejects a renamed file when its content type disagrees with its extension'
     Storage::assertEmpty();
 });
 
+test('strips control characters from uploaded filenames', function (): void {
+    [, $items, $token] = portalUploadFixture();
+
+    uploadPortal(
+        $token,
+        $items[0]->getKey(),
+        validPdf("passport\r\nX-Injected: yes.pdf"),
+    )
+        ->assertOk()
+        ->assertJsonPath('items.0.file.originalName', 'passportX-Injected: yes.pdf');
+
+    expect(Document::query()->firstOrFail()->original_name)
+        ->toBe('passportX-Injected: yes.pdf');
+});
+
 test('returns the same invalid link response for upload requests', function (): void {
     [, $items, $token] = portalUploadFixture();
 
