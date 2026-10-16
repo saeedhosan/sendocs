@@ -244,14 +244,17 @@ describe('PortalPage', () => {
   })
 
   it('refetches on focus and surfaces a link revoked elsewhere', async () => {
-    viewMock
-      .mockResolvedValueOnce(makeView())
-      .mockRejectedValueOnce(
-        new ApiError('invalid_link', 'This link is no longer valid.', 410),
-      )
+    viewMock.mockResolvedValue(makeView())
     renderPortal()
 
     await screen.findByText('Passport or Government ID')
+
+    // Configure the revocation response only after the initial render. React
+    // StrictMode may run the initial effect more than once in the test build.
+    viewMock.mockRejectedValueOnce(
+      new ApiError('invalid_link', 'This link is no longer valid.', 410),
+    )
+
     await act(async () => {
       window.dispatchEvent(new Event('focus'))
     })
