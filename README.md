@@ -45,6 +45,14 @@ The React (web) app and API are separate parts of the same repository. PostgreSQ
 - **Dev/prod parity:** one Compose file and multi-stage images run the same code everywhere; Vite and nginx proxy the API so sessions and CSRF match.
 - **Automated quality gates:** CI runs Pest, PHPStan, Pint, Rector, Vitest, Playwright, ESLint, and tsc, then builds images and ships production on a version tag.
 
+## Documentation Guide
+
+- [Design](docs/design.md) — system scope, data, architecture, deployment.
+- [Decisions](docs/decisions.md) — architectural choices and their reasoning.
+- [Frontend](docs/frontend.md) — shared React rendering and data handling.
+- [Feature specs](docs/features/) — auth, document requests, magic links, progress, dashboards, portal.
+- [OpenAPI contract](docs/openapi.yaml) — versioned API endpoints, payloads, and errors.
+
 ## Tech Stack
 
 | Layer              | Technologies                                    |
