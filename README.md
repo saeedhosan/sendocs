@@ -63,8 +63,6 @@ Feature behavior has its own source-of-truth document:
 
 ## Run locally
 
-You will need Docker with the Compose plugin, plus Node.js/npm to run the root commands. The API, web app, and PostgreSQL run in containers.
-
 From the repository root, run:
 
 ```bash
