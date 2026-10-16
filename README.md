@@ -91,6 +91,8 @@ Full guides:
 
 ```bash
 docker compose run --rm test              # Run both test suites
+
+# or
 docker compose run --rm api composer test # Run API tests
 docker compose run --rm web bun run test  # Run web tests
 ```
