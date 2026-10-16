@@ -36,10 +36,6 @@ The React (web) app and API are separate parts of the same repository. PostgreSQ
 
 ![Diagram](/docs/diagram/quick-flow.png)
 
-## Engineering Highlights
-
-## Documentation Guide
-
 ## Tech Stack
 
 | Layer              | Technologies                                    |
@@ -50,12 +46,9 @@ The React (web) app and API are separate parts of the same repository. PostgreSQ
 | **Services**       | Docker Compose, S3-compatible object storage    |
 | **Automation**     | GitHub Actions (testing, linting, image builds) |
 
-## Development
+## Quick Start
 
-- **With Docker** - Docker Compose (recommended, no host toolchain).
-- **Without Docker** - PHP, Composer, Bun, PostgreSQL.
-
-### Quick Start (Docker)
+Requires [Docker](https://docs.docker.com/get-docker/) with the Compose plugin.
 
 ```bash
 git clone https://github.com/saeedhosan/sendocs.git
@@ -70,57 +63,17 @@ docker compose up -d             # Start all services
 - Web: [http://localhost:3000](http://localhost:3000)
 - API: [http://localhost:8000](http://localhost:8000)
 
-Single service (dependencies start automatically):
-
-```bash
-docker compose up -d web    # Start web with its dependencies
-docker compose up -d api    # Start API with its dependencies
-```
-
 Stop: `docker compose down`
 
-### Tests
+Full guides:
+
+- [Development](docs/development.md) (single service, without Docker, per-surface commands)
+- [Production](docs/production.md) (production images and deployment)
+
+### Testing
 
 ```bash
 docker compose run --rm test              # Run both test suites
 docker compose run --rm api composer test # Run API tests
 docker compose run --rm web bun run test  # Run web tests
 ```
-
-### Running Without Docker
-
-Requires a local PostgreSQL. Run the API and web in separate shells.
-
-```bash
-cd api
-composer install            # Install PHP dependencies
-cp -n .env.example .env     # Configure .env (set DB_HOST=127.0.0.1)
-php artisan key:generate    # Generate the application key
-php artisan migrate         # Run database migrations
-php artisan serve           # Start the API server
-```
-
-API runs at [http://localhost:8000](http://localhost:8000).
-
-```bash
-cd web
-bun install                 # Install JavaScript dependencies
-bun run dev                 # Start the dev server
-```
-
-Web runs at [http://localhost:3000](http://localhost:3000); the dev server proxies /api to API server.
-
-### Production Deployment
-
-Set `API_TARGET=prod` and `WEB_TARGET=prod` in `.env`, then:
-
-```bash
-cp -n .env.example .env          # Configure .env (set API_TARGET=prod and WEB_TARGET=prod)
-docker compose build             # Build production images
-docker compose run --rm migrate  # Run database migrations
-docker compose up -d             # Start production services
-```
-
-Served at [http://localhost:3000](http://localhost:3000). For public access, set `WEB_BIND=0.0.0.0` in `.env`.
-
-Pushing to `stage` deploys staging; pushing a `v*` tag on `main` deploys production. See [docs/deployment.md](docs/deployment.md).
