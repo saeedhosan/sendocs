@@ -18,7 +18,8 @@ services:
             target: ${API_TARGET:-dev}
         env_file:
             - .env
-            - api/.env
+            - path: api/.env
+              required: false
         environment:
             FILESYSTEM_DISK: s3
             AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-sendocs-local-access}
@@ -52,7 +53,8 @@ services:
             - --max-time=3600
         env_file:
             - .env
-            - api/.env
+            - path: api/.env
+              required: false
         environment:
             FILESYSTEM_DISK: s3
             AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-sendocs-local-access}
@@ -81,7 +83,8 @@ services:
             - schedule:work
         env_file:
             - .env
-            - api/.env
+            - path: api/.env
+              required: false
         environment:
             FILESYSTEM_DISK: s3
             AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-sendocs-local-access}
@@ -106,7 +109,8 @@ services:
             target: ${WEB_TARGET:-dev}
         env_file:
             - .env
-            - web/.env
+            - path: web/.env
+              required: false
         environment:
             VITE_API_PROXY: http://api:8000
         ports:
