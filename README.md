@@ -36,6 +36,15 @@ The React (web) app and API are separate parts of the same repository. PostgreSQ
 
 ![Diagram](/docs/diagram/quick-flow.png)
 
+## Engineering Highlights
+
+- **Constraint-first database:** PostgreSQL enforces the invariants (one token hash, one item per position, cascading deletes); a request commits with its items and token in one transaction.
+- **Hash-only magic links:** a 256-bit token stored as its SHA-256 hash, so a database leak yields no working links; expiry and revocation end a link with no background job.
+- **Private-by-default files:** validated uploads stored under random keys; access is a 5-minute signed link, never a public path.
+- **Transactional outbox:** the database and object store can't share a transaction, so object deletions are queued in PostgreSQL and retried with exponential backoff, avoiding blocked deletes and orphaned files.
+- **Dev/prod parity:** one Compose file and multi-stage images run the same code everywhere; Vite and nginx proxy the API so sessions and CSRF match.
+- **Automated quality gates:** CI runs Pest, PHPStan, Pint, Rector, Vitest, Playwright, ESLint, and tsc, then builds images and ships production on a version tag.
+
 ## Tech Stack
 
 | Layer              | Technologies                                    |
