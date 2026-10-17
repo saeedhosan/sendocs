@@ -8,30 +8,32 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 PLACEHOLDER = "__API_ORIGIN__"
-CONNECT_PREFIX = "connect-src 'self' "
 
 
 def main() -> int:
     if len(sys.argv) != 3:
-        print(
-            "Usage: configure-csp.py <htaccess-path> <api-url>",
-            file=sys.stderr,
-        )
+        print("Usage: configure-csp.py <htaccess-path> <api-url>", file=sys.stderr)
         return 2
 
     policy_path = Path(sys.argv[1])
     api_url = sys.argv[2]
-    parsed = urlsplit(api_url)
 
-    if (
-        parsed.scheme != "https"
-        or not parsed.hostname
-        or parsed.username is not None
-        or parsed.password is not None
-        or parsed.path not in ("", "/")
-        or parsed.query
-        or parsed.fragment
-    ):
+    try:
+        parsed = urlsplit(api_url)
+        valid_origin = (
+            parsed.scheme == "https"
+            and bool(parsed.hostname)
+            and parsed.username is None
+            and parsed.password is None
+            and parsed.path in ("", "/")
+            and not parsed.query
+            and not parsed.fragment
+            and parsed.port is not None if parsed.port is not None else True
+        )
+    except ValueError:
+        valid_origin = False
+
+    if not valid_origin:
         print(
             "API_URL must be an HTTPS origin without credentials, path, query, or fragment.",
             file=sys.stderr,
@@ -55,12 +57,7 @@ def main() -> int:
 
     configured = policy.replace(PLACEHOLDER, api_origin)
 
-    connect_directives = [
-        directive.strip()
-        for directive in configured.split('"')
-        if directive.strip().startswith(CONNECT_PREFIX)
-    ]
-    if len(connect_directives) != 1 or api_origin not in connect_directives[0].split():
+    if f"connect-src 'self' {api_origin};" not in configured:
         print("Generated CSP does not allow the configured API origin.", file=sys.stderr)
         return 1
 
