@@ -4,20 +4,21 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\DocumentRequests\Services\MagicLinkService;
 use App\Models\DocumentRequest;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 
 class DocumentRequestSeeder extends Seeder
 {
     use WithoutModelEvents;
 
     /**
-     * Give every user a few realistic document requests.
+     * Give every user a few realistic document requests and print the client
+     * portal link for each one.
      */
-    public function run(): void
+    public function run(MagicLinkService $links): void
     {
         $titles = [
             'Visa application',
@@ -26,15 +27,27 @@ class DocumentRequestSeeder extends Seeder
             'University admission',
         ];
 
+        $portalLinks = [];
+
         foreach (User::all() as $user) {
             foreach ($titles as $title) {
+                $token = $links->generate();
+
                 DocumentRequest::create([
                     'owner_id'   => $user->getKey(),
                     'title'      => $title,
-                    'token_hash' => hash('sha256', Str::random(40)),
-                    'expires_at' => now()->addDays(14),
+                    'token_hash' => $links->hash($token),
+                    'expires_at' => $links->expiry(),
                 ]);
+
+                $portalLinks[] = [
+                    $user->email,
+                    $title,
+                    $links->link($token),
+                ];
             }
         }
+
+        $this->command->table(['Owner', 'Request', 'Portal link'], $portalLinks);
     }
 }
