@@ -21,7 +21,7 @@ jobs:
         name: API
         runs-on: ubuntu-latest
         timeout-minutes: 15
-        
+
         steps:
             - name: Check out repository
               uses: actions/checkout@v4
@@ -47,7 +47,7 @@ jobs:
             - name: Test
               working-directory: api
               run: composer test
-              
+
     web:
         name: Web
         runs-on: ubuntu-latest
@@ -73,6 +73,14 @@ jobs:
             - name: Install dependencies
               working-directory: web
               run: bun install --frozen-lockfile
+
+            - name: Test CSP deployment configuration
+              working-directory: web
+              run: |
+                  cp public/.htaccess "$RUNNER_TEMP/sendocs.htaccess"
+                  python3 scripts/configure-csp.py "$RUNNER_TEMP/sendocs.htaccess" https://api.example.test
+                  grep -F "connect-src 'self' https://api.example.test;" "$RUNNER_TEMP/sendocs.htaccess"
+                  ! grep -F "__API_ORIGIN__" "$RUNNER_TEMP/sendocs.htaccess"
 
             - name: Install Playwright browsers
               working-directory: web
