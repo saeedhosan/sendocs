@@ -28,7 +28,7 @@ def main() -> int:
             and parsed.path in ("", "/")
             and not parsed.query
             and not parsed.fragment
-            and parsed.port is not None if parsed.port is not None else True
+            and (parsed.port is None or 0 < parsed.port < 65536)
         )
     except ValueError:
         valid_origin = False
