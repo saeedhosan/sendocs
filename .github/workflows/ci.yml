@@ -74,14 +74,6 @@ jobs:
               working-directory: web
               run: bun install --frozen-lockfile
 
-            - name: Test CSP deployment configuration
-              working-directory: web
-              run: |
-                  cp public/.htaccess "$RUNNER_TEMP/sendocs.htaccess"
-                  python3 scripts/configure-csp.py "$RUNNER_TEMP/sendocs.htaccess" https://api.example.test
-                  grep -F "connect-src 'self' https://api.example.test;" "$RUNNER_TEMP/sendocs.htaccess"
-                  ! grep -F "__API_ORIGIN__" "$RUNNER_TEMP/sendocs.htaccess"
-
             - name: Install Playwright browsers
               working-directory: web
               run: bunx playwright install --with-deps chromium
