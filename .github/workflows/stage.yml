@@ -103,10 +103,6 @@ jobs:
                   VITE_API_URL: ${{ secrets.API_URL }}
               run: bun run build
 
-            - name: Configure and validate deployed CSP
-              working-directory: web
-              run: python3 scripts/configure-csp.py dist/.htaccess "$API_URL"
-
             - name: Deploy
               uses: appleboy/scp-action@v1.0.0
               with:
