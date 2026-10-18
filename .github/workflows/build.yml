@@ -5,10 +5,7 @@ on:
     push:
         branches:
             - main
-    pull_request:
-        branches:
-            - main
-
+            
 permissions:
     contents: read
 
@@ -17,8 +14,27 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
+    tests:
+        name: Container tests
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+
+        steps:
+            - name: Check out repository
+              uses: actions/checkout@v4
+
+            - name: Create environment file
+              run: cp -n .env.example .env
+
+            - name: Run API tests
+              run: docker compose run --rm api composer test
+
+            - name: Run web tests
+              run: docker compose run --rm web bun run test
+
     production-images:
         name: Production images
+        needs: tests
         runs-on: ubuntu-latest
         timeout-minutes: 20
 
@@ -26,8 +42,11 @@ jobs:
             - name: Check out repository
               uses: actions/checkout@v4
 
-            - name: Build API production image
-              run: docker build --target prod -t sendocs-api-ci ./api
+            - name: Create environment file
+              run: cp -n .env.example .env
 
-            - name: Build web production image
-              run: docker build --target prod -t sendocs-web-ci ./web
+            - name: Build production images
+              env:
+                  API_TARGET: prod
+                  WEB_TARGET: prod
+              run: docker compose build
