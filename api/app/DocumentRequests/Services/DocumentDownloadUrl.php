@@ -13,7 +13,7 @@ final class DocumentDownloadUrl
 
     public function for(Document $document): string
     {
-        return Storage::temporaryUrl(
+        return Storage::disk('s3-browser')->temporaryUrl(
             $document->storage_key,
             now()->addMinutes(self::TTL_MINUTES),
             [

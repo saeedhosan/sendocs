@@ -30,6 +30,7 @@ test('stores and deletes private objects and creates a five-minute signed downlo
         $url = app(DocumentDownloadUrl::class)->for($document);
 
         expect($url)
+            ->toStartWith(rtrim((string) config('filesystems.disks.s3-browser.endpoint'), '/').'/')
             ->toContain('X-Amz-Algorithm=AWS4-HMAC-SHA256')
             ->toContain('X-Amz-Expires=300')
             ->toContain('integration.txt');

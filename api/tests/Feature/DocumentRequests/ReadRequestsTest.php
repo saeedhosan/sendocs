@@ -178,9 +178,15 @@ test('includes a signed download URL for uploaded documents', function (): void 
         'uploaded_at'   => now(),
     ]);
 
-    Storage::shouldReceive('temporaryUrl')
+    $disk = Mockery::mock();
+    $disk->shouldReceive('temporaryUrl')
         ->once()
         ->andReturn('https://storage.example.test/signed');
+
+    Storage::shouldReceive('disk')
+        ->once()
+        ->with('s3-browser')
+        ->andReturn($disk);
 
     app(SessionService::class)->issue($owner);
     test()->withCredentials();
