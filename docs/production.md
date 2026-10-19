@@ -16,12 +16,7 @@ docker compose up -d             # start production services
 - Web: [http://localhost:3000](http://localhost:3000); nginx serves the bundle and proxies `/api` and `/health` to PHP-FPM.
 - Set `WEB_BIND=0.0.0.0` to expose publicly; `API_BIND=0.0.0.0` only to reach the API directly.
 - Set `APP_KEY` to a production value, never the development key.
-- Set `S3_BROWSER_ENDPOINT` to the HTTPS S3 API endpoint that clients' browsers can reach (for example, `https://storage.example.com`). Compose passes it to Laravel as `AWS_BROWSER_ENDPOINT`; when deploying the API outside Compose, set `AWS_BROWSER_ENDPOINT` directly in the API environment.
-- Route that HTTPS hostname only to RustFS port `9000` (the S3 API). Never proxy or publish port `9001` (the management console). Compose pins both RustFS host ports to `127.0.0.1`, so the host-level reverse proxy can reach the S3 API without making either port directly public. Do not add firewall/NAT rules that expose those ports.
-- Use [the example Nginx virtual host](../deploy/nginx/rustfs-storage.conf.example) as a starting point for TLS termination. Replace its hostname/certificate paths, validate the config, and reload Nginx. Preserve the signed host, path, and query string end-to-end; do not rewrite the request path or query. This is a deployment template, not an automatically installed server configuration.
-- Presigned URLs are bearer credentials. The example disables storage-host access logs. If your infrastructure requires access logging, log only `$uri` and never `$request`, `$request_uri`, query strings, or full signed URLs. Configure error reporting and upstream/proxy logs to redact query strings too. Do not log signed URLs in Laravel application logs.
-- The `sendocs-private` bucket is dedicated to client documents. Startup initialization applies a private bucket ACL and removes bucket policies. Do not attach public-read ACLs or public bucket policies. A signed URL is the only intended browser access path.
-- Laravel must load and owner-scope the request before serializing download URLs. Do not add an endpoint that signs an arbitrary storage key or document ID without the same ownership check.
+- Set `S3_BROWSER_ENDPOINT` to the HTTPS S3 API endpoint that clients' browsers can reach.
 
 ## Compose Variables
 
