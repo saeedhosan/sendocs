@@ -42,7 +42,9 @@ Two environments deploy over GitHub Actions using a cPanel SSH/SCP model.
 | Stage       | push to `stage`, or manual dispatch | `.github/workflows/stage.yml`  |
 | Production  | `v*` tag contained in `main`        | `.github/workflows/deploy.yml` |
 
-The published [API reference](https://saeedhosan.github.io/sendocs/) is built by `.github/workflows/docs.yml`. Its build job reads `API_URL` from the `production` GitHub Actions environment and substitutes that value into the generated copy of `api/docs/openapi.yaml`. The source contract keeps `http://127.0.0.1:8000` for local development; the workflow does not modify the source file.
+The published [API reference](https://saeedhosan.github.io/sendocs/) is built by `.github/workflows/docs.yml`. 
+Its build job reads `API_URL` from the `production` GitHub Actions environment and substitutes. 
+The source contract keeps `http://127.0.0.1:8000` for local development; the workflow does not modify the source file.
 
 Configure these secrets per environment under **Settings → Environments**:
 
