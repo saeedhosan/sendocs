@@ -16,7 +16,9 @@ test('creates a five minute attachment URL with the stored MIME type', function 
         'mime_type'     => 'application/pdf',
     ]);
 
-    Storage::shouldReceive('temporaryUrl')
+    $disk = Mockery::mock();
+
+    $disk->shouldReceive('temporaryUrl')
         ->once()
         ->with(
             $document->storage_key,
@@ -29,6 +31,11 @@ test('creates a five minute attachment URL with the stored MIME type', function 
             ],
         )
         ->andReturn('https://storage.example.test/signed');
+
+    Storage::shouldReceive('disk')
+        ->once()
+        ->with('s3-browser')
+        ->andReturn($disk);
 
     expect(app(DocumentDownloadUrl::class)->for($document))
         ->toBe('https://storage.example.test/signed');

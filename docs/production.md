@@ -16,6 +16,7 @@ docker compose up -d             # start production services
 - Web: [http://localhost:3000](http://localhost:3000); nginx serves the bundle and proxies `/api` and `/health` to PHP-FPM.
 - Set `WEB_BIND=0.0.0.0` to expose publicly; `API_BIND=0.0.0.0` only to reach the API directly.
 - Set `APP_KEY` to a production value, never the development key.
+- Set `S3_BROWSER_ENDPOINT` to the HTTPS S3 API endpoint that clients' browsers can reach.
 
 ## Compose Variables
 
@@ -30,6 +31,7 @@ Compose reads these from the root `.env`; the application does not.
 | `API_BIND`      | `127.0.0.1` | Address the published API port binds to        |
 | `API_PORT`      | `8000`      | Port published for the API                     |
 | `POSTGRES_BIND` | `127.0.0.1` | Address the published PostgreSQL port binds to |
+| `S3_BROWSER_ENDPOINT` | `http://localhost:9000` | Browser-reachable S3 endpoint used when signing downloads; HTTPS is required in production |
 
 ## Deployment
 
