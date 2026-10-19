@@ -203,7 +203,14 @@ services:
               # This bucket is dedicated to private client documents. Reset its ACL
               # and remove bucket policies so objects cannot be made public by policy.
               aws --endpoint-url "$AWS_ENDPOINT" s3api put-bucket-acl --bucket "$AWS_BUCKET" --acl private
-              aws --endpoint-url "$AWS_ENDPOINT" s3api delete-bucket-policy --bucket "$AWS_BUCKET" >/dev/null 2>&1 || true
+              if policy_error=$(aws --endpoint-url "$AWS_ENDPOINT" s3api delete-bucket-policy --bucket "$AWS_BUCKET" 2>&1); then
+                  :
+              else
+                  case "$policy_error" in
+                      *NoSuchBucketPolicy*|*"The bucket policy does not exist"*) ;;
+                      *) echo "$policy_error" >&2; exit 1 ;;
+                  esac
+              fi
         environment:
             AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-sendocs-local-access}
             AWS_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:-local-only-change-this-secret}
