@@ -22,7 +22,7 @@ jobs:
     timeout-minutes: 10
     environment: production
     env:
-      WEB_URL: ${{ secrets.WEB_URL }}
+      API_URL: ${{ secrets.API_URL }}
 
     steps:
       - name: Check out repository
@@ -39,10 +39,10 @@ jobs:
           from shutil import copytree
           from urllib.parse import urlparse
 
-          web_url = os.environ.get("WEB_URL", "").strip().rstrip("/")
-          parsed = urlparse(web_url)
+          api_url = os.environ.get("API_URL", "").strip().rstrip("/")
+          parsed = urlparse(api_url)
           if parsed.scheme not in {"http", "https"} or not parsed.netloc:
-              raise SystemExit("WEB_URL must be a valid absolute HTTP(S) URL.")
+              raise SystemExit("API_URL must be a valid absolute HTTP(S) URL.")
 
           source = Path("api/docs")
           output = Path("_site")
@@ -54,8 +54,8 @@ jobs:
           if content.count(local_server) != 1:
               raise SystemExit("Expected exactly one local OpenAPI server URL to replace.")
 
-          openapi.write_text(content.replace(local_server, f"url: {web_url}", 1))
-          print(f"Rendered OpenAPI server URL: {web_url}")
+          openapi.write_text(content.replace(local_server, f"url: {api_url}", 1))
+          print(f"Rendered OpenAPI server URL: {api_url}")
           PY
 
       - name: Upload API documentation
