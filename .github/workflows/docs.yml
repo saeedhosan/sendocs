@@ -16,13 +16,13 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  deploy:
-    name: Publish API reference
+  build:
+    name: Build API reference
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    environment: production
+    env:
+      WEB_URL: ${{ secrets.WEB_URL }}
 
     steps:
       - name: Check out repository
@@ -31,11 +31,48 @@ jobs:
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
+      - name: Render the deployed API server URL
+        run: |
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          from shutil import copytree
+          from urllib.parse import urlparse
+
+          web_url = os.environ.get("WEB_URL", "").strip().rstrip("/")
+          parsed = urlparse(web_url)
+          if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+              raise SystemExit("WEB_URL must be a valid absolute HTTP(S) URL.")
+
+          source = Path("api/docs")
+          output = Path("_site")
+          copytree(source, output)
+
+          openapi = output / "openapi.yaml"
+          content = openapi.read_text()
+          local_server = "url: http://127.0.0.1:8000"
+          if content.count(local_server) != 1:
+              raise SystemExit("Expected exactly one local OpenAPI server URL to replace.")
+
+          openapi.write_text(content.replace(local_server, f"url: {web_url}", 1))
+          print(f"Rendered OpenAPI server URL: {web_url}")
+          PY
+
       - name: Upload API documentation
         uses: actions/upload-pages-artifact@v3
         with:
-          path: api/docs
+          path: _site
 
+  deploy:
+    name: Publish API reference
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
