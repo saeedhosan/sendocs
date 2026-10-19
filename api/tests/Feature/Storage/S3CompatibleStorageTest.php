@@ -61,8 +61,17 @@ test('signs download URLs with the browser-facing endpoint', function (): void {
 
     $url = app(DocumentDownloadUrl::class)->for($document);
 
-    expect($url)
-        ->toStartWith('https://storage.example.test/sendocs-private/requests/request/document.pdf?')
-        ->toContain('X-Amz-Algorithm=AWS4-HMAC-SHA256')
-        ->toContain('X-Amz-Expires=300');
+    $query = [];
+    parse_str((string) parse_url($url, PHP_URL_QUERY), $query);
+
+    expect(parse_url($url, PHP_URL_SCHEME))
+        ->toBe('https')
+        ->and(parse_url($url, PHP_URL_HOST))
+        ->toBe('storage.example.test')
+        ->and(parse_url($url, PHP_URL_PATH))
+        ->toBe('/sendocs-private/requests/request/document.pdf')
+        ->and($query['X-Amz-Algorithm'] ?? null)
+        ->toBe('AWS4-HMAC-SHA256')
+        ->and($query['X-Amz-Expires'] ?? null)
+        ->toBe('300');
 });
