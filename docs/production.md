@@ -16,6 +16,8 @@ docker compose up -d             # start production services
 - Web: [http://localhost:3000](http://localhost:3000); nginx serves the bundle and proxies `/api` and `/health` to PHP-FPM.
 - Set `WEB_BIND=0.0.0.0` to expose publicly; `API_BIND=0.0.0.0` only to reach the API directly.
 - Set `APP_KEY` to a production value, never the development key.
+- Set `S3_BROWSER_ENDPOINT` to the HTTPS S3 API endpoint that clients' browsers can reach (for example, `https://storage.example.com`). Compose passes it to Laravel as `AWS_BROWSER_ENDPOINT`; when deploying the API outside Compose, set `AWS_BROWSER_ENDPOINT` directly in the API environment.
+- Route that HTTPS hostname to the S3 API, preserving the host used in the signed URL. Keep the bucket private and the RustFS console private; do not use the internal Docker hostname in browser URLs.
 
 ## Compose Variables
 
@@ -30,6 +32,7 @@ Compose reads these from the root `.env`; the application does not.
 | `API_BIND`      | `127.0.0.1` | Address the published API port binds to        |
 | `API_PORT`      | `8000`      | Port published for the API                     |
 | `POSTGRES_BIND` | `127.0.0.1` | Address the published PostgreSQL port binds to |
+| `S3_BROWSER_ENDPOINT` | `http://localhost:9000` | Browser-reachable S3 endpoint used when signing downloads |
 
 ## Deployment
 
