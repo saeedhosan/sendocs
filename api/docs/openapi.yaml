@@ -24,7 +24,7 @@ info:
     | Accepted types | PDF, JPEG, PNG, DOCX, XLSX, CSV, TXT |
     | Page size | `limit` defaults to 20, capped at 100 |
     | Magic-link expiry | 14 days default, 90 days maximum |
-    | Password length | 12 to 200 characters |
+    | Password length | 8 to 200 characters |
 
     A type is decided by sniffing the content, never by the `Content-Type` header, and
     the sniffed type must agree with the file extension.
@@ -61,7 +61,6 @@ paths:
       operationId: registerOwner
       summary: Register and sign in an owner.
       description: Sets a session cookie and returns a CSRF token. Verification email is queued after commit.
-        registration.
       security: []
       x-rate-limit: { limit: 10, window: 60, key: ip }
       requestBody:
@@ -93,7 +92,6 @@ paths:
       operationId: loginOwner
       summary: Sign in with email and password.
       description: Unknown emails and wrong passwords return identical responses; failed attempts also verify a dummy password.
-        reveals whether an address exists.
       security: []
       x-rate-limit: { limit: 10, window: 60, key: ip }
       requestBody:
@@ -150,7 +148,6 @@ paths:
       operationId: resolveSession
       summary: Get the current user, CSRF token, and expiry.
       description: Returns `401` when the session is invalid.
-        `401` rather than an empty user, so a client never has to interpret a null user.
       security: [{ sessionCookie: [] }]
       x-rate-limit: { limit: 120, window: 60, key: user }
       responses:
@@ -171,7 +168,6 @@ paths:
       operationId: requestPasswordReset
       summary: Request a password reset.
       description: Returns the same `202` for known and unknown emails; unknown addresses receive no email.
-        when the address is unknown, so it cannot be used to enumerate accounts.
       security: []
       x-rate-limit: { limit: 5, window: 3600, key: ip }
       requestBody:
@@ -198,7 +194,6 @@ paths:
       operationId: resetPassword
       summary: Reset a password with a token.
       description: The token expires after 60 minutes and is single-use. Success revokes other sessions. Google-only accounts are unsupported.
-        that do not have a password (Google-only).
       security: []
       x-rate-limit: { limit: 5, window: 3600, key: ip }
       requestBody:
@@ -239,7 +234,6 @@ paths:
       operationId: changePassword
       summary: Change the signed-in owner's password.
       description: Revokes other sessions. Google-only accounts are unsupported.
-        Not supported for Google-only accounts.
       security: [{ sessionCookie: [] }, { csrfToken: [] }]
       x-rate-limit: { limit: 120, window: 60, key: user }
       requestBody:
@@ -275,7 +269,6 @@ paths:
       operationId: verifyEmail
       summary: Verify an email address.
       description: Email verification is not required to use the product.
-        immediately.
       security: []
       x-rate-limit: { limit: 5, window: 3600, key: ip }
       parameters:
@@ -331,7 +324,6 @@ paths:
       operationId: oauthGoogleStart
       summary: Start Google sign-in.
       description: Starts OAuth with PKCE and state; returns the Google authorization URL.
-        Returns the authorization URL to redirect the user to Google.
       security: []
       x-rate-limit: { limit: 10, window: 60, key: ip }
       responses:
@@ -355,7 +347,6 @@ paths:
       operationId: oauthGoogleCallback
       summary: Complete Google sign-in.
       description: Validates OAuth state and the Google ID token, then creates or links the account and sets a session cookie. Provider conflicts return `409`; invalid state or tokens return `400`.
-        that fails signature or claim verification.
       security: []
       x-rate-limit: { limit: 10, window: 60, key: ip }
       parameters:
@@ -394,7 +385,6 @@ paths:
       operationId: deleteAccount
       summary: Delete the owner account and its data.
       description: Requires the password and email confirmation. Metadata is deleted immediately; stored files are cleaned up afterwards.
-        stored objects are removed afterwards by a cleanup job.
       security: [{ sessionCookie: [] }, { csrfToken: [] }]
       x-rate-limit: { limit: 120, window: 60, key: user }
       requestBody:
@@ -434,8 +424,6 @@ paths:
       operationId: listRequests
       summary: List the owner's requests and progress.
       description: Cursor-paginated by creation time, newest first. Other owners' requests are never exposed.
-
-        Another owner's request never appears, and no endpoint discloses that one exists.
       security: [{ sessionCookie: [] }]
       x-rate-limit: { limit: 120, window: 60, key: user }
       parameters:
@@ -460,7 +448,6 @@ paths:
       operationId: createRequest
       summary: Create a request and its items.
       description: The magic link is returned only in this response. Display it once and do not persist it client-side.
-        nowhere.
       security: [{ sessionCookie: [] }, { csrfToken: [] }]
       x-rate-limit: { limit: 120, window: 60, key: user }
       requestBody:
@@ -493,9 +480,6 @@ paths:
       operationId: showRequest
       summary: Get a request, its items, and download URLs.
       description: Other owners' requests return the same `404` as missing IDs. Download URLs expire after five minutes and are not cached.
-
-        Download URLs are presigned object-storage links valid for five minutes. They
-        are minted per view, carry `attachment` and `nosniff`, and are never cached.
       security: [{ sessionCookie: [] }]
       x-rate-limit: { limit: 120, window: 60, key: user }
       responses:
@@ -517,8 +501,6 @@ paths:
       operationId: deleteRequest
       summary: Delete a request and its files.
       description: Invalidates the magic link and schedules stored-file cleanup. This action is irreversible.
-
-        This is irreversible, and the response does not wait for object deletion.
       security: [{ sessionCookie: [] }, { csrfToken: [] }]
       x-rate-limit: { limit: 120, window: 60, key: user }
       responses:
@@ -541,9 +523,6 @@ paths:
       operationId: revokeMagicLink
       summary: Revoke a request's magic link.
       description: Idempotent and permanent. The owner can still view the request and files; the link cannot be restored.
-
-        Revocation is permanent. There is no un-revoke and no regeneration, so a new
-        request is the only way forward.
       security: [{ sessionCookie: [] }, { csrfToken: [] }]
       x-rate-limit: { limit: 120, window: 60, key: user }
       responses:
@@ -571,13 +550,6 @@ paths:
       operationId: deleteDocument
       summary: Delete an uploaded document.
       description: The item returns to `waiting`, so derived progress may decrease. Foreign items and items without a file return `404`.
-
-        The item must belong to the request in the path, so a foreign `itemId` is `404`.
-        An item with no document is also `404`, so a repeated call is not a second delete.
-
-        The row is removed first and the object afterwards, with deletion retried from a
-        queue if the storage call fails. Progress therefore moves backwards, because it is
-        derived rather than stored.
       security: [{ sessionCookie: [] }, { csrfToken: [] }]
       x-rate-limit: { limit: 120, window: 60, key: user }
       responses:
@@ -598,13 +570,6 @@ paths:
       operationId: showPortal
       summary: Open the client portal with a magic link.
       description: No cookie or CSRF token is used. Invalid, expired, revoked, or malformed links return the same `410`. Never log the token; responses use `Referrer-Policy: no-referrer`.
-
-        Unknown, malformed, expired, revoked, and tampered links all return one
-        identical `410` body, so a caller cannot tell a wrong link from a dead one or
-        confirm that a request ever existed. A malformed token is rejected before any
-        database query.
-
-        The token is a secret. Do not log it, and send `Referrer-Policy: no-referrer`.
       security: []
       x-rate-limit: { limit: 60, window: 60, key: ip }
       parameters:
@@ -637,12 +602,6 @@ paths:
       operationId: uploadPortalFile
       summary: Upload a file for one portal item.
       description: Authorization is checked before reading the body. Each item accepts one file; duplicates return `409`. Uploads are not resumable.
-
-        One file per item: a second upload to the same item is `409`, and the first
-        file is kept. The size cap is enforced while streaming, so an oversized body is
-        rejected before it is buffered.
-
-        Uploads are not resumable. A transfer that fails must start again from zero.
       security: []
       x-rate-limit: { limit: 30, window: 3600, key: ip }
       parameters:
