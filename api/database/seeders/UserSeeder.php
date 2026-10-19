@@ -20,7 +20,7 @@ class UserSeeder extends Seeder
         User::factory()->create([
             'name'     => 'Alex Nouri',
             'email'    => 'alex@example.com',
-            'password' => 'alex@example.com',
+            'password' => 'alex7890',
         ]);
     }
 }
