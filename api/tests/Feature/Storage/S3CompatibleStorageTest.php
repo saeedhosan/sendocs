@@ -47,7 +47,7 @@ test('signs download URLs with the browser-facing endpoint', function (): void {
         'filesystems.disks.s3-browser.secret'                  => 'test-secret-key',
         'filesystems.disks.s3-browser.region'                  => 'us-east-1',
         'filesystems.disks.s3-browser.bucket'                  => 'sendocs-private',
-        'filesystems.disks.s3-browser.endpoint'                => 'http://localhost:9000',
+        'filesystems.disks.s3-browser.endpoint'                => 'https://storage.example.test',
         'filesystems.disks.s3-browser.use_path_style_endpoint' => true,
     ]);
 
@@ -62,7 +62,7 @@ test('signs download URLs with the browser-facing endpoint', function (): void {
     $url = app(DocumentDownloadUrl::class)->for($document);
 
     expect($url)
-        ->toStartWith('http://localhost:9000/sendocs-private/requests/request/document.pdf?')
+        ->toStartWith('https://storage.example.test/sendocs-private/requests/request/document.pdf?')
         ->toContain('X-Amz-Algorithm=AWS4-HMAC-SHA256')
         ->toContain('X-Amz-Expires=300');
 });
