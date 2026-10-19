@@ -1,78 +1,41 @@
-name: Deploy API documentation
+name: Deploy API docs
 
 on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+    push:
+        branches:
+            - main
+    workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+    contents: read
+    pages: write
+    id-token: write
 
 concurrency:
-  group: api-docs-pages
-  cancel-in-progress: false
+    group: api-docs-pages
+    cancel-in-progress: false
 
 jobs:
-  build:
-    name: Build API reference
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    environment: production
-    env:
-      API_URL: ${{ secrets.API_URL }}
+    deploy:
+        name: Publish API reference
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
 
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
+        steps:
+            - name: Check out repository
+              uses: actions/checkout@v4
 
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
+            - name: Configure GitHub Pages
+              uses: actions/configure-pages@v5
 
-      - name: Render the deployed API server URL
-        run: |
-          python3 - <<'PY'
-          import os
-          from pathlib import Path
-          from shutil import copytree
-          from urllib.parse import urlparse
+            - name: Upload API documentation
+              uses: actions/upload-pages-artifact@v3
+              with:
+                  path: api/docs
 
-          api_url = os.environ.get("API_URL", "").strip().rstrip("/")
-          parsed = urlparse(api_url)
-          if parsed.scheme not in {"http", "https"} or not parsed.netloc:
-              raise SystemExit("API_URL must be a valid absolute HTTP(S) URL.")
-
-          source = Path("api/docs")
-          output = Path("_site")
-          copytree(source, output)
-
-          openapi = output / "openapi.yaml"
-          content = openapi.read_text()
-          local_server = "url: http://127.0.0.1:8000"
-          if content.count(local_server) != 1:
-              raise SystemExit("Expected exactly one local OpenAPI server URL to replace.")
-
-          openapi.write_text(content.replace(local_server, f"url: {api_url}", 1))
-          print(f"Rendered OpenAPI server URL: {api_url}")
-          PY
-
-      - name: Upload API documentation
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: _site
-
-  deploy:
-    name: Publish API reference
-    needs: build
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+            - name: Deploy to GitHub Pages
+              id: deployment
+              uses: actions/deploy-pages@v4
