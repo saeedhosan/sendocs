@@ -17,7 +17,10 @@ docker compose up -d             # start production services
 - Set `WEB_BIND=0.0.0.0` to expose publicly; `API_BIND=0.0.0.0` only to reach the API directly.
 - Set `APP_KEY` to a production value, never the development key.
 - Set `S3_BROWSER_ENDPOINT` to the HTTPS S3 API endpoint that clients' browsers can reach (for example, `https://storage.example.com`). Compose passes it to Laravel as `AWS_BROWSER_ENDPOINT`; when deploying the API outside Compose, set `AWS_BROWSER_ENDPOINT` directly in the API environment.
-- Route that HTTPS hostname to the S3 API, preserving the host used in the signed URL. Keep the bucket private and the RustFS console private; do not use the internal Docker hostname in browser URLs.
+- Route that HTTPS hostname only to RustFS port `9000` (the S3 API). Never proxy or publish port `9001` (the management console). Keep both host ports bound to loopback and block direct public access to them; the HTTPS reverse proxy is the only public path to the storage API.
+- Configure the storage proxy with TLS and preserve the host/path used in the signature. Do not log full request targets or query strings on this hostname: presigned URLs contain bearer credentials. Disable access logging for the storage virtual host or use a log format containing only the path (for example, Nginx `$uri`, not `$request` or `$request_uri`). Keep query strings out of error reporting and application logs too.
+- The `sendocs-private` bucket is dedicated to client documents. Startup initialization applies a private bucket ACL and removes bucket policies. Do not attach public-read ACLs or public bucket policies. A signed URL is the only intended browser access path.
+- Laravel must load and owner-scope the request before serializing download URLs. Do not add an endpoint that signs an arbitrary storage key or document ID without the same ownership check.
 
 ## Compose Variables
 
