@@ -197,9 +197,13 @@ services:
                   fi
                   sleep 2
               done
-              if ! aws --endpoint-url "$$AWS_ENDPOINT" s3api head-bucket --bucket "$$AWS_BUCKET" >/dev/null 2>&1; then
-                  aws --endpoint-url "$$AWS_ENDPOINT" s3api create-bucket --bucket "$$AWS_BUCKET"
+              if ! aws --endpoint-url "$AWS_ENDPOINT" s3api head-bucket --bucket "$AWS_BUCKET" >/dev/null 2>&1; then
+                  aws --endpoint-url "$AWS_ENDPOINT" s3api create-bucket --bucket "$AWS_BUCKET" --acl private
               fi
+              # This bucket is dedicated to private client documents. Reset its ACL
+              # and remove bucket policies so objects cannot be made public by policy.
+              aws --endpoint-url "$AWS_ENDPOINT" s3api put-bucket-acl --bucket "$AWS_BUCKET" --acl private
+              aws --endpoint-url "$AWS_ENDPOINT" s3api delete-bucket-policy --bucket "$AWS_BUCKET" >/dev/null 2>&1 || true
         environment:
             AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-sendocs-local-access}
             AWS_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:-local-only-change-this-secret}
