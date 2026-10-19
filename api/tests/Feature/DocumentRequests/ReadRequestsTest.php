@@ -196,3 +196,55 @@ test('includes a signed download URL for uploaded documents', function (): void 
         ->assertOk()
         ->assertJsonPath('items.0.document.downloadUrl', 'https://storage.example.test/signed');
 });
+
+test('requires authentication before exposing document download URLs', function (): void {
+    $otherOwner = User::factory()->create();
+    $request    = makeDocumentRequest($otherOwner, 'Private files', 1);
+    $item       = $request->items()->firstOrFail();
+
+    $item->document()->create([
+        'storage_key'   => 'requests/'.$request->getKey().'/private.pdf',
+        'original_name' => 'private.pdf',
+        'mime_type'     => 'application/pdf',
+        'size_bytes'    => 1024,
+        'sha256'        => hash('sha256', 'pdf'),
+        'uploaded_at'   => now(),
+    ]);
+
+    Storage::shouldReceive('disk')->never();
+
+    test()->getJson("/api/v1/requests/{$request->getKey()}")
+        ->assertUnauthorized();
+});
+
+test('does not generate a signed download URL for another owners document', function (): void {
+    $owner      = User::factory()->create();
+    $otherOwner = User::factory()->create();
+    $request    = makeDocumentRequest($otherOwner, 'Other owners files', 1);
+    $item       = $request->items()->firstOrFail();
+
+    $item->document()->create([
+        'storage_key'   => 'requests/'.$request->getKey().'/private.pdf',
+        'original_name' => 'private.pdf',
+        'mime_type'     => 'application/pdf',
+        'size_bytes'    => 1024,
+        'sha256'        => hash('sha256', 'pdf'),
+        'uploaded_at'   => now(),
+    ]);
+
+    Storage::shouldReceive('disk')->never();
+
+    app(SessionService::class)->issue($owner);
+    test()->withCredentials();
+    useDevice(queuedSessionToken());
+
+    test()->getJson("/api/v1/requests/{$request->getKey()}")
+        ->assertNotFound()
+        ->assertExactJson([
+            'error' => [
+                'code'    => 'not_found',
+                'message' => 'Not found.',
+            ],
+        ]);
+});
+
