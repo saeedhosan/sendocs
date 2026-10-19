@@ -3,27 +3,17 @@ openapi: 3.1.0
 info:
   title: API documentation
   version: "1.0.0"
-  summary: Owner session API and client magic-link API, served from one origin.
+  summary: Owner session and client magic-link APIs.
   description: |
-    Two credentials that never intersect.
+    Owner routes use a session cookie and require `X-CSRF-Token` for state changes.
+    Portal routes use the magic link in the path and set no cookie.
 
-    Owner routes require a session cookie, plus an `X-CSRF-Token` header on every
-    state-changing request. Portal routes carry the magic link in the path and set no
-    cookie, so they take no CSRF token either.
+    Errors use `{ "error": { "code": "...", "message": "...", "details": {} } }`.
+    `details` appears only for validation errors.
 
-    Every error uses one envelope:
+    ## Limits
 
-    ```json
-    { "error": { "code": "validation_failed", "message": "…", "details": {} } }
-    ```
-
-    `code` is stable and machine-readable. `message` is human-readable. `details`
-    appears only on validation failures.
-
-    ## Published limits
-
-    This document is the single source for the numbers a client is allowed to check
-    before acting.
+    These limits define the API contract.
 
     | Limit | Value |
     | --- | --- |
@@ -34,14 +24,14 @@ info:
     | Accepted types | PDF, JPEG, PNG, DOCX, XLSX, CSV, TXT |
     | Page size | `limit` defaults to 20, capped at 100 |
     | Magic-link expiry | 14 days default, 90 days maximum |
-    | Password length | 12 to 200 characters |
+    | Password length | 8 to 200 characters |
 
     A type is decided by sniffing the content, never by the `Content-Type` header, and
     the sniffed type must agree with the file extension.
 
 servers:
   - url: http://127.0.0.1:8000
-    description: One origin serves the UI and the API.
+    description: API base URL.
 
 tags:
   - name: Health
@@ -54,8 +44,8 @@ paths:
     get:
       tags: [Health]
       operationId: health
-      summary: Liveness and readiness check.
-      description: Used by the deploy pipeline after a release.
+      summary: Check application health.
+      description: Used after deployment.
       security: []
       responses:
         "200":
@@ -69,11 +59,8 @@ paths:
     post:
       tags: [Owner Authentication]
       operationId: registerOwner
-      summary: Create an owner account and sign it in.
-      description: |
-        Sets the session cookie and returns a CSRF token. The verification email is
-        dispatched from the queue after commit, so it is never sent for a rolled-back
-        registration.
+      summary: Register and sign in an owner.
+      description: Sets a session cookie and returns a CSRF token. Verification email is queued after commit.
       security: []
       x-rate-limit: { limit: 10, window: 60, key: ip }
       requestBody:
@@ -103,11 +90,8 @@ paths:
     post:
       tags: [Owner Authentication]
       operationId: loginOwner
-      summary: Exchange credentials for a session cookie.
-      description: |
-        A wrong password and an unknown address return byte-identical bodies, and a
-        failed attempt still runs a dummy password verification, so timing never
-        reveals whether an address exists.
+      summary: Sign in with email and password.
+      description: Unknown emails and wrong passwords return identical responses; failed attempts also verify a dummy password.
       security: []
       x-rate-limit: { limit: 10, window: 60, key: ip }
       requestBody:
@@ -137,8 +121,8 @@ paths:
     post:
       tags: [Owner Authentication]
       operationId: logoutOwner
-      summary: Destroy the current session.
-      description: The session row is deleted, so the old cookie is inert afterwards.
+      summary: Sign out and invalidate the session.
+      description: Deletes the session; the old cookie no longer works.
       security: [{ sessionCookie: [] }, { csrfToken: [] }]
       x-rate-limit: { limit: 120, window: 60, key: user }
       responses:
@@ -162,10 +146,8 @@ paths:
     get:
       tags: [Owner Authentication]
       operationId: resolveSession
-      summary: Resolve the caller, CSRF token, and session expiry.
-      description: |
-        The only unauthenticated-shaped read that touches the session itself. It returns
-        `401` rather than an empty user, so a client never has to interpret a null user.
+      summary: Get the current user, CSRF token, and expiry.
+      description: Returns `401` when the session is invalid.
       security: [{ sessionCookie: [] }]
       x-rate-limit: { limit: 120, window: 60, key: user }
       responses:
@@ -184,10 +166,8 @@ paths:
     post:
       tags: [Owner Authentication]
       operationId: requestPasswordReset
-      summary: Send a reset link to the address on file.
-      description: |
-        Returns an identical `202` for known and unknown addresses, and sends nothing
-        when the address is unknown, so it cannot be used to enumerate accounts.
+      summary: Request a password reset.
+      description: Returns the same `202` for known and unknown emails; unknown addresses receive no email.
       security: []
       x-rate-limit: { limit: 5, window: 3600, key: ip }
       requestBody:
@@ -212,11 +192,8 @@ paths:
     post:
       tags: [Owner Authentication]
       operationId: resetPassword
-      summary: Redeem a reset token and set a new password.
-      description: |
-        The token is single-use and expires after 60 minutes. On success every other
-        session for that owner is revoked. Password reset is not supported for accounts
-        that do not have a password (Google-only).
+      summary: Reset a password with a token.
+      description: The token expires after 60 minutes and is single-use. Success revokes other sessions. Google-only accounts are unsupported.
       security: []
       x-rate-limit: { limit: 5, window: 3600, key: ip }
       requestBody:
@@ -229,7 +206,7 @@ paths:
               properties:
                 token:
                   type: string
-                  description: The raw token from the emailed link. Never logged.
+                  description: Single-use token from the email link. Never log it.
                 password:
                   $ref: "#/components/schemas/Password"
       responses:
@@ -255,10 +232,8 @@ paths:
     post:
       tags: [Owner Authentication]
       operationId: changePassword
-      summary: Change the password while signed in.
-      description: |
-        Revokes every other session for the owner on success.
-        Not supported for Google-only accounts.
+      summary: Change the signed-in owner's password.
+      description: Revokes other sessions. Google-only accounts are unsupported.
       security: [{ sessionCookie: [] }, { csrfToken: [] }]
       x-rate-limit: { limit: 120, window: 60, key: user }
       requestBody:
@@ -292,10 +267,8 @@ paths:
     get:
       tags: [Owner Authentication]
       operationId: verifyEmail
-      summary: Redeem a verification token from the email link.
-      description: |
-        Verification gates nothing today: an unverified owner can use the product
-        immediately.
+      summary: Verify an email address.
+      description: Email verification is not required to use the product.
       security: []
       x-rate-limit: { limit: 5, window: 3600, key: ip }
       parameters:
@@ -331,8 +304,8 @@ paths:
     post:
       tags: [Owner Authentication]
       operationId: resendVerification
-      summary: Send a new verification link.
-      description: Dispatch is queued, so a lost job is recoverable by resending.
+      summary: Resend the verification email.
+      description: Queued for delivery.
       security: [{ sessionCookie: [] }, { csrfToken: [] }]
       x-rate-limit: { limit: 5, window: 3600, key: user }
       responses:
@@ -349,10 +322,8 @@ paths:
     get:
       tags: [Owner Authentication]
       operationId: oauthGoogleStart
-      summary: Initiate Google OAuth.
-      description: |
-        Starts the Google OAuth 2.0 Authorization Code flow with PKCE and state.
-        Returns the authorization URL to redirect the user to Google.
+      summary: Start Google sign-in.
+      description: Starts OAuth with PKCE and state; returns the Google authorization URL.
       security: []
       x-rate-limit: { limit: 10, window: 60, key: ip }
       responses:
@@ -374,13 +345,8 @@ paths:
     get:
       tags: [Owner Authentication]
       operationId: oauthGoogleCallback
-      summary: Handle Google OAuth callback.
-      description: |
-        Exchanges the authorization code for tokens, verifies the Google ID token,
-        and creates or links the account. On success, sets the session cookie.
-        If an email exists under a different provider, returns 409.
-        A missing, expired, or already-used state returns 400, as does any token
-        that fails signature or claim verification.
+      summary: Complete Google sign-in.
+      description: Validates OAuth state and the Google ID token, then creates or links the account and sets a session cookie. Provider conflicts return `409`; invalid state or tokens return `400`.
       security: []
       x-rate-limit: { limit: 10, window: 60, key: ip }
       parameters:
@@ -417,11 +383,8 @@ paths:
     delete:
       tags: [Owner Authentication]
       operationId: deleteAccount
-      summary: Delete the owner account and everything it owns.
-      description: |
-        Requires the password and the address typed as confirmation, so a replayed
-        request cannot trigger it. Metadata is removed in one cascading statement;
-        stored objects are removed afterwards by a cleanup job.
+      summary: Delete the owner account and its data.
+      description: Requires the password and email confirmation. Metadata is deleted immediately; stored files are cleaned up afterwards.
       security: [{ sessionCookie: [] }, { csrfToken: [] }]
       x-rate-limit: { limit: 120, window: 60, key: user }
       requestBody:
@@ -459,13 +422,8 @@ paths:
     get:
       tags: [Document Requests]
       operationId: listRequests
-      summary: List the caller's own requests with progress.
-      description: |
-        Cursor-paginated on creation time descending. Every request in the page carries
-        its own counts, so the list costs one additional grouped query per page and
-        never one query per row.
-
-        Another owner's request never appears, and no endpoint discloses that one exists.
+      summary: List the owner's requests and progress.
+      description: Cursor-paginated by creation time, newest first. Other owners' requests are never exposed.
       security: [{ sessionCookie: [] }]
       x-rate-limit: { limit: 120, window: 60, key: user }
       parameters:
@@ -488,11 +446,8 @@ paths:
     post:
       tags: [Document Requests]
       operationId: createRequest
-      summary: Create a request with its required items.
-      description: |
-        The response carries the magic link exactly once. It is never returned by any
-        other endpoint, so a client must render it from this response and persist it
-        nowhere.
+      summary: Create a request and its items.
+      description: The magic link is returned only in this response. Display it once and do not persist it client-side.
       security: [{ sessionCookie: [] }, { csrfToken: [] }]
       x-rate-limit: { limit: 120, window: 60, key: user }
       requestBody:
@@ -523,13 +478,8 @@ paths:
     get:
       tags: [Document Requests]
       operationId: showRequest
-      summary: One request with its items and signed download URLs.
-      description: |
-        A request owned by another owner returns `404` with a body identical to a
-        nonexistent id, so existence is never disclosed.
-
-        Download URLs are presigned object-storage links valid for five minutes. They
-        are minted per view, carry `attachment` and `nosniff`, and are never cached.
+      summary: Get a request, its items, and download URLs.
+      description: Other owners' requests return the same `404` as missing IDs. Download URLs expire after five minutes and are not cached.
       security: [{ sessionCookie: [] }]
       x-rate-limit: { limit: 120, window: 60, key: user }
       responses:
@@ -549,13 +499,8 @@ paths:
     delete:
       tags: [Document Requests]
       operationId: deleteRequest
-      summary: Delete the request and every file in it.
-      description: |
-        Metadata is removed in one cascading statement, so deleting the row also
-        invalidates the magic link. Stored objects are deleted after the commit and
-        retried from a queue if that fails.
-
-        This is irreversible, and the response does not wait for object deletion.
+      summary: Delete a request and its files.
+      description: Invalidates the magic link and schedules stored-file cleanup. This action is irreversible.
       security: [{ sessionCookie: [] }, { csrfToken: [] }]
       x-rate-limit: { limit: 120, window: 60, key: user }
       responses:
@@ -576,13 +521,8 @@ paths:
     post:
       tags: [Document Requests]
       operationId: revokeMagicLink
-      summary: Revoke the client magic link.
-      description: |
-        Idempotent: a second call returns the same `200`. The request row stays, so the
-        owner keeps reading it and downloading its files.
-
-        Revocation is permanent. There is no un-revoke and no regeneration, so a new
-        request is the only way forward.
+      summary: Revoke a request's magic link.
+      description: Idempotent and permanent. The owner can still view the request and files; the link cannot be restored.
       security: [{ sessionCookie: [] }, { csrfToken: [] }]
       x-rate-limit: { limit: 120, window: 60, key: user }
       responses:
@@ -608,17 +548,8 @@ paths:
     delete:
       tags: [Document Requests]
       operationId: deleteDocument
-      summary: Delete one uploaded document.
-      description: |
-        The owner's recovery path for a mis-uploaded or unwanted file: the item returns
-        to `waiting`, so the client can upload it again.
-
-        The item must belong to the request in the path, so a foreign `itemId` is `404`.
-        An item with no document is also `404`, so a repeated call is not a second delete.
-
-        The row is removed first and the object afterwards, with deletion retried from a
-        queue if the storage call fails. Progress therefore moves backwards, because it is
-        derived rather than stored.
+      summary: Delete an uploaded document.
+      description: The item returns to `waiting`, so derived progress may decrease. Foreign items and items without a file return `404`.
       security: [{ sessionCookie: [] }, { csrfToken: [] }]
       x-rate-limit: { limit: 120, window: 60, key: user }
       responses:
@@ -637,17 +568,8 @@ paths:
     get:
       tags: [Client Portal]
       operationId: showPortal
-      summary: Authenticate a client by magic link and return the portal view.
-      description: |
-        The link is the whole credential: there is no cookie, no session, and no CSRF
-        token in this surface.
-
-        Unknown, malformed, expired, revoked, and tampered links all return one
-        identical `410` body, so a caller cannot tell a wrong link from a dead one or
-        confirm that a request ever existed. A malformed token is rejected before any
-        database query.
-
-        The token is a secret. Do not log it, and send `Referrer-Policy: no-referrer`.
+      summary: Open the client portal with a magic link.
+      description: No cookie or CSRF token is used. Invalid, expired, revoked, or malformed links return the same `410`. Never log the token; responses use `Referrer-Policy: no-referrer`.
       security: []
       x-rate-limit: { limit: 60, window: 60, key: ip }
       parameters:
@@ -678,16 +600,8 @@ paths:
     post:
       tags: [Client Portal]
       operationId: uploadPortalFile
-      summary: Upload one file for one required item.
-      description: |
-        Authorization is settled before a single body byte is read, so a dead link
-        cannot probe the upload path or the size limit.
-
-        One file per item: a second upload to the same item is `409`, and the first
-        file is kept. The size cap is enforced while streaming, so an oversized body is
-        rejected before it is buffered.
-
-        Uploads are not resumable. A transfer that fails must start again from zero.
+      summary: Upload a file for one portal item.
+      description: Authorization is checked before reading the body. Each item accepts one file; duplicates return `409`. Uploads are not resumable.
       security: []
       x-rate-limit: { limit: 30, window: 3600, key: ip }
       parameters:
@@ -748,11 +662,11 @@ components:
 
   headers:
     SessionCookie:
-      description: The opaque session cookie, set on register, login, and password reset.
+      description: Opaque session cookie set on registration, login, and password reset.
       schema:
         type: string
     RetryAfter:
-      description: Whole seconds to wait before retrying.
+      description: Seconds to wait before retrying.
       schema:
         type: integer
         minimum: 0
@@ -769,7 +683,7 @@ components:
       name: itemId
       in: path
       required: true
-      description: Scoped by the request resolved from the same token.
+      description: Scoped to the request identified by the same token.
       schema:
         type: string
         format: uuid
@@ -800,7 +714,7 @@ components:
       name: cursor
       in: query
       required: false
-      description: Opaque, encodes the last seen `created_at` and `id`. A tampered cursor is `422`.
+      description: Opaque cursor for the last seen `created_at` and `id`; tampering returns `422`.
       schema:
         type: string
 
@@ -838,7 +752,7 @@ components:
               code: csrf_failed
               message: Refresh the page and try again.
     NotFound:
-      description: Missing, or owned by another caller. The body never distinguishes the two.
+      description: Missing or owned by another caller; both return the same body.
       content:
         application/json:
           schema:
@@ -848,9 +762,7 @@ components:
               code: not_found
               message: Not found.
     InvalidLink:
-      description: |
-        Magic link unknown, malformed, expired, revoked, or tampered. One identical body covers all
-        four cases.
+      description: Unknown, malformed, expired, or revoked magic link. All cases return the same body.
       content:
         application/json:
           schema:
@@ -940,7 +852,7 @@ components:
               code: unsupported_type
               message: That file type is not accepted.
     ValidationFailed:
-      description: Field-level failure, with a `details` map keyed by field name.
+      description: Validation errors include a `details` map keyed by field.
       content:
         application/json:
           schema:
@@ -952,7 +864,7 @@ components:
               details:
                 items: "Between 1 and 10 items are required."
     RateLimited:
-      description: The bucket for this operation is exhausted.
+      description: Rate limit exceeded.
       headers:
         Retry-After:
           $ref: "#/components/headers/RetryAfter"
@@ -965,7 +877,7 @@ components:
               code: rate_limited
               message: Too many requests. Try again shortly.
     InternalError:
-      description: Unexpected failure. The response never includes internal details.
+      description: Unexpected error; internal details are never returned.
       content:
         application/json:
           schema:
@@ -986,14 +898,14 @@ components:
           properties:
             code:
               type: string
-              description: Stable, machine-readable error code.
+              description: Stable machine-readable code.
             message:
               type: string
-              description: Human-readable summary.
+              description: Human-readable message.
             details:
               type: object
               additionalProperties: true
-              description: Present only on validation failures, keyed by field name.
+              description: Field errors, present only for validation failures.
 
     ValidationError:
       allOf:
@@ -1021,14 +933,14 @@ components:
       type: string
       format: email
       maxLength: 254
-      description: Trimmed and lowercased before comparison.
+      description: Trimmed and lowercased.
 
     Password:
       type: string
       format: password
       minLength: 8
       maxLength: 200
-      description: Length is the only rule. No composition requirements.
+      description: Length only; no character-composition rules.
 
     User:
       type: object
@@ -1045,7 +957,7 @@ components:
         emailVerifiedAt:
           type: string
           format: date-time
-          description: Null while unverified. Verification gates nothing today.
+          description: Null until verified; verification is not required to use the product.
 
     SessionPayload:
       type: object
@@ -1106,12 +1018,12 @@ components:
           type: string
           minLength: 1
           maxLength: 200
-          description: Trimmed, whitespace collapsed, and an all-whitespace title is `422`.
+          description: Trimmed and whitespace-collapsed; blank titles return `422`.
         items:
           type: array
           minItems: 1
           maxItems: 10
-          description: Labels in display order. Duplicate labels are allowed.
+          description: Labels in display order; duplicates are allowed.
           items:
             type: object
             required: [label]
@@ -1120,7 +1032,7 @@ components:
                 type: string
                 minLength: 1
                 maxLength: 200
-                description: Trimmed; an empty label is `422`.
+                description: Trimmed; blank labels return `422`.
 
     MagicLink:
       type: object
@@ -1161,7 +1073,7 @@ components:
           type: string
           format: date-time
           nullable: true
-          description: Newest upload, or null when nothing has been uploaded.
+          description: Latest upload, or null if none.
         createdAt:
           type: string
           format: date-time
@@ -1183,10 +1095,10 @@ components:
         originalName:
           type: string
           maxLength: 255
-          description: Display only. Never used to build a path or a storage key.
+          description: Display only; never used in paths or storage keys.
         mimeType:
           type: string
-          description: Sniffed from content, never taken from the request header.
+          description: Detected from file content, not the request header.
         sizeBytes:
           type: integer
           minimum: 1
@@ -1290,7 +1202,7 @@ components:
         nextCursor:
           type: string
           nullable: true
-          description: Absent or null on the last page.
+          description: Null on the last page.
 
     PortalView:
       type: object
@@ -1300,7 +1212,7 @@ components:
         title:
           type: string
           maxLength: 200
-          description: Owner-written text. Render as text, never as markup.
+          description: Owner-written text; render as text, not markup.
         status:
           $ref: "#/components/schemas/ProgressStatus"
         uploaded:
@@ -1319,12 +1231,12 @@ components:
         expiresAt:
           type: string
           format: date-time
-          description: Shown to the client, since the link stops working at this moment.
+          description: Time when the link expires.
         items:
           type: array
           minItems: 1
           maxItems: 10
-          description: Every item, uploaded or not, so a client never infers a missing row.
+          description: Includes all items, whether uploaded or not.
           items:
             $ref: "#/components/schemas/PortalItem"
 
@@ -1342,7 +1254,7 @@ components:
         label:
           type: string
           maxLength: 200
-          description: Owner-written text. Treat as untrusted input and insert it as a text node.
+          description: Untrusted owner text; render as a text node.
         position:
           type: integer
           minimum: 1
@@ -1358,7 +1270,7 @@ components:
                 originalName:
                   type: string
                   maxLength: 255
-                  description: Display only, never used to build a path or a key.
+                  description: Display only; never used in paths or keys.
                 sizeBytes:
                   type: integer
                   minimum: 1
