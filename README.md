@@ -30,6 +30,15 @@ Try the live Sendocs preview at [sendocs.saeedhosan.com](https://sendocs.saeedho
 
 _This is a demo environment. Please avoid uploading sensitive or real client documents._
 
+Demo credentials:
+
+```txt
+Email: alex@example.com
+Password: alex7890
+```
+
+Browse the application's interface in the [screenshots](./docs/screenshots/).
+
 ## Architecture
 
 The React (web) app and API are separate parts of the same repository. PostgreSQL stores application records; file contents are handled separately by the private object storage.
@@ -47,7 +56,6 @@ The React (web) app and API are separate parts of the same repository. PostgreSQ
 
 ## Documentation Guide
 
-
 - [Design](docs/design.md) — system scope, data, architecture, deployment.
 - [Decisions](docs/decisions.md) — architectural choices and their reasoning.
 - [Frontend](docs/frontend.md) — shared React rendering and data handling.
@@ -55,7 +63,6 @@ The React (web) app and API are separate parts of the same repository. PostgreSQ
 - [API reference](https://saeedhosan.github.io/sendocs/) — browse endpoints, schemas, and responses.
 - [OpenAPI contract](api/docs/openapi.yaml) — the source specification used to generate the reference.
 
-  
 ## Tech Stack
 
 | Layer              | Technologies                                    |
