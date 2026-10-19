@@ -569,7 +569,10 @@ paths:
       tags: [Client Portal]
       operationId: showPortal
       summary: Open the client portal with a magic link.
-      description: No cookie or CSRF token is used. Invalid, expired, revoked, or malformed links return the same `410`. Never log the token; responses use `Referrer-Policy: no-referrer`.
+      description: |
+        No cookie or CSRF token is used. Invalid, expired, revoked, or malformed links
+        return the same `410`. Never log the token; responses use
+        `Referrer-Policy: no-referrer`.
       security: []
       x-rate-limit: { limit: 60, window: 60, key: ip }
       parameters:
