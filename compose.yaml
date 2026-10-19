@@ -57,6 +57,7 @@ services:
             AWS_DEFAULT_REGION: ${S3_REGION:-us-east-1}
             AWS_BUCKET: ${S3_BUCKET:-sendocs-private}
             AWS_ENDPOINT: http://rustfs:9000
+            AWS_BROWSER_ENDPOINT: ${S3_BROWSER_ENDPOINT:-http://localhost:9000}
             AWS_USE_PATH_STYLE_ENDPOINT: "true"
         ports:
             - "${API_BIND:-127.0.0.1}:${API_PORT:-8000}:8000"
