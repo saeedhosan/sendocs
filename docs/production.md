@@ -22,15 +22,15 @@ docker compose up -d             # start production services
 
 Compose reads these from the root `.env`; the application does not.
 
-| Variable        | Default     | Purpose                                        |
-| :-------------- | :---------- | :--------------------------------------------- |
-| `API_TARGET`    | `dev`       | Dockerfile stage built for the API and worker  |
-| `WEB_TARGET`    | `dev`       | Dockerfile stage built for the web service     |
-| `WEB_BIND`      | `127.0.0.1` | Address the published web port binds to        |
-| `WEB_PORT`      | `3000`      | Port published for the web service             |
-| `API_BIND`      | `127.0.0.1` | Address the published API port binds to        |
-| `API_PORT`      | `8000`      | Port published for the API                     |
-| `POSTGRES_BIND` | `127.0.0.1` | Address the published PostgreSQL port binds to |
+| Variable              | Default                 | Purpose                                                                                    |
+| :-------------------- | :---------------------- | :----------------------------------------------------------------------------------------- |
+| `API_TARGET`          | `dev`                   | Dockerfile stage built for the API and worker                                              |
+| `WEB_TARGET`          | `dev`                   | Dockerfile stage built for the web service                                                 |
+| `WEB_BIND`            | `127.0.0.1`             | Address the published web port binds to                                                    |
+| `WEB_PORT`            | `3000`                  | Port published for the web service                                                         |
+| `API_BIND`            | `127.0.0.1`             | Address the published API port binds to                                                    |
+| `API_PORT`            | `8000`                  | Port published for the API                                                                 |
+| `POSTGRES_BIND`       | `127.0.0.1`             | Address the published PostgreSQL port binds to                                             |
 | `S3_BROWSER_ENDPOINT` | `http://localhost:9000` | Browser-reachable S3 endpoint used when signing downloads; HTTPS is required in production |
 
 ## Deployment
@@ -41,10 +41,6 @@ Two environments deploy over GitHub Actions using a cPanel SSH/SCP model.
 | :---------- | :---------------------------------- | :----------------------------- |
 | Stage       | push to `stage`, or manual dispatch | `.github/workflows/stage.yml`  |
 | Production  | `v*` tag contained in `main`        | `.github/workflows/deploy.yml` |
-
-The published [API reference](https://saeedhosan.github.io/sendocs/) is built by `.github/workflows/docs.yml`. 
-Its build job reads `API_URL` from the `production` GitHub Actions environment and substitutes. 
-The source contract keeps `http://127.0.0.1:8000` for local development; the workflow does not modify the source file.
 
 Configure these secrets per environment under **Settings → Environments**:
 
