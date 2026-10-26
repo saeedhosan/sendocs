@@ -165,6 +165,8 @@ test('returns not found for an unknown request', function (): void {
 });
 
 test('includes a signed download URL for uploaded documents', function (): void {
+    config(['filesystems.default' => 's3']);
+
     $owner   = User::factory()->create();
     $request = makeDocumentRequest($owner, 'Tax Documents', 1);
     $item    = $request->items()->firstOrFail();
