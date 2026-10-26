@@ -13,11 +13,17 @@ final class DocumentDownloadUrl
 
     public function for(Document $document): string
     {
-        return Storage::disk('s3-browser')->temporaryUrl(
+        // S3-compatible storage signs URLs with the browser-reachable endpoint.
+        // Local storage signs an application URL and must not initialize an S3 client.
+        $disk = config('filesystems.default') === 's3'
+            ? Storage::disk('s3-browser')
+            : Storage::disk();
+
+        return $disk->temporaryUrl(
             $document->storage_key,
             now()->addMinutes(self::TTL_MINUTES),
             [
-                'ResponseContentDisposition' => 'attachment; filename="'.addcslashes($document->original_name, '\\"').'"',
+                'ResponseContentDisposition' => 'attachment; filename="'.addcslashes($document->original_name, '\\\"').'"',
                 'ResponseContentType'        => $document->mime_type,
             ],
         );
