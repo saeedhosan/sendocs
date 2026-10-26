@@ -42,6 +42,8 @@ test('stores and deletes private objects and creates a five-minute signed downlo
 });
 
 test('signs download URLs with the browser-facing endpoint', function (): void {
+    config(['filesystems.default' => 's3']);
+
     config([
         'filesystems.disks.s3-browser.key'                     => 'test-access-key',
         'filesystems.disks.s3-browser.secret'                  => 'test-secret-key',
