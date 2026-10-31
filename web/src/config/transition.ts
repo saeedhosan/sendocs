@@ -3,7 +3,7 @@ import type { TransitionStyle } from "../lib/transitionStyles";
 /**
  * Navigation progress + page-transition configuration.
  *
- * Data only — see `lib/transitionStyles.ts` for the code that consumes it and
+ * Data only - see `lib/transitionStyles.ts` for the code that consumes it and
  * publishes the visual tunables as CSS custom properties.
  */
 export const transitions = {
@@ -23,7 +23,7 @@ export const transitions = {
     view: {
         /** Default every navigation to a browser View Transition. */
         enabled: false,
-        /** Cross-fade preset — see {@link TransitionStyle}. */
+        /** Cross-fade preset - see {@link TransitionStyle}. */
         style: "fade" as TransitionStyle,
         /** How long the outgoing page animates out. */
         outDurationMs: 160,

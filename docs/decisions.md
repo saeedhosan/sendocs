@@ -39,10 +39,10 @@ Create a request, its items, and its token hash in one transaction.
 
 ### Alternatives Considered
 
-- **MySQL:** — Does the same job, with no clear gain here.
-- **SQLite:** — Simple locally, but cannot run two app instances or a migration at once.
-- **NoSQL:** — Our rules are links between records, which it would be hard to enforce.
-- **Redis:** — Temporary data only. Neither survives a restart.
+- **MySQL:** - Does the same job, with no clear gain here.
+- **SQLite:** - Simple locally, but cannot run two app instances or a migration at once.
+- **NoSQL:** - Our rules are links between records, which it would be hard to enforce.
+- **Redis:** - Temporary data only. Neither survives a restart.
 
 ### Rationale
 
@@ -87,9 +87,9 @@ Use `private S3-compatible storage`. RustFS is the local Compose implementation;
 
 ### Alternatives Considered
 
-- **Public storage** — Rejected; a hidden key is not access control.
-- **Database blobs** — 75 GB a month would grow the database and every backup.
-- **Local filesystem** — One machine would hold every file become singe point of failure.
+- **Public storage** - Rejected; a hidden key is not access control.
+- **Database blobs** - 75 GB a month would grow the database and every backup.
+- **Local filesystem** - One machine would hold every file become singe point of failure.
 
 ### Rationale
 
@@ -344,9 +344,9 @@ Use **session cookies** for owner API access.
 
 ### Alternatives Considered
 
-- **API tokens:** — Useful for external clients, but not needed now.
-- **JWT:** — Adds complexity without a clear benefit.
-- **Cookies without CSRF:** — Not safe for browser requests.
+- **API tokens:** - Useful for external clients, but not needed now.
+- **JWT:** - Adds complexity without a clear benefit.
+- **Cookies without CSRF:** - Not safe for browser requests.
 
 ### Rationale
 
@@ -370,7 +370,6 @@ Sessions also make expiry and revocation simple.
 - State-changing requests need CSRF protection.
 - CLI clients cannot use the browser session directly.
 - API testing needs a session cookie.
-
 
 ## TD-008 - Durable Object Cleanup
 

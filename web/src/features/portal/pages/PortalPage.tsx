@@ -22,8 +22,8 @@ type PortalStatus = "loading" | "ready" | "dead" | "error";
  * The single client-portal screen.
  *
  * The token is a credential read once from the path and held in memory only; it
- * is never written to storage, a cookie, or the query string. A `410` — for an
- * unknown, malformed, expired, revoked, or tampered link — always swaps to the
+ * is never written to storage, a cookie, or the query string. A `410` - for an
+ * unknown, malformed, expired, revoked, or tampered link - always swaps to the
  * one dead-link screen, with nothing about the request revealed.
  */
 export function PortalPage() {

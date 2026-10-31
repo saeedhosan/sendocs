@@ -1,4 +1,4 @@
-# Auth and Access — Technical Design
+# Auth and Access - Technical Design
 
 This document defines how authentication and authorization work for the owner account system. It covers registration, sign-in, sessions, password management, email verification, and account deletion. It also describes the security model and data structures used to enforce owner-scoped access control.
 
@@ -152,12 +152,12 @@ Every Other Session Revoked
 
 **Indexes:**
 
-- `users (email)` unique — the only user read path
-- `auth_identities (provider, provider_id)` unique — lookup for social providers
-- `auth_identities (user_id)` — find all identities for a user
-- `sessions (token_hash)` unique — hit on every authenticated request
-- `sessions (user_id)` — revoke all other sessions
-- `account_tokens (token_hash)` unique — the only token redemption lookup
+- `users (email)` unique - the only user read path
+- `auth_identities (provider, provider_id)` unique - lookup for social providers
+- `auth_identities (user_id)` - find all identities for a user
+- `sessions (token_hash)` unique - hit on every authenticated request
+- `sessions (user_id)` - revoke all other sessions
+- `account_tokens (token_hash)` unique - the only token redemption lookup
 
 **Relationships:**
 
@@ -171,92 +171,92 @@ Every Other Session Revoked
 
 ### Owner Authentication
 
-**POST /api/v1/auth/register** — Create an owner account and sign it in.
+**POST /api/v1/auth/register** - Create an owner account and sign it in.
 
 - **Payload:** `name`, `email`, `password`
-- **Response:** `201` — user, CSRF token, session cookie set
-- **Failure:** `409` — email already registered
-- **Failure:** `422` — validation failed, with per-field `details`
-- **Failure:** `429` — rate limited (10 per minute per IP)
+- **Response:** `201` - user, CSRF token, session cookie set
+- **Failure:** `409` - email already registered
+- **Failure:** `422` - validation failed, with per-field `details`
+- **Failure:** `429` - rate limited (10 per minute per IP)
 
-**POST /api/v1/auth/login** — Exchange credentials for a session cookie.
+**POST /api/v1/auth/login** - Exchange credentials for a session cookie.
 
 - **Payload:** `email`, `password`
-- **Response:** `200` — user, CSRF token, session cookie set
-- **Failure:** `401` — invalid credentials
-- **Failure:** `422` — malformed email or password shape, with per-field `details`
-- **Failure:** `429` — rate limited (10 per minute per IP)
+- **Response:** `200` - user, CSRF token, session cookie set
+- **Failure:** `401` - invalid credentials
+- **Failure:** `422` - malformed email or password shape, with per-field `details`
+- **Failure:** `429` - rate limited (10 per minute per IP)
 
-**POST /api/v1/auth/logout** — Destroy the current session.
+**POST /api/v1/auth/logout** - Destroy the current session.
 
 - **Payload:** none; session cookie plus CSRF header
-- **Response:** `204` — no content, and the cookie is expired on the way out
-- **Failure:** `401` — no valid session
-- **Failure:** `403` — CSRF check failed
-- **Failure:** `429` — rate limited (120 per minute per owner)
+- **Response:** `204` - no content, and the cookie is expired on the way out
+- **Failure:** `401` - no valid session
+- **Failure:** `403` - CSRF check failed
+- **Failure:** `429` - rate limited (120 per minute per owner)
 
-**GET /api/v1/auth/session** — Resolve the caller, used by the UI on load and refresh.
+**GET /api/v1/auth/session** - Resolve the caller, used by the UI on load and refresh.
 
 - **Payload:** none; session cookie
-- **Response:** `200` — user, CSRF token, session expiry
-- **Failure:** `401` — no valid session
-- **Failure:** `429` — rate limited (120 per minute per owner)
+- **Response:** `200` - user, CSRF token, session expiry
+- **Failure:** `401` - no valid session
+- **Failure:** `429` - rate limited (120 per minute per owner)
 
 ### Password Reset
 
-**POST /api/v1/auth/password/forgot** — Send a reset link to the address on file.
+**POST /api/v1/auth/password/forgot** - Send a reset link to the address on file.
 
 - **Payload:** `email`
-- **Response:** `202` — accepted, identical for known and unknown addresses
-- **Failure:** `422` — malformed email, with per-field `details`
-- **Failure:** `429` — rate limited (5 per hour per IP)
+- **Response:** `202` - accepted, identical for known and unknown addresses
+- **Failure:** `422` - malformed email, with per-field `details`
+- **Failure:** `429` - rate limited (5 per hour per IP)
 
-**POST /api/v1/auth/password/reset** — Redeem a reset token and set a new password.
+**POST /api/v1/auth/password/reset** - Redeem a reset token and set a new password.
 
 - **Payload:** `token`, `password`
-- **Response:** `200` — user, CSRF token, session cookie set, so the owner is signed in
-- **Failure:** `400` — the account has no password to reset (Google-only)
-- **Failure:** `410` — token unknown, expired, or already used
-- **Failure:** `422` — password fails policy
-- **Failure:** `429` — rate limited (5 per hour per IP)
+- **Response:** `200` - user, CSRF token, session cookie set, so the owner is signed in
+- **Failure:** `400` - the account has no password to reset (Google-only)
+- **Failure:** `410` - token unknown, expired, or already used
+- **Failure:** `422` - password fails policy
+- **Failure:** `429` - rate limited (5 per hour per IP)
 
-**POST /api/v1/auth/password/change** — Change the password while signed in.
+**POST /api/v1/auth/password/change** - Change the password while signed in.
 
 - **Payload:** `currentPassword`, `password`
-- **Response:** `204` — no content
-- **Failure:** `400` — the account has no password to change (Google-only)
-- **Failure:** `401` — `currentPassword` is wrong
-- **Failure:** `403` — CSRF check failed
-- **Failure:** `422` — password fails policy
-- **Failure:** `429` — rate limited (120 per minute per owner)
+- **Response:** `204` - no content
+- **Failure:** `400` - the account has no password to change (Google-only)
+- **Failure:** `401` - `currentPassword` is wrong
+- **Failure:** `403` - CSRF check failed
+- **Failure:** `422` - password fails policy
+- **Failure:** `429` - rate limited (120 per minute per owner)
 
 ### Email Verification
 
-**GET /api/v1/auth/email/verify** — Redeem a verification token from the email link.
+**GET /api/v1/auth/email/verify** - Redeem a verification token from the email link.
 
 - **Payload:** `token` (query parameter)
-- **Response:** `200` — verified address
-- **Failure:** `410` — token unknown, expired, or already used
-- **Failure:** `422` — the token is missing or longer than 200 characters
-- **Failure:** `429` — rate limited (5 per hour per IP)
+- **Response:** `200` - verified address
+- **Failure:** `410` - token unknown, expired, or already used
+- **Failure:** `422` - the token is missing or longer than 200 characters
+- **Failure:** `429` - rate limited (5 per hour per IP)
 
-**POST /api/v1/auth/email/resend** — Send a new verification link.
+**POST /api/v1/auth/email/resend** - Send a new verification link.
 
 - **Payload:** none; session cookie plus CSRF header
-- **Response:** `202` — accepted
-- **Failure:** `401` — no valid session
-- **Failure:** `429` — rate limited (5 per hour per owner)
+- **Response:** `202` - accepted
+- **Failure:** `401` - no valid session
+- **Failure:** `429` - rate limited (5 per hour per owner)
 
 ### Account Deletion
 
-**DELETE /api/v1/auth/account** — Delete the owner account and everything it owns.
+**DELETE /api/v1/auth/account** - Delete the owner account and everything it owns.
 
 - **Payload:** `password`, `confirm` (the email, typed to confirm)
-- **Response:** `204` — no content, with the session cookie expired
-- **Failure:** `400` — the account has no password (Google-only)
-- **Failure:** `401` — wrong password
-- **Failure:** `422` — `confirm` does not match
-- **Failure:** `429` — rate limited (120 per minute per owner)
+- **Response:** `204` - no content, with the session cookie expired
+- **Failure:** `400` - the account has no password (Google-only)
+- **Failure:** `401` - wrong password
+- **Failure:** `422` - `confirm` does not match
+- **Failure:** `429` - rate limited (120 per minute per owner)
 
 > Every write above can also return 403 csrf_failed on a stale or missing
 > X-CSRF-Token, so that code is listed once in the error table below rather than repeated
@@ -267,12 +267,12 @@ Every Other Session Revoked
 The client credential is the magic link, and its rules belong to secure-magic-link.md.
 Only the guard boundary is noted here; the endpoint itself is defined in secure-magic-link.md and client-portal.md, and neither is restated.
 
-**GET /api/v1/portal/{token}** — Authenticate by magic link and return the portal view.
+**GET /api/v1/portal/{token}** - Authenticate by magic link and return the portal view.
 
 - **Payload:** none; the token is in the path
-- **Response:** `200` — request title, required items with per-item state, link expiry
-- **Failure:** `410` — unknown, malformed, expired, revoked, or tampered
-- **Failure:** `429` — rate limited (60 per minute per IP)
+- **Response:** `200` - request title, required items with per-item state, link expiry
+- **Failure:** `410` - unknown, malformed, expired, revoked, or tampered
+- **Failure:** `429` - rate limited (60 per minute per IP)
 
 > Restated here only to mark the authorization boundary. secure-magic-link.md owns the token rules and client-portal.md owns the view and the upload endpoint.
 
@@ -369,7 +369,7 @@ Only the guard boundary is noted here; the endpoint itself is defined in secure-
 
 ### Core Components
 
-**AuthController** — Owner auth endpoints, request validation, and error mapping.
+**AuthController** - Owner auth endpoints, request validation, and error mapping.
 
 - `register(Request $r): JsonResponse`
 - `login(Request $r): JsonResponse`
@@ -382,56 +382,56 @@ Only the guard boundary is noted here; the endpoint itself is defined in secure-
 - `resendVerification(): JsonResponse`
 - `destroy(Request $r): Response`
 
-**SessionService** — Issue, resolve, and revoke session cookies.
+**SessionService** - Issue, resolve, and revoke session cookies.
 
 - `issue(User $u): Session`
 - `resolve(string $token): ?User`
 - `revoke(string $token): void`
 - `revokeAllExcept(User $u, string $token): void`
 
-**PasswordService** — Hash and verify passwords, and run the dummy verify on failure.
+**PasswordService** - Hash and verify passwords, and run the dummy verify on failure.
 
 - `hash(string $plain): string`
 - `verify(string $plain, string $hash): bool`
 - `dummyVerify(): void`
 
-**AccountTokenService** — Issue and redeem single-use reset and verification tokens.
+**AccountTokenService** - Issue and redeem single-use reset and verification tokens.
 
-- `issue(User $u, string $purpose): string` — returns the raw token, once
+- `issue(User $u, string $purpose): string` - returns the raw token, once
 - `redeem(string $token, string $purpose): ?User`
 - `revokeAll(User $u, string $purpose): void`
 
-**CsrfTokenService** — Derive and verify the session-bound CSRF token.
+**CsrfTokenService** - Derive and verify the session-bound CSRF token.
 
 - `derive(string $sessionId): string`
 - `verify(string $sessionId, ?string $token): bool`
 
-**AuthenticateSession** — Middleware that resolves the caller and attach to request.
+**AuthenticateSession** - Middleware that resolves the caller and attach to request.
 
-- `handle(Request $r, Closure $next): Response` — `401` when no valid session
-- `requireCsrf(Request $r): void` — `403` on a mismatched token
+- `handle(Request $r, Closure $next): Response` - `401` when no valid session
+- `requireCsrf(Request $r): void` - `403` on a mismatched token
 
-**RateLimiter** — Fixed-window counters in the database.
+**RateLimiter** - Fixed-window counters in the database.
 
 - `hit(string $bucket, string $key): int`
 - `tooManyAttempts(string $bucket, string $key, int $max): bool`
-- `availableIn(string $bucket, string $key): int` — seconds for `Retry-After`
+- `availableIn(string $bucket, string $key): int` - seconds for `Retry-After`
 
-**AuthMailer** — Queue the three auth emails behind an interface.
+**AuthMailer** - Queue the three auth emails behind an interface.
 
-- `sendWelcome(User $u): void` — dispatches a queued job
-- `sendVerification(User $u): void` — dispatches a queued job
-- `sendPasswordReset(User $u): void` — dispatches a queued job
+- `sendWelcome(User $u): void` - dispatches a queued job
+- `sendVerification(User $u): void` - dispatches a queued job
+- `sendPasswordReset(User $u): void` - dispatches a queued job
 
-**GoogleOAuthService** — Handle Google OAuth authentication.
+**GoogleOAuthService** - Handle Google OAuth authentication.
 
-- `generateAuthUrl(): string` — generates state-protected authorization URL
-- `exchangeCode(string $code): array` — exchanges code for tokens and returns user info
-- `findOrCreateUser(array $googleUser): User` — finds/creates user from Google profile
+- `generateAuthUrl(): string` - generates state-protected authorization URL
+- `exchangeCode(string $code): array` - exchanges code for tokens and returns user info
+- `findOrCreateUser(array $googleUser): User` - finds/creates user from Google profile
 
-**OwnershipScope** — The single authorization rule, applied at the query.
+**OwnershipScope** - The single authorization rule, applied at the query.
 
-- `forUser(User $u): Builder` — adds the `owner_id` filter to any owner-scoped query
+- `forUser(User $u): Builder` - adds the `owner_id` filter to any owner-scoped query
 
 ## Authorization
 
@@ -605,14 +605,14 @@ Only the guard boundary is noted here; the endpoint itself is defined in secure-
 
 ## Performance
 
-- **Session lookup** — one indexed equality plus a join, so a single round trip resolves the caller.
-- **Negligible at peak** — about 1 req/s, far below where this becomes a bottleneck.
-- **Rate-limit write** — the only added cost on public routes: one upsert per request.
-- **Rows roll off** — window keys change, so counters do not accumulate.
-- **Password Hash** — the dominant CPU cost, at roughly 100–250 ms per registration, login, or reset.
-- **Dummy verify** — deliberate on failed login, and bounded by the 10/minute limit.
-- **Verification status** — a column on the user already joined for the session, so no extra query.
-- **Pool** — auth touches the database on nearly every request, so pool saturation is the signal to watch.
+- **Session lookup** - one indexed equality plus a join, so a single round trip resolves the caller.
+- **Negligible at peak** - about 1 req/s, far below where this becomes a bottleneck.
+- **Rate-limit write** - the only added cost on public routes: one upsert per request.
+- **Rows roll off** - window keys change, so counters do not accumulate.
+- **Password Hash** - the dominant CPU cost, at roughly 100–250 ms per registration, login, or reset.
+- **Dummy verify** - deliberate on failed login, and bounded by the 10/minute limit.
+- **Verification status** - a column on the user already joined for the session, so no extra query.
+- **Pool** - auth touches the database on nearly every request, so pool saturation is the signal to watch.
 
 ## Error Handling
 

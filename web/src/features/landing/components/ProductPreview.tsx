@@ -50,7 +50,7 @@ export function ProductPreview() {
                 <div className="flex items-center gap-2 min-w-0">
                     <span className="shrink-0 size-2.5 rounded-full bg-border-strong" />
                     <span className="text-[14px] leading-[1.5] font-semibold text-ink truncate">
-                        2024 Corporate Tax Return — Acme Corp
+                        2024 Corporate Tax Return - Acme Corp
                     </span>
                 </div>
                 <span className="shrink-0 px-2 py-0.5 border border-marketing-success-border rounded-[4px] bg-marketing-success-surface text-[0.6875rem] leading-[1.5] font-medium text-marketing-success">

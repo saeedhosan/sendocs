@@ -1,4 +1,4 @@
-# Owner Dashboard — Technical Design
+# Owner Dashboard - Technical Design
 
 The signed-in dashboard lets owners view, track, and manage document requests. It covers dashboard screens and interactions; request APIs, progress, link security, and authentication are defined in their respective feature documents.
 
@@ -31,10 +31,10 @@ The signed-in dashboard lets owners view, track, and manage document requests. I
 
 **Routes**
 
-- `/dashboard` — request list (signed-in landing page).
-- `/requests/new` — create a new request.
-- `/requests/{id}` — View and manage the request detail.
-- `/settings/password`, `/settings/delete` — covered by auth-and-access.md.
+- `/dashboard` - request list (signed-in landing page).
+- `/requests/new` - create a new request.
+- `/requests/{id}` - View and manage the request detail.
+- `/settings/password`, `/settings/delete` - covered by auth-and-access.md.
 
 **User Flow**
 
@@ -97,61 +97,61 @@ Dashboard Shows Progress on Return
 
 ### Client Components
 
-**SessionGate** — Client-side route guard, the app-side half of `AuthenticateSession`.
+**SessionGate** - Client-side route guard, the app-side half of `AuthenticateSession`.
 
-- `boot(): Promise<User>` — one call to GET /auth/session
-- `onUnauthorized(): void` — route to sign-in, preserving the intended destination
+- `boot(): Promise<User>` - one call to GET /auth/session
+- `onUnauthorized(): void` - route to sign-in, preserving the intended destination
 
-**RequestList** — The list, its paging, and its row states.
+**RequestList** - The list, its paging, and its row states.
 
 - `mount(cursor: ?string, limit: int): void`
 - `loadMore(): Promise<void>`
-- `previous(): Promise<void>` — only while the cursor stack is intact
+- `previous(): Promise<void>` - only while the cursor stack is intact
 
-**RequestRow** — One row: title, status, progress, counts, and last activity.
+**RequestRow** - One row: title, status, progress, counts, and last activity.
 
 - `statusLabel(r): string`
 - `progressLabel(r): string`
 - `timeAgo(iso: string): string`
 
-**RequestDetail** — Header, items, files, and the action bar.
+**RequestDetail** - Header, items, files, and the action bar.
 
 - `mount(id: string): Promise<void>`
 - `download(docId: string): void`
-- `removeDocument(itemId: string): Promise<void>` — called by `ItemRow.remove`, then re-reads the request
+- `removeDocument(itemId: string): Promise<void>` - called by `ItemRow.remove`, then re-reads the request
 - `revoke(): Promise<void>`
 - `destroy(): Promise<void>`
 
-**ItemRow** — One required item and its current state.
+**ItemRow** - One required item and its current state.
 
 - `stateLabel(item): string`
-- `fileAction(item): string` — download when present, waiting when not
-- `remove(item): Promise<void>` — delete the document, only when one exists
+- `fileAction(item): string` - download when present, waiting when not
+- `remove(item): Promise<void>` - delete the document, only when one exists
 
-**NewRequestForm** — Title and the item rows.
+**NewRequestForm** - Title and the item rows.
 
 - `addRow(): void`
 - `removeRow(index: int): void`
 - `move(index: int, direction: int): void`
 - `submit(): Promise<void>`
 
-**LinkReveal** — Show the raw link exactly once.
+**LinkReveal** - Show the raw link exactly once.
 
 - `show(link: string): void`
 - `copy(): Promise<void>`
 - `dismiss(): void`
 
-**ConfirmDialog** — One dialog for every destructive action.
+**ConfirmDialog** - One dialog for every destructive action.
 
 - `ask(action: 'revoke' | 'delete-document' | 'delete-request', subject: string): Promise<bool>`
 - `confirm(): void`
 
-**Notice** — Non-blocking outcome messages, never the only feedback.
+**Notice** - Non-blocking outcome messages, never the only feedback.
 
 - `ok(message: string): void`
 - `error(code: string): void`
 
-**EmptyState** — The first-run and per-request zero states.
+**EmptyState** - The first-run and per-request zero states.
 
 - `render(context: 'dashboard' | 'request'): void`
 
@@ -182,48 +182,48 @@ It adds no table and no migration; every value it shows comes from the request A
 
 ### Consumed Endpoints
 
-**GET /api/v1/requests** — One page for the list.
+**GET /api/v1/requests** - One page for the list.
 
 - **Payload:** `limit`, `cursor` (query parameters)
-- **Response:** `200` — a page of requests, each with counts and an `nextCursor`
-- **Failure:** `401` — no valid session
-- **Failure:** `422` — malformed cursor
-- **Failure:** `429` — rate limited, with Retry-After
+- **Response:** `200` - a page of requests, each with counts and an `nextCursor`
+- **Failure:** `401` - no valid session
+- **Failure:** `422` - malformed cursor
+- **Failure:** `429` - rate limited, with Retry-After
 
-**GET /api/v1/requests/{id}** — One request with signed download URLs.
+**GET /api/v1/requests/{id}** - One request with signed download URLs.
 
 - **Payload:** none; session cookie
-- **Response:** `200` — title, expiry, revoked state, items, and a signed URL per uploaded document
-- **Failure:** `401` — no valid session
-- **Failure:** `404` — not found, or owned by another owner
-- **Failure:** `429` — rate limited, with Retry-After
+- **Response:** `200` - title, expiry, revoked state, items, and a signed URL per uploaded document
+- **Failure:** `401` - no valid session
+- **Failure:** `404` - not found, or owned by another owner
+- **Failure:** `429` - rate limited, with Retry-After
 
-**POST /api/v1/requests** — Create a request (returns magic link once).
+**POST /api/v1/requests** - Create a request (returns magic link once).
 
 - **Payload:** `title`, `items`
-- **Response:** `201` — request, items, and magic link (shown once)
-- **Failure:** `422` — validation failed with per-field details
-- **Failure:** `429` — rate limited
+- **Response:** `201` - request, items, and magic link (shown once)
+- **Failure:** `422` - validation failed with per-field details
+- **Failure:** `429` - rate limited
 
-**POST /api/v1/requests/{id}/revoke** — Revoke the client link.
-
-- **Payload:** none; session cookie plus CSRF header
-- **Response:** `200` — the request with `revokedAt` set
-- **Failure:** `404` — not found, or owned by another owner
-
-**DELETE /api/v1/requests/{id}/items/{itemId}/document** — Delete one uploaded document.
+**POST /api/v1/requests/{id}/revoke** - Revoke the client link.
 
 - **Payload:** none; session cookie plus CSRF header
-- **Response:** `204` — no content
-- **Failure:** `404` — not the caller's item, or no document on it
+- **Response:** `200` - the request with `revokedAt` set
+- **Failure:** `404` - not found, or owned by another owner
 
-**DELETE /api/v1/requests/{id}** — Delete the request and every file in it.
+**DELETE /api/v1/requests/{id}/items/{itemId}/document** - Delete one uploaded document.
 
 - **Payload:** none; session cookie plus CSRF header
-- **Response:** `204` — no content
-- **Failure:** `404` — not found, or owned by another owner
+- **Response:** `204` - no content
+- **Failure:** `404` - not the caller's item, or no document on it
 
-**GET /api/v1/auth/session** — The caller, CSRF token from auth-and-access.md.
+**DELETE /api/v1/requests/{id}** - Delete the request and every file in it.
+
+- **Payload:** none; session cookie plus CSRF header
+- **Response:** `204` - no content
+- **Failure:** `404` - not found, or owned by another owner
+
+**GET /api/v1/auth/session** - The caller, CSRF token from auth-and-access.md.
 
 > Request semantics are defined in document-requests.md and session semantics in auth-and-access.md. This section defines only what the screens need. Any endpoint may also return 401 or 429; writes may return 403 for a stale CSRF token.
 
@@ -337,7 +337,7 @@ It adds no table and no migration; every value it shows comes from the request A
 
 ### Core Components
 
-**DashboardController** — Return the app shell for each dashboard route.
+**DashboardController** - Return the app shell for each dashboard route.
 
 - `index(): Response`
 - `create(): Response`
@@ -434,14 +434,14 @@ It adds no table and no migration; every value it shows comes from the request A
 
 ## Performance
 
-- **First paint** — cached shell, then skeleton while data loads.
-- **List** — one request per page with progress and counts included.
-- **Detail** — one request per view; signed URLs minted there.
-- **Writes** — one request each; buttons disabled while in flight.
-- **No polling** — refetch on focus; idle tabs cost nothing.
-- **Payload** — twenty-request pages stay small; no file bytes included.
-- **Downloads** — object storage serves file bytes directly.
-- **Caching** — no durable cache, so no stale state to invalidate.
+- **First paint** - cached shell, then skeleton while data loads.
+- **List** - one request per page with progress and counts included.
+- **Detail** - one request per view; signed URLs minted there.
+- **Writes** - one request each; buttons disabled while in flight.
+- **No polling** - refetch on focus; idle tabs cost nothing.
+- **Payload** - twenty-request pages stay small; no file bytes included.
+- **Downloads** - object storage serves file bytes directly.
+- **Caching** - no durable cache, so no stale state to invalidate.
 
 ## Error Handling
 

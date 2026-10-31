@@ -1,4 +1,4 @@
-# Secure Magic Link — Technical Design
+# Secure Magic Link - Technical Design
 
 A client is authenticated using a magic lin in the URL path. Only the token's SHA-256 hash is stored. This document covers issuing the token, validating it, expiry and revocation, and preventing credential leakage. Portal pages, uploads, and request details are covered in client-portal.md and document-requests.md.
 
@@ -62,8 +62,8 @@ Expired or Revoked by Owner
 
 **Discovery Screens**
 
-- Link dead (typo, expired, or revoked) — identical message to client.
-- Link revoked while open — next action returns dead link.
+- Link dead (typo, expired, or revoked) - identical message to client.
+- Link revoked while open - next action returns dead link.
 
 ## Low-Level Design
 
@@ -154,39 +154,39 @@ Expired or Revoked by Owner
 
 ### Core Components
 
-**MagicLinkGuard** — The only path from a token to a request.
+**MagicLinkGuard** - The only path from a token to a request.
 
-- `resolve(string $token): ?DocumentRequest` — null for unknown, expired, or revoked.
-- `reason(string $token): LinkFailure` — logs/metrics only.
+- `resolve(string $token): ?DocumentRequest` - null for unknown, expired, or revoked.
+- `reason(string $token): LinkFailure` - logs/metrics only.
 
-**TokenFactory** — Generates, hashes, and assembles links.
+**TokenFactory** - Generates, hashes, and assembles links.
 
-- `generate(): string` — 256-bit URL-safe token.
-- `hash(string $token): string` — SHA-256 hex.
-- `link(string $token): string` — `app url/portal/{token}`.
+- `generate(): string` - 256-bit URL-safe token.
+- `hash(string $token): string` - SHA-256 hex.
+- `link(string $token): string` - `app url/portal/{token}`.
 
-**LinkPolicy** — Owns expiry and liveness rules.
+**LinkPolicy** - Owns expiry and liveness rules.
 
-- `defaultTtl(): Duration` — 14 days.
-- `maxTtl(): Duration` — 90 days.
-- `expiryFor(?int $ttlDays): Carbon` — clamps to max.
-- `isLive(DocumentRequest $r): bool` — not revoked or expired.
+- `defaultTtl(): Duration` - 14 days.
+- `maxTtl(): Duration` - 90 days.
+- `expiryFor(?int $ttlDays): Carbon` - clamps to max.
+- `isLive(DocumentRequest $r): bool` - not revoked or expired.
 
-**LinkRedactor** — Removes token material from logs.
+**LinkRedactor** - Removes token material from logs.
 
-- `path(string $path): string` — redacts `/portal/{token}`.
-- `body(string $body): string` — redacts token fields and links.
-- `header(string $name, string $value): string` — redacts link-bearing headers.
+- `path(string $path): string` - redacts `/portal/{token}`.
+- `body(string $body): string` - redacts token fields and links.
+- `header(string $name, string $value): string` - redacts link-bearing headers.
 
-**LinkRedactorMiddleware** — Applies redaction before logging.
+**LinkRedactorMiddleware** - Applies redaction before logging.
 
-- `handle(Request $r, Closure $next): Response` — redacts the token path.
-- `scrub(string $line): string` — applies the same rules to logs and exceptions.
+- `handle(Request $r, Closure $next): Response` - redacts the token path.
+- `scrub(string $line): string` - applies the same rules to logs and exceptions.
 
-**LinkMetrics** — Records outcomes without token material.
+**LinkMetrics** - Records outcomes without token material.
 
-- `hit(string $outcome): void` — resolved, unknown, expired, or revoked.
-- `observe(float $ms): void` — records resolution time.
+- `hit(string $outcome): void` - resolved, unknown, expired, or revoked.
+- `observe(float $ms): void` - records resolution time.
 
 ## Trade-offs
 
@@ -292,12 +292,12 @@ Expired or Revoked by Owner
 
 ## Performance
 
-- **Lookup** — one indexed equality on CHAR(64), with no validation join.
-- **No cache** — revocation is always read fresh.
-- **Early reject** — malformed tokens never reach the database.
-- **No sweep** — expired rows are pruned opportunistically.
-- **No crypto** — no signature verification per request.
-- **Cost** — one database read per request for exact revocation.
+- **Lookup** - one indexed equality on CHAR(64), with no validation join.
+- **No cache** - revocation is always read fresh.
+- **Early reject** - malformed tokens never reach the database.
+- **No sweep** - expired rows are pruned opportunistically.
+- **No crypto** - no signature verification per request.
+- **Cost** - one database read per request for exact revocation.
 
 ## Error Handling
 

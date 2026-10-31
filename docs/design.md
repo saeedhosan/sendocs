@@ -89,11 +89,11 @@ This system does one job, one request, one link, one place for the files, with e
 
 **Pages**
 
-- `/register`, `/login` — owner access.
-- `/dashboard` — request list and progress.
-- `/requests/new` — create a request.
-- `/requests/{id}` — request, documents, and actions.
-- `/portal/{token}` — client upload portal.
+- `/register`, `/login` - owner access.
+- `/dashboard` - request list and progress.
+- `/requests/new` - create a request.
+- `/requests/{id}` - request, documents, and actions.
+- `/portal/{token}` - client upload portal.
 
 **User Flow**
 
@@ -130,10 +130,10 @@ Track Progress
 
 **Navigation Screens**
 
-- Dashboard — from the brand and from every detail screen
-- New request — from the dashboard header
-- Account menu — from the dashboard nav, holding settings and sign out
-- Client link — copyable from a request detail
+- Dashboard - from the brand and from every detail screen
+- New request - from the dashboard header
+- Account menu - from the dashboard nav, holding settings and sign out
+- Client link - copyable from a request detail
 
 **Discovery Screens**
 
@@ -185,57 +185,57 @@ We wil define the main core table we need for this system and for details databa
 
 **users**
 
-- `id (UUID)` — owner identifier.
-- `name (VARCHAR 120)` — display name.
-- `email (VARCHAR 254, unique)` — login email, stored lowercased.
-- `password (VARCHAR 255)` — bcrypt hash; never logged or returned.
-- `email_verified_at (TIMESTAMPTZ, nullable)` — The verification link is used.
-- `created_at (TIMESTAMPTZ)` — creation time.
+- `id (UUID)` - owner identifier.
+- `name (VARCHAR 120)` - display name.
+- `email (VARCHAR 254, unique)` - login email, stored lowercased.
+- `password (VARCHAR 255)` - bcrypt hash; never logged or returned.
+- `email_verified_at (TIMESTAMPTZ, nullable)` - The verification link is used.
+- `created_at (TIMESTAMPTZ)` - creation time.
 
 **sessions**
 
-- `id (UUID)` — session identifier.
-- `user_id (UUID)` — session owner.
-- `token_hash (CHAR 64, unique)` — SHA-256 hash of the session cookie value.
-- `expires_at (TIMESTAMPTZ)` — absolute expiry, 7 days after sign-in.
-- `created_at (TIMESTAMPTZ)` — creation time.
+- `id (UUID)` - session identifier.
+- `user_id (UUID)` - session owner.
+- `token_hash (CHAR 64, unique)` - SHA-256 hash of the session cookie value.
+- `expires_at (TIMESTAMPTZ)` - absolute expiry, 7 days after sign-in.
+- `created_at (TIMESTAMPTZ)` - creation time.
 
 **account_tokens**
 
-- `id (UUID)` — token identifier.
-- `user_id (UUID)` — token owner.
-- `purpose (VARCHAR 20)` — `password_reset` or `email_verification`.
-- `token_hash (CHAR 64, unique)` — SHA-256 hash of the emailed token.
-- `expires_at (TIMESTAMPTZ)` — absolute expiry, 60 minutes after issue.
-- `used_at (TIMESTAMPTZ, nullable)` — set on redemption, so a token is single-use.
+- `id (UUID)` - token identifier.
+- `user_id (UUID)` - token owner.
+- `purpose (VARCHAR 20)` - `password_reset` or `email_verification`.
+- `token_hash (CHAR 64, unique)` - SHA-256 hash of the emailed token.
+- `expires_at (TIMESTAMPTZ)` - absolute expiry, 60 minutes after issue.
+- `used_at (TIMESTAMPTZ, nullable)` - set on redemption, so a token is single-use.
 
 **document_requests**
 
-- `id (UUID)` — request identifier.
-- `owner_id (UUID)` — request owner.
-- `title (VARCHAR 200)` — request title.
-- `token_hash (CHAR 64, unique)` — magic-link hash.
-- `expires_at (TIMESTAMPTZ)` — link expiry; 14 days by default, 90 days maximum.
-- `revoked_at (TIMESTAMPTZ, nullable)` — revocation time.
-- `created_at (TIMESTAMPTZ)` — creation time.
+- `id (UUID)` - request identifier.
+- `owner_id (UUID)` - request owner.
+- `title (VARCHAR 200)` - request title.
+- `token_hash (CHAR 64, unique)` - magic-link hash.
+- `expires_at (TIMESTAMPTZ)` - link expiry; 14 days by default, 90 days maximum.
+- `revoked_at (TIMESTAMPTZ, nullable)` - revocation time.
+- `created_at (TIMESTAMPTZ)` - creation time.
 
 **request_items**
 
-- `id (UUID)` — item identifier.
-- `request_id (UUID)` — parent request.
-- `label (VARCHAR 200)` — required document.
-- `position (INTEGER)` — display order, unique per request.
+- `id (UUID)` - item identifier.
+- `request_id (UUID)` - parent request.
+- `label (VARCHAR 200)` - required document.
+- `position (INTEGER)` - display order, unique per request.
 
 **documents**
 
-- `id (UUID)` — document identifier.
-- `request_item_id (UUID, unique)` — one file per item.
-- `storage_key (VARCHAR)` — private storage key.
-- `original_name (VARCHAR 255)` — original filename, sanitized before storage.
-- `mime_type (VARCHAR 100)` — server-detected content type.
-- `size_bytes (BIGINT)` — file size.
-- `sha256 (CHAR 64)` — checksum for integrity checks.
-- `uploaded_at (TIMESTAMPTZ)` — upload time.
+- `id (UUID)` - document identifier.
+- `request_item_id (UUID, unique)` - one file per item.
+- `storage_key (VARCHAR)` - private storage key.
+- `original_name (VARCHAR 255)` - original filename, sanitized before storage.
+- `mime_type (VARCHAR 100)` - server-detected content type.
+- `size_bytes (BIGINT)` - file size.
+- `sha256 (CHAR 64)` - checksum for integrity checks.
+- `uploaded_at (TIMESTAMPTZ)` - upload time.
 
 ### Relationships
 
@@ -286,34 +286,34 @@ We wil define the main core table we need for this system and for details databa
 
 Versioned REST under `/api/v1`.
 
-`GET /health: 200 Health` — application Health Check.
+`GET /health: 200 Health` - application Health Check.
 
 ### Authentication
 
 We defined the core endpoints we need for the design and rest live at authentication.md
 
-- `POST /auth/register: 201 User` — register an owner and sign them in.
-- `POST /auth/login: 200 Session` — sign in an owner.
-- `POST /auth/logout: 204` — end the session.
-- `GET /auth/session: 200 Session` — resolve the caller, used on app boot.
-- `DELETE /auth/account: 204` — delete the owner and everything it owns.
+- `POST /auth/register: 201 User` - register an owner and sign them in.
+- `POST /auth/login: 200 Session` - sign in an owner.
+- `POST /auth/logout: 204` - end the session.
+- `GET /auth/session: 200 Session` - resolve the caller, used on app boot.
+- `DELETE /auth/account: 204` - delete the owner and everything it owns.
 
 ### Document Requests
 
 We defined the core endpoints we need for the design and rest live at document-request.md
 
-- `POST /requests: 201 CreatedRequest` — create a request; includes the magic link.
-- `GET /requests: 200 Paginated<Request>` — list own requests with progress.
-- `GET /requests/{id}: 200 Request` — request with documents and signed download URLs.
-- `POST /requests/{id}/revoke: 200 Request` — revoke the link.
-- `DELETE /requests/{id}: 204` — delete the request and its files.
+- `POST /requests: 201 CreatedRequest` - create a request; includes the magic link.
+- `GET /requests: 200 Paginated<Request>` - list own requests with progress.
+- `GET /requests/{id}: 200 Request` - request with documents and signed download URLs.
+- `POST /requests/{id}/revoke: 200 Request` - revoke the link.
+- `DELETE /requests/{id}: 204` - delete the request and its files.
 
 ### Client Portal
 
 We defined the core endpoints we need for the design and rest live at client-portal.md
 
-- `GET /portal/{token}: 200 PortalView` — required documents and status.
-- `POST /portal/{token}/items/{itemId}/file: 200 PortalView` — upload one file.
+- `GET /portal/{token}: 200 PortalView` - required documents and status.
+- `POST /portal/{token}/items/{itemId}/file: 200 PortalView` - upload one file.
 
 ### File Limits
 
@@ -396,12 +396,12 @@ Enforced server-side:
 
 ### Core Components
 
-- **UI** — owner dashboard and client portal, served as a single page application (SPA).
-- **API** — auth, authorization, and business rules, exposed as a versioned API.
-- **Relational Database** — users, sessions, requests, items, and file metadata.
-- **Object Storage** — private S3-compatible bucket (RustFS in development).
-- **Queue Worker** — sends account emails.
-- **Cleanup Scheduler** — drains the PostgreSQL storage-deletion outbox on a one-minute schedule.
+- **UI** - owner dashboard and client portal, served as a single page application (SPA).
+- **API** - auth, authorization, and business rules, exposed as a versioned API.
+- **Relational Database** - users, sessions, requests, items, and file metadata.
+- **Object Storage** - private S3-compatible bucket (RustFS in development).
+- **Queue Worker** - sends account emails.
+- **Cleanup Scheduler** - drains the PostgreSQL storage-deletion outbox on a one-minute schedule.
 
 ### High-Level Design
 
@@ -418,9 +418,9 @@ Application (UI assets + API)
 Response
 ```
 
-- **Owner auth** — server-managed secure session cookie plus a CSRF token, same origin.
-- **Client auth** — no auth; the magic link in the URL path authenticates each request.
-- **Boundary** — auth sessions and magic links are separate; each reaches its own data.
+- **Owner auth** - server-managed secure session cookie plus a CSRF token, same origin.
+- **Client auth** - no auth; the magic link in the URL path authenticates each request.
+- **Boundary** - auth sessions and magic links are separate; each reaches its own data.
 
 ### Request Lifecycle
 
@@ -587,56 +587,56 @@ Hold no auth state in the app, so instances scale horizontally. Sessions, rate l
 
 ### Identify bottlenecks
 
-- **File uploads** — Large or concurrent uploads can consume application resources.
-- **Request lists** — Growing request data can increase database query cost.
-- **Portal lookups** — Every client request requires magic-link validation.
-- **Storage consistency** — Database and object storage can fail independently.
-- **Uploads saturate first** — a rising upload p95 exhausts the app workers.
+- **File uploads** - Large or concurrent uploads can consume application resources.
+- **Request lists** - Growing request data can increase database query cost.
+- **Portal lookups** - Every client request requires magic-link validation.
+- **Storage consistency** - Database and object storage can fail independently.
+- **Uploads saturate first** - a rising upload p95 exhausts the app workers.
 
 ### Resolved bottlenecks
 
-- **File uploads** — Enforce size limits and upload rate limits.
-- **Request lists** — Use indexed owner queries with cursor pagination.
-- **Portal lookups** — Use a unique index on the token hash.
-- **Storage consistency** — Clean up stored files when metadata persistence fails.
+- **File uploads** - Enforce size limits and upload rate limits.
+- **Request lists** - Use indexed owner queries with cursor pagination.
+- **Portal lookups** - Use a unique index on the token hash.
+- **Storage consistency** - Clean up stored files when metadata persistence fails.
 
 ## Development
 
 **Implementation**
 
-- **Auth** — session cookie plus a CSRF token for the app UI; see auth-and-access.md.
-- **Requests** — request, items, and link hash created in one transaction.
-- **Portal** — validate link, accept upload, track completion; see features/\*.md.
-- **Storage** — private storage behind an interface; S3-compatible bucket in production.
-- **Queue** — A single worker for asnyc tasks; jobs retry with backoff and failure log.
-- **Migrations** — Versioned applied by a migration step before the new version release.
-- **API docs** — OpenAPI and Postman collection checked in CI against the running app.
+- **Auth** - session cookie plus a CSRF token for the app UI; see auth-and-access.md.
+- **Requests** - request, items, and link hash created in one transaction.
+- **Portal** - validate link, accept upload, track completion; see features/\*.md.
+- **Storage** - private storage behind an interface; S3-compatible bucket in production.
+- **Queue** - A single worker for asnyc tasks; jobs retry with backoff and failure log.
+- **Migrations** - Versioned applied by a migration step before the new version release.
+- **API docs** - OpenAPI and Postman collection checked in CI against the running app.
 
 **Key Decisions**
 
-- **Hash magic links** — a database leak exposes no working links.
-- **Derived progress** — no status column to contradict the files.
-- **API-first** — business rules live behind the API, independent of the UI.
-- **Private storage** — no direct public access to files.
-- **File content** — a client-declared Content-Type proves nothing.
+- **Hash magic links** - a database leak exposes no working links.
+- **Derived progress** - no status column to contradict the files.
+- **API-first** - business rules live behind the API, independent of the UI.
+- **Private storage** - no direct public access to files.
+- **File content** - a client-declared Content-Type proves nothing.
 
 ## Performance
 
 **Performance Considerations**
 
-- **Indexes** — cover owner-scoped request lists, token lookups, and session lookups.
-- **Pagination** — cursor pagination keeps list cost predictable regardless of table size.
-- **Uploads** — stream to storage with a hard size; never buffer a whole file in memory.
-- **Downloads** — serve through signed storage URLs, not with application api.
+- **Indexes** - cover owner-scoped request lists, token lookups, and session lookups.
+- **Pagination** - cursor pagination keeps list cost predictable regardless of table size.
+- **Uploads** - stream to storage with a hard size; never buffer a whole file in memory.
+- **Downloads** - serve through signed storage URLs, not with application api.
 
 **Target Benchmarks**
 
 Measured with k6 on the deployed demo. Replace with real results.
 
-- **Request list (1,000 requests)** — p95 under `200 ms`.
-- **Portal lookup** — p95 under `150 ms`.
-- **5 MB upload** — under `3 s`, excluding network latency.
-- **Error rate** — under `1%`.
+- **Request list (1,000 requests)** - p95 under `200 ms`.
+- **Portal lookup** - p95 under `150 ms`.
+- **5 MB upload** - under `3 s`, excluding network latency.
+- **Error rate** - under `1%`.
 
 ## Testing
 
@@ -676,10 +676,10 @@ Measured with k6 on the deployed demo. Replace with real results.
 
 **Environments**
 
-- **Demo** — a production-like environment where the k6 benchmark runs.
-- **Local** — Docker Compose for the application, PostgreSQL, and RustFS.
-- **Staging** — production-like environment for deployment and integration checks.
-- **Production** — PostgreSQL and object storage with single app instance scale.
+- **Demo** - a production-like environment where the k6 benchmark runs.
+- **Local** - Docker Compose for the application, PostgreSQL, and RustFS.
+- **Staging** - production-like environment for deployment and integration checks.
+- **Production** - PostgreSQL and object storage with single app instance scale.
 
 **Deployment Flow**
 
@@ -689,17 +689,17 @@ Push -> CI (lint, analysis, tests) -> Build -> Migrate -> Deploy -> Health Check
 
 **Production Services**
 
-- **App container** — serves the API and built UI assets from one origin.
-- **Database** — Relational Database Management System such as PostgreSQL.
-- **Object storage** — private S3-compatible bucket.
+- **App container** - serves the API and built UI assets from one origin.
+- **Database** - Relational Database Management System such as PostgreSQL.
+- **Object storage** - private S3-compatible bucket.
 
 **Production Monitoring**
 
-- **Health check** — application and database availability via GET /health.
-- **Structured logs** — no tokens, session cookies, or portal paths.
-- **Uptime check** — external ping on the health endpoint.
-- **Signals to watch** — upload p95, 429 rate, database connection pool saturation.
-- **Backups** — daily database snapshots; object storage owns file durability.
+- **Health check** - application and database availability via GET /health.
+- **Structured logs** - no tokens, session cookies, or portal paths.
+- **Uptime check** - external ping on the health endpoint.
+- **Signals to watch** - upload p95, 429 rate, database connection pool saturation.
+- **Backups** - daily database snapshots; object storage owns file durability.
 
 **Production Security**
 
@@ -725,8 +725,8 @@ Merge -> CI -> Tag -> Migrate -> Deploy -> Health Check
 
 **Versioning**
 
-- **App** — semantic tags such as `v1.0.0`.
-- **API** — versioned paths; breaking changes use `/api/v2`.
+- **App** - semantic tags such as `v1.0.0`.
+- **API** - versioned paths; breaking changes use `/api/v2`.
 
 **Rollout**
 
@@ -741,10 +741,10 @@ Merge -> CI -> Tag -> Migrate -> Deploy -> Health Check
 
 ## Discussion
 
-- **Future work** — Notifications, teams, retention, file scanning, and e-signatures.
-- **Security** — Magic links require secure token handling, expiry, and revocation.
-- **Storage** — PostgreSQL stores metadata while private object storage stores files.
-- **Consistency** — Database transactions protect api state; storage failures require cleanup.
-- **Scaling** — Start simple and add infrastructure when measured load requires it.
-- **Files** — File content, size, and type must be validated before storage.
-- **Abuse** — registration is open so rate limiting and owner isolation are the controls.
+- **Future work** - Notifications, teams, retention, file scanning, and e-signatures.
+- **Security** - Magic links require secure token handling, expiry, and revocation.
+- **Storage** - PostgreSQL stores metadata while private object storage stores files.
+- **Consistency** - Database transactions protect api state; storage failures require cleanup.
+- **Scaling** - Start simple and add infrastructure when measured load requires it.
+- **Files** - File content, size, and type must be validated before storage.
+- **Abuse** - registration is open so rate limiting and owner isolation are the controls.

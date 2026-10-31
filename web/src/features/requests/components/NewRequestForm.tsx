@@ -142,7 +142,7 @@ export function NewRequestForm({ onSubmit, onCancel }: NewRequestFormProps) {
                     id="request-title"
                     ref={titleRef}
                     className={cn(INPUT_CLASS, errors.title ? "border-danger" : "border-border")}
-                    placeholder="e.g. 2024 Corporate Tax Return — Acme Corp"
+                    placeholder="e.g. 2024 Corporate Tax Return - Acme Corp"
                     value={title}
                     maxLength={200}
                     aria-invalid={errors.title ? true : undefined}

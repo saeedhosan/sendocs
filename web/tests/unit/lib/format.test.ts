@@ -19,8 +19,8 @@ describe('timeAgo', () => {
   const now = new Date('2026-06-01T12:00:00Z').getTime()
 
   it('returns a dash for missing or invalid input', () => {
-    expect(timeAgo(null, now)).toBe('—')
-    expect(timeAgo('not-a-date', now)).toBe('—')
+    expect(timeAgo(null, now)).toBe('-')
+    expect(timeAgo('not-a-date', now)).toBe('-')
   })
 
   it('describes minutes, hours and days', () => {

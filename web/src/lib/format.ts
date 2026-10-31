@@ -19,13 +19,13 @@ export function formatBytes(bytes: number): string {
 /** Relative recency for the "last activity" column. */
 export function timeAgo(iso: string | null, now: number = Date.now()): string {
   if (!iso) {
-    return '—'
+    return '-'
   }
 
   const then = new Date(iso).getTime()
 
   if (Number.isNaN(then)) {
-    return '—'
+    return '-'
   }
 
   const seconds = Math.floor(Math.max(0, now - then) / 1000)

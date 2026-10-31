@@ -53,7 +53,7 @@ describe('LandingPage', () => {
       expect(
         screen.getByRole('heading', { name: 'How it works' }),
       ).toBeInTheDocument()
-      expect(screen.getByText('01 — Create a request')).toBeInTheDocument()
+      expect(screen.getByText('01 - Create a request')).toBeInTheDocument()
       expect(
         screen.getByRole('heading', {
           name: 'Ready to simplify document collection?',

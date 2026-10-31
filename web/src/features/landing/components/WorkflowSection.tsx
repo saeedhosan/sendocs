@@ -1,16 +1,16 @@
 const steps = [
   {
-    step: '01 — Create a request',
+    step: '01 - Create a request',
     title: 'Choose a title and list the required documents',
     body: 'Specify the items you need and provide clear instructions for each file.',
   },
   {
-    step: '02 — Share the link',
+    step: '02 - Share the link',
     title: 'Send your client a secure link',
     body: 'Clients open the portal and submit documents without creating an account.',
   },
   {
-    step: '03 — Collect documents',
+    step: '03 - Collect documents',
     title: 'Track uploads and download the files',
     body: 'Monitor progress in real time and download received files securely.',
   },

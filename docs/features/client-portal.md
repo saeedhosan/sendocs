@@ -1,4 +1,4 @@
-# Client Portal — Technical Design
+# Client Portal - Technical Design
 
 A client opens a magic link, sees what is being asked for, and uploads one file per item. This document covers the portal screens, upload flow, and client access rules. Token handling is covered in secure-magic-link.md, request and file validation in document-requests.md, and progress calculation in progress-tracking.md.
 
@@ -99,11 +99,11 @@ Item Marked Uploaded
 
 **Portal Behavior**
 
-- **One page** — all required items on a single screen; uploads can be in any order.
-- **Resumable** — progress is derived, so leaving and returning preserves completed uploads.
-- **Per-item state** — each row shows waiting, uploading, uploaded, or failed, with retry on failure.
-- **Mobile-first** — responsive layout with large tap targets.
-- **Accessible** — labelled controls, visible focus, and status not conveyed by color alone.
+- **One page** - all required items on a single screen; uploads can be in any order.
+- **Resumable** - progress is derived, so leaving and returning preserves completed uploads.
+- **Per-item state** - each row shows waiting, uploading, uploaded, or failed, with retry on failure.
+- **Mobile-first** - responsive layout with large tap targets.
+- **Accessible** - labelled controls, visible focus, and status not conveyed by color alone.
 
 ## Data Design
 
@@ -132,23 +132,23 @@ The portal adds nothing to the server schema. Every value it shows comes from th
 
 ### Consumed Endpoints
 
-**GET /api/v1/portal/{token}** — Load the portal view.
+**GET /api/v1/portal/{token}** - Load the portal view.
 
 - **Payload:** none; the token is in the path
-- **Response:** `200` — `PortalView`: request title, `expiresAt`, the four progress fields including `lastActivityAt`, and every item
-- **Failure:** `410` — unknown, malformed, expired, revoked, or tampered, one identical body for all five
-- **Failure:** `429` — rate limited (60 reads per minute per IP)
+- **Response:** `200` - `PortalView`: request title, `expiresAt`, the four progress fields including `lastActivityAt`, and every item
+- **Failure:** `410` - unknown, malformed, expired, revoked, or tampered, one identical body for all five
+- **Failure:** `429` - rate limited (60 reads per minute per IP)
 
-**POST /api/v1/portal/{token}/items/{itemId}/file** — Upload one file for one item.
+**POST /api/v1/portal/{token}/items/{itemId}/file** - Upload one file for one item.
 
 - **Payload:** `file` (multipart)
-- **Response:** `200` — the updated portal view
-- **Failure:** `404` — the item is not on the request this token resolved
-- **Failure:** `409` — the item already has a file
-- **Failure:** `410` — unknown, malformed, expired, revoked, or tampered, one identical body
-- **Failure:** `413` — over the 25 MB cap
-- **Failure:** `415` — sniffed type not allowed, or extension mismatch
-- **Failure:** `429` — rate limited (30 uploads per hour per IP)
+- **Response:** `200` - the updated portal view
+- **Failure:** `404` - the item is not on the request this token resolved
+- **Failure:** `409` - the item already has a file
+- **Failure:** `410` - unknown, malformed, expired, revoked, or tampered, one identical body
+- **Failure:** `413` - over the 25 MB cap
+- **Failure:** `415` - sniffed type not allowed, or extension mismatch
+- **Failure:** `429` - rate limited (30 uploads per hour per IP)
 
 > Validation and storage semantics are in `document-requests.md`; `410` rules in `secure-magic-link.md`. No owner endpoint is reachable from this surface.
 
@@ -162,39 +162,39 @@ The portal adds nothing to the server schema. Every value it shows comes from th
 
 ### Core Components
 
-**PortalController** — Serve the app shell for the single portal route, with no owner data in it.
+**PortalController** - Serve the app shell for the single portal route, with no owner data in it.
 
 - `show(): Response`
 
-**PortalApp** — Boot the React app, read token, and load view. `PortalView`/`PortalItem` carry no download URL, storage key, or `mimeType`.
+**PortalApp** - Boot the React app, read token, and load view. `PortalView`/`PortalItem` carry no download URL, storage key, or `mimeType`.
 
-- `boot(): Promise<PortalView>` — read path once; call portal endpoint
+- `boot(): Promise<PortalView>` - read path once; call portal endpoint
 - `refetch(): Promise<PortalView>`
 - `onDeadLink(): void`
 
-**ItemList** — Render required items and states.
+**ItemList** - Render required items and states.
 
 - `mount(items: Item[]): void`
 - `render(): void`
-- `remaining(): number` — from payload, never recounted locally
+- `remaining(): number` - from payload, never recounted locally
 
-**ItemUpload** — Pick, pre-check, transfer, and report one item.
+**ItemUpload** - Pick, pre-check, transfer, and report one item.
 
 - `pick(itemId: string): void`
 - `precheck(file: File, itemId: string): PrecheckResult`
 - `send(itemId: string, file: File): Promise<void>`
 - `retry(itemId: string): void`
 
-**TransferWatcher** — Report bytes sent for upload progress.
+**TransferWatcher** - Report bytes sent for upload progress.
 
-- `watch(xhr: XMLHttpRequest): void` — emits percentage and rate
+- `watch(xhr: XMLHttpRequest): void` - emits percentage and rate
 - `cancel(): void`
 
-**DeadLink** — The single dead-link screen defined in `secure-magic-link.md`.
+**DeadLink** - The single dead-link screen defined in `secure-magic-link.md`.
 
-- `render(): void` — no portal shell, no request title, no item labels
+- `render(): void` - no portal shell, no request title, no item labels
 
-**UploadErrors** — Map a failure code to a sentence the client can act on.
+**UploadErrors** - Map a failure code to a sentence the client can act on.
 
 - `message(code: string): string`
 - `retryable(code: string): boolean`
@@ -414,14 +414,14 @@ The portal adds nothing to the server schema. Every value it shows comes from th
 
 ## Performance
 
-- **First load** — one static shell, then one portal request; no other third-party bytes.
-- **Per upload** — one multipart request, streamed straight to storage with a hard cap.
-- **Concurrency** — at most two transfers, so a phone's connection is not fragmented.
-- **Validation** — the local pre-check avoids a doomed transfer entirely; server sniffing reads only the first bytes.
-- **Refetch** — on focus and after each upload, never on a timer.
-- **Payload** — a portal view is a title, up to ten items, and four numbers; there are no file bytes.
-- **Rendering** — the list is small enough that no virtualisation is needed.
-- **Budget** — the page is dominated by the transfer, not by anything this design adds.
+- **First load** - one static shell, then one portal request; no other third-party bytes.
+- **Per upload** - one multipart request, streamed straight to storage with a hard cap.
+- **Concurrency** - at most two transfers, so a phone's connection is not fragmented.
+- **Validation** - the local pre-check avoids a doomed transfer entirely; server sniffing reads only the first bytes.
+- **Refetch** - on focus and after each upload, never on a timer.
+- **Payload** - a portal view is a title, up to ten items, and four numbers; there are no file bytes.
+- **Rendering** - the list is small enough that no virtualisation is needed.
+- **Budget** - the page is dominated by the transfer, not by anything this design adds.
 
 ## Error Handling
 
@@ -450,10 +450,10 @@ The portal adds nothing to the server schema. Every value it shows comes from th
 
 **Terminal vs Retryable**
 
-- 410 — terminal for session; no retry.
-- 413, 415 — terminal for that file; pick another.
-- 409 — terminal but successful; row marked done.
-- 429, 500 — retryable; row stays actionable.
+- 410 - terminal for session; no retry.
+- 413, 415 - terminal for that file; pick another.
+- 409 - terminal but successful; row marked done.
+- 429, 500 - retryable; row stays actionable.
 
 ## Testing
 

@@ -1,4 +1,4 @@
-# Document Requests — Technical Design
+# Document Requests - Technical Design
 
 This document defines how document requests work for owners. It covers creating requests, sharing a magic link with a client, tracking upload progress, storing uploaded files, and managing requests from the owner dashboard.
 
@@ -120,10 +120,10 @@ Owner Reads, Downloads, Revokes, or Deletes
 
 **Indexes:**
 
-- `document_requests (owner_id, created_at, id)` — the owner-scoped list cursor
-- `document_requests (token_hash)` unique — the only portal lookup
-- `request_items (request_id, position)` — ordered items for a request
-- `documents (request_item_id)` unique — also what turns a double upload into a 409
+- `document_requests (owner_id, created_at, id)` - the owner-scoped list cursor
+- `document_requests (token_hash)` unique - the only portal lookup
+- `request_items (request_id, position)` - ordered items for a request
+- `documents (request_item_id)` unique - also what turns a double upload into a 409
 
 **Relationships:**
 
@@ -137,60 +137,60 @@ Owner Reads, Downloads, Revokes, or Deletes
 
 ### Requests
 
-**POST /api/v1/requests** — Create a request with its required items.
+**POST /api/v1/requests** - Create a request with its required items.
 
 - **Payload:** `title`, `items` (1–10 labels, in display order)
-- **Response:** `201` — request, items, and the magic link, shown once
-- **Failure:** `401` — no valid session
-- **Failure:** `422` — title or item count out of range, with per-field details
-- **Failure:** `429` — rate limited (120 per minute)
+- **Response:** `201` - request, items, and the magic link, shown once
+- **Failure:** `401` - no valid session
+- **Failure:** `422` - title or item count out of range, with per-field details
+- **Failure:** `429` - rate limited (120 per minute)
 
-**GET /api/v1/requests** — List the caller's own requests with progress.
+**GET /api/v1/requests** - List the caller's own requests with progress.
 
 - **Payload:** `limit`, `cursor` (query parameters)
-- **Response:** `200` — a page of requests, each with counts and an nextCursor
-- **Failure:** `401` — no valid session
-- **Failure:** `422` — malformed cursor
-- **Failure:** `429` — rate limited (120 per minute)
+- **Response:** `200` - a page of requests, each with counts and an nextCursor
+- **Failure:** `401` - no valid session
+- **Failure:** `422` - malformed cursor
+- **Failure:** `429` - rate limited (120 per minute)
 
-**GET /api/v1/requests/{id}** — One request with its items and signed download URLs.
+**GET /api/v1/requests/{id}** - One request with its items and signed download URLs.
 
 - **Payload:** none; session cookie
-- **Response:** `200` — title, expiry, revoked state, items, and a signed URL per-item
-- **Failure:** `401` — no valid session
-- **Failure:** `404` — not found, or owned by another owner
-- **Failure:** `429` — rate limited (120 per minute)
+- **Response:** `200` - title, expiry, revoked state, items, and a signed URL per-item
+- **Failure:** `401` - no valid session
+- **Failure:** `404` - not found, or owned by another owner
+- **Failure:** `429` - rate limited (120 per minute)
 
-**POST /api/v1/requests/{id}/revoke** — Revoke the magic link.
-
-- **Payload:** none; session cookie plus CSRF header
-- **Response:** `200` — the request with revokedAt set
-- **Failure:** `401` — no valid session
-- **Failure:** `404` — not found, or owned by another owner
-- **Failure:** `429` — rate limited (120 per minute)
-
-**DELETE /api/v1/requests/{id}/items/{itemId}/document** — Delete one uploaded document.
+**POST /api/v1/requests/{id}/revoke** - Revoke the magic link.
 
 - **Payload:** none; session cookie plus CSRF header
-- **Response:** `204` — no content
-- **Failure:** `401` — no valid session
-- **Failure:** `404` — no such item on the caller's request, or no document on the item
-- **Failure:** `429` — rate limited (120 per minute)
+- **Response:** `200` - the request with revokedAt set
+- **Failure:** `401` - no valid session
+- **Failure:** `404` - not found, or owned by another owner
+- **Failure:** `429` - rate limited (120 per minute)
 
-**DELETE /api/v1/requests/{id}** — Delete the request and every file in it.
+**DELETE /api/v1/requests/{id}/items/{itemId}/document** - Delete one uploaded document.
 
 - **Payload:** none; session cookie plus CSRF header
-- **Response:** `204` — no content
-- **Failure:** `401` — no valid session
-- **Failure:** `404` — not found, or owned by another owner
-- **Failure:** `429` — rate limited (120 per minute)
+- **Response:** `204` - no content
+- **Failure:** `401` - no valid session
+- **Failure:** `404` - no such item on the caller's request, or no document on the item
+- **Failure:** `429` - rate limited (120 per minute)
+
+**DELETE /api/v1/requests/{id}** - Delete the request and every file in it.
+
+- **Payload:** none; session cookie plus CSRF header
+- **Response:** `204` - no content
+- **Failure:** `401` - no valid session
+- **Failure:** `404` - not found, or owned by another owner
+- **Failure:** `429` - rate limited (120 per minute)
 
 > Every write above can also return 403 csrf_failed on a stale or missing
 > X-CSRF-Token, as defined in auth-and-access.md. This is listed once in the error table.
 
 ### Core Components
 
-**RequestController** — Owner request endpoints, validation, and error mapping.
+**RequestController** - Owner request endpoints, validation, and error mapping.
 
 - `store(Request $r): JsonResponse`
 - `index(Request $r): JsonResponse`
@@ -199,7 +199,7 @@ Owner Reads, Downloads, Revokes, or Deletes
 - `destroy(Request $r, string $id): Response`
 - `destroyDocument(Request $r, string $id, string $itemId): Response`
 
-**RequestService** — Create, read, revoke, and delete requests.
+**RequestService** - Create, read, revoke, and delete requests.
 
 - `create(User $u, string $title, array $labels): CreatedRequest`
 - `findForUser(User $u, string $id): DocumentRequest`
@@ -207,42 +207,42 @@ Owner Reads, Downloads, Revokes, or Deletes
 - `delete(User $u, string $id): void`
 - `paginate(User $u, Cursor $c, int $limit): Page`
 
-**MagicLinkService** — Build the link for a newly created request.
+**MagicLinkService** - Build the link for a newly created request.
 
-- `issue(DocumentRequest $r): string` — returns the raw link, once
+- `issue(DocumentRequest $r): string` - returns the raw link, once
 - `hash(string $token): string`
-- `expiryFor(int $ttlDays): Carbon` — delegates to policy in `secure-magic-link.md`
+- `expiryFor(int $ttlDays): Carbon` - delegates to policy in `secure-magic-link.md`
 
-**ProgressCalculator** — Derive progress from items and documents.
+**ProgressCalculator** - Derive progress from items and documents.
 
-- `forRequest(string $requestId): Progress` — one query, no stored status
-- `forRequests(array $requestIds): array` — batched for the list endpoint
+- `forRequest(string $requestId): Progress` - one query, no stored status
+- `forRequests(array $requestIds): array` - batched for the list endpoint
 
-**DocumentService** — Validate, store, and serve one file per item.
+**DocumentService** - Validate, store, and serve one file per item.
 
 - `upload(RequestItem $i, UploadedFile $f): Document`
 - `findForItem(string $itemId): ?Document`
 - `deleteForItem(RequestItem $i): void`
 - `deleteForRequest(string $requestId): void`
-- `signedUrlFor(Document $d): string` — 5 minutes, `attachment` and `nosniff`
+- `signedUrlFor(Document $d): string` - 5 minutes, `attachment` and `nosniff`
 
-**FileValidator** — Size, content type, and extension checks.
+**FileValidator** - Size, content type, and extension checks.
 
-- `assertSize(UploadedFile $f): void` — `413` over the cap
-- `assertType(UploadedFile $f, string $originalName): string` — returns the sniffed type
-- `sniff(Stream $s): string` — reads magic bytes, never the `Content-Type` header
+- `assertSize(UploadedFile $f): void` - `413` over the cap
+- `assertType(UploadedFile $f, string $originalName): string` - returns the sniffed type
+- `sniff(Stream $s): string` - reads magic bytes, never the `Content-Type` header
 
-**StorageService** — Private object storage behind an interface.
+**StorageService** - Private object storage behind an interface.
 
 - `put(string $key, Stream $s): void`
 - `presignedGet(string $key, int $ttlSeconds): string`
 - `delete(string $key): void`
 - `deleteMany(array $keys): void`
 
-**StorageDeletionOutbox** — Persist storage cleanup intent in PostgreSQL and retry it outside the request path.
+**StorageDeletionOutbox** - Persist storage cleanup intent in PostgreSQL and retry it outside the request path.
 
-- `enqueue(array $storageKeys): void` — inserts keys in the caller's transaction
-- `processBatch(): int` — attempts up to 100 pending deletions and keeps failures for retry
+- `enqueue(array $storageKeys): void` - inserts keys in the caller's transaction
+- `processBatch(): int` - attempts up to 100 pending deletions and keeps failures for retry
 
 ## Low-Level Design
 

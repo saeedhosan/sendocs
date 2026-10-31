@@ -1,4 +1,4 @@
-# Frontend — Technical Design
+# Frontend - Technical Design
 
 The application renders multiple views and surfaces, including the owner dashboard, client portal, landing page, and modals, while receiving data and creating resources through REST APIs.
 

@@ -1,4 +1,4 @@
-# Progress Tracking — Technical Design
+# Progress Tracking - Technical Design
 
 Progress is the uploaded item count divided by the total item count, derived on every read rather than stored to prevent counter drift.
 
@@ -97,7 +97,7 @@ Progress has no table; it is computed from existing tables with no schema change
 - `lastActivityAt` is null when nothing uploaded.
 - No caching; no migration/backfill needed.
 
-> Storing progress requires writes from upload, delete, and create—any miss causes drift. Derivation avoids this.
+> Storing progress requires writes from upload, delete, and create-any miss causes drift. Derivation avoids this.
 
 ## API Design
 
@@ -194,21 +194,21 @@ No endpoint exists for progress on its own
 
 ### Core Components
 
-**ProgressCalculator** — Derive progress for one request or for a page of them.
+**ProgressCalculator** - Derive progress for one request or for a page of them.
 
 - `forRequest(string $requestId): Progress`
-- `forRequests(array $requestIds): array` — one grouped statement for the whole page
+- `forRequests(array $requestIds): array` - one grouped statement for the whole page
 - `status(int $uploaded, int $total): string`
 
-**ProgressQuery** — The single statement behind every count.
+**ProgressQuery** - The single statement behind every count.
 
-- `countsByRequest(array $requestIds): array` — keyed by request id, zero-filled
-- `lastActivityByRequest(array $requestIds): array` — keyed by request id, empty:null
+- `countsByRequest(array $requestIds): array` - keyed by request id, zero-filled
+- `lastActivityByRequest(array $requestIds): array` - keyed by request id, empty:null
 
-**ProgressSerializer** — Turn a `Progress` into the four payload fields.
+**ProgressSerializer** - Turn a `Progress` into the four payload fields.
 
 - `fields(Progress $p): array`
-- `percent(Progress $p): int` — computed here for display, never stored or sent
+- `percent(Progress $p): int` - computed here for display, never stored or sent
 
 ## Trade-offs
 
@@ -282,14 +282,14 @@ No endpoint exists for progress on its own
 
 ## Performance
 
-- **Counts query** — one grouped LEFT JOIN per list page and per detail view.
-- **Round trips** — two queries per list page: the page, then the counts.
-- **Index use** — reads the item and document indexes; no sort and no scan.
-- **Aggregation** — grouped over at most 10 requests per page, keeping the row small.
-- **No cache** — nothing is invalidated, because nothing is stored.
-- **Percent** — computed once, in the serializer, on two integers.
-- **Null handling** — a request with no documents costs nothing extra.
-- **Negligible share** — small compared with file sniffing, hashing, and object storage.
+- **Counts query** - one grouped LEFT JOIN per list page and per detail view.
+- **Round trips** - two queries per list page: the page, then the counts.
+- **Index use** - reads the item and document indexes; no sort and no scan.
+- **Aggregation** - grouped over at most 10 requests per page, keeping the row small.
+- **No cache** - nothing is invalidated, because nothing is stored.
+- **Percent** - computed once, in the serializer, on two integers.
+- **Null handling** - a request with no documents costs nothing extra.
+- **Negligible share** - small compared with file sniffing, hashing, and object storage.
 
 ## Error Handling
 

@@ -90,7 +90,7 @@ export function LinkReveal({ open, link, onClose }: LinkRevealProps) {
                 </p>
                 {copyFailed ? (
                     <p className="text-xs text-muted-foreground" role="alert">
-                        Copy failed — select the link above and copy it manually.
+                        Copy failed - select the link above and copy it manually.
                     </p>
                 ) : null}
                 <p className="sr-only" aria-live="polite">

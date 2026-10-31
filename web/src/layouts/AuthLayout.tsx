@@ -13,7 +13,7 @@ export type AuthLayoutProps = {
 /**
  * The one container every auth page renders inside: the shared header (the
  * dashboard header once signed in, otherwise the minimal auth header), a
- * centered card, and the shared site footer — identical on login, register,
+ * centered card, and the shared site footer - identical on login, register,
  * forgot/reset password, verify-email, and the settings pages.
  */
 export function AuthLayout({ children, headerAction }: AuthLayoutProps) {

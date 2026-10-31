@@ -91,7 +91,7 @@ export function DeleteAccountPage() {
           <AlertIcon size={16} aria-hidden="true" />
           This cannot be undone.
         </div>
-        Deleting your account removes the account and everything it owns — every
+        Deleting your account removes the account and everything it owns - every
         document request and uploaded file.
         <span className="block mt-1 text-muted-foreground">
           Stored files are removed afterwards by a cleanup job.
