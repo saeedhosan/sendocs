@@ -18,11 +18,11 @@ class DocumentFactory extends Factory
     {
         return [
             'request_item_id' => RequestItem::factory(),
-            'storage_key' => Str::random(40),
-            'original_name' => fake()->word() . '.' . Str::random(3),
-            'mime_type' => fake()->mimeType(),
-            'size_bytes' => fake()->numberBetween(100, 10000000),
-            'sha256' => Str::random(64),
+            'storage_key'     => Str::random(40),
+            'original_name'   => fake()->word().'.'.Str::random(3),
+            'mime_type'       => fake()->mimeType(),
+            'size_bytes'      => fake()->numberBetween(100, 10000000),
+            'sha256'          => Str::random(64),
         ];
     }
 }

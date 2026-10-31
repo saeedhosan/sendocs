@@ -17,8 +17,8 @@ class AuthIdentityFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::factory(),
-            'provider' => fn () => array_rand(['google', 'github', 'gitlab', 'facebook']),
+            'user_id'     => User::factory(),
+            'provider'    => fn (): int => array_rand(['google', 'github', 'gitlab', 'facebook']),
             'provider_id' => Str::random(32),
         ];
     }

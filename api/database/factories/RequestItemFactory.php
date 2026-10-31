@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Models\RequestItem;
 use App\Models\DocumentRequest;
+use App\Models\RequestItem;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 /**
  * @extends Factory<RequestItem>
@@ -18,8 +17,8 @@ class RequestItemFactory extends Factory
     {
         return [
             'request_id' => DocumentRequest::factory(),
-            'label' => fake()->word(),
-            'position' => fake()->numberBetween(1, 10),
+            'label'      => fake()->word(),
+            'position'   => fake()->numberBetween(1, 10),
         ];
     }
 

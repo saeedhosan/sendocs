@@ -19,18 +19,18 @@ class AccountTokenFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::factory(),
-            'purpose' => fn () => Str::random(10) === 'password' ? 'password_reset' : 'email_verification',
+            'user_id'    => User::factory(),
+            'purpose'    => fn (): string => Str::random(10) === 'password' ? 'password_reset' : 'email_verification',
             'token_hash' => Str::random(64),
             'expires_at' => now()->addDays(21),
-            'used_at' => null,
+            'used_at'    => null,
         ];
     }
 
     public function passwordReset(): static
     {
         return $this->state(fn (array $attributes): array => [
-            'purpose' => AccountToken::PURPOSE_PASSWORD_RESET,
+            'purpose'    => AccountToken::PURPOSE_PASSWORD_RESET,
             'token_hash' => Str::random(64),
         ]);
     }

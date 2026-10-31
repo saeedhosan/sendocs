@@ -17,8 +17,8 @@ class DocumentRequestFactory extends Factory
     public function definition(): array
     {
         return [
-            'owner_id' => User::factory(),
-            'title' => fake()->sentence(),
+            'owner_id'   => User::factory(),
+            'title'      => fake()->sentence(),
             'token_hash' => Str::random(64),
             'expires_at' => now()->addDays(30),
             'revoked_at' => null,

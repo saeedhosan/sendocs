@@ -17,7 +17,7 @@ class SessionFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::factory(),
+            'user_id'    => User::factory(),
             'token_hash' => Str::random(64),
             'expires_at' => now()->addDays(30),
         ];
