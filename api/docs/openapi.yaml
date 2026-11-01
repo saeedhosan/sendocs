@@ -30,8 +30,10 @@ info:
     the sniffed type must agree with the file extension.
 
 servers:
+  - url: https://api-sendocs.saeedhosan.com
+    description: Live API base URL.
   - url: http://127.0.0.1:8000
-    description: API base URL.
+    description: Local API base URL.
 
 tags:
   - name: Health
