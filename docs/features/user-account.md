@@ -87,7 +87,7 @@ The email address is not accepted by this endpoint.
 - Response: `200` - updated `User`.
 - Failures: `401` unauthenticated, `403` CSRF failed, `413` too large, `415` unsupported or mismatched type, `422` invalid image, `429` rate limited.
 
-The server determines the image type from the file bytes, not the request Content-Type. The detected type must match the filename extension. SVG is not accepted. The server must decode the image and enforce a bounded decoded image size before storing it. The original filename is not used as a storage key.
+The server determines the image type from the file bytes, not the request Content-Type. The detected type must match the filename extension. SVG is not accepted. The server must decode the image and reject either dimension above 4,096 pixels or more than 16 megapixels in total before storing it. The original filename is not used as a storage key.
 
 ### Serve Avatar
 
@@ -135,7 +135,7 @@ Removing an avatar restores the initials fallback.
 - The session response includes the authenticated avatar endpoint URL after upload.
 - Owners can update their own display name; blank and overlong names return `422`.
 - An update cannot change the email address or another user's profile.
-- JPEG, PNG, and WebP uploads succeed within the size and decoded-dimension limits.
+- JPEG, PNG, and WebP uploads succeed within the 2 MB, 4,096-pixel-per-dimension, and 16-megapixel limits.
 - Oversized, unsupported, mismatched, malformed, and SVG uploads are rejected.
 - A failed replacement leaves the previous avatar available.
 - The old object is queued for deletion after a successful replacement.
