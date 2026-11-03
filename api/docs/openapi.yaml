@@ -441,6 +441,7 @@ paths:
                   type: string
                   minLength: 1
                   maxLength: 120
+                  description: Trimmed; whitespace-only values are rejected.
       responses:
         "200":
           description: Updated owner profile.
@@ -490,7 +491,7 @@ paths:
       tags: [Owner Account]
       operationId: uploadAccountAvatar
       summary: Upload or replace the signed-in owner's avatar.
-      description: Accepts JPEG, PNG, or WebP up to 2 MB. The server sniffs and decodes the image; SVG is not accepted.
+      description: Accepts JPEG, PNG, or WebP up to 2 MB. The server sniffs and decodes the image, rejects dimensions above 4,096 pixels or 16 megapixels total, and rejects SVG.
       security: [{ sessionCookie: [] }, { csrfToken: [] }]
       x-rate-limit: { limit: 120, window: 60, key: user }
       requestBody:
@@ -504,7 +505,7 @@ paths:
                 avatar:
                   type: string
                   format: binary
-                  description: JPEG, PNG, or WebP; maximum 2 MB. Detected type must match the extension.
+                  description: JPEG, PNG, or WebP; maximum 2 MB, 4,096 pixels per dimension, and 16 megapixels total. Detected type must match the extension.
       responses:
         "200":
           description: Updated profile with the new avatar URL.
