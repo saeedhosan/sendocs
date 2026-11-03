@@ -1,120 +1,124 @@
 # User Account — Technical Design
 
-Sendocs provides one authenticated Account page for owners to manage their profile. The recommended approach is to keep profile data on the Sendocs user record, independent of the authentication provider, and store avatars in private object storage.
+Authenticated Account page for owners to manage their profile, keeping profile data on the user record and avatars in private object storage.
 
-## Purpose
-
-Owners need a simple place to view and maintain their account identity. A consistent profile across email/password and Google sign-in avoids tying account information to a specific login provider.
-
-## Scope
+> References: auth-and-access.md (session, CSRF), document-requests.md (avatar upload/download endpoints).
 
 ### In Scope
 
-- View the signed-in owner's display name, login email, and avatar.
-- Update the display name.
-- Upload, replace, and remove one profile avatar.
-- Use the same profile for email/password and Google sign-in accounts.
-- Provide an initials fallback when no avatar is set.
-- Keep profile and future account controls within one Account page.
+- Logged in user can view profile: name, email, picture.
+- User can update the disaply name and oauth provdered name.
+- User can upload, replace, and remove one profile avatar.
+- Use the same profile for custom and Oauth auth account.
+- User get an initials fallback when no avatar is set.
+- Keep profile and future account controls within account.
 
 ### Out of Scope
 
 - Changing the login email address.
 - Linking, unlinking, or managing authentication providers.
 - Importing or synchronizing provider-hosted profile images.
-- Notification preferences and other account preferences for the initial release.
-- Public profiles or publicly accessible avatar URLs.
+- Notification and other account preferences.
+
+## UX and UI
+
+**Routes**
+
+- `/account`, view and edit profile.
+
+**User Flow**
+
+```text
+Owner
+  |
+Account page loaded
+  |
+Update display name or upload avatar
+  |
+Changes saved, avatar streamed or initials shown
+  |
+Remove avatar, initials fallback displayed
+```
+
+**Foundation Screens**
+
+- Profile view, with name, email, and avatar initials.
+- Avatar editor, with upload zone and preview.
+- Initials fallback when no avatar is set.
+- Linked sections: Changes password, Delete account
 
 ## Data Design
 
-The profile belongs to the Sendocs user, not an authentication identity. Email/password and Google sign-in accounts use the same profile fields and avatar storage. No separate avatar table is required because each user has at most one current avatar.
+The profile belongs to the existing users table; no need new table.
 
 **`users` — additional columns**
 
-| Column | Type | Key / Constraint | Purpose |
-| --- | --- | --- | --- |
-| `avatar_key` | `VARCHAR` | `NULL` | Random key for the private stored avatar. |
-| `avatar_mime_type` | `VARCHAR(100)` | `NULL` | Server-detected image type used when serving the avatar. |
-| `avatar_updated_at` | `TIMESTAMPTZ` | `NULL` | Time of the last successful avatar change. |
-
-**Indexes:** No additional index — avatar fields are read through the existing user lookup by primary key.
-
-**Relationships:** `users` → private object storage — one optional avatar object per user. The database stores the private storage key and metadata, never image bytes or a public URL.
+| Column              | Type           | Key / Constraint | Purpose                                    |
+| ------------------- | -------------- | ---------------- | ------------------------------------------ |
+| `avatar_key`        | `VARCHAR`      | `NULL`           | Random key for the private stored avatar.  |
+| `avatar_mime_type`  | `VARCHAR(100)` | `NULL`           | Server-detected image type .               |
+| `avatar_updated_at` | `TIMESTAMPTZ`  | `NULL`           | Time of the last successful avatar change. |
 
 ## API Design
 
-All endpoints are under `/api/v1`. Owner endpoints require the session cookie. State-changing endpoints also require `X-CSRF-Token`.
+State-changing endpoints also require `X-CSRF-Token`.
 
-### Current Profile
+### Session
 
-**GET /api/v1/auth/session** — Return the signed-in owner's session and profile.
+Existing response: auth-and-access.md with new filed `user.avatarUrl` or null
 
-- **Payload:** No request body.
-- **Response:** Existing session response with `user.avatarUrl`; same-origin authenticated avatar endpoint URL or `null`.
-- **Success:** `200`
-- **Failure:** `401` — no valid owner session.
+### Account
 
-### Update Display Name
+**PATCH /api/v1/account** - Update user display name.
 
-**PATCH /api/v1/account** — Update the signed-in owner's display name.
-
-- **Payload:** `{ "name": "Display name" }`; trimmed, non-empty, maximum 120 characters.
-- **Response:** Updated `User` profile.
-- **Success:** `200`
-- **Failure:** `401` — unauthenticated; `403` — CSRF validation failed; `422` — invalid name; `429` — rate limit exceeded.
-
-The login email is read-only and is not accepted by this endpoint.
-
-### Upload or Replace Avatar
+- **Payload:** `name`
+- **Response:** `201` - user, CSRF token, session cookie set
+- **Failure:** `409` - email already registered
+- **Failure:** `422` - validation failed, with per-field `details`
+- **Failure:** `429` - rate limited
 
 **POST /api/v1/account/avatar** — Upload or replace the owner's avatar.
 
-- **Payload:** Multipart field `avatar`; JPEG, PNG, or WebP; maximum 2 MB.
-- **Response:** Updated `User` profile with the avatar URL.
-- **Success:** `200`
-- **Failure:** `401` — unauthenticated; `403` — CSRF validation failed; `413` — upload exceeds 2 MB; `415` — unsupported or mismatched image type; `422` — invalid image; `429` — rate limit exceeded.
+- **Payload:** `avatar` - Multipart field; JPEG, PNG, or WebP; maximum 2 MB
+- **Response:** `204` - no content
+- **Failure:** `403` - CSRF check failed
+- **Failure:** `429` - rate limited
 
-The server detects the image type from file bytes, requires the detected type to match the filename extension, rejects SVG, and rejects images with either dimension above 4,096 pixels or more than 16 megapixels total. The original filename is never used as a storage key.
-
-### Serve Avatar
-
-**GET /api/v1/account/avatar** — Stream the signed-in owner's private avatar.
+**GET /api/v1/account/avatar** — Stream the private avatar.
 
 - **Payload:** No request body.
 - **Response:** Image bytes with the server-detected Content-Type.
 - **Success:** `200`
-- **Failure:** `401` — unauthenticated; `404` — no avatar exists; `429` — rate limit exceeded.
+- **Failure:** `403` - CSRF check failed
+- **Failure:** `429` - rate limited
 
-### Remove Avatar
-
-**DELETE /api/v1/account/avatar** — Remove the signed-in owner's avatar.
+**DELETE /api/v1/account/avatar** — Remove the user avatar.
 
 - **Payload:** No request body; requires session cookie and CSRF token.
-- **Response:** Empty response.
-- **Success:** `204`
-- **Failure:** `401` — unauthenticated; `403` — CSRF validation failed; `429` — rate limit exceeded.
-
-Removing an avatar restores the generated initials fallback.
+- **Response:** `204` - Empty response.
+- **Failure:** `403` - CSRF check failed
+- **Failure:** `429` - rate limited
 
 ## Low-Level Design
 
-Avatar replacement and deletion involve both database metadata and object storage, which cannot participate in one atomic transaction. Use the existing storage-deletion outbox to make cleanup retryable.
+Avatar replacement and deletion involve both database metadata and object storage, which cannot participate in one atomic transaction.
+Use the existing storage-deletion outbox to make cleanup retryable.
 
 ### Core Components
 
-**Account Profile Service** — Validates profile updates and coordinates avatar metadata changes.
+**Account Profile Service** — Validates profile updates and avatar metadata changes.
 
 - Update only the authenticated owner's profile.
 - Validate and persist the display name.
 - Coordinate avatar upload, replacement, and removal.
 
-**Private Avatar Storage** — Stores and streams validated avatar objects using the existing private S3-compatible storage.
+**Private Avatar Storage** — Streams validated avatars via existing private S3 storage.
 
 - Generate a random, non-user-controlled storage key.
 - Store the new object before updating the user's avatar metadata.
 - Stream an avatar only after checking the authenticated owner.
 
-**Storage Deletion Outbox** — Reliably schedules obsolete or orphaned avatar objects for cleanup.
+**Storage Deletion Outbox** — Schedules obsolete avatars for cleanup.
 
 - Enqueue the previous object after a successful replacement.
 - Enqueue a newly uploaded object if metadata persistence fails.
@@ -122,22 +126,31 @@ Avatar replacement and deletion involve both database metadata and object storag
 
 ## Trade-offs
 
-- **Private authenticated avatar endpoint** — Keeps avatars private and avoids permanent public URLs, at the cost of serving image requests through the application.
-- **One avatar field set on `users`** — Keeps the model simple for one avatar per user, at the cost of requiring a separate table if avatar history or multiple images are introduced.
-- **No provider avatar synchronization** — Keeps the profile consistent and user-controlled, at the cost of not automatically using a Google profile image.
-- **Alternative considered: public object URLs** — Rejected because account avatars should not be publicly accessible by default.
+**Private Authenticated Avatar Endpoint**
+
+- Benefit: Keeps avatars private and avoids permanent public URLs.
+- Cost: Serves image requests through the application.
+
+**No Provider Avatar Synchronization**
+
+- Benefit: Keeps the profile consistent and user-controlled.
+- Cost: Does not automatically use a Google profile image.
+
+**Alternative Considered: Public Object URLs**
+
+- Rejected because account avatars should not be publicly accessible by default.
 
 ## Security
 
 - Only the authenticated owner can read or change their own profile and avatar.
-- Owner data is scoped to the authenticated user; another user's profile or avatar must never be exposed.
-- Require session authentication for all endpoints and CSRF validation for state-changing endpoints.
-- Keep avatar objects in private storage; do not expose public URLs or storage keys.
-- Do not trust multipart Content-Type or the original filename. Detect the image type from bytes and decode the image before storage.
+- Owner data scoped to authenticated user; never expose another's profile or avatar.
+- Session auth for all; CSRF for state-changing endpoints.
+- Keep avatar objects in private storage; no public URLs or keys.
+- Do not trust multipart Content-Type; detect image type from bytes.
 - Accept JPEG, PNG, and WebP only. Reject SVG and malformed images.
-- Enforce the 2 MB request limit before buffering the complete upload; reject dimensions above 4,096 pixels or 16 megapixels total.
+- Enforce 2 MB limit; reject dimensions over 4,096 pixels or 16MP.
 - Do not fetch or synchronize provider-hosted avatars.
-- Send `X-Content-Type-Options: nosniff` and private cache controls when serving avatar bytes.
+- Send `X-Content-Type-Options: nosniff` and private cache controls.
 - Do not log image bytes, storage keys, or uploaded file contents.
 
 ## Error Handling
@@ -146,11 +159,9 @@ Avatar replacement and deletion involve both database metadata and object storag
 - `403 csrf_failed` — Reject state-changing requests with an invalid or missing CSRF token.
 - `404 avatar_not_found` — Return when the authenticated owner has no avatar.
 - `413 avatar_too_large` — Reject uploads larger than 2 MB.
-- `415 unsupported_avatar_type` — Reject unsupported formats or a mismatch between detected content and filename extension.
-- `422 validation_failed` — Reject blank or overlong display names and malformed or undecodable images.
+- `415 unsupported_avatar_type` — Reject unsupported formats or content/extension mismatch.
+- `422 validation_failed` — Reject blank/overlong names and malformed images.
 - `429 rate_limited` — Reject requests exceeding the configured endpoint rate limit.
-
-If avatar metadata persistence fails after an object is stored, enqueue the new object for cleanup. If old-object deletion fails, retain the outbox entry for retry; do not invalidate the newly saved avatar.
 
 ## Testing
 
@@ -158,23 +169,29 @@ If avatar metadata persistence fails after an object is stored, enqueue the new 
 
 - Validate display-name trimming, required value, and 120-character maximum.
 - Detect supported image formats from bytes and reject mismatched extensions.
-- Reject malformed images, SVG, images over 2 MB, dimensions over 4,096 pixels, and images over 16 megapixels.
+- Reject malformed images, SVG, and unsupported file types or contents.
+- images over 2 MB, dimensions over 4,096 pixels, and images over 16 megapixels.
 
 **Feature Tests**
 
-- The session response returns `avatarUrl: null` when no avatar exists and the authenticated endpoint URL when one exists.
-- An owner can update their own display name; blank and overlong names return `422`.
+- Owner can update display name; blank and overlong return `422`.
 - Profile updates cannot change the login email or another user's profile.
 - An owner can upload, replace, retrieve, and remove their avatar.
 - An unauthenticated caller cannot read or mutate a profile or avatar.
 - A user's avatar cannot be read by another account.
-- A failed replacement leaves the previous avatar available.
-- A failed metadata write queues the new object for cleanup.
-- A successful replacement and avatar removal queue obsolete objects for cleanup.
 - Removing an avatar restores the initials fallback.
 - Account deletion queues the avatar object for cleanup.
+
+**E2E Tests**
+
+- Owner signs in and updates display name.
+- Owner removes avatar, initials fallback is restored.
+- Unauthenticated user cannot access the Account page.
+- Owner uploads a valid avatar image and it appears on profile.
+- Owner's avatar is not readable by another account.
+- Failed avatar replacement leaves previous avatar available.
 
 ## Open Questions
 
 - Which image-processing library should decode and normalize uploaded images?
-- Should Sendocs generate a fixed-size thumbnail or serve the validated original dimensions?
+- Should the system generate a fixed-size or serve the validated original dimensions?
