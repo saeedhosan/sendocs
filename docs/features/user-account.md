@@ -77,14 +77,14 @@ Existing response: auth-and-access.md with new filed `user.avatarUrl` or null
 - **Failure:** `422` - validation failed, with per-field `details`
 - **Failure:** `429` - rate limited
 
-**POST /api/v1/account/avatar** — Upload or replace the owner's avatar.
+**POST /api/v1/account/avatar** — Upload or replace the user's avatar.
 
 - **Payload:** `avatar` - Multipart field; JPEG, PNG, or WebP; maximum 2 MB
 - **Response:** `204` - no content
 - **Failure:** `403` - CSRF check failed
 - **Failure:** `429` - rate limited
 
-**GET /api/v1/account/avatar** — Stream the private avatar.
+**GET /api/v1/account/avatar** — Stream the user private avatar.
 
 - **Payload:** No request body.
 - **Response:** Image bytes with the server-detected Content-Type.
