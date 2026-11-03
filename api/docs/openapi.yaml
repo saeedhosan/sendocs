@@ -38,7 +38,6 @@ servers:
 tags:
   - name: Health
   - name: Owner Authentication
-  - name: Owner Account
   - name: Document Requests
   - name: Client Portal
 
@@ -418,126 +417,6 @@ paths:
           $ref: "#/components/responses/CsrfFailed"
         "422":
           $ref: "#/components/responses/ValidationFailed"
-        "429":
-          $ref: "#/components/responses/RateLimited"
-
-  /api/v1/account:
-    patch:
-      tags: [Owner Account]
-      operationId: updateAccountProfile
-      summary: Update the signed-in owner's display name.
-      description: The login email is read-only and cannot be changed through this operation.
-      security: [{ sessionCookie: [] }, { csrfToken: [] }]
-      x-rate-limit: { limit: 120, window: 60, key: user }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [name]
-              properties:
-                name:
-                  type: string
-                  minLength: 1
-                  maxLength: 120
-                  description: Trimmed; whitespace-only values are rejected.
-      responses:
-        "200":
-          description: Updated owner profile.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/CsrfFailed"
-        "422":
-          $ref: "#/components/responses/ValidationFailed"
-        "429":
-          $ref: "#/components/responses/RateLimited"
-
-  /api/v1/account/avatar:
-    get:
-      tags: [Owner Account]
-      operationId: getAccountAvatar
-      summary: Get the signed-in owner's private avatar.
-      description: Streams the current avatar after checking the session owner. No public URL or storage key is exposed.
-      security: [{ sessionCookie: [] }]
-      x-rate-limit: { limit: 120, window: 60, key: user }
-      responses:
-        "200":
-          description: Private avatar image.
-          headers:
-            X-Content-Type-Options:
-              schema: { type: string, const: nosniff }
-            Cache-Control:
-              schema: { type: string, example: "private, no-store" }
-          content:
-            image/jpeg:
-              schema: { type: string, format: binary }
-            image/png:
-              schema: { type: string, format: binary }
-            image/webp:
-              schema: { type: string, format: binary }
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "404":
-          $ref: "#/components/responses/NotFound"
-        "429":
-          $ref: "#/components/responses/RateLimited"
-    post:
-      tags: [Owner Account]
-      operationId: uploadAccountAvatar
-      summary: Upload or replace the signed-in owner's avatar.
-      description: Accepts JPEG, PNG, or WebP up to 2 MB. The server sniffs and decodes the image, rejects dimensions above 4,096 pixels or 16 megapixels total, and rejects SVG.
-      security: [{ sessionCookie: [] }, { csrfToken: [] }]
-      x-rate-limit: { limit: 120, window: 60, key: user }
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              required: [avatar]
-              properties:
-                avatar:
-                  type: string
-                  format: binary
-                  description: JPEG, PNG, or WebP; maximum 2 MB, 4,096 pixels per dimension, and 16 megapixels total. Detected type must match the extension.
-      responses:
-        "200":
-          description: Updated profile with the new avatar URL.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/CsrfFailed"
-        "413":
-          $ref: "#/components/responses/AvatarTooLarge"
-        "415":
-          $ref: "#/components/responses/UnsupportedAvatarType"
-        "422":
-          $ref: "#/components/responses/ValidationFailed"
-        "429":
-          $ref: "#/components/responses/RateLimited"
-    delete:
-      tags: [Owner Account]
-      operationId: deleteAccountAvatar
-      summary: Remove the signed-in owner's avatar.
-      security: [{ sessionCookie: [] }, { csrfToken: [] }]
-      x-rate-limit: { limit: 120, window: 60, key: user }
-      responses:
-        "204":
-          description: Avatar metadata removed; object cleanup is queued.
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/CsrfFailed"
         "429":
           $ref: "#/components/responses/RateLimited"
 
@@ -977,26 +856,6 @@ components:
             error:
               code: unsupported_type
               message: That file type is not accepted.
-    AvatarTooLarge:
-      description: Avatar exceeds the 2 MB limit.
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/Error"
-          example:
-            error:
-              code: avatar_too_large
-              message: The avatar is larger than 2 MB.
-    UnsupportedAvatarType:
-      description: Avatar is not a supported raster image or its extension does not match its content.
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/Error"
-          example:
-            error:
-              code: unsupported_avatar_type
-              message: Upload a JPEG, PNG, or WebP image.
     ValidationFailed:
       description: Validation errors include a `details` map keyed by field.
       content:
@@ -1090,7 +949,7 @@ components:
 
     User:
       type: object
-      required: [id, name, email, avatarUrl]
+      required: [id, name, email]
       properties:
         id:
           type: string
@@ -1103,13 +962,7 @@ components:
         emailVerifiedAt:
           type: string
           format: date-time
-          nullable: true
           description: Null until verified; verification is not required to use the product.
-        avatarUrl:
-          type: string
-          format: uri-reference
-          nullable: true
-          description: Same-origin authenticated endpoint for the owner's private avatar, or null when no avatar is set.
 
     SessionPayload:
       type: object
