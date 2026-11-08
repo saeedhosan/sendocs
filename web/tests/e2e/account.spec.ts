@@ -42,7 +42,7 @@ test.describe('account profile', () => {
     await expect(page.getByLabel('Full name')).toHaveValue('Alex Morgan')
     await expect(page.getByLabel('Email address')).toBeDisabled()
     await expect(page.getByRole('button', { name: 'Update profile' })).toBeDisabled()
-    await expect(page.getByRole('img', { name: 'Alex Morgan profile picture' })).toBeVisible()
+    await expect(page.getByRole('main').getByRole('img', { name: 'Alex Morgan profile picture' })).toBeVisible()
 
     const storedSession = await page.evaluate(() =>
       sessionStorage.getItem('sendocs.owner-session.v1'),
@@ -80,6 +80,6 @@ test.describe('account profile', () => {
 
     await expect(page.getByText('Your profile has been updated.')).toBeVisible()
     await expect(nameField).toHaveValue('Alex Rivera')
-    await expect(page.getByRole('img', { name: 'Alex Rivera profile picture' })).toContainText('AR')
+    await expect(page.getByRole('main').getByRole('img', { name: 'Alex Rivera profile picture' })).toContainText('AR')
   })
 })
