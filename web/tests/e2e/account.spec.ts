@@ -55,7 +55,7 @@ test.describe('account profile', () => {
     await signInAndOpenAccount(page)
 
     await expect(
-      page.getByRole('img', { name: 'Alex Morgan profile picture' }),
+      page.getByRole('main').getByRole('img', { name: 'Alex Morgan profile picture' }),
     ).toContainText('AM')
   })
 
