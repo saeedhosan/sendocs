@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest'
 import { getBackgroundColor, getInitials } from '../../../../src/features/account/lib/avatar'
 
 describe('getInitials', () => {
-  it('uses the first and last initials', () => {
-    expect(getInitials('Saeed Hosan')).toBe('SH')
+  it('uses only the first initial for multi-word names', () => {
+    expect(getInitials('Saeed Hosan')).toBe('S')
   })
 
   it('supports a single-word name', () => {
@@ -11,7 +11,7 @@ describe('getInitials', () => {
   })
 
   it('handles extra whitespace and empty names', () => {
-    expect(getInitials('  Alex   Morgan  ')).toBe('AM')
+    expect(getInitials('  Alex   Morgan  ')).toBe('A')
     expect(getInitials('   ')).toBe('?')
   })
 })
