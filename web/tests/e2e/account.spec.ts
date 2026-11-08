@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 import type { Page } from '@playwright/test'
-import type { SessionPayload } from '../../src/features/auth/types'
+import type { SessionPayload } from '../../src/features/auth/types.js'
 
 const pictureUrl = 'https://lh3.googleusercontent.com/a/example'
 const sessionPayload = {
