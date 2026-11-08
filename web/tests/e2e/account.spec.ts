@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 import type { Page } from '@playwright/test'
+import type { SessionPayload } from '../../src/features/auth/types'
 
 const pictureUrl = 'https://lh3.googleusercontent.com/a/example'
 const sessionPayload = {
@@ -22,7 +23,7 @@ function json(status: number, body: unknown) {
   }
 }
 
-async function signInAndOpenAccount(page: Page, payload = sessionPayload) {
+async function signInAndOpenAccount(page: Page, payload: SessionPayload = sessionPayload) {
   await page.route('**/api/v1/auth/login', (route) =>
     route.fulfill(json(200, payload)),
   )
