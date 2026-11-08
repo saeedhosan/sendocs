@@ -36,7 +36,7 @@ export function ProfileAvatar({
   pictureUrl,
   size = 'default',
 }: ProfileAvatarProps) {
-  const dimension = size === 'small' ? 'size-8 text-xs' : 'size-18 text-xl'
+  const dimension = size === 'small' ? 'size-8 text-xs' : 'size-18 text-2xl'
   const initials = getInitials(name)
 
   return (
