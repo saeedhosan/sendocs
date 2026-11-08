@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import type { Page } from '@playwright/test'
 
 const pictureUrl = 'https://lh3.googleusercontent.com/a/example'
 const sessionPayload = {
@@ -21,9 +22,9 @@ function json(status: number, body: unknown) {
   }
 }
 
-async function signInAndOpenAccount(page: Parameters<typeof test>[0] extends never ? never : any) {
-  await page.route('**/api/v1/auth/login', (route: any) =>
-    route.fulfill(json(200, sessionPayload)),
+async function signInAndOpenAccount(page: Page, payload = sessionPayload) {
+  await page.route('**/api/v1/auth/login', (route) =>
+    route.fulfill(json(200, payload)),
   )
   await page.goto('/login')
   await page.getByLabel('Email address').fill('alex@example.com')
@@ -58,7 +59,10 @@ test.describe('account profile', () => {
       route.fulfill(json(200, updatedSession)),
     )
 
-    await signInAndOpenAccount(page)
+    await signInAndOpenAccount(page, {
+      ...sessionPayload,
+      user: { ...sessionPayload.user, pictureUrl: null },
+    })
     const nameField = page.getByLabel('Full name')
     await nameField.fill('Alex Rivera')
     await expect(page.getByRole('button', { name: 'Update profile' })).toBeEnabled()
