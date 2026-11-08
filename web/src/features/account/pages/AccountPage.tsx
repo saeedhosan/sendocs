@@ -78,66 +78,68 @@ export function AccountPage() {
       </div>
 
       <div className="grid gap-8 md:grid-cols-[220px_minmax(0,1fr)]">
-        <aside aria-label="Account settings navigation" className="space-y-5">
-          <div>
-            <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Account settings
-            </p>
-            <nav className="space-y-1">
-              <NavLink
-                to="/account"
-                end
-                className={({ isActive }) =>
-                  `${navigationItem} ${isActive ? activeNavigationItem : inactiveNavigationItem}`
-                }
-              >
-                <UserRound className="size-4" aria-hidden="true" />
-                Account
-              </NavLink>
-              <NavLink
-                to="/dashboard"
-                className={({ isActive }) =>
-                  `${navigationItem} ${isActive ? activeNavigationItem : inactiveNavigationItem}`
-                }
-              >
-                <LayoutDashboard className="size-4" aria-hidden="true" />
-                Dashboard
-              </NavLink>
-            </nav>
-          </div>
+        <aside aria-label="Account settings navigation">
+          <div className="space-y-5 rounded-xl border border-border bg-card p-3">
+            <div>
+              <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Account settings
+              </p>
+              <nav className="space-y-1">
+                <NavLink
+                  to="/account"
+                  end
+                  className={({ isActive }) =>
+                    `${navigationItem} ${isActive ? activeNavigationItem : inactiveNavigationItem}`
+                  }
+                >
+                  <UserRound className="size-4" aria-hidden="true" />
+                  Account
+                </NavLink>
+                <NavLink
+                  to="/dashboard"
+                  className={({ isActive }) =>
+                    `${navigationItem} ${isActive ? activeNavigationItem : inactiveNavigationItem}`
+                  }
+                >
+                  <LayoutDashboard className="size-4" aria-hidden="true" />
+                  Dashboard
+                </NavLink>
+              </nav>
+            </div>
 
-          <div>
-            <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Security
-            </p>
-            <nav>
-              <NavLink
-                to="/settings/password"
-                className={({ isActive }) =>
-                  `${navigationItem} ${isActive ? activeNavigationItem : inactiveNavigationItem}`
-                }
-              >
-                <Shield className="size-4" aria-hidden="true" />
-                Change password
-              </NavLink>
-            </nav>
-          </div>
+            <div className="border-t border-border pt-4">
+              <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Security
+              </p>
+              <nav>
+                <NavLink
+                  to="/settings/password"
+                  className={({ isActive }) =>
+                    `${navigationItem} ${isActive ? activeNavigationItem : inactiveNavigationItem}`
+                  }
+                >
+                  <Shield className="size-4" aria-hidden="true" />
+                  Change password
+                </NavLink>
+              </nav>
+            </div>
 
-          <div>
-            <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Danger zone
-            </p>
-            <nav>
-              <NavLink
-                to="/settings/delete"
-                className={({ isActive }) =>
-                  `${navigationItem} ${isActive ? 'bg-destructive/10 text-destructive font-medium' : 'text-destructive hover:bg-destructive/10'}`
-                }
-              >
-                <Trash2 className="size-4" aria-hidden="true" />
-                Delete account
-              </NavLink>
-            </nav>
+            <div className="border-t border-border pt-4">
+              <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Danger zone
+              </p>
+              <nav>
+                <NavLink
+                  to="/settings/delete"
+                  className={({ isActive }) =>
+                    `${navigationItem} ${isActive ? 'bg-destructive/10 text-destructive font-medium' : 'text-destructive hover:bg-destructive/10'}`
+                  }
+                >
+                  <Trash2 className="size-4" aria-hidden="true" />
+                  Delete account
+                </NavLink>
+              </nav>
+            </div>
           </div>
         </aside>
 
