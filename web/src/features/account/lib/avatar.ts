@@ -18,8 +18,8 @@ export function getInitials(name: string): string {
     return '?'
   }
 
-  const first = parts[0]?.[0] ?? ''
-  const last = parts.length > 1 ? (parts[parts.length - 1]?.[0] ?? '') : ''
+  const first = Array.from(parts[0] ?? '')[0] ?? ''
+  const last = parts.length > 1 ? (Array.from(parts[parts.length - 1] ?? '')[0] ?? '') : ''
 
   return `${first}${last}`.toLocaleUpperCase()
 }
@@ -28,8 +28,8 @@ export function getBackgroundColor(name: string): string {
   let hash = 0
 
   for (const character of name.trim().toLocaleLowerCase()) {
-    hash = (hash * 31 + character.codePointAt(0)!) | 0
+    hash = (hash * 31 + (character.codePointAt(0) ?? 0)) | 0
   }
 
-  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length]!
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length] ?? AVATAR_COLORS[0]
 }
