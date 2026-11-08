@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { NavLink } from 'react-router-dom'
 import { LockKeyhole, UserRound, LayoutDashboard, Shield, Trash2 } from 'lucide-react'
@@ -25,10 +25,6 @@ export function AccountPage() {
   const [formError, setFormError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [submitting, setSubmitting] = useState(false)
-
-  useEffect(() => {
-    setName(user?.name ?? '')
-  }, [user?.name])
 
   const hasChanges = name.trim() !== (user?.name ?? '')
   const canSave = hasChanges && name.trim().length > 0 && name.trim().length <= 120
