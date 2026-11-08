@@ -192,21 +192,15 @@ export function AccountPage() {
 
               <FormField
                 label="Email address"
+                labelAction={<LockKeyhole className="size-4 text-muted-foreground" aria-hidden="true" />}
                 hint="Your email address is used for signing in and cannot be changed here."
               >
-                <div className="relative">
-                  <Input
-                    type="email"
-                    value={user?.email ?? ''}
-                    disabled
-                    className="pr-10"
-                    aria-label="Email address"
-                  />
-                  <LockKeyhole
-                    className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
-                    aria-hidden="true"
-                  />
-                </div>
+                <Input
+                  type="email"
+                  value={user?.email ?? ''}
+                  disabled
+                  aria-label="Email address"
+                />
               </FormField>
 
               <div className="flex justify-end border-t border-border pt-5">
