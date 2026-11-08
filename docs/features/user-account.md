@@ -1,197 +1,136 @@
 # User Account — Technical Design
 
-Authenticated Account page for owners to manage their profile, keeping profile data on the user record and avatars in private object storage.
+Authenticated users get one Account page to view and update their application-owned display name, login email, and profile picture.
 
-> References: auth-and-access.md (session, CSRF), document-requests.md (avatar upload/download endpoints).
+## Scope
 
 ### In Scope
 
-- Logged in user can view profile: name, email, picture.
-- User can update the disaply name and oauth provdered name.
-- User can upload, replace, and remove one profile avatar.
-- Use the same profile for custom and Oauth auth account.
-- User get an initials fallback when no avatar is set.
-- Keep profile and future account controls within account.
+- Logged-in users can view their profile: name, email, and picture.
+- Users can update their display name, including users with an OAuth account.
+- Users can use their OAuth provider's profile picture when available.
+- Users without a usable provider picture get a generated initials avatar.
+- Keep profile information and future account controls within one Account page.
 
 ### Out of Scope
 
 - Changing the login email address.
+- Uploading, replacing, or removing custom profile pictures.
+- Saving profile picture data or files in application storage.
 - Linking, unlinking, or managing authentication providers.
 - Importing or synchronizing provider-hosted profile images.
-- Notification and other account preferences.
+- Notifications and other account preferences.
 
 ## UX and UI
 
-**Routes**
-
-- `/account`, view and edit profile.
-
 **User Flow**
 
-```text
-Owner
-  |
-Account page loaded
-  |
-Update display name or upload avatar
-  |
-Changes saved, avatar streamed or initials shown
-  |
-Remove avatar, initials fallback displayed
-```
+1. User opens the Account page.
+2. Frontend retrieves the authenticated user's profile.
+3. User sees their display name, email, and profile picture.
+4. If an OAuth picture is available, the frontend displays it.
+5. Otherwise, the frontend generates an initials avatar.
+6. User edits their display name and saves the change.
+7. Frontend displays the updated name and refreshes the initials if necessary.
 
 **Foundation Screens**
 
-- Profile view, with name, email, and avatar initials.
-- Avatar editor, with upload zone and preview.
-- Initials fallback when no avatar is set.
-- Linked sections: Changes password, Delete account
-
-## Data Design
-
-The profile belongs to the existing users table; no need new table.
-
-**`users` — additional columns**
-
-| Column              | Type           | Key / Constraint | Purpose                                    |
-| ------------------- | -------------- | ---------------- | ------------------------------------------ |
-| `avatar_key`        | `VARCHAR`      | `NULL`           | Random key for the private stored avatar.  |
-| `avatar_mime_type`  | `VARCHAR(100)` | `NULL`           | Server-detected image type .               |
-| `avatar_updated_at` | `TIMESTAMPTZ`  | `NULL`           | Time of the last successful avatar change. |
+- Account: Profile overview containing display name, login email, and profile picture.
+- Edit Display Name: Inline editing or a small form within the Account page.
 
 ## API Design
 
-State-changing endpoints also require `X-CSRF-Token`.
-
-### Session
-
-Existing response: auth-and-access.md with new filed `user.avatarUrl` or null
-
 ### Account
 
-**PATCH /api/v1/account** - Update user display name.
+**`GET /api/v1/auth/session`** — Extend the existing session response with the user's profile picture URL.
 
-- **Payload:** `name`
-- **Response:** `201` - user, CSRF token, session cookie set
-- **Failure:** `409` - email already registered
-- **Failure:** `422` - validation failed, with per-field `details`
-- **Failure:** `429` - rate limited
+- **Payload:** None; authenticated session cookie.
+- **Response:** `200 OK` — Existing session response with `user.pictureUrl`; Nullable.
+- **Failure:** `401 Unauthorized` — Missing or invalid session.
 
-**POST /api/v1/account/avatar** — Upload or replace the user's avatar.
+**`PATCH /api/v1/account`** — Update the authenticated user's application display name.
 
-- **Payload:** `avatar` - Multipart field; JPEG, PNG, or WebP; maximum 2 MB
-- **Response:** `204` - no content
-- **Failure:** `403` - CSRF check failed
-- **Failure:** `429` - rate limited
-
-**GET /api/v1/account/avatar** — Stream the user private avatar.
-
-- **Payload:** No request body.
-- **Response:** Image bytes with the server-detected Content-Type.
-- **Success:** `200`
-- **Failure:** `403` - CSRF check failed
-- **Failure:** `429` - rate limited
-
-**DELETE /api/v1/account/avatar** — Remove the user avatar.
-
-- **Payload:** No request body; requires session cookie and CSRF token.
-- **Response:** `204` - Empty response.
-- **Failure:** `403` - CSRF check failed
-- **Failure:** `429` - rate limited
+- **Payload:** `{ "name": "Updated Display Name" }`; session cookie and CSRF token.
+- **Response:** `200 OK` — Updated user profile with the existing session response shape.
+- **Failure:** `401 Unauthorized` — Missing or invalid session.
+- **Failure:** `403 Forbidden` — CSRF validation failed.
+- **Failure:** `422 Unprocessable Entity` — Invalid display name.
+- **Failure:** `429 Too Many Requests` — Rate limit exceeded.
 
 ## Low-Level Design
 
-Avatar replacement and deletion involve both database metadata and object storage, which cannot participate in one atomic transaction.
-Use the existing storage-deletion outbox to make cleanup retryable.
+**Profile picture resolution**
+
+- Resolve the OAuth provider picture URL from existing authentication identity data.
+- Return the URL as `pictureUrl` when available; otherwise, return `null`.
+- If the image is unavailable or fails to load, the frontend displays the generated initials avatar.
+
+**Display name update**
+
+- Authenticate the request using the existing session.
+- Trim and validate the submitted name.
+- Update `users.name`.
+- Do not update the OAuth provider's name or credentials.
 
 ### Core Components
 
-**Account Profile Service** — Validates profile updates and avatar metadata changes.
+**AccountController** — Handles authenticated account profile requests.
 
-- Update only the authenticated owner's profile.
-- Validate and persist the display name.
-- Coordinate avatar upload, replacement, and removal.
+- `show(): Response`
+- `update(UpdateAccountRequest $request): Response`
 
-**Private Avatar Storage** — Streams validated avatars via existing private S3 storage.
+**AccountService** — Updates the authenticated user's application profile.
 
-- Generate a random, non-user-controlled storage key.
-- Store the new object before updating the user's avatar metadata.
-- Stream an avatar only after checking the authenticated owner.
+- `update(User $user, UserData $data): User`
 
-**Storage Deletion Outbox** — Schedules obsolete avatars for cleanup.
+**UserData** — Carries validated application profile data.
 
-- Enqueue the previous object after a successful replacement.
-- Enqueue a newly uploaded object if metadata persistence fails.
-- Enqueue the current object when the avatar is removed.
+- `name: string`
 
-## Trade-offs
+**ProfilePictureResolver** — Resolves the OAuth provider picture URL for the authenticated user.
 
-**Private Authenticated Avatar Endpoint**
+- `resolve(User $user): ?string`
 
-- Benefit: Keeps avatars private and avoids permanent public URLs.
-- Cost: Serves image requests through the application.
+**GenerateAvatar** — Generates a frontend fallback avatar when no usable provider picture is available.
 
-**No Provider Avatar Synchronization**
-
-- Benefit: Keeps the profile consistent and user-controlled.
-- Cost: Does not automatically use a Google profile image.
-
-**Alternative Considered: Public Object URLs**
-
-- Rejected because account avatars should not be publicly accessible by default.
+- `getInitials(string $name): string`
+- `getBackgroundColor(string $name): string`
 
 ## Security
 
-- Only the authenticated owner can read or change their own profile and avatar.
-- Owner data scoped to authenticated user; never expose another's profile or avatar.
-- Session auth for all; CSRF for state-changing endpoints.
-- Keep avatar objects in private storage; no public URLs or keys.
-- Do not trust multipart Content-Type; detect image type from bytes.
-- Accept JPEG, PNG, and WebP only. Reject SVG and malformed images.
-- Enforce 2 MB limit; reject dimensions over 4,096 pixels or 16MP.
-- Do not fetch or synchronize provider-hosted avatars.
-- Send `X-Content-Type-Options: nosniff` and private cache controls.
-- Do not log image bytes, storage keys, or uploaded file contents.
-
-## Error Handling
-
-- `401 unauthenticated` — Reject requests without a valid owner session.
-- `403 csrf_failed` — Reject state-changing requests with an invalid or missing CSRF token.
-- `404 avatar_not_found` — Return when the authenticated owner has no avatar.
-- `413 avatar_too_large` — Reject uploads larger than 2 MB.
-- `415 unsupported_avatar_type` — Reject unsupported formats or content/extension mismatch.
-- `422 validation_failed` — Reject blank/overlong names and malformed images.
-- `429 rate_limited` — Reject requests exceeding the configured endpoint rate limit.
+- All account endpoints require an authenticated session.
+- Account updates require CSRF protection.
+- Users can only access and update their own profile.
+- Validate display names on the server.
+- Do not accept arbitrary picture URLs from the account update endpoint.
+- Resolve picture URLs only from trusted, supported OAuth provider identity data.
+- Only allow HTTPS picture URLs from supported providers.
+- Never expose OAuth access tokens, refresh tokens, or provider credentials in account responses.
 
 ## Testing
 
-**Unit Tests**
+**Unit tests**
 
-- Validate display-name trimming, required value, and 120-character maximum.
-- Detect supported image formats from bytes and reject mismatched extensions.
-- Reject malformed images, SVG, and unsupported file types or contents.
-- images over 2 MB, dimensions over 4,096 pixels, and images over 16 megapixels.
+- Generate initials from single-word and multiple-word names.
+- Generate deterministic avatar background colors.
+- Resolve provider picture URLs when available.
+- Return null when no provider picture exists.
+- Validate display name trimming and length.
+- Reject unsupported or insecure picture URL schemes.
 
-**Feature Tests**
+**Feature tests**
 
-- Owner can update display name; blank and overlong return `422`.
-- Profile updates cannot change the login email or another user's profile.
-- An owner can upload, replace, retrieve, and remove their avatar.
-- An unauthenticated caller cannot read or mutate a profile or avatar.
-- A user's avatar cannot be read by another account.
-- Removing an avatar restores the initials fallback.
-- Account deletion queues the avatar object for cleanup.
+- Authenticated user can retrieve their account information.
+- Authenticated user can update their display name.
+- Updating the display name does not modify OAuth provider identity data.
+- Users cannot update another user's profile.
+- Invalid display names return validation errors.
+- CSRF protection and rate limits are enforced.
 
-**E2E Tests**
+**Integration tests**
 
-- Owner signs in and updates display name.
-- Owner removes avatar, initials fallback is restored.
-- Unauthenticated user cannot access the Account page.
-- Owner uploads a valid avatar image and it appears on profile.
-- Owner's avatar is not readable by another account.
-- Failed avatar replacement leaves previous avatar available.
-
-## Open Questions
-
-- Which image-processing library should decode and normalize uploaded images?
-- Should the system generate a fixed-size or serve the validated original dimensions?
+- OAuth user receives their available provider picture URL.
+- OAuth user without a provider picture receives null.
+- Frontend displays initials when the picture URL is unavailable.
+- Frontend falls back to initials when the provider image fails to load.
+- Updating the display name refreshes the displayed name and generated initials.
