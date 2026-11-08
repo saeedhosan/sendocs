@@ -50,13 +50,13 @@ test.describe('account profile', () => {
     expect(storedSession).not.toContain(pictureUrl)
   })
 
-  test('falls back to initials when the Google profile image fails', async ({ page }) => {
+  test('falls back to a single initial when the Google profile image fails', async ({ page }) => {
     await page.route(pictureUrl, (route) => route.fulfill({ status: 404, body: '' }))
     await signInAndOpenAccount(page)
 
     await expect(
       page.getByRole('main').getByRole('img', { name: 'Alex Morgan profile picture' }),
-    ).toContainText('AM')
+    ).toHaveText('A')
   })
 
   test('updates the display name and refreshes the initials avatar', async ({ page }) => {
@@ -80,6 +80,6 @@ test.describe('account profile', () => {
 
     await expect(page.getByText('Your profile has been updated.')).toBeVisible()
     await expect(nameField).toHaveValue('Alex Rivera')
-    await expect(page.getByRole('main').getByRole('img', { name: 'Alex Rivera profile picture' })).toContainText('AR')
+    await expect(page.getByRole('main').getByRole('img', { name: 'Alex Rivera profile picture' })).toHaveText('A')
   })
 })
