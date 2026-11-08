@@ -134,6 +134,13 @@ export const router = createBrowserRouter([
             element: <UserLayout />,
             children: [
               {
+                path: 'account',
+                lazy: lazyPage(
+                  () => import('../features/account/pages/AccountPage'),
+                  'AccountPage',
+                ),
+              },
+              {
                 path: 'dashboard',
                 lazy: lazyPage(
                   () => import('../features/requests/pages/RequestsPage'),

@@ -8,6 +8,7 @@ import type {
   LoginInput,
   RegisterInput,
   SessionPayload,
+  UpdateAccountInput,
 } from '../../features/auth/types'
 import { clearCsrfToken, setCsrfToken } from '../../lib/api/csrf'
 import { setSessionInvalidHandler } from '../../lib/api/client'
@@ -15,6 +16,14 @@ import { AuthContext } from './auth-context'
 import type { AuthContextValue, AuthStatus } from './auth-context'
 
 const SESSION_STORAGE_KEY = 'sendocs.owner-session.v1'
+
+/** Provider-hosted images are transient and must never enter sessionStorage. */
+function withoutProviderPicture(payload: SessionPayload): SessionPayload {
+  return {
+    ...payload,
+    user: { ...payload.user, pictureUrl: null },
+  }
+}
 
 function readStoredSession(): SessionPayload | null {
   try {
@@ -36,7 +45,15 @@ function readStoredSession(): SessionPayload | null {
       return null
     }
 
-    return session
+    // Clean up any previously stored provider URL and normalize the stored shape.
+    const safeSession = withoutProviderPicture(session)
+    try {
+      sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(safeSession))
+    } catch {
+      // Keep the readable in-memory session even when storage is unavailable.
+    }
+
+    return safeSession
   } catch {
     return null
   }
@@ -64,7 +81,10 @@ export function AuthProvider({
     setExpiresAt(payload.expiresAt)
     setStatus('authenticated')
     try {
-      sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(payload))
+      sessionStorage.setItem(
+        SESSION_STORAGE_KEY,
+        JSON.stringify(withoutProviderPicture(payload)),
+      )
     } catch {
       // Authentication remains available for this page if storage is blocked.
     }
@@ -147,6 +167,18 @@ export function AuthProvider({
     clearSession()
   }, [clearSession])
 
+  const updateAccount = useCallback(
+    async (input: UpdateAccountInput) => {
+      const payload = await authApi.updateAccount(input)
+      // PATCH does not re-issue the transient OAuth image; retain it in memory.
+      setSession({
+        ...payload,
+        user: { ...payload.user, pictureUrl: user?.pictureUrl ?? null },
+      })
+    },
+    [setSession, user?.pictureUrl],
+  )
+
   const changePassword = useCallback(async (input: ChangePasswordInput) => {
     await authApi.changePassword(input)
   }, [])
@@ -167,6 +199,7 @@ export function AuthProvider({
       login,
       register,
       logout,
+      updateAccount,
       changePassword,
       deleteAccount,
       setSession,
@@ -178,6 +211,7 @@ export function AuthProvider({
       login,
       register,
       logout,
+      updateAccount,
       changePassword,
       deleteAccount,
       setSession,

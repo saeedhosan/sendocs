@@ -9,8 +9,8 @@ Authenticated users get one Account page to view and update their application-ow
 - Logged-in users can view their profile: name, email, and avatar.
 - Users can update their display name, except email address.
 - OAuth (Google) users may see the picture URL returned by the provider.
-- Users without a usable provider picture get a generated initials avatar.
-- Keep profile information and future account controls within one Account page.
+- Users without a usable provider picture get a generated avatar using the first character of their display name.
+- Account settings navigation is grouped in a card alongside the profile card.
 
 ### Out of Scope
 
@@ -69,7 +69,7 @@ Authenticated users get one Account page to view and update their application-ow
 
 **GenerateAvatar** — Frontend fallback avatar behavior.
 
-- `getInitials(string $name): string`
+- `getInitials(string $name): string` — Returns the first character of the first word, uppercased (or `?` for an empty name).
 - `getBackgroundColor(string $name): string`
 
 ## Security
@@ -84,7 +84,7 @@ Authenticated users get one Account page to view and update their application-ow
 
 **Unit tests**
 
-- Generate initials from single-word names.
+- Generate a single-character avatar from single-word and multi-word names.
 - Generate deterministic avatar background colors.
 - Resolve provider picture URLs when available.
 - Return null when no provider picture exists.
@@ -103,6 +103,6 @@ Authenticated users get one Account page to view and update their application-ow
 
 - OAuth user receives their available provider picture URL.
 - OAuth user without a provider picture receives null.
-- Frontend displays initials when the picture URL is unavailable.
-- Frontend falls back to initials when the provider image fails to load.
-- Updating the display name refreshes the displayed name and generated initials.
+- Frontend displays a single-character avatar when the picture URL is unavailable.
+- Frontend falls back to a single-character avatar when the provider image fails to load.
+- Updating the display name refreshes the displayed name and generated avatar.

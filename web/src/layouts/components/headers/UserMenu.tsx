@@ -1,32 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { LayoutDashboard } from "lucide-react";
 import { useAuth } from "../../../app/providers/useAuth";
 import {
     ChevronDownIcon,
-    LockResetIcon,
     LogoutIcon,
-    TrashIcon,
     UserIcon,
 } from "../../../components/icons";
+import { ProfileAvatar } from "../../../features/account/components/ProfileAvatar";
 import { ThemeMenu } from "./ThemeMenu";
 
 const MENU_GROUP = "py-1";
 const ITEM =
     "flex items-center gap-2 w-full px-3 py-2 text-sm text-left cursor-pointer transition-colors duration-150 text-ink-secondary hover:bg-surface-muted hover:text-ink";
 const ICON = "size-4 shrink-0";
-
-function initials(name: string): string {
-    const parts = name.trim().split(/\s+/).filter(Boolean);
-
-    if (parts.length === 0) {
-        return "?";
-    }
-
-    const first = parts[0]?.[0] ?? "";
-    const last = parts.length > 1 ? (parts[parts.length - 1]?.[0] ?? "") : "";
-
-    return `${first}${last}`.toUpperCase();
-}
 
 export function UserMenu() {
     const { user, logout, status } = useAuth();
@@ -84,12 +71,11 @@ export function UserMenu() {
                     aria-label={`${displayName}'s account menu`}
                     onClick={() => setOpen((value) => !value)}
                 >
-                    <span
-                        className="inline-flex items-center justify-center size-8 rounded-full bg-surface-sunken text-ink-secondary font-medium text-sm"
-                        aria-hidden="true"
-                    >
-                        {initials(displayName)}
-                    </span>
+                    <ProfileAvatar
+                        name={displayName}
+                        pictureUrl={user?.pictureUrl}
+                        size="small"
+                    />
                     <ChevronDownIcon size={14} className="text-ink-muted" />
                 </button>
                 {open ? (
@@ -109,31 +95,22 @@ export function UserMenu() {
 
                         <div className={MENU_GROUP} role="none">
                             <RouterLink
-                                to="/dashboard"
+                                to="/account"
                                 role="menuitem"
                                 className={ITEM}
                                 onClick={() => setOpen(false)}
                             >
                                 <UserIcon size={16} className={ICON} aria-hidden="true" />
+                                Account
+                            </RouterLink>
+                            <RouterLink
+                                to="/dashboard"
+                                role="menuitem"
+                                className={ITEM}
+                                onClick={() => setOpen(false)}
+                            >
+                                <LayoutDashboard size={16} className={ICON} aria-hidden="true" />
                                 Dashboard
-                            </RouterLink>
-                            <RouterLink
-                                to="/settings/password"
-                                role="menuitem"
-                                className={ITEM}
-                                onClick={() => setOpen(false)}
-                            >
-                                <LockResetIcon size={16} className={ICON} aria-hidden="true" />
-                                Change password
-                            </RouterLink>
-                            <RouterLink
-                                to="/settings/delete"
-                                role="menuitem"
-                                className={ITEM}
-                                onClick={() => setOpen(false)}
-                            >
-                                <TrashIcon size={16} className={ICON} aria-hidden="true" />
-                                Delete account
                             </RouterLink>
                         </div>
 

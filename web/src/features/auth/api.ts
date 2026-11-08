@@ -6,6 +6,7 @@ import type {
   RegisterInput,
   ResetPasswordInput,
   SessionPayload,
+  UpdateAccountInput,
 } from './types'
 
 export type VerifyEmailResult = {
@@ -52,6 +53,13 @@ export const authApi = {
   changePassword(input: ChangePasswordInput): Promise<void> {
     return apiRequest<void>('/auth/password/change', {
       method: 'POST',
+      body: input,
+    })
+  },
+
+  updateAccount(input: UpdateAccountInput): Promise<SessionPayload> {
+    return apiRequest<SessionPayload>('/account', {
+      method: 'PATCH',
       body: input,
     })
   },

@@ -6,6 +6,7 @@ import type {
   LoginInput,
   RegisterInput,
   SessionPayload,
+  UpdateAccountInput,
 } from '../../features/auth/types'
 
 export type AuthStatus = 'checking' | 'authenticated' | 'unauthenticated'
@@ -17,6 +18,7 @@ export type AuthContextValue = {
   login: (input: LoginInput) => Promise<void>
   register: (input: RegisterInput) => Promise<void>
   logout: () => Promise<void>
+  updateAccount: (input: UpdateAccountInput) => Promise<void>
   changePassword: (input: ChangePasswordInput) => Promise<void>
   deleteAccount: (input: DeleteAccountInput) => Promise<void>
   setSession: (payload: SessionPayload) => void
