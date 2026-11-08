@@ -84,7 +84,9 @@ it('signs a new owner in on the first google sign-in', function (): void {
 
     $response = googleCallback(['state' => $state]);
 
-    $response->assertOk()->assertJsonPath('user.email', 'owner@example.com');
+    $response->assertOk()
+        ->assertJsonPath('user.email', 'owner@example.com')
+        ->assertJsonPath('user.pictureUrl', null);
 
     $user = User::query()->sole();
 
@@ -95,6 +97,42 @@ it('signs a new owner in on the first google sign-in', function (): void {
         ->and(Session::query()->sole()->user_id)->toBe($user->getKey());
 
     expect($response->headers->getCookies())->not->toBeEmpty();
+});
+
+it('returns a verified Google picture URL only in the OAuth callback response', function (): void {
+    $pictureUrl = 'https://lh3.googleusercontent.com/a/example';
+    fakeIdToken(GoogleToken::idToken(['picture' => $pictureUrl]));
+
+    $state = googleStart()['state'];
+
+    $response = googleCallback(['state' => $state])
+        ->assertOk()
+        ->assertJsonPath('user.pictureUrl', $pictureUrl);
+
+    $identity = AuthIdentity::query()->sole();
+
+    expect(array_key_exists('picture_url', $identity->getAttributes()))->toBeFalse();
+
+});
+
+it('omits Google picture URLs that are missing or not HTTPS Google-hosted URLs', function (): void {
+    fakeIdToken(GoogleToken::idToken(['picture' => 'http://lh3.googleusercontent.com/a/example']));
+
+    $state = googleStart()['state'];
+
+    googleCallback(['state' => $state])
+        ->assertOk()
+        ->assertJsonPath('user.pictureUrl', null);
+});
+
+it('rejects Google picture URLs from unsupported hosts', function (): void {
+    fakeIdToken(GoogleToken::idToken(['picture' => 'https://images.attacker.example/avatar.png']));
+
+    $state = googleStart()['state'];
+
+    googleCallback(['state' => $state])
+        ->assertOk()
+        ->assertJsonPath('user.pictureUrl', null);
 });
 
 it('sends the pkce verifier and client secret when exchanging the code', function (): void {

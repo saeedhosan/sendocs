@@ -15,7 +15,10 @@ final readonly class SignInWithGoogle
         private SessionService $sessions,
     ) {}
 
-    public function handle(string $code, string $state): Session
+    /**
+     * @return array{session: Session, pictureUrl: ?string}
+     */
+    public function handle(string $code, string $state): array
     {
         $profile = $this->google->exchangeCode(
             $code,
@@ -24,6 +27,9 @@ final readonly class SignInWithGoogle
 
         $user = $this->google->findOrCreateUser($profile);
 
-        return $this->sessions->issue($user);
+        return [
+            'session'    => $this->sessions->issue($user),
+            'pictureUrl' => $profile['pictureUrl'],
+        ];
     }
 }

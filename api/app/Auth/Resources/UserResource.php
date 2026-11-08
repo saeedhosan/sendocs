@@ -16,6 +16,11 @@ use Illuminate\Support\Carbon;
  */
 class UserResource extends JsonResource
 {
+    public function __construct(mixed $resource, private readonly ?string $pictureUrl = null)
+    {
+        parent::__construct($resource);
+    }
+
     /**
      * Transform the resource into an array.
      *
@@ -32,6 +37,7 @@ class UserResource extends JsonResource
             'id'              => $user->id,
             'name'            => $user->name,
             'email'           => $user->email,
+            'pictureUrl'      => $this->pictureUrl,
             'emailVerifiedAt' => is_string($emailVerifiedAt)
                 ? Carbon::parse($emailVerifiedAt)->toIso8601String()
                 : null,

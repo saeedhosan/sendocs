@@ -38,6 +38,7 @@ servers:
 tags:
   - name: Health
   - name: Owner Authentication
+  - name: Owner Account
   - name: Document Requests
   - name: Client Portal
 
@@ -348,7 +349,7 @@ paths:
       tags: [Owner Authentication]
       operationId: oauthGoogleCallback
       summary: Complete Google sign-in.
-      description: Validates OAuth state and the Google ID token, then creates or links the account and sets a session cookie. Provider conflicts return `409`; invalid state or tokens return `400`.
+      description: Validates OAuth state and the Google ID token, then creates or links the account and sets a session cookie. The response may include a verified HTTPS Google-hosted picture URL; it is returned only by this callback and is never persisted. Provider conflicts return `409`; invalid state or tokens return `400`.
       security: []
       x-rate-limit: { limit: 10, window: 60, key: ip }
       parameters:
@@ -376,6 +377,36 @@ paths:
           $ref: "#/components/responses/OAuthFailed"
         "409":
           $ref: "#/components/responses/OAuthProviderConflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+  /api/v1/account:
+    patch:
+      tags: [Owner Account]
+      operationId: updateOwnerAccount
+      summary: Update the signed-in owner's display name.
+      description: Updates only the application-owned display name. Provider identity data and profile pictures are not modified or stored.
+      security: [{ sessionCookie: [], csrfToken: [] }]
+      x-rate-limit: { limit: 30, window: 60, key: user }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateAccountRequest"
+      responses:
+        "200":
+          description: Updated account and current session payload.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SessionPayload"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/CsrfFailed"
         "422":
           $ref: "#/components/responses/ValidationFailed"
         "429":
@@ -949,7 +980,7 @@ components:
 
     User:
       type: object
-      required: [id, name, email]
+      required: [id, name, email, pictureUrl]
       properties:
         id:
           type: string
@@ -959,6 +990,13 @@ components:
           maxLength: 120
         email:
           $ref: "#/components/schemas/Email"
+        pictureUrl:
+          type: string
+          format: uri
+          nullable: true
+          description: |
+            Optional Google-hosted profile image URL returned only by the successful OAuth callback.
+            All other session responses return null. Sendocs never persists this URL or image data.
         emailVerifiedAt:
           type: string
           format: date-time
@@ -992,6 +1030,16 @@ components:
           $ref: "#/components/schemas/Email"
         password:
           $ref: "#/components/schemas/Password"
+
+    UpdateAccountRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+          description: Trimmed display name.
 
     LoginRequest:
       type: object

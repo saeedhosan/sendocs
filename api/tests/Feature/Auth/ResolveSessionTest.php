@@ -56,7 +56,8 @@ it('resolves the caller, csrf token, and expiry', function (): void {
     $response->assertOk()
         ->assertJsonPath('user.id', $this->owner->getKey())
         ->assertJsonPath('user.email', 'ada@example.com')
-        ->assertJsonStructure(['user' => ['id', 'name', 'email', 'emailVerifiedAt'], 'csrfToken', 'expiresAt']);
+        ->assertJsonStructure(['user' => ['id', 'name', 'email', 'emailVerifiedAt', 'pictureUrl'], 'csrfToken', 'expiresAt'])
+        ->assertJsonPath('user.pictureUrl', null);
 
     expect($response->json('csrfToken'))->toBe(app(CsrfTokenService::class)->derive($session->getKey()))
         ->and($response->json('expiresAt'))->toBe($session->expires_at->toIso8601String());

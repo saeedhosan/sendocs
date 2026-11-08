@@ -15,7 +15,7 @@ class SessionPayloadResource extends JsonResource
         $session = $this['session'];
 
         return [
-            'user'      => UserResource::make($session->user),
+            'user'      => new UserResource($session->user, $this['pictureUrl'] ?? null),
             'csrfToken' => $this['csrfToken'],
             'expiresAt' => $session->expires_at->toIso8601String(),
         ];
