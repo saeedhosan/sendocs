@@ -80,7 +80,7 @@ final class GoogleOAuthService
     /**
      * Exchange an authorization code for the caller's verified profile.
      *
-     * @return array{sub: string, email: string, name: string}
+     * @return array{sub: string, email: string, name: string, pictureUrl: ?string}
      */
     public function exchangeCode(string $code, string $codeVerifier): array
     {
@@ -109,7 +109,7 @@ final class GoogleOAuthService
      * linked silently, so a stolen provider account cannot take an existing
      * owner over.
      *
-     * @param  array{sub: string, email: string, name: string}  $profile
+     * @param  array{sub: string, email: string, name: string, pictureUrl?: ?string}  $profile
      */
     public function findOrCreateUser(array $profile): User
     {
@@ -144,7 +144,7 @@ final class GoogleOAuthService
     /**
      * Create an owner and its Google identity together.
      *
-     * @param  array{sub: string, email: string, name: string}  $profile
+     * @param  array{sub: string, email: string, name: string, pictureUrl?: ?string}  $profile
      */
     private function createGoogleUser(array $profile): User
     {
@@ -185,7 +185,7 @@ final class GoogleOAuthService
     /**
      * Verify an ID token's signature and claims, then read its profile.
      *
-     * @return array{sub: string, email: string, name: string}
+     * @return array{sub: string, email: string, name: string, pictureUrl: ?string}
      */
     private function verifyIdToken(string $idToken): array
     {
@@ -227,11 +227,43 @@ final class GoogleOAuthService
             throw ApiException::oauthFailed('Google did not confirm a verified email address.');
         }
 
+        $picture = $claims['picture'] ?? null;
+
         return [
-            'sub'   => $sub,
-            'email' => mb_strtolower($email),
-            'name'  => Str::limit($name, 120, ''),
+            'sub'        => $sub,
+            'email'      => mb_strtolower($email),
+            'name'       => Str::limit($name, 120, ''),
+            'pictureUrl' => $this->trustedPictureUrl(is_string($picture) ? $picture : null),
         ];
+    }
+
+    /**
+     * Accept only HTTPS Google-hosted profile images from the verified ID token.
+     * The URL is response-only metadata and is never stored by Sendocs.
+     */
+    private function trustedPictureUrl(?string $url): ?string
+    {
+        if ($url === null || filter_var($url, FILTER_VALIDATE_URL) === false) {
+            return null;
+        }
+
+        $parts = parse_url($url);
+
+        if (! is_array($parts)) {
+            return null;
+        }
+
+        $host = strtolower((string) ($parts['host'] ?? ''));
+
+        if (($parts['scheme'] ?? null) !== 'https'
+            || ($host !== 'googleusercontent.com' && ! str_ends_with($host, '.googleusercontent.com'))
+            || isset($parts['user'])
+            || isset($parts['pass'])
+            || isset($parts['port'])) {
+            return null;
+        }
+
+        return $url;
     }
 
     /**

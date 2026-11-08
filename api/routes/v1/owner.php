@@ -2,9 +2,14 @@
 
 declare(strict_types=1);
 
+use App\Account\Controllers\AccountController;
 use App\Auth\Middleware\VerifyCsrfToken;
 use App\DocumentRequests\Controllers\DocumentRequestController;
 use Illuminate\Support\Facades\Route;
+
+Route::patch('account', [AccountController::class, 'update'])
+    ->middleware([VerifyCsrfToken::class, 'throttle:account.update'])
+    ->name('account.update');
 
 Route::get('requests', [DocumentRequestController::class, 'index'])
     ->middleware('throttle:document-requests.read')
