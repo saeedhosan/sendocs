@@ -47,7 +47,11 @@ function readStoredSession(): SessionPayload | null {
 
     // Clean up any previously stored provider URL and normalize the stored shape.
     const safeSession = withoutProviderPicture(session)
-    sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(safeSession))
+    try {
+      sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(safeSession))
+    } catch {
+      // Keep the readable in-memory session even when storage is unavailable.
+    }
 
     return safeSession
   } catch {
