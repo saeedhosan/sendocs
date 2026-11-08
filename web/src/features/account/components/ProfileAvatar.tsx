@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { getBackgroundColor, getInitials } from '../lib/avatar'
 
 type ProfileAvatarProps = {
@@ -13,6 +13,11 @@ export function ProfileAvatar({
   size = 'default',
 }: ProfileAvatarProps) {
   const [imageFailed, setImageFailed] = useState(false)
+
+  useEffect(() => {
+    setImageFailed(false)
+  }, [pictureUrl])
+
   const dimension = size === 'small' ? 'size-8 text-xs' : 'size-18 text-xl'
   const showPicture = Boolean(pictureUrl) && !imageFailed
 
