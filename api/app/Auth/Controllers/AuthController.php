@@ -163,16 +163,12 @@ class AuthController extends Controller
         CsrfTokenService $csrf,
     ): JsonResponse {
         $attributes = $request->validated();
-        $result     = $signIn->handle($attributes['code'], $attributes['state']);
-        $session    = $result['session'];
+        $session = $signIn->handle($attributes['code'], $attributes['state']);
 
-        // The verified provider URL is returned only for this OAuth response. It is
-        // deliberately not persisted, so later session resolution returns null.
         return response()->json(
             SessionPayloadResource::make([
-                'session'    => $session,
-                'csrfToken'  => $csrf->derive($session->id),
-                'pictureUrl' => $result['pictureUrl'],
+                'session'   => $session,
+                'csrfToken' => $csrf->derive($session->id),
             ])->resolve($request),
         );
     }
