@@ -13,7 +13,7 @@ class SessionPayloadResource extends JsonResource
     /** @return array<string, mixed> */
     public function toArray(Request $request): array
     {
-        $session = $this['session'];
+        $session    = $this['session'];
         $pictureUrl = AuthIdentity::query()
             ->where('user_id', $session->user->getKey())
             ->where('provider', AuthIdentity::PROVIDER_GOOGLE)
