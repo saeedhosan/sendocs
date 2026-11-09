@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * The unique (provider, provider_id) pair is the only lookup a social sign-in
  * needs, and it never stores a token from the provider.
  */
-#[Fillable(['user_id', 'provider', 'provider_id'])]
+#[Fillable(['user_id', 'provider', 'provider_id', 'picture_url'])]
 class AuthIdentity extends Model
 {
     use HasUuids;

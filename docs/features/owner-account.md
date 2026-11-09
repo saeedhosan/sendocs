@@ -8,7 +8,7 @@ Authenticated users get one Account page to view and update their application-ow
 
 - Logged-in users can view their profile: name, email, and avatar.
 - Users can update their display name, except email address.
-- OAuth (Google) users may see the picture URL returned by the provider.
+- Google users see their provider picture URL, resolved from the linked identity on every session.
 - Users without a usable provider picture get a generated avatar using the first character of their display name.
 - Account settings navigation is grouped in a card alongside the profile card.
 
@@ -16,7 +16,7 @@ Authenticated users get one Account page to view and update their application-ow
 
 - Changing the login email address.
 - Uploading, replacing, or removing custom profile pictures.
-- Saving profile picture data, files, or provider picture URLs in storage.
+- Saving profile image data or files.
 - Importing, caching, proxying, or synchronizing provider-hosted profile images.
 - Linking, unlinking, or managing authentication providers.
 - Notifications and other account preferences.
@@ -44,9 +44,10 @@ Authenticated users get one Account page to view and update their application-ow
 
 **Provider picture handling**
 
-- Read the optional `picture` claim only after verifying oauth provider.
-- Return the URL only in the successful OAuth Provider callback response.
-- Never store the URL in PostgreSQL, session storage, object storage, or logs.
+- Read the optional `picture` claim only from the verified Google ID token.
+- Store the validated HTTPS Google-hosted URL in `auth_identities.picture_url`; never download or store image data.
+- Refresh or clear the URL on Google sign-in. `GET /api/v1/auth/session` resolves it from provider metadata.
+- Keep the URL in frontend memory only; do not persist it in browser storage.
 
 **Display name update**
 
@@ -78,7 +79,7 @@ Authenticated users get one Account page to view and update their application-ow
 - Users can only update their own profile and validate display names on the server.
 - Ignore unrecognized fields, including client-supplied picture URLs.
 - Never expose OAuth access tokens, refresh tokens, or provider credentials.
-- Only expose a picture URL from oauth provider profile picture url.
+- Accept only validated Google-hosted HTTPS URLs from the provider; never accept a client-supplied URL.
 
 ## Testing
 
@@ -101,8 +102,8 @@ Authenticated users get one Account page to view and update their application-ow
 
 **Integration tests**
 
-- OAuth user receives their available provider picture URL.
-- OAuth user without a provider picture receives null.
+- OAuth picture URL is persisted and returned by later session resolution.
+- Missing or invalid provider pictures resolve to null.
 - Frontend displays a single-character avatar when the picture URL is unavailable.
 - Frontend falls back to a single-character avatar when the provider image fails to load.
 - Updating the display name refreshes the displayed name and generated avatar.

@@ -8,12 +8,15 @@ use App\Models\Session;
 use App\Models\User;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Request as ClientRequest;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Testing\TestResponse;
 use Tests\Support\GoogleToken;
 
 beforeEach(function (): void {
+    $this->withCredentials();
+
     config()->set('services.google.client_id', GoogleToken::CLIENT_ID);
     config()->set('services.google.client_secret', 'test-client-secret');
     config()->set('services.google.redirect_uri', 'http://localhost:3000/auth/google/callback');
@@ -99,7 +102,7 @@ it('signs a new owner in on the first google sign-in', function (): void {
     expect($response->headers->getCookies())->not->toBeEmpty();
 });
 
-it('returns a verified Google picture URL only in the OAuth callback response', function (): void {
+it('persists the verified Google picture URL and returns it after session restoration', function (): void {
     $pictureUrl = 'https://lh3.googleusercontent.com/a/example';
     fakeIdToken(GoogleToken::idToken(['picture' => $pictureUrl]));
 
@@ -109,10 +112,14 @@ it('returns a verified Google picture URL only in the OAuth callback response', 
         ->assertOk()
         ->assertJsonPath('user.pictureUrl', $pictureUrl);
 
-    $identity = AuthIdentity::query()->sole();
+    expect(AuthIdentity::query()->sole()->picture_url)->toBe($pictureUrl);
 
-    expect(array_key_exists('picture_url', $identity->getAttributes()))->toBeFalse();
+    keepCookiesFrom($response);
+    Auth::forgetGuards();
 
+    $this->getJson('/api/v1/auth/session')
+        ->assertOk()
+        ->assertJsonPath('user.pictureUrl', $pictureUrl);
 });
 
 it('omits Google picture URLs that are missing or not HTTPS Google-hosted URLs', function (): void {
@@ -148,8 +155,9 @@ it('sends the pkce verifier and client secret when exchanging the code', functio
         && $request['grant_type']    === 'authorization_code');
 });
 
-it('signs an existing google identity in without creating another owner', function (): void {
-    fakeGoogle();
+it('refreshes the stored picture URL when an existing Google identity signs in', function (): void {
+    $pictureUrl = 'https://lh3.googleusercontent.com/a/refreshed';
+    fakeIdToken(GoogleToken::idToken(['picture' => $pictureUrl]));
 
     $existing = User::factory()->create(['email' => 'owner@example.com']);
     AuthIdentity::query()->create([
@@ -160,10 +168,14 @@ it('signs an existing google identity in without creating another owner', functi
 
     $state = googleStart()['state'];
 
-    googleCallback(['state' => $state])->assertOk()->assertJsonPath('user.email', 'owner@example.com');
+    googleCallback(['state' => $state])
+        ->assertOk()
+        ->assertJsonPath('user.email', 'owner@example.com')
+        ->assertJsonPath('user.pictureUrl', $pictureUrl);
 
     expect(User::query()->count())->toBe(1)
-        ->and(AuthIdentity::query()->count())->toBe(1);
+        ->and(AuthIdentity::query()->count())->toBe(1)
+        ->and(AuthIdentity::query()->sole()->picture_url)->toBe($pictureUrl);
 });
 
 it('refuses to link a google sign-in to an owner who registered with a password', function (): void {
