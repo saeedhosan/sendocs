@@ -116,6 +116,8 @@ final class GoogleOAuthService
         $identity = $this->existingIdentity($profile);
 
         if ($identity instanceof AuthIdentity) {
+            $identity->update(['picture_url' => $profile['pictureUrl'] ?? null]);
+
             return $identity->user;
         }
 
@@ -136,6 +138,8 @@ final class GoogleOAuthService
             if (! $winner instanceof AuthIdentity) {
                 throw $queryException;
             }
+
+            $winner->update(['picture_url' => $profile['pictureUrl'] ?? null]);
 
             return $winner->user;
         }
@@ -163,6 +167,7 @@ final class GoogleOAuthService
                 'user_id'     => $user->getKey(),
                 'provider'    => AuthIdentity::PROVIDER_GOOGLE,
                 'provider_id' => $profile['sub'],
+                'picture_url' => $profile['pictureUrl'] ?? null,
             ]);
 
             return $user;
@@ -239,7 +244,7 @@ final class GoogleOAuthService
 
     /**
      * Accept only HTTPS Google-hosted profile images from the verified ID token.
-     * The URL is response-only metadata and is never stored by Sendocs.
+     * Only the URL is stored; image data is never downloaded or stored.
      */
     private function trustedPictureUrl(?string $url): ?string
     {
