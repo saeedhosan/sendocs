@@ -24,11 +24,18 @@ function json(status: number, body: unknown) {
 }
 
 async function signInAndOpenAccount(page: Page, payload: SessionPayload = sessionPayload) {
-  await page.route('**/api/v1/auth/login', (route) =>
-    route.fulfill(json(200, payload)),
-  )
+  let signedIn = false
+
+  await page.route('**/api/v1/auth/login', (route) => {
+    signedIn = true
+    return route.fulfill(json(200, payload))
+  })
   await page.route('**/api/v1/auth/session', (route) =>
-    route.fulfill(json(200, payload)),
+    route.fulfill(
+      signedIn
+        ? json(200, payload)
+        : json(401, { error: { code: 'unauthenticated', message: 'Not signed in.' } }),
+    ),
   )
   await page.goto('/login')
   await page.getByLabel('Email address').fill('alex@example.com')

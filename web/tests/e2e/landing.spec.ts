@@ -73,11 +73,17 @@ test.describe("public landing", () => {
         );
     });
     test("a signed-in owner can still reach the landing page", async ({ page }) => {
-        await page.route("**/api/v1/auth/login", (route) =>
-            route.fulfill(json(200, sessionPayload)),
-        );
+        let signedIn = false
+        await page.route("**/api/v1/auth/login", (route) => {
+            signedIn = true
+            return route.fulfill(json(200, sessionPayload))
+        });
         await page.route("**/api/v1/auth/session", (route) =>
-            route.fulfill(json(200, sessionPayload)),
+            route.fulfill(
+                signedIn
+                    ? json(200, sessionPayload)
+                    : json(401, { error: { code: "unauthenticated", message: "Not signed in." } }),
+            ),
         );
 
         await page.goto("/login");

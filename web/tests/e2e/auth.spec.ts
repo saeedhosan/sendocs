@@ -110,14 +110,20 @@ test.describe('authenticated shell', () => {
   })
 
   test('an owner can delete their account', async ({ page }) => {
+    let signedIn = false
     await page.route('**/api/v1/auth/account', (route) =>
       route.fulfill({ status: 204 }),
     )
-    await page.route('**/api/v1/auth/login', (route) =>
-      route.fulfill(json(200, sessionPayload)),
-    )
+    await page.route('**/api/v1/auth/login', (route) => {
+      signedIn = true
+      return route.fulfill(json(200, sessionPayload))
+    })
     await page.route('**/api/v1/auth/session', (route) =>
-      route.fulfill(json(200, sessionPayload)),
+      route.fulfill(
+        signedIn
+          ? json(200, sessionPayload)
+          : json(401, { error: { code: 'unauthenticated', message: 'Not signed in.' } }),
+      ),
     )
     await page.goto('/login')
     await page.getByLabel('Email address').fill('alex@example.com')
@@ -140,11 +146,17 @@ test.describe('authenticated shell', () => {
   })
 
   test('an unverified owner can resend the verification email', async ({ page }) => {
-    await page.route('**/api/v1/auth/login', (route) =>
-      route.fulfill(json(200, sessionPayload)),
-    )
+    let signedIn = false
+    await page.route('**/api/v1/auth/login', (route) => {
+      signedIn = true
+      return route.fulfill(json(200, sessionPayload))
+    })
     await page.route('**/api/v1/auth/session', (route) =>
-      route.fulfill(json(200, sessionPayload)),
+      route.fulfill(
+        signedIn
+          ? json(200, sessionPayload)
+          : json(401, { error: { code: 'unauthenticated', message: 'Not signed in.' } }),
+      ),
     )
     await page.route(/\/api\/v1\/requests(\?.*)?$/, (route) =>
       route.fulfill(json(200, { data: [], nextCursor: null })),
