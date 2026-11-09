@@ -163,7 +163,7 @@ class AuthController extends Controller
         CsrfTokenService $csrf,
     ): JsonResponse {
         $attributes = $request->validated();
-        $session = $signIn->handle($attributes['code'], $attributes['state']);
+        $session    = $signIn->handle($attributes['code'], $attributes['state']);
 
         return response()->json(
             SessionPayloadResource::make([
