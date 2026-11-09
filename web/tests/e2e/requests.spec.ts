@@ -40,17 +40,22 @@ function json(status: number, body: unknown): Fulfill {
 }
 
 async function stubAuthenticatedOwner(page: Page) {
+  const sessionPayload = {
+    user: {
+      id: '1',
+      name: 'Alex Morgan',
+      email: 'alex@example.com',
+      emailVerifiedAt: null,
+    },
+    csrfToken: 'e2e-csrf',
+    expiresAt: '2099-01-01T00:00:00Z',
+  }
+
   await page.route('**/api/v1/auth/login', (route) =>
-    route.fulfill(json(200, {
-      user: {
-        id: '1',
-        name: 'Alex Morgan',
-        email: 'alex@example.com',
-        emailVerifiedAt: null,
-      },
-      csrfToken: 'e2e-csrf',
-      expiresAt: '2099-01-01T00:00:00Z',
-    })),
+    route.fulfill(json(200, sessionPayload)),
+  )
+  await page.route('**/api/v1/auth/session', (route) =>
+    route.fulfill(json(200, sessionPayload)),
   )
   await page.goto('/login')
   await page.getByLabel('Email address').fill('alex@example.com')

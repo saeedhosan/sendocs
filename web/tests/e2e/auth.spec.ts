@@ -73,6 +73,22 @@ test.describe('unauthenticated shell', () => {
 })
 
 test.describe('authenticated shell', () => {
+  test('restores a valid cookie session on a fresh application load', async ({ page }) => {
+    let sessionCalls = 0
+    await page.route('**/api/v1/auth/session', (route) => {
+      sessionCalls += 1
+      return route.fulfill(json(200, sessionPayload))
+    })
+    await page.route(/\/api\/v1\/requests(\?.*)?$/, (route) =>
+      route.fulfill(json(200, { data: [], nextCursor: null })),
+    )
+
+    await page.goto('/dashboard')
+
+    await expect(page.getByText('No document requests yet')).toBeVisible()
+    expect(sessionCalls).toBeGreaterThan(0)
+  })
+
   test('sign in moves a guest to the dashboard', async ({ page }) => {
     await page.route('**/api/v1/auth/login', (route) =>
       route.fulfill(json(200, sessionPayload)),
@@ -97,8 +113,10 @@ test.describe('authenticated shell', () => {
     await page.route('**/api/v1/auth/account', (route) =>
       route.fulfill({ status: 204 }),
     )
-
     await page.route('**/api/v1/auth/login', (route) =>
+      route.fulfill(json(200, sessionPayload)),
+    )
+    await page.route('**/api/v1/auth/session', (route) =>
       route.fulfill(json(200, sessionPayload)),
     )
     await page.goto('/login')
@@ -123,6 +141,9 @@ test.describe('authenticated shell', () => {
 
   test('an unverified owner can resend the verification email', async ({ page }) => {
     await page.route('**/api/v1/auth/login', (route) =>
+      route.fulfill(json(200, sessionPayload)),
+    )
+    await page.route('**/api/v1/auth/session', (route) =>
       route.fulfill(json(200, sessionPayload)),
     )
     await page.route(/\/api\/v1\/requests(\?.*)?$/, (route) =>

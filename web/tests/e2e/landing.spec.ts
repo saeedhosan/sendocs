@@ -76,6 +76,9 @@ test.describe("public landing", () => {
         await page.route("**/api/v1/auth/login", (route) =>
             route.fulfill(json(200, sessionPayload)),
         );
+        await page.route("**/api/v1/auth/session", (route) =>
+            route.fulfill(json(200, sessionPayload)),
+        );
 
         await page.goto("/login");
         await page.getByLabel("Email address").fill("alex@example.com");

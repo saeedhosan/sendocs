@@ -27,6 +27,9 @@ async function signInAndOpenAccount(page: Page, payload: SessionPayload = sessio
   await page.route('**/api/v1/auth/login', (route) =>
     route.fulfill(json(200, payload)),
   )
+  await page.route('**/api/v1/auth/session', (route) =>
+    route.fulfill(json(200, payload)),
+  )
   await page.goto('/login')
   await page.getByLabel('Email address').fill('alex@example.com')
   await page.getByLabel('Password', { exact: true }).fill('correcthorsebattery')
@@ -36,7 +39,7 @@ async function signInAndOpenAccount(page: Page, payload: SessionPayload = sessio
 }
 
 test.describe('account profile', () => {
-  test('shows profile details and does not persist the Google picture URL', async ({ page }) => {
+  test('shows profile details without persisting session data in browser storage', async ({ page }) => {
     await signInAndOpenAccount(page)
 
     await expect(page.getByLabel('Full name')).toHaveValue('Alex Morgan')
@@ -44,10 +47,8 @@ test.describe('account profile', () => {
     await expect(page.getByRole('button', { name: 'Update profile' })).toBeDisabled()
     await expect(page.getByRole('main').getByRole('img', { name: 'Alex Morgan profile picture' })).toBeVisible()
 
-    const storedSession = await page.evaluate(() =>
-      sessionStorage.getItem('sendocs.owner-session.v1'),
-    )
-    expect(storedSession).not.toContain(pictureUrl)
+    const storageLength = await page.evaluate(() => sessionStorage.length)
+    expect(storageLength).toBe(0)
   })
 
   test('falls back to a single initial when the Google profile image fails', async ({ page }) => {
