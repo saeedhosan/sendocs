@@ -15,6 +15,8 @@ use Illuminate\Testing\TestResponse;
 use Tests\Support\GoogleToken;
 
 beforeEach(function (): void {
+    $this->withCredentials();
+
     config()->set('services.google.client_id', GoogleToken::CLIENT_ID);
     config()->set('services.google.client_secret', 'test-client-secret');
     config()->set('services.google.redirect_uri', 'http://localhost:3000/auth/google/callback');
