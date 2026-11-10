@@ -15,64 +15,23 @@ import { setSessionInvalidHandler } from '../../lib/api/client'
 import { AuthContext } from './auth-context'
 import type { AuthContextValue, AuthStatus } from './auth-context'
 
-const SESSION_STORAGE_KEY = 'sendocs.owner-session.v1'
-
-/** Provider-hosted images are transient and must never enter sessionStorage. */
-function withoutProviderPicture(payload: SessionPayload): SessionPayload {
-  return {
-    ...payload,
-    user: { ...payload.user, pictureUrl: null },
-  }
-}
-
-function readStoredSession(): SessionPayload | null {
-  try {
-    const value = sessionStorage.getItem(SESSION_STORAGE_KEY)
-
-    if (value === null) {
-      return null
-    }
-
-    const session = JSON.parse(value) as SessionPayload
-
-    if (
-      typeof session.csrfToken !== 'string' ||
-      typeof session.expiresAt !== 'string' ||
-      Date.parse(session.expiresAt) <= Date.now() ||
-      typeof session.user?.id !== 'string'
-    ) {
-      sessionStorage.removeItem(SESSION_STORAGE_KEY)
-      return null
-    }
-
-    // Clean up any previously stored provider URL and normalize the stored shape.
-    const safeSession = withoutProviderPicture(session)
-    try {
-      sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(safeSession))
-    } catch {
-      // Keep the readable in-memory session even when storage is unavailable.
-    }
-
-    return safeSession
-  } catch {
-    return null
-  }
-}
-
 export function AuthProvider({
   children,
   initialSession,
 }: {
   children: ReactNode
+  /** Test-only bootstrap; production always resolves the session from the API. */
   initialSession?: SessionPayload
 }) {
-  const [restoredSession] = useState(() => initialSession ?? readStoredSession())
+  const [providedInitialSession] = useState(initialSession)
   const [status, setStatus] = useState<AuthStatus>(
-    restoredSession ? 'authenticated' : 'checking',
+    providedInitialSession ? 'authenticated' : 'checking',
   )
-  const [user, setUser] = useState<AuthUser | null>(restoredSession?.user ?? null)
+  const [user, setUser] = useState<AuthUser | null>(
+    providedInitialSession?.user ?? null,
+  )
   const [expiresAt, setExpiresAt] = useState<string | null>(
-    restoredSession?.expiresAt ?? null,
+    providedInitialSession?.expiresAt ?? null,
   )
 
   const setSession = useCallback((payload: SessionPayload) => {
@@ -80,14 +39,6 @@ export function AuthProvider({
     setUser(payload.user)
     setExpiresAt(payload.expiresAt)
     setStatus('authenticated')
-    try {
-      sessionStorage.setItem(
-        SESSION_STORAGE_KEY,
-        JSON.stringify(withoutProviderPicture(payload)),
-      )
-    } catch {
-      // Authentication remains available for this page if storage is blocked.
-    }
   }, [])
 
   const clearSession = useCallback(() => {
@@ -95,11 +46,6 @@ export function AuthProvider({
     setUser(null)
     setExpiresAt(null)
     setStatus('unauthenticated')
-    try {
-      sessionStorage.removeItem(SESSION_STORAGE_KEY)
-    } catch {
-      // The in-memory session is still cleared.
-    }
   }, [])
 
   // Any request that reports the session is gone drops it and returns to sign in.
@@ -109,15 +55,10 @@ export function AuthProvider({
     return () => setSessionInvalidHandler(null)
   }, [clearSession])
 
+  // The cookie is the source of truth. Resolve it on every fresh app startup.
   useEffect(() => {
-    if (restoredSession) {
-      setCsrfToken(restoredSession.csrfToken)
-    }
-  }, [restoredSession])
-
-  // Boot: if no stored session, try to restore from the server via cookie.
-  useEffect(() => {
-    if (restoredSession) {
+    if (providedInitialSession) {
+      setCsrfToken(providedInitialSession.csrfToken)
       return
     }
 
@@ -132,6 +73,7 @@ export function AuthProvider({
       })
       .catch(() => {
         if (!cancelled) {
+          clearCsrfToken()
           setStatus('unauthenticated')
         }
       })
@@ -139,7 +81,7 @@ export function AuthProvider({
     return () => {
       cancelled = true
     }
-  }, [restoredSession, setSession, setStatus])
+  }, [providedInitialSession, setSession])
 
   const login = useCallback(
     async (input: LoginInput) => {

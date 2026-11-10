@@ -1,5 +1,5 @@
 ## Summary
-The login page already has a \"Remember this device for 30 days\" checkbox, but:
+The login page already has a "Remember this device for 30 days" checkbox, but:
 - `LoginInput` / `loginSchema` don't include `remember` → never sent to API
 - API `LoginRequest` doesn't accept `remember`
 - `SessionService::issue()` always uses fixed 7-day lifetime (config `owner_cookie.lifetime_days`)
@@ -36,11 +36,6 @@ The login page already has a \"Remember this device for 30 days\" checkbox, but:
 
 ---
 
-### Related: Cross-tab session restore (separate issue)
-The SPA currently boots from per-tab `sessionStorage` only, never calls `/auth/session` to restore from the cookie. A new tab with empty `sessionStorage` redirects to login even with a valid backend session. Fix:
-- Add `'checking'` status to `AuthStatus`
-- On boot with no stored session → call `authApi.session()` to revalidate via cookie
-- Guards (`RequireAuth`, `GuestOnly`) render `null` while `checking`
+### Related: Cross-tab session restore — completed
 
-
-Note: for this work we can reopen the existing github issue #78
+The React app now calls `GET /api/v1/auth/session` on every fresh application startup and restores the owner session from the HTTP-only cookie. The user profile and CSRF token remain in React memory only; no session data is persisted in browser storage. Route guards wait while the initial session check is in progress.

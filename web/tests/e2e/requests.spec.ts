@@ -40,17 +40,28 @@ function json(status: number, body: unknown): Fulfill {
 }
 
 async function stubAuthenticatedOwner(page: Page) {
-  await page.route('**/api/v1/auth/login', (route) =>
-    route.fulfill(json(200, {
-      user: {
-        id: '1',
-        name: 'Alex Morgan',
-        email: 'alex@example.com',
-        emailVerifiedAt: null,
-      },
-      csrfToken: 'e2e-csrf',
-      expiresAt: '2099-01-01T00:00:00Z',
-    })),
+  let signedIn = false
+  const sessionPayload = {
+    user: {
+      id: '1',
+      name: 'Alex Morgan',
+      email: 'alex@example.com',
+      emailVerifiedAt: null,
+    },
+    csrfToken: 'e2e-csrf',
+    expiresAt: '2099-01-01T00:00:00Z',
+  }
+
+  await page.route('**/api/v1/auth/login', (route) => {
+    signedIn = true
+    return route.fulfill(json(200, sessionPayload))
+  })
+  await page.route('**/api/v1/auth/session', (route) =>
+    route.fulfill(
+      signedIn
+        ? json(200, sessionPayload)
+        : json(401, { error: { code: 'unauthenticated', message: 'Not signed in.' } }),
+    ),
   )
   await page.goto('/login')
   await page.getByLabel('Email address').fill('alex@example.com')
