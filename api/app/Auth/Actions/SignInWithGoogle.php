@@ -15,11 +15,11 @@ final readonly class SignInWithGoogle
         private SessionService $sessions,
     ) {}
 
-    public function handle(string $code, string $state): Session
+    public function handle(string $code, string $state, string $browserBinding): Session
     {
         $profile = $this->google->exchangeCode(
             $code,
-            $this->google->consumeState($state),
+            $this->google->consumeState($state, $browserBinding),
         );
 
         $user = $this->google->findOrCreateUser($profile);

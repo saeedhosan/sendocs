@@ -39,15 +39,18 @@ final class GoogleOAuthService
     /**
      * Generate a state-protected authorization URL with a PKCE challenge.
      *
-     * The verifier and the state are stored, so the callback can prove the
-     * redirect belongs to the sign-in that started it.
+     * The verifier, state, and browser-binding hash are stored, so the callback
+     * can prove it belongs to the sign-in started by this browser.
      */
-    public function generateAuthUrl(): string
+    public function generateAuthUrl(string $browserBinding): string
     {
         $state    = Str::random(40);
         $verifier = Str::random(96);
 
-        Cache::put($this->stateKey($state), ['verifier' => $verifier], now()->addMinutes((int) config('services.google.state_lifetime_minutes')));
+        Cache::put($this->stateKey($state), [
+            'verifier'             => $verifier,
+            'browser_binding_hash' => hash('sha256', $browserBinding),
+        ], now()->addMinutes((int) config('services.google.state_lifetime_minutes')));
 
         return self::AUTHORIZE_URL.'?'.http_build_query([
             'client_id'             => $this->clientId(),
@@ -63,18 +66,25 @@ final class GoogleOAuthService
     /**
      * Consume a callback state and return its PKCE verifier.
      *
-     * The state is removed on read, so a replayed callback finds nothing and
-     * the authorization code can only be redeemed once.
+     * The state is removed only after the browser binding matches. A callback
+     * opened in another browser therefore cannot consume the original attempt.
      */
-    public function consumeState(string $state): string
+    public function consumeState(string $state, string $browserBinding): string
     {
-        $stored = Cache::pull($this->stateKey($state));
+        $key    = $this->stateKey($state);
+        $stored = Cache::get($key);
 
-        if (! is_array($stored) || ! isset($stored['verifier'])) {
-            throw ApiException::oauthFailed('That sign-in link has expired. Try signing in again.');
+        if ($this->hasValidState($stored, $browserBinding)) {
+            // Only the initiating browser may consume the state. A callback URL
+            // opened elsewhere must not invalidate the original browser's attempt.
+            $consumed = Cache::pull($key);
+
+            if (is_array($consumed) && isset($consumed['verifier']) && is_string($consumed['verifier'])) {
+                return $consumed['verifier'];
+            }
         }
 
-        return $stored['verifier'];
+        throw ApiException::oauthFailed('That sign-in link has expired. Try signing in again.');
     }
 
     /**
@@ -406,5 +416,21 @@ final class GoogleOAuthService
         }
 
         return $redirectUri;
+    }
+
+    /**
+     * Determine whether the stored state belongs to the browser presenting the callback.
+     */
+    private function hasValidState(mixed $stored, string $browserBinding): bool
+    {
+        if (is_array($stored)
+            && isset($stored['verifier'], $stored['browser_binding_hash'])
+            && is_string($stored['verifier'])
+            && is_string($stored['browser_binding_hash'])
+            && $browserBinding) {
+            return hash_equals($stored['browser_binding_hash'], hash('sha256', $browserBinding));
+        }
+
+        return false;
     }
 }

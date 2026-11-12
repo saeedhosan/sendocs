@@ -42,6 +42,7 @@ function googleStart(): array
     $response = test()->getJson('/api/v1/auth/oauth/google');
 
     $response->assertOk();
+    keepCookiesFrom($response);
 
     parse_str((string) parse_url($response->json('authUrl'), PHP_URL_QUERY), $query);
 
@@ -76,8 +77,47 @@ it('stores the pkce verifier against the state without it appearing in the url',
     expect($stored['verifier'])
         ->not->toBeEmpty()
         ->not->toContain($query['code_challenge'])
+        ->and($stored['browser_binding_hash'])->not->toBeEmpty()
         ->and(hash('sha256', $stored['verifier'], true))
         ->toBe(base64_decode(strtr($query['code_challenge'], '-_', '+/').'==', false));
+});
+
+it('sets a short-lived HttpOnly browser-binding cookie', function (): void {
+    $response = $this->getJson('/api/v1/auth/oauth/google')->assertOk();
+
+    $cookie = collect($response->headers->getCookies())
+        ->first(fn ($cookie): bool => $cookie->getName() === 'sendocs_google_oauth_binding');
+
+    expect($cookie)->not->toBeNull()
+        ->and($cookie->isHttpOnly())->toBeTrue()
+        ->and($cookie->getPath())->toBe('/api/v1/auth/oauth/google')
+        ->and($cookie->getSameSite())->toBe('lax');
+});
+
+it('rejects a callback from another browser without consuming the original state', function (): void {
+    fakeGoogle();
+
+    $originalStart = $this->getJson('/api/v1/auth/oauth/google')->assertOk();
+    parse_str((string) parse_url($originalStart->json('authUrl'), PHP_URL_QUERY), $query);
+    keepCookiesFrom($originalStart);
+
+    $otherStart         = $this->getJson('/api/v1/auth/oauth/google')->assertOk();
+    $otherBrowserCookie = collect($otherStart->headers->getCookies())
+        ->first(fn ($cookie): bool => $cookie->getName() === 'sendocs_google_oauth_binding');
+
+    expect($otherBrowserCookie)->not->toBeNull();
+
+    $this->call(
+        'GET',
+        '/api/v1/auth/oauth/google/callback',
+        ['code' => 'google-authorization-code', 'state' => $query['state']],
+        ['sendocs_google_oauth_binding' => $otherBrowserCookie->getValue()],
+    )
+        ->assertStatus(400)
+        ->assertJsonPath('error.code', 'oauth_failed');
+
+    keepCookiesFrom($originalStart);
+    googleCallback(['state' => $query['state']])->assertOk();
 });
 
 it('signs a new owner in on the first google sign-in', function (): void {
