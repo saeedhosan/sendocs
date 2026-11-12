@@ -292,7 +292,9 @@ Only the guard boundary is noted here; the endpoint itself is defined in secure-
 **Google OAuth**
 
 - Google OAuth uses Authorization Code flow with PKCE and state for CSRF protection.
-- state is generated, stored, and consumed on callback, so a replayed redirect finds nothing. The PKCE verifier is stored alongside it and never appears in the authorization URL.
+- Each start creates a short-lived, HttpOnly, SameSite=Lax browser-binding cookie, Secure in production and scoped to the OAuth API path. React cannot read it.
+- The state record stores the SHA-256 hash of that browser binding alongside the PKCE verifier. The callback checks the cookie before consuming the state, so a callback opened in another browser cannot consume the original browser's attempt.
+- The PKCE verifier never appears in the authorization URL.
 - Google ID token is verified using Google's public keys.
 - Google emails are treated as verified if `email_verified` is true.
 - First Google sign-in creates a user and an auth_identities entry and set provider.

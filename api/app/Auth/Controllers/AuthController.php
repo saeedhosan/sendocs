@@ -31,10 +31,15 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
 {
+    private const string GOOGLE_OAUTH_BINDING_COOKIE = 'sendocs_google_oauth_binding';
+
+    private const string GOOGLE_OAUTH_BINDING_COOKIE_PATH = '/api/v1/auth/oauth/google';
+
     public function register(
         RegisterRequest $request,
         RegisterOwner $register,
@@ -142,7 +147,20 @@ class AuthController extends Controller
 
     public function oauthGoogleStart(GoogleOAuthService $google): JsonResponse
     {
-        return response()->json(['authUrl' => $google->generateAuthUrl()]);
+        $browserBinding = Str::random(64);
+
+        return response()->json(['authUrl' => $google->generateAuthUrl($browserBinding)])
+            ->cookie(
+                self::GOOGLE_OAUTH_BINDING_COOKIE,
+                $browserBinding,
+                (int) config('services.google.state_lifetime_minutes'),
+                self::GOOGLE_OAUTH_BINDING_COOKIE_PATH,
+                null,
+                (bool) config('session.owner_cookie.secure'),
+                true,
+                false,
+                'lax',
+            );
     }
 
     public function resolveSession(
@@ -162,8 +180,14 @@ class AuthController extends Controller
         SignInWithGoogle $signIn,
         CsrfTokenService $csrf,
     ): JsonResponse {
-        $attributes = $request->validated();
-        $session    = $signIn->handle($attributes['code'], $attributes['state']);
+        $attributes     = $request->validated();
+        $browserBinding = $request->cookie(self::GOOGLE_OAUTH_BINDING_COOKIE);
+
+        $session = $signIn->handle(
+            $attributes['code'],
+            $attributes['state'],
+            is_string($browserBinding) ? $browserBinding : '',
+        );
 
         return response()->json(
             SessionPayloadResource::make([

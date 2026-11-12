@@ -326,12 +326,17 @@ paths:
       tags: [Owner Authentication]
       operationId: oauthGoogleStart
       summary: Start Google sign-in.
-      description: Starts OAuth with PKCE and state; returns the Google authorization URL.
+      description: Starts OAuth with PKCE and state; returns the Google authorization URL and sets a short-lived HttpOnly browser-binding cookie.
       security: []
       x-rate-limit: { limit: 10, window: 60, key: ip }
       responses:
         "200":
-          description: Authorization URL.
+          description: Authorization URL; short-lived browser-binding cookie set.
+          headers:
+            Set-Cookie:
+              description: HttpOnly, SameSite=Lax browser-binding cookie, Secure in production, scoped to the Google OAuth API path.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -349,7 +354,7 @@ paths:
       tags: [Owner Authentication]
       operationId: oauthGoogleCallback
       summary: Complete Google sign-in.
-      description: Validates OAuth state and the Google ID token, then creates or links the account and sets a session cookie. The response may include a verified HTTPS Google-hosted picture URL; it is returned only by this callback and is never persisted. Provider conflicts return `409`; invalid state or tokens return `400`.
+      description: Validates OAuth state, the initiating browser's binding cookie, and the Google ID token, then creates or links the account and sets a session cookie. The response may include a verified HTTPS Google-hosted picture URL; it is returned only by this callback and is never persisted. Provider conflicts return `409`; invalid state, browser binding, or tokens return `400`.
       security: []
       x-rate-limit: { limit: 10, window: 60, key: ip }
       parameters:
