@@ -100,7 +100,7 @@ Full guides:
 ### Testing
 
 ```bash
-docker compose run --rm test              # Run both test suites
+docker compose run --rm test              # Run both tests
 
 # or
 docker compose run --rm api composer test # Run API tests
