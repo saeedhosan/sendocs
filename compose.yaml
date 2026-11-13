@@ -64,6 +64,7 @@ services:
         volumes:
             - ./api:/var/www/html
             - /var/www/html/vendor
+            - /var/www/html/storage/framework/testing
         depends_on:
             db:
                 condition: service_healthy
