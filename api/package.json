@@ -4,7 +4,7 @@
     "type": "module",
     "scripts": {},
     "devDependencies": {
-        "concurrently": "^10.0.3"
+        "concurrently": "^10.0.7"
     },
     "optionalDependencies": {
         "@laravel/multiplex": "^0.4.1"
