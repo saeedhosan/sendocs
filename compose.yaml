@@ -64,6 +64,7 @@ services:
         volumes:
             - ./api:/var/www/html
             - /var/www/html/vendor
+            - /var/www/html/storage/framework/testing
         depends_on:
             db:
                 condition: service_healthy
@@ -197,18 +198,18 @@ services:
                   fi
                   sleep 2
               done
-              if ! aws --endpoint-url "$AWS_ENDPOINT" s3api head-bucket --bucket "$AWS_BUCKET" >/dev/null 2>&1; then
-                  aws --endpoint-url "$AWS_ENDPOINT" s3api create-bucket --bucket "$AWS_BUCKET" --acl private
+              if ! aws --endpoint-url "$$AWS_ENDPOINT" s3api head-bucket --bucket "$$AWS_BUCKET" >/dev/null 2>&1; then
+                  aws --endpoint-url "$$AWS_ENDPOINT" s3api create-bucket --bucket "$$AWS_BUCKET" --acl private
               fi
               # This bucket is dedicated to private client documents. Reset its ACL
               # and remove bucket policies so objects cannot be made public by policy.
-              aws --endpoint-url "$AWS_ENDPOINT" s3api put-bucket-acl --bucket "$AWS_BUCKET" --acl private
-              if policy_error=$(aws --endpoint-url "$AWS_ENDPOINT" s3api delete-bucket-policy --bucket "$AWS_BUCKET" 2>&1); then
+              aws --endpoint-url "$$AWS_ENDPOINT" s3api put-bucket-acl --bucket "$$AWS_BUCKET" --acl private
+              if policy_error=$$(aws --endpoint-url "$$AWS_ENDPOINT" s3api delete-bucket-policy --bucket "$$AWS_BUCKET" 2>&1); then
                   :
               else
-                  case "$policy_error" in
+                  case "$$policy_error" in
                       *NoSuchBucketPolicy*|*"The bucket policy does not exist"*) ;;
-                      *) echo "$policy_error" >&2; exit 1 ;;
+                      *) echo "$$policy_error" >&2; exit 1 ;;
                   esac
               fi
         environment:
