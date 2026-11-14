@@ -5,11 +5,13 @@
 
 ## Goal
 
-Measure whether one Sendocs application instance can support 1K owner DAU and the client traffic they generate.
+Validate the Sendocs codebase and Docker Compose environment under a simulated 1K-owner daily workload, using only GitHub Actions and open-source k6.
+
+This is a CI-based capacity experiment, not proof of capacity on a specific production server.
 
 ## Workload
 
-1K DAU means 1,000 distinct owners active within 24 hours. Client activity is additional traffic.
+1K DAU means 1,000 distinct owners active within a 24-hour period. Client activity adds traffic but does not count toward owner DAU.
 
 Initial design estimates (hypotheses, not measured usage):
 
@@ -26,26 +28,36 @@ Simulate real owner and client journeys, not isolated endpoint calls:
 
 - Owners sign in, view lists, open request details, create requests, and download files.
 - Clients open magic links, upload files, leave, and return later.
-- Include varied item counts (1–10), file sizes (up to 25 MB), and normal think time.
+- Vary request item counts (1–10), file sizes (up to 25 MB), and think time.
 - Keep retries, duplicate uploads, invalid files, and destructive actions as separate tests.
 
-The request and upload totals above are planning assumptions. Validate the journey mix during testing; do not add artificial requests just to reach 10,000/day.
+The estimates are hypotheses. Validate the journey mix during testing; do not add artificial requests just to reach a target total.
 
 ## Test Environment
 
-Use one application instance, PostgreSQL, private S3-compatible storage, the email worker, and cleanup scheduler.
+Run entirely in GitHub Actions:
 
-Record the tested commit, machine/container limits, database and storage configuration, dataset, and load-generator location. Use an isolated environment with synthetic data.
+- Check out the tested commit and build the repository's actual Docker Compose services.
+- Start the application, PostgreSQL, and configured private object storage and workers.
+- Apply migrations and create isolated synthetic benchmark data (including 1,000 distinct owners).
+- Run k6 against the Compose application; do not send load to the public demo or production.
+- Save k6 output, logs, and available resource measurements as workflow artifacts.
+
+Use GitHub-hosted runner capacity and included Actions allowance only; do not provision a paid server or external load-testing service. Record runner specifications, job duration, container limits, and the tested commit for each run.
+
+The application and load generator may compete for the same runner CPU and memory. Results therefore describe this CI environment and must not be presented as production-server capacity.
 
 ## Test Steps
 
-1. Verify each owner and client journey with a small smoke test.
-2. Increase owner population progressively: 100, 250, 500, then 1,000 DAU.
-3. Run a full 24-hour 1K test to validate daily activity and scheduled cleanup.
-4. Run separate upload, peak-load, soak, and failure tests.
-5. Repeat any run that shows a bottleneck.
+1. Add a small k6 smoke test for the real owner and client API journeys.
+2. Build and start the existing Docker Compose environment in a manually triggered GitHub Actions workflow.
+3. Seed isolated synthetic owners, requests, items, and test files.
+4. Increase simulated daily owner populations progressively: 100, 250, 500, then 1,000.
+5. Run an accelerated workload representing a 24-hour activity distribution. Record the simulated time window and test duration; do not claim it was a real 24-hour soak.
+6. Run separate upload, peak-load, soak (within CI job limits), and failure tests.
+7. Repeat runs after addressing measured bottlenecks.
 
-Use k6 for load generation. Do not run load tests against production without explicit authorization.
+Use open-source k6 for load generation. Keep workflow runs manually triggered initially to control GitHub Actions usage.
 
 ## Pass Criteria
 
@@ -59,6 +71,8 @@ Use k6 for load generation. Do not run load tests against production without exp
 
 Also verify owner isolation, identical 410 responses for invalid links, one file per item, private file access, correct progress, and eventual storage cleanup.
 
+These are initial targets from the design, not measured results. Report each target as passed, failed, or not measured.
+
 ## Results
 
 **Outcome:** Not started
@@ -70,12 +84,12 @@ Also verify owner isolation, identical 410 responses for invalid links, one file
 | 500 DAU | Not run | |
 | 1K DAU | Not run | |
 
-For each run, record throughput, p50/p95/p99 latency, errors, CPU/memory, database connections/queries/locks, storage transfer performance, queue delay, and cleanup backlog.
+For each run, record throughput, p50/p95/p99 latency, errors, CPU/memory, database connections/queries/locks, storage transfer performance, queue delay, cleanup backlog, runner specifications, and duration.
 
 ## Findings
 
-Record only measured bottlenecks, the evidence, the change made, and its result. Add infrastructure only when measurements justify it.
+Record only measured bottlenecks, supporting evidence, the change made, and its result. Add infrastructure only when measurements justify it.
 
 ## References
 
-[Design](../design.md) · [Decisions](../decisions.md) · [OpenAPI](../../api/docs/openapi.yaml) · [Owner dashboard](../features/owner-dashboard.md) · [Client portal](../features/client-portal.md)
+[Design](../design.md) · [Development and Docker Compose](../development.md) · [Decisions](../decisions.md) · [OpenAPI](../../api/docs/openapi.yaml) · [Owner dashboard](../features/owner-dashboard.md) · [Client portal](../features/client-portal.md) · [k6](https://grafana.com/docs/k6/latest/)
