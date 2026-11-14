@@ -1,6 +1,6 @@
 # 1K DAU Scalability Validation
 
-**Status:** Planned  
+**Status:** In progress  
 **Target:** 1,000 active owner accounts per day
 
 ## Goal
@@ -49,15 +49,16 @@ The application and load generator may compete for the same runner CPU and memor
 
 ## Test Steps
 
-1. Add a small k6 smoke test for the real owner and client API journeys.
-2. Build and start the existing Docker Compose environment in a manually triggered GitHub Actions workflow.
+1. [x] Add a k6 smoke journey covering owner registration, request listing/creation/detail, client portal lookup, and a valid PDF upload.
+2. [x] Add a manually triggered GitHub Actions workflow that builds and starts the existing Docker Compose API, database, object storage, and worker services, then runs k6.
+3. Run the smoke workflow and fix any environment or journey failures before adding higher-volume scenarios.
 3. Seed isolated synthetic owners, requests, items, and test files.
 4. Increase simulated daily owner populations progressively: 100, 250, 500, then 1,000.
 5. Run an accelerated workload representing a 24-hour activity distribution. Record the simulated time window and test duration; do not claim it was a real 24-hour soak.
 6. Run separate upload, peak-load, soak (within CI job limits), and failure tests.
 7. Repeat runs after addressing measured bottlenecks.
 
-Use open-source k6 for load generation. Keep workflow runs manually triggered initially to control GitHub Actions usage.
+Use open-source k6 for load generation. Keep workflow runs manually triggered initially to control GitHub Actions usage. The smoke workflow is [scalability-smoke.yml](../../.github/workflows/scalability-smoke.yml); its journey is [smoke.js](../../tests/load/smoke.js).
 
 ## Pass Criteria
 
