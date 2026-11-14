@@ -51,12 +51,13 @@ The application and load generator may compete for the same runner CPU and memor
 
 1. [x] Add a k6 smoke journey covering owner registration, request listing/creation/detail, client portal lookup, and a valid PDF upload.
 2. [x] Add the k6 smoke job to the existing manually dispatchable Build workflow. It builds every Compose image and starts the complete runtime stack, including the web frontend, API, PostgreSQL, RustFS, workers, scheduler, and storage initialization. One-shot test and migration helpers are excluded from stack startup; migrations run explicitly before startup.
-3. Run the smoke workflow and fix any environment or journey failures before adding higher-volume scenarios.
-3. Seed isolated synthetic owners, requests, items, and test files.
-4. Increase simulated daily owner populations progressively: 100, 250, 500, then 1,000.
-5. Run an accelerated workload representing a 24-hour activity distribution. Record the simulated time window and test duration; do not claim it was a real 24-hour soak.
-6. Run separate upload, peak-load, soak (within CI job limits), and failure tests.
-7. Repeat runs after addressing measured bottlenecks.
+3. [x] Wait for `http://127.0.0.1:3000/health`, which checks the API through the frontend's configured `/health` proxy.
+4. Run the smoke workflow and fix any environment or journey failures before adding higher-volume scenarios.
+5. Seed isolated synthetic owners, requests, items, and test files.
+6. Increase simulated daily owner populations progressively: 100, 250, 500, then 1,000.
+7. Run an accelerated workload representing a 24-hour activity distribution. Record the simulated time window and test duration; do not claim it was a real 24-hour soak.
+8. Run separate upload, peak-load, soak (within CI job limits), and failure tests.
+9. Repeat runs after addressing measured bottlenecks.
 
 Use open-source k6 for load generation. Keep workflow runs manually triggered initially to control GitHub Actions usage. The smoke job lives in the existing [Build workflow](../../.github/workflows/build.yml) and runs on manual dispatch; its journey is [smoke.js](../../tests/load/smoke.js).
 
