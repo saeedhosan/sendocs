@@ -50,7 +50,7 @@ The application and load generator may compete for the same runner CPU and memor
 ## Test Steps
 
 1. [x] Add a k6 smoke journey covering owner registration, request listing/creation/detail, client portal lookup, and a valid PDF upload.
-2. [x] Add the k6 smoke job to the existing manually dispatchable Build workflow. It builds and starts the existing Docker Compose API, database, object storage, and worker services, then runs k6.
+2. [x] Add the k6 smoke job to the existing manually dispatchable Build workflow. It builds every Compose image and starts the complete runtime stack, including the web frontend, API, PostgreSQL, RustFS, workers, scheduler, and storage initialization. One-shot test and migration helpers are excluded from stack startup; migrations run explicitly before startup.
 3. Run the smoke workflow and fix any environment or journey failures before adding higher-volume scenarios.
 3. Seed isolated synthetic owners, requests, items, and test files.
 4. Increase simulated daily owner populations progressively: 100, 250, 500, then 1,000.
