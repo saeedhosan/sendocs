@@ -37,7 +37,7 @@ The app and k6 share runner resources, so document this limitation with every re
 ## Validation
 
 1. [x] Add a k6 journey test: owner registration, request list/create/detail, portal lookup, and PDF upload.
-2. [x] Add a separate manual [Scalability Load Test workflow](../../.github/workflows/scalability-smoke.yml).
+2. [x] Add a separate manual [Scalability Load Test workflow](../../.github/workflows/k6-loading.yml).
 3. [ ] Run the k6 journey test and fix journey or environment failures.
 4. [ ] Add isolated synthetic data for 1,000 owners.
 5. [ ] Run progressively at 100, 250, 500, and 1,000 daily active owners.
