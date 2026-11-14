@@ -12,23 +12,23 @@ This is a benchmark plan, not a claim that the current system has demonstrated t
 
 ## Workload Model
 
-The target counts active owner accounts. Client activity is additional workload and is included in the API request, upload, and download totals; clients do not need accounts.
+The target counts active owner accounts. Clients do not need accounts; their portal activity adds to the system workload.
 
 The following are planning estimates from [design.md](../design.md), not measured production usage:
 
 | Metric | Expected workload |
 |---|---:|
 | Daily active owners | 1,000 |
-| API requests | ~10,000/day |
+| API requests (owners and clients) | ~10,000/day |
 | Average API request rate | ~0.1 requests/second |
 | Peak API request rate | ~1 request/second (10× average) |
-| Requests created | ~200/day |
-| File uploads | ~500/day |
+| Document requests created by owners | ~200/day |
+| File uploads by clients | ~500/day |
 | Average file size | ~5 MB |
 | Upload volume | ~2.5 GB/day; ~75 GB/month |
 | Maximum file size | 25 MB |
 
-The request and upload estimates represent combined owner and client activity. Validate this interpretation against representative owner and client journeys before treating the estimates as a final workload profile.
+API request volume includes both owner and client journeys. Request creation is owner activity; file uploads are client activity. Validate these planning estimates against representative journeys before treating them as a final workload profile.
 
 Run the load progressively at 100, 250, 500, and 1,000 owner-DAU-equivalent workload levels. Scale request rates and background activity with each level; do not treat DAU as concurrent virtual users. Record the concurrency, ramp-up, and duration used for each run.
 
