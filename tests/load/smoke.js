@@ -80,4 +80,22 @@ export default function () {
         headers: { Accept: 'application/json' },
     });
     check(portal, { 'client portal lookup returns 200': (r) => r.status === 200 });
+
+    const itemId = portal.json('items.0.id');
+    if (!itemId) {
+        fail('Client portal response did not contain a request item');
+    }
+
+    const pdf = '%PDF-1.7\\n1 0 obj\\n<< /Type /Catalog >>\\nendobj\\n%%EOF\\n';
+    const upload = http.post(
+        `${baseUrl}/api/v1/portal/${token}/items/${itemId}/file`,
+        { file: http.file(pdf, 'identity.pdf', 'application/pdf') },
+        { headers: { Accept: 'application/json' } },
+    );
+
+    check(upload, {
+        'client document upload returns 200': (r) => r.status === 200,
+        'uploaded document updates portal progress': (r) => r.json('uploaded') === 1,
+        'uploaded document is marked uploaded': (r) => r.json('items.0.state') === 'uploaded',
+    });
 }
