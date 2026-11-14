@@ -38,13 +38,13 @@ The app and k6 share runner resources, so document this limitation with every re
 
 1. [x] Add a k6 journey test: owner registration, request list/create/detail, portal lookup, and PDF upload.
 2. [x] Add a separate manual [Scalability Load Test workflow](../../.github/workflows/scalability-smoke.yml).
-3. [ ] Run the smoke test and fix journey or environment failures.
+3. [ ] Run the k6 journey test and fix journey or environment failures.
 4. [ ] Add isolated synthetic data for 1,000 owners.
 5. [ ] Run progressively at 100, 250, 500, and 1,000 daily active owners.
 6. [ ] Run accelerated daily, peak, upload, and bounded soak scenarios.
 7. [ ] Record bottlenecks and rerun after changes.
 
-The k6 script is [tests/load/k6-load.js](../../tests/load/smoke.js). An accelerated daily test is not a real 24-hour soak.
+The k6 script is [tests/load/k6-load.js](../../tests/load/k6-load.js). An accelerated daily test is not a real 24-hour soak.
 
 ## Acceptance Targets
 
