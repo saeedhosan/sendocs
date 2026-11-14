@@ -1,7 +1,7 @@
 import http from 'k6/http';
 import { check, fail } from 'k6';
 
-const baseUrl = (__ENV.BASE_URL || 'http://127.0.0.1:8000').replace(/\\/$/, '');
+const baseUrl = __ENV.BASE_URL || 'http://127.0.0.1:8000';
 
 export const options = {
     vus: 1,
@@ -86,7 +86,7 @@ export default function () {
         fail('Client portal response did not contain a request item');
     }
 
-    const pdf = '%PDF-1.7\\n1 0 obj\\n<< /Type /Catalog >>\\nendobj\\n%%EOF\\n';
+    const pdf = '%PDF-1.7\n1 0 obj\n<< /Type /Catalog >>\nendobj\n%%EOF\n';
     const upload = http.post(
         `${baseUrl}/api/v1/portal/${token}/items/${itemId}/file`,
         { file: http.file(pdf, 'identity.pdf', 'application/pdf') },
