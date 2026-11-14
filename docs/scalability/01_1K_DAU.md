@@ -228,7 +228,7 @@ After testing, summarize the highest workload that met the acceptance criteria, 
 
 - Architecture and initial workload estimates: [design.md](../design.md)
 - Technical decisions: [decisions.md](../decisions.md)
-- API contract: [openapi.yaml](../api/docs/openapi.yaml)
+- API contract: [openapi.yaml](../../api/docs/openapi.yaml)
 - Owner behavior: [owner-dashboard.md](../features/owner-dashboard.md)
 - Client behavior: [client-portal.md](../features/client-portal.md)
 - Request lifecycle and storage: [document-requests.md](../features/document-requests.md)
