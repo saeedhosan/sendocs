@@ -50,7 +50,7 @@ The application and load generator may compete for the same runner CPU and memor
 ## Test Steps
 
 1. [x] Add a k6 smoke journey covering owner registration, request listing/creation/detail, client portal lookup, and a valid PDF upload.
-2. [x] Add a manually triggered GitHub Actions workflow that builds and starts the existing Docker Compose API, database, object storage, and worker services, then runs k6.
+2. [x] Add the k6 smoke job to the existing manually dispatchable Build workflow. It builds and starts the existing Docker Compose API, database, object storage, and worker services, then runs k6.
 3. Run the smoke workflow and fix any environment or journey failures before adding higher-volume scenarios.
 3. Seed isolated synthetic owners, requests, items, and test files.
 4. Increase simulated daily owner populations progressively: 100, 250, 500, then 1,000.
@@ -58,7 +58,7 @@ The application and load generator may compete for the same runner CPU and memor
 6. Run separate upload, peak-load, soak (within CI job limits), and failure tests.
 7. Repeat runs after addressing measured bottlenecks.
 
-Use open-source k6 for load generation. Keep workflow runs manually triggered initially to control GitHub Actions usage. The smoke workflow is [scalability-smoke.yml](../../.github/workflows/scalability-smoke.yml); its journey is [smoke.js](../../tests/load/smoke.js).
+Use open-source k6 for load generation. Keep workflow runs manually triggered initially to control GitHub Actions usage. The smoke job lives in the existing [Build workflow](../../.github/workflows/build.yml) and runs on manual dispatch; its journey is [smoke.js](../../tests/load/smoke.js).
 
 ## Pass Criteria
 
