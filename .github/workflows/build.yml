@@ -85,7 +85,7 @@ jobs:
 
             - name: Start the complete Compose application stack
               # The test helper runs the full test suites, so exclude it from the load-test environment.
-              run: docker compose up -d --scale test=0
+              run: docker compose up -d --scale test=0 --scale migrate=0
 
             - name: Wait for API health
               run: |
