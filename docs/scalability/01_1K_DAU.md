@@ -36,17 +36,17 @@ These are the current planning estimates from [design.md](../design.md). They ar
 
 The daily totals are independent aggregates. The 500 uploads on a given day are not assumed to belong only to the 200 requests created that same day; clients may be completing requests created on earlier days. Likewise, 10,000 API calls are shared across owner and client journeys, not 10 calls made by every owner.
 
-A useful cross-check is the minimum event budget implied by one dashboard app boot per active owner and the documented upload behavior:
+A useful cross-check is the minimum event budget implied by the agreed baseline assumption that each active owner opens the dashboard once per day, plus the documented upload behavior:
 
 | Event | Daily count | Basis |
 |---|---:|---|
-| Owner session resolution | ~1,000 | One dashboard app boot per active owner (test assumption) |
-| First request-list read | ~1,000 | One initial dashboard page per active owner (test assumption) |
+| Owner session resolution | ~1,000 | One dashboard app boot per active owner |
+| First request-list read | ~1,000 | One initial dashboard page per active owner |
 | Request creation | ~200 | Existing planning estimate |
 | Successful upload | ~500 | Existing planning estimate |
 | Portal refetch after successful upload | ~500 | Client portal refetches after each successful upload |
 
-This accounts for about 3,200 API calls/day before request-detail reads, additional list pages, client first opens, client returns/focus refetches, and other owner activity. The remaining difference to the 10,000/day estimate must be allocated through an explicit journey mix during calibration; do not assign the unexplained calls to arbitrary endpoint traffic. Downloads also generate object-storage requests and bytes, which must be measured separately from API calls.
+This accounts for about 3,200 API calls/day before request-detail reads, additional list pages, client first opens, client returns/focus refetches, and other owner activity. The remaining ~6,800 calls are not yet assigned to journeys. During calibration, derive that remainder from observed or explicitly chosen journey frequencies (for example, owner detail revisits and client portal opens/returns), and document the resulting counts before running the target workload. Do not fill the gap with arbitrary endpoint traffic merely to reach 10,000 calls/day. Downloads also generate object-storage requests and bytes, which must be measured separately from API calls.
 
 Do not use the aggregate request rate as a substitute for simulating the workflows below. Do not change the workload merely to make the acceptance criteria pass.
 
