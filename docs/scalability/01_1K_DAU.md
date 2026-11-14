@@ -36,6 +36,18 @@ These are the current planning estimates from [design.md](../design.md). They ar
 
 The daily totals are independent aggregates. The 500 uploads on a given day are not assumed to belong only to the 200 requests created that same day; clients may be completing requests created on earlier days. Likewise, 10,000 API calls are shared across owner and client journeys, not 10 calls made by every owner.
 
+A useful cross-check is the minimum event budget implied by one dashboard app boot per active owner and the documented upload behavior:
+
+| Event | Daily count | Basis |
+|---|---:|---|
+| Owner session resolution | ~1,000 | One dashboard app boot per active owner (test assumption) |
+| First request-list read | ~1,000 | One initial dashboard page per active owner (test assumption) |
+| Request creation | ~200 | Existing planning estimate |
+| Successful upload | ~500 | Existing planning estimate |
+| Portal refetch after successful upload | ~500 | Client portal refetches after each successful upload |
+
+This accounts for about 3,200 API calls/day before request-detail reads, additional list pages, client first opens, client returns/focus refetches, and other owner activity. The remaining difference to the 10,000/day estimate must be allocated through an explicit journey mix during calibration; do not assign the unexplained calls to arbitrary endpoint traffic. Downloads also generate object-storage requests and bytes, which must be measured separately from API calls.
+
 Do not use the aggregate request rate as a substitute for simulating the workflows below. Do not change the workload merely to make the acceptance criteria pass.
 
 ### Owner journey
@@ -115,7 +127,7 @@ Prepare a repeatable dataset with:
 - Requests containing varied item counts from 1–10.
 - A mix of waiting, partially uploaded, and complete requests.
 - Documents with varied file sizes and valid allowed content types.
-- Enough request history to exercise cursor pagination and the 1,000-request list acceptance scenario.
+- Enough request history to exercise cursor pagination and the 1,000-request list acceptance scenario. For that specific latency scenario, seed 1,000 requests owned by one test owner; keep this separate from the distributed 1K-DAU population dataset.
 
 Record dataset size and generation rules. Do not use one identical owner, request, item count, or file size for every virtual user. Use synthetic documents only; never use real client documents.
 
@@ -161,10 +173,11 @@ Correctness and security are pass/fail requirements alongside performance:
 1. **Prepare:** pin the application commit and environment; seed and verify the dataset; isolate the load generator from the system under test.
 2. **Smoke:** execute each journey with a small number of actors and verify response correctness before increasing load.
 3. **Calibrate:** verify that the generator produces the intended owner DAU-equivalent population, daily action counts, item/file distributions, arrival curve, and client revisit behavior.
-4. **Progressive runs:** execute levels 100, 250, 500, and 1,000 using the same behavioral model. Record ramp-up, steady-state duration, peak duration, and cool-down.
-5. **Soak and background work:** run a sustained target-level test long enough to observe database connections, memory growth, queue delay, and cleanup backlog. Exercise the one-minute cleanup scheduler and verify eventual object deletion.
-6. **Fault tests:** run the failure and lifecycle scenarios separately, then verify data integrity and security invariants.
-7. **Repeat:** rerun material tests to distinguish stable bottlenecks from noise. Record environmental differences.
+4. **Progressive runs:** execute levels 100, 250, 500, and 1,000 using the same behavioral model. Record ramp-up, steady-state duration, peak duration, and cool-down. Shorter runs at 100/250/500 are useful for finding saturation points, but do not represent a full day of user activity.
+5. **Target-day run:** run the 1K workload for a full 24-hour window to validate the daily activity target and observe daily background work. A compressed run may be used for faster iteration, but it must be labeled as a rate-equivalent test, not proof of a full 1K DAU day; compression changes concurrency and the timing of scheduled work.
+6. **Soak and background work:** observe database connections, memory growth, queue delay, and cleanup backlog. Exercise the one-minute cleanup scheduler and verify eventual object deletion.
+7. **Fault tests:** run the failure and lifecycle scenarios separately, then verify data integrity and security invariants.
+8. **Repeat:** rerun material tests to distinguish stable bottlenecks from noise. Record environmental differences.
 
 Use an open-source load-testing tool such as [k6](https://k6.io/). A shared GitHub Actions runner can validate scripts, but its shared resources are not a reliable measure of production capacity. Record where the application and load generator run.
 
