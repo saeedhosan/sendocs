@@ -36,17 +36,27 @@ These are the current planning estimates from [design.md](../design.md). They ar
 
 The daily totals are independent aggregates. The 500 uploads on a given day are not assumed to belong only to the 200 requests created that same day; clients may be completing requests created on earlier days. Likewise, 10,000 API calls are shared across owner and client journeys, not 10 calls made by every owner.
 
-A useful cross-check is the minimum event budget implied by the agreed baseline assumption that each active owner opens the dashboard once per day, plus the documented upload behavior:
+A useful cross-check is the minimum event budget implied by the agreed baseline assumption that each active owner opens the dashboard once per day, plus the documented creation and upload activity:
 
 | Event | Daily count | Basis |
 |---|---:|---|
 | Owner session resolution | ~1,000 | One dashboard app boot per active owner |
 | First request-list read | ~1,000 | One initial dashboard page per active owner |
 | Request creation | ~200 | Existing planning estimate |
-| Successful upload | ~500 | Existing planning estimate |
-| Portal refetch after successful upload | ~500 | Client portal refetches after each successful upload |
+| Successful upload | ~500 | Existing planning estimate; each upload is one API call |
 
-This accounts for about 3,200 API calls/day before request-detail reads, additional list pages, client first opens, client returns/focus refetches, and other owner activity. The remaining ~6,800 calls are not yet assigned to journeys. During calibration, derive that remainder from observed or explicitly chosen journey frequencies (for example, owner detail revisits and client portal opens/returns), and document the resulting counts before running the target workload. Do not fill the gap with arbitrary endpoint traffic merely to reach 10,000 calls/day. Downloads also generate object-storage requests and bytes, which must be measured separately from API calls.
+This accounts for about 2,700 API calls/day before additional list pages, request-detail reads, client portal visits/returns, and lifecycle actions. The upload endpoint returns an updated portal view; do not automatically count a second GET after every upload unless the implementation actually makes that separate request. Count portal GETs for initial visits and later focus/return visits separately.
+
+The remaining ~7,300 calls are not yet assigned to journeys. Represent the unconfirmed frequencies explicitly:
+
+| Variable | Meaning | Current value |
+|---|---|---:|
+| L | Additional owner request-list page reads beyond the first daily page | To calibrate |
+| D | Owner request-detail reads | To calibrate |
+| M | Owner lifecycle mutations (revoke and delete actions) | To calibrate |
+| P | Client portal GETs for initial visits and later focus/return visits | To calibrate |
+
+Under this event model, the estimated total is **2,700 + L + D + M + P API calls/day**. The 10,000/day design estimate therefore requires L + D + M + P to account for about 7,300 calls. That is a substantial share of the total and must be justified by the journey mix; if a plausible journey model does not produce it, revise the 10,000/day estimate rather than manufacturing traffic to meet it. Downloads also generate object-storage requests and bytes, which must be measured separately from API calls.
 
 Do not use the aggregate request rate as a substitute for simulating the workflows below. Do not change the workload merely to make the acceptance criteria pass.
 
