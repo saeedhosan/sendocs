@@ -1,97 +1,77 @@
 # 1K DAU Scalability Validation
 
 **Status:** In progress  
-**Target:** 1,000 active owner accounts per day
+**Target:** 1,000 active owner accounts per day  
+**Outcome:** Not started
 
 ## Goal
 
-Validate the Sendocs codebase and Docker Compose environment under a simulated 1K-owner daily workload, using only GitHub Actions and open-source k6.
+Test the Sendocs application and Docker Compose stack with a realistic, accelerated 1K-owner daily workload using GitHub Actions and open-source k6.
 
-This is a CI-based capacity experiment, not proof of capacity on a specific production server.
+This validates the tested codebase on a GitHub-hosted runner, not production-server capacity.
 
 ## Workload
 
-1K DAU means 1,000 distinct owners active within a 24-hour period. Client activity adds traffic but does not count toward owner DAU.
+1K DAU means 1,000 distinct owners active in a 24-hour period. Client activity is additional traffic.
 
-Initial design estimates (hypotheses, not measured usage):
+Initial workload estimates (hypotheses, not measured usage):
 
-| Metric | Daily target |
+| Metric | Daily estimate |
 |---|---:|
-| Active owners | 1,000 |
-| API requests | ~10,000 |
-| Requests created | ~200 |
-| Successful uploads | ~500 |
-| Average upload size | ~5 MB |
-| Upload volume | ~2.5 GB |
+| API requests | 10,000 |
+| Requests created | 200 |
+| Successful uploads | 500 |
+| Average upload | 5 MB |
 
-Simulate real owner and client journeys, not isolated endpoint calls:
-
-- Owners sign in, view lists, open request details, create requests, and download files.
-- Clients open magic links, upload files, leave, and return later.
-- Vary request item counts (1–10), file sizes (up to 25 MB), and think time.
-- Keep retries, duplicate uploads, invalid files, and destructive actions as separate tests.
-
-The estimates are hypotheses. Validate the journey mix during testing; do not add artificial requests just to reach a target total.
+Simulate owner and client journeys with varied request sizes, upload sizes, think times, and returning clients. Do not generate artificial traffic just to hit these estimates. Keep failure and duplicate-upload tests separate.
 
 ## Test Environment
 
-Run entirely in GitHub Actions:
+- GitHub-hosted runner; no external server or paid load-testing service.
+- Build and run the repository's Docker Compose stack, including PostgreSQL and private object storage.
+- Use isolated synthetic data; never load-test the public demo or production.
+- Record the commit, runner resources, test duration, and k6 results.
 
-- Check out the tested commit and build the repository's actual Docker Compose services.
-- Start the application, PostgreSQL, and configured private object storage and workers.
-- Apply migrations and create isolated synthetic benchmark data (including 1,000 distinct owners).
-- Run k6 against the Compose application; do not send load to the public demo or production.
-- Save k6 output, logs, and available resource measurements as workflow artifacts.
+The app and k6 share runner resources, so document this limitation with every result.
 
-Use GitHub-hosted runner capacity and included Actions allowance only; do not provision a paid server or external load-testing service. Record runner specifications, job duration, container limits, and the tested commit for each run.
+## Validation
 
-The application and load generator may compete for the same runner CPU and memory. Results therefore describe this CI environment and must not be presented as production-server capacity.
+1. [x] Add a k6 smoke journey: owner registration, request list/create/detail, portal lookup, and PDF upload.
+2. [x] Add a separate manual [Scalability Smoke workflow](../../.github/workflows/scalability-smoke.yml).
+3. [ ] Run the smoke test and fix journey or environment failures.
+4. [ ] Add isolated synthetic data for 1,000 owners.
+5. [ ] Run progressively at 100, 250, 500, and 1,000 daily active owners.
+6. [ ] Run accelerated daily, peak, upload, and bounded soak scenarios.
+7. [ ] Record bottlenecks and rerun after changes.
 
-## Test Steps
+The smoke script is [tests/load/smoke.js](../../tests/load/smoke.js). An accelerated daily test is not a real 24-hour soak.
 
-1. [x] Add a k6 smoke journey covering owner registration, request listing/creation/detail, client portal lookup, and a valid PDF upload.
-2. [x] Add a dedicated, manually triggered scalability workflow that builds Compose images and starts the runtime stack, including the web frontend, API, PostgreSQL, RustFS, workers, scheduler, and storage initialization. One-shot test and migration helpers are excluded from stack startup; migrations run explicitly before startup.
-3. [x] Wait for `http://127.0.0.1:3000/health`, which checks the API through the frontend's configured `/health` proxy.
-4. Run the smoke workflow and fix any environment or journey failures before adding higher-volume scenarios.
-5. Seed isolated synthetic owners, requests, items, and test files.
-6. Increase simulated daily owner populations progressively: 100, 250, 500, then 1,000.
-7. Run an accelerated workload representing a 24-hour activity distribution. Record the simulated time window and test duration; do not claim it was a real 24-hour soak.
-8. Run separate upload, peak-load, soak (within CI job limits), and failure tests.
-9. Repeat runs after addressing measured bottlenecks.
+## Acceptance Targets
 
-Use open-source k6 for load generation. Keep workflow runs manually triggered initially to control GitHub Actions usage. The smoke job lives in the separate [Scalability Smoke workflow](../../.github/workflows/scalability-smoke.yml); its journey is [smoke.js](../../tests/load/smoke.js).
-
-## Pass Criteria
-
-| Measurement | Target |
+| Measurement | Initial target |
 |---|---:|
 | Request list (1,000 requests) | p95 < 200 ms |
 | Portal lookup | p95 < 150 ms |
-| 5 MB upload | < 3 s, excluding network |
+| 5 MB upload (excluding network) | < 3 s |
 | Normal-workload error rate | < 1% |
-| Peak API throughput | ~1 request/s |
 
-Also verify owner isolation, identical 410 responses for invalid links, one file per item, private file access, correct progress, and eventual storage cleanup.
-
-These are initial targets from the design, not measured results. Report each target as passed, failed, or not measured.
+Also verify owner isolation, invalid-link 410 behavior, duplicate-upload handling, private file access, progress, and storage cleanup. These are targets, not achieved results.
 
 ## Results
 
-**Outcome:** Not started
+| Daily active owners | Outcome | Evidence |
+|---:|---|---|
+| 100 | Not run | |
+| 250 | Not run | |
+| 500 | Not run | |
+| 1,000 | Not run | |
 
-| Level | Result | Notes |
-|---|---|---|
-| 100 DAU | Not run | |
-| 250 DAU | Not run | |
-| 500 DAU | Not run | |
-| 1K DAU | Not run | |
-
-For each run, record throughput, p50/p95/p99 latency, errors, CPU/memory, database connections/queries/locks, storage transfer performance, queue delay, cleanup backlog, runner specifications, and duration.
+For each run, attach k6 output and record latency, throughput, errors, resource usage, database behavior, storage performance, and queue delay.
 
 ## Findings
 
-Record only measured bottlenecks, supporting evidence, the change made, and its result. Add infrastructure only when measurements justify it.
+Record measured bottlenecks, evidence, changes, and the effect of each change. Add infrastructure only when measurements justify it.
 
 ## References
 
-[Design](../design.md) · [Development and Docker Compose](../development.md) · [Decisions](../decisions.md) · [OpenAPI](../../api/docs/openapi.yaml) · [Owner dashboard](../features/owner-dashboard.md) · [Client portal](../features/client-portal.md) · [k6](https://grafana.com/docs/k6/latest/)
+[Design](../design.md) · [Development](../development.md) · [Decisions](../decisions.md) · [OpenAPI](../../api/docs/openapi.yaml) · [k6](https://grafana.com/docs/k6/latest/)
