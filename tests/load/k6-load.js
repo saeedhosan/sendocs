@@ -223,7 +223,7 @@ export function handleSummary(data) {
         '',
     );
 
-    const report = lines.join('\\n');
+    const report = lines.join('\n');
     const output = {
         'scalability-results/benchmark-entry.md': report,
         stdout: report,
