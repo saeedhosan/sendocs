@@ -231,7 +231,7 @@ export function handleSummary(data) {
     const totalChecks = passedChecks + failedChecks;
     const checkRate = totalChecks > 0 ? passedChecks / totalChecks : 0;
     const errorRate = typeof failed.rate === 'number' ? failed.rate : null;
-    const maxVus = vusMax.max ?? vus.max ?? 0;
+    const maxVus = vus.max ?? vusMax.max ?? 0;
     const targetReached = maxVus >= 1000;
     const result = targetReached && checkRate > 0.99 && errorRate !== null && errorRate < 0.01
         ? 'Passed'
