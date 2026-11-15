@@ -1,217 +1,177 @@
-import http from 'k6/http';
-import { check, fail, sleep } from 'k6';
-import exec from 'k6/execution';
-import { Counter } from 'k6/metrics';
+import { browser } from 'k6/browser';
+import { check } from 'k6';
+import { Counter, Trend } from 'k6/metrics';
 
-const baseUrl = __ENV.BASE_URL || 'http://127.0.0.1:3000';
-const password = 'benchmark-password-123';
-const identities = JSON.parse(open('../../scalability-results/owners.json'));
+const BASE_URL = __ENV.BASE_URL || 'http://127.0.0.1:3000';
+const SEEDED_OWNERS = JSON.parse(open(__ENV.SEEDED_OWNERS_FILE));
+const PASSWORD = 'benchmark-password-123';
+const REGISTER_PASSWORD = 'StrongPass123!';
 
-const portalReads = new Counter('client_portal_reads');
-const portalUploads = new Counter('client_portal_uploads');
-const loginRequests = new Counter('auth_login_requests');
-const registrationRequests = new Counter('auth_registration_requests');
+const journeysCompleted = new Counter('browser_journeys_completed');
+const journeyDuration = new Trend('browser_journey_duration', true);
 
-let ownerState = null;
+const PDF_BASE64 = 'JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCAyMDAgMjAwXSAvQ29udGVudHMgNCAwIFIgL1Jlc291cmNlcyA8PCAvRm9udCA8PCAvRjEgNSAwIFIgPj4gPj4gPj4KZW5kb2JqCjQgMCBvYmoKPDwgL0xlbmd0aCA0OSA+PgpzdHJlYW0KQlQgL0YxIDEyIFRmIDIwIDEwMCBUZCAoU2VuZG9jcyBsb2FkIHRlc3QpIFRqIEVUCmVuZHN0cmVhbQplbmRvYmoKNSAwIG9iago8PCAvVHlwZSAvRm9udCAvU3VidHlwZSAvVHlwZTEgL0Jhc2VGb250IC9IZWx2ZXRpY2EgPj4KZW5kb2JqCnhyZWYKMCA2CjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDAwOSAwMDAwMCBuIAowMDAwMDAwMDU4IDAwMDAwIG4gCjAwMDAwMDAxMTUgMDAwMDAgbiAKMDAwMDAwMDI0MSAwMDAwMCBuIAowMDAwMDAwMzM5IDAwMDAwIG4gCnRyYWlsZXIKPDwgL1NpemUgNiAvUm9vdCAxIDAgUiA+PgpzdGFydHhyZWYKNDA5CiUlRU9GCg==';
 
 export const options = {
     scenarios: {
-        owner_load: {
-            executor: 'ramping-vus',
-            startVUs: 0,
-            stages: [
-                { duration: '10s', target: 100 },
-                { duration: '10s', target: 250 },
-                { duration: '10s', target: 500 },
-                { duration: '15s', target: 1000 },
-                { duration: '30s', target: 1000 },
-                { duration: '10s', target: 0 },
-            ],
-            gracefulRampDown: '10s',
-            exec: 'ownerJourney',
+        browser_journeys: {
+            executor: 'per-vu-iterations',
+            vus: 5,
+            iterations: 1,
+            maxDuration: '5m',
+            options: {
+                browser: {
+                    type: 'chromium',
+                },
+            },
         },
     },
     thresholds: {
-        checks: ['rate>0.99'],
-        http_req_failed: ['rate<0.01'],
+        checks: ['rate==1'],
+        browser_http_req_failed: ['rate<0.01'],
     },
 };
 
-export function ownerJourney() {
-    const ownerIndex = exec.vu.idInTest - 1;
-    const owner = identities[ownerIndex];
+export default async function () {
+    const page = await browser.newPage();
+    const startedAt = Date.now();
+    const requestTitle = `Browser journey ${__ENV.GITHUB_RUN_ID || 'local'}-${__ENV.GITHUB_RUN_ATTEMPT || '1'}-${__VU}`;
 
-    if (!owner) {
-        fail(`No seeded owner identity for VU ${exec.vu.idInTest}`);
-    }
-
-    if (ownerState === null) {
-        http.cookieJar().set(baseUrl, 'sendocs_session', owner.cookie, { path: '/' });
-        ownerState = { requestId: null, token: null, itemId: null, portalChecked: false, authChecked: false };
-    }
-
-    const home = http.get(`${baseUrl}/`, { tags: { area: 'home' } });
-    check(home, { 'home route returns 200': (r) => r.status === 200 });
-
-    const dashboard = http.get(`${baseUrl}/dashboard`, { tags: { area: 'home' } });
-    check(dashboard, { 'dashboard shell returns 200': (r) => r.status === 200 });
-
-    // Exercise login and registration once for ten owners, within each
-    // endpoint's documented 10 requests/minute source-IP limit.
-    if (ownerIndex < 10 && !ownerState.authChecked) {
-        const loginPage = http.get(`${baseUrl}/login`, { tags: { area: 'home' } });
-        check(loginPage, { 'login page returns 200': (r) => r.status === 200 });
-
-        const login = http.post(
-            `${baseUrl}/api/v1/auth/login`,
-            JSON.stringify({ email: owner.email, password }),
-            { headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, tags: { area: 'auth' } },
-        );
-        loginRequests.add(1);
-        check(login, {
-            'owner login returns 200': (r) => r.status === 200,
-            'login returns a CSRF token': (r) => typeof r.json('csrfToken') === 'string',
+    try {
+        // Public landing page.
+        await page.goto(BASE_URL, { waitUntil: 'domcontentloaded' });
+        await page.locator('body').waitFor({ state: 'visible' });
+        const landingText = await page.locator('body').textContent();
+        check(landingText, {
+            'landing page renders in Chromium': (value) => Boolean(value && value.trim().length > 0),
         });
 
-        const registration = http.post(
-            `${baseUrl}/api/v1/auth/register`,
-            JSON.stringify({
-                name: 'k6 registration burst',
-                email: `k6-register-${Date.now()}-${ownerIndex}@example.test`,
-                password,
-            }),
-            { headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, tags: { area: 'auth' } },
-        );
-        registrationRequests.add(1);
-        check(registration, {
-            'owner registration returns 201': (r) => r.status === 201,
-            'registration returns a CSRF token': (r) => typeof r.json('csrfToken') === 'string',
-        });
+        // Visit all public authentication screens in every browser session.
+        await page.goto(`${BASE_URL}/login`, { waitUntil: 'domcontentloaded' });
+        await page.locator('input[name="email"]').waitFor({ state: 'visible' });
 
-        http.cookieJar().set(baseUrl, 'sendocs_session', owner.cookie, { path: '/' });
-        ownerState.authChecked = true;
-    }
+        await page.goto(`${BASE_URL}/register`, { waitUntil: 'domcontentloaded' });
+        await page.locator('input[name="email"]').waitFor({ state: 'visible' });
 
-    const session = http.get(`${baseUrl}/api/v1/auth/session`, {
-        headers: { Accept: 'application/json' },
-        tags: { area: 'auth' },
-    });
-    check(session, { 'owner session resolves': (r) => r.status === 200 });
+        await page.goto(`${BASE_URL}/forgot-password`, { waitUntil: 'domcontentloaded' });
+        await page.locator('body').waitFor({ state: 'visible' });
 
-    const list = http.get(`${baseUrl}/api/v1/requests?limit=20`, {
-        headers: { Accept: 'application/json' },
-        tags: { area: 'owner' },
-    });
-    check(list, { 'owner request list returns 200': (r) => r.status === 200 });
-
-    if (ownerState.requestId === null) {
-        const created = http.post(
-            `${baseUrl}/api/v1/requests`,
-            JSON.stringify({
-                title: `k6 request for owner ${ownerIndex + 1}`,
-                items: [
-                    { label: 'Proof of identity' },
-                    { label: 'Proof of address' },
-                ],
-            }),
-            {
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                    'X-CSRF-Token': owner.csrfToken,
-                },
-                tags: { area: 'owner' },
-            },
-        );
-
-        if (!check(created, { 'owner request creation returns 201': (r) => r.status === 201 })) {
-            fail(`Request creation failed for VU ${exec.vu.idInTest}: ${created.status} ${created.body}`);
-        }
-
-        const requestId = created.json('request.id');
-        const portalUrl = created.json('link.url');
-        const token = typeof portalUrl === 'string' ? portalUrl.split('/').pop() : '';
-
-        if (!requestId || !token) {
-            fail(`Request response missing request id or client link for VU ${exec.vu.idInTest}`);
-        }
-
-        ownerState.requestId = requestId;
-        ownerState.token = token;
-    }
-
-    const detail = http.get(`${baseUrl}/api/v1/requests/${ownerState.requestId}`, {
-        headers: { Accept: 'application/json' },
-        tags: { area: 'owner' },
-    });
-    check(detail, { 'owner request detail returns 200': (r) => r.status === 200 });
-
-    // The client portal is IP-rate-limited. The shared runner has one egress IP,
-    // so exercise the documented per-IP budget rather than generating artificial 429s.
-    if (ownerIndex < 60 && !ownerState.portalChecked) {
-        const portal = http.get(`${baseUrl}/api/v1/portal/${ownerState.token}`, {
-            headers: { Accept: 'application/json' },
-            tags: { area: 'client' },
-        });
-        portalReads.add(1);
-        check(portal, { 'client portal lookup returns 200': (r) => r.status === 200 });
-
-        const itemId = portal.json('items.0.id');
-        if (!itemId) {
-            fail(`Client portal response missing item id for VU ${exec.vu.idInTest}`);
-        }
-
-        ownerState.itemId = itemId;
-        ownerState.portalChecked = true;
-
-        // Upload is limited to 30 requests/hour per source IP. Keep this burst
-        // within the real application limit on the single GitHub runner address.
-        if (ownerIndex < 30) {
-            const pdf = '%PDF-1.7\n1 0 obj\n<< /Type /Catalog >>\nendobj\n%%EOF\n';
-            const upload = http.post(
-                `${baseUrl}/api/v1/portal/${ownerState.token}/items/${ownerState.itemId}/file`,
-                { file: http.file(pdf, 'identity.pdf', 'application/pdf') },
-                {
-                    headers: { Accept: 'application/json' },
-                    tags: { area: 'client' },
-                },
+        // Three VUs register through the UI; two sign in with isolated seeded accounts.
+        if (__VU <= 3) {
+            await page.goto(`${BASE_URL}/register`, { waitUntil: 'domcontentloaded' });
+            await page.locator('input[name="name"]').fill('Sendocs Browser Benchmark');
+            await page.locator('input[name="email"]').fill(
+                `browser-${__ENV.GITHUB_RUN_ID || Date.now()}-${__ENV.GITHUB_RUN_ATTEMPT || '1'}-${__VU}@example.test`,
             );
-            portalUploads.add(1);
-            check(upload, {
-                'client document upload returns 200': (r) => r.status === 200,
-                'upload updates progress': (r) => r.json('uploaded') === 1,
-                'uploaded item is marked uploaded': (r) => r.json('items.0.state') === 'uploaded',
-            });
-        }
-    }
+            await page.locator('input[name="password"]').fill(REGISTER_PASSWORD);
+            await page.locator('input[name="confirmPassword"]').fill(REGISTER_PASSWORD);
+            await page.locator('button[type="submit"]').click();
+        } else {
+            const owner = SEEDED_OWNERS[__VU - 4];
 
-    sleep(2 + Math.random() * 3);
+            await page.goto(`${BASE_URL}/login`, { waitUntil: 'domcontentloaded' });
+            await page.locator('input[name="email"]').fill(owner.email);
+            await page.locator('input[name="password"]').fill(PASSWORD);
+            await page.locator('button[type="submit"]').click();
+        }
+
+        await page.waitForURL(`${BASE_URL}/dashboard`, { timeout: 30000 });
+        await page.getByRole('heading', { name: 'Document Requests' }).waitFor({
+            state: 'visible',
+            timeout: 30000,
+        });
+        check(true, { 'owner dashboard loads after authentication': (value) => value === true });
+
+        // Visit every protected owner screen without submitting destructive settings forms.
+        await page.goto(`${BASE_URL}/account`, { waitUntil: 'domcontentloaded' });
+        await page.getByRole('heading', { name: 'Account', exact: true }).waitFor({ state: 'visible' });
+        check(true, { 'owner account page loads': (value) => value === true });
+
+        await page.goto(`${BASE_URL}/settings/password`, { waitUntil: 'domcontentloaded' });
+        await page.getByRole('heading', { name: 'Change password', exact: true }).waitFor({ state: 'visible' });
+        check(true, { 'owner password settings page loads': (value) => value === true });
+
+        await page.goto(`${BASE_URL}/settings/delete`, { waitUntil: 'domcontentloaded' });
+        await page.getByRole('heading', { name: 'Delete account', exact: true }).waitFor({ state: 'visible' });
+        check(true, { 'owner account deletion page loads without submitting': (value) => value === true });
+
+        await page.goto(`${BASE_URL}/dashboard`, { waitUntil: 'domcontentloaded' });
+        await page.getByRole('heading', { name: 'Document Requests' }).waitFor({ state: 'visible' });
+
+        // Create a real request through the owner UI and capture its one-time portal link.
+        await page.getByRole('button', { name: 'New request' }).click();
+        await page.locator('#request-title').fill(requestTitle);
+        await page.locator('input[aria-label="Document 1"]').fill('Proof of address');
+        await page.getByRole('button', { name: 'Create request' }).click();
+
+        const linkInput = page.locator('input[aria-label="Client portal link"]');
+        await linkInput.waitFor({ state: 'visible', timeout: 30000 });
+        const portalUrl = await linkInput.inputValue();
+        check(portalUrl, {
+            'owner receives a client portal link': (value) => value.includes('/portal/'),
+        });
+
+        // Open the created request detail page from the owner list.
+        await page.getByRole('button', { name: 'Done' }).click();
+        await page.getByRole('link', { name: requestTitle, exact: true }).click();
+        await page.getByRole('heading', { name: requestTitle }).waitFor({
+            state: 'visible',
+            timeout: 30000,
+        });
+        check(true, { 'owner request detail page loads': (value) => value === true });
+
+        // Follow the actual one-time link in Chromium and upload a valid PDF.
+        await page.goto(portalUrl, { waitUntil: 'domcontentloaded' });
+        await page.locator('input[type="file"]').waitFor({ state: 'attached', timeout: 30000 });
+        await page.setInputFiles('input[type="file"]', {
+            name: 'proof-of-address.pdf',
+            mimeType: 'application/pdf',
+            buffer: PDF_BASE64,
+        });
+        await page.getByText('All documents received').waitFor({
+            state: 'visible',
+            timeout: 30000,
+        });
+        check(true, { 'client portal upload completes in browser': (value) => value === true });
+
+        journeyDuration.add(Date.now() - startedAt);
+        journeysCompleted.add(1);
+    } finally {
+        await page.close();
+    }
 }
 
-function number(value, digits = 1) {
-    return typeof value === 'number' ? value.toFixed(digits) : null;
+function metricValue(data, name, key) {
+    const values = data.metrics[name] && data.metrics[name].values;
+    return values && values[key] !== undefined ? values[key] : null;
+}
+
+function formatMetric(value, suffix = '') {
+    return value === null ? null : `${value.toFixed(2)}${suffix}`;
 }
 
 export function handleSummary(data) {
-    const metrics = data.metrics || {};
-    const checks = metrics.checks?.values || {};
-    const failed = metrics.http_req_failed?.values || {};
-    const duration = metrics.http_req_duration?.values || {};
-    const requests = metrics.http_reqs?.values || {};
-    const journey = metrics.iteration_duration?.values || {};
-    const vus = metrics.vus?.values || {};
-    const dropped = metrics.dropped_iterations?.values || {};
+    const checks = data.metrics.checks && data.metrics.checks.values;
+    const browserRequests = data.metrics.browser_http_req_duration && data.metrics.browser_http_req_duration.values;
+    const failedRequests = data.metrics.browser_http_req_failed && data.metrics.browser_http_req_failed.values;
+    const lcp = data.metrics.browser_web_vital_lcp && data.metrics.browser_web_vital_lcp.values;
+    const journey = data.metrics.browser_journey_duration && data.metrics.browser_journey_duration.values;
+    const vus = data.metrics.vus && data.metrics.vus.values;
+    const completed = metricValue(data, 'browser_journeys_completed', 'count') || 0;
 
-    const passedChecks = checks.passes || 0;
-    const failedChecks = checks.fails || 0;
+    const passedChecks = checks ? checks.passes || 0 : 0;
+    const failedChecks = checks ? checks.fails || 0 : 0;
     const totalChecks = passedChecks + failedChecks;
-    const checkRate = totalChecks > 0 ? passedChecks / totalChecks : 0;
-    const errorRate = typeof failed.rate === 'number' ? failed.rate : null;
-    const maxVus = vus.max ?? 0;
-    const targetReached = maxVus >= 1000;
-    const result = targetReached && checkRate > 0.99 && errorRate !== null && errorRate < 0.01
-        ? 'Passed'
-        : 'Failed';
+    const checkRate = totalChecks ? passedChecks / totalChecks : null;
+    const requestFailureRate = failedRequests && typeof failedRequests.rate === 'number'
+        ? failedRequests.rate
+        : null;
+    const maxVus = vus && typeof vus.max === 'number' ? vus.max : 0;
+
+    const passed = completed === 5
+        && checkRate === 1
+        && requestFailureRate !== null
+        && requestFailureRate < 0.01;
 
     const runId = __ENV.GITHUB_RUN_ID || 'local';
     const repository = __ENV.GITHUB_REPOSITORY || '';
@@ -220,43 +180,58 @@ export function handleSummary(data) {
     const commitShort = commit ? commit.slice(0, 7) : 'unknown';
     const runUrl = repository ? `${server}/${repository}/actions/runs/${runId}` : '';
     const commitUrl = repository && commit ? `${server}/${repository}/commit/${commit}` : '';
-    const commitLabel = commitUrl ? '[' + '`' + commitShort + '`' + '](' + commitUrl + ')' : '`' + commitShort + '`';
+    const commitLabel = commitUrl ? '[`' + commitShort + '`](' + commitUrl + ')' : '`' + commitShort + '`';
     const runLabel = runUrl ? ` · [Workflow run](${runUrl})` : '';
 
-    const report = [
+    const lines = [
         `<!-- benchmark-run: ${runId} -->`,
-        `### Results — ${new Date().toISOString()}`,
+        `### Browser results — ${new Date().toISOString()}`,
         '',
-        `**Outcome:** ${result}  `,
-        `**Scenario:** ${__ENV.BENCHMARK_SCENARIO}  `,
-        `**Concurrent owner target:** ${__ENV.BENCHMARK_CONCURRENT_OWNER_TARGET}  `,
+        `**Outcome:** ${passed ? 'Passed' : 'Failed'}  `,
+        '**Scenario:** 5 concurrent Chromium users completing one journey each  ',
         `**Commit:** ${commitLabel}${runLabel}`,
         '',
         '| Metric | Result |',
         '|---|---:|',
-        `| Concurrent owners reached | ${maxVus} |`,
-        `| HTTP requests | ${requests.count} |`,
-        `| Average throughput | ${number(requests.rate)} requests/s |`,
-        `| Average latency | ${number(duration.avg)} ms |`,
-        `| p95 latency | ${number(duration['p(95)'])} ms |`,
-        `| HTTP error rate | ${errorRate === null ? null : (errorRate * 100).toFixed(2) + '%'} |`,
-        `| Dropped iterations | ${dropped.count} |`,
-        `| Functional checks | ${totalChecks ? `${passedChecks}/${totalChecks} (${(checkRate * 100).toFixed(1)}%)` : null} |`,
-        `| Average journey duration | ${number(journey.avg)} ms |`,
-        `| Login / registration requests | ${metrics.auth_login_requests?.values?.count ?? 0} / ${metrics.auth_registration_requests?.values?.count ?? 0} |`,
-        `| Portal reads / uploads | ${metrics.client_portal_reads?.values?.count ?? 0} / ${metrics.client_portal_uploads?.values?.count ?? 0} |`,
-        '',
-        `**Runner:** ${__ENV.RUNNER_OS} / ${__ENV.RUNNER_ARCH} · ${__ENV.RUNNER_CPU_COUNT} vCPU · ${__ENV.RUNNER_MEMORY_GB} GB RAM`,
-        '',
-        '> The application and k6 share this GitHub-hosted runner. API requests pass through one Compose web proxy, so IP-based limits cap portal reads at 60/minute, uploads at 30/hour, and login and registration at 10/minute each. Results describe this workload, not production capacity.',
-        '',
-    ].filter((line) => !line.endsWith('| null |')).join('\n');
+        `| Browser journeys completed | ${completed}/5 |`,
+        `| Concurrent browser VUs reached | ${maxVus} |`,
+        `| Functional checks | ${totalChecks ? `${passedChecks}/${totalChecks} (${(checkRate * 100).toFixed(1)}%)` : '0'} |`,
+    ];
 
+    if (browserRequests && typeof browserRequests.count === 'number') {
+        lines.push(`| Browser requests | ${browserRequests.count} |`);
+    }
+    if (browserRequests && typeof browserRequests['p(95)'] === 'number') {
+        lines.push(`| Browser request p95 | ${formatMetric(browserRequests['p(95)'], ' ms')} |`);
+    }
+    if (requestFailureRate !== null) {
+        lines.push(`| Browser request failure rate | ${formatMetric(requestFailureRate * 100, '%')} |`);
+    }
+    if (journey && typeof journey['p(95)'] === 'number') {
+        lines.push(`| End-to-end journey p95 | ${formatMetric(journey['p(95)'], ' ms')} |`);
+    }
+    if (lcp && typeof lcp['p(95)'] === 'number') {
+        lines.push(`| Largest Contentful Paint p95 | ${formatMetric(lcp['p(95)'], ' ms')} |`);
+    }
+    if (__ENV.RUNNER_CPU_COUNT && __ENV.RUNNER_MEMORY_GB) {
+        lines.push(`| GitHub runner | ${__ENV.RUNNER_CPU_COUNT} vCPU / ${__ENV.RUNNER_MEMORY_GB} GB RAM |`);
+    }
+
+    lines.push(
+        '',
+        'Journey: landing → login/register/forgot password → owner dashboard → account/settings → create request → request detail → client portal → PDF upload.',
+        '',
+    );
+
+    const report = lines.join('\\n');
     const output = {
         'scalability-results/benchmark-entry.md': report,
+        stdout: report,
     };
+
     if (__ENV.GITHUB_STEP_SUMMARY) {
         output[__ENV.GITHUB_STEP_SUMMARY] = report;
     }
+
     return output;
 }
