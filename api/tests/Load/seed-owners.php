@@ -7,13 +7,14 @@ use App\Auth\Services\SecureToken;
 use App\Models\Session;
 use App\Models\User;
 use Illuminate\Contracts\Console\Kernel;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Hash;
 
 $apiRoot = dirname(__DIR__, 2);
 
 require $apiRoot.'/vendor/autoload.php';
 
-/** @var Illuminate\Foundation\Application $app */
+/** @var Application $app */
 $app = require $apiRoot.'/bootstrap/app.php';
 $app->make(Kernel::class)->bootstrap();
 
