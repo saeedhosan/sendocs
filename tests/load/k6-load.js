@@ -35,7 +35,7 @@ export const options = {
             vus: 10,
             iterations: 1,
             maxDuration: '30s',
-            startTime: '10s',
+            startTime: '55s',
             exec: 'authJourney',
         },
     },
