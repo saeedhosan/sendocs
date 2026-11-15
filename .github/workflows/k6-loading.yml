@@ -1,4 +1,4 @@
-name: 1K Concurrent User Scalability Test
+name: Scalability Load Test
 
 on:
     workflow_dispatch:
@@ -66,6 +66,7 @@ jobs:
             - name: Run browser-based user journeys
               env:
                   BASE_URL: http://127.0.0.1:3000
+                  TARGET_SCALE_USER: 1000
                   RUNNER_CPU_COUNT: ${{ steps.runner.outputs.cpu_count }}
                   RUNNER_MEMORY_GB: ${{ steps.runner.outputs.memory_gb }}
               run: |
