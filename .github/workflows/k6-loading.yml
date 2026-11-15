@@ -79,6 +79,15 @@ jobs:
                   cloud-comment-on-pr: false
                   disable-analytics: true
 
+            - name: Append result to benchmark history
+              if: always() && hashFiles('scalability-results/benchmark-entry.md') != ''
+              run: |
+                  marker="$(head -n 1 scalability-results/benchmark-entry.md)"
+                  if ! grep --fixed-strings --line-regexp --quiet "$marker" docs/benchmark.md; then
+                    printf '\n' >> docs/benchmark.md
+                    cat scalability-results/benchmark-entry.md >> docs/benchmark.md
+                  fi
+
             - name: Commit benchmark result
               if: always() && hashFiles('scalability-results/benchmark-entry.md') != '' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
               uses: stefanzweifel/git-auto-commit-action@v7
