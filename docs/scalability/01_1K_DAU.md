@@ -43,7 +43,7 @@ Model owner and client journeys with varied request sizes, upload sizes, think t
 7. [ ] Run accelerated daily, peak, upload, and bounded soak scenarios.
 8. [ ] Record bottlenecks and rerun after changes.
 
-The workflow appends each run to [Benchmark](../benchmark.md), preserving the history in version control. It also retains the raw `k6-summary.json` as a downloadable artifact. An accelerated daily test is not a real 24-hour soak.
+The k6 `handleSummary()` function publishes each result to the GitHub Actions Job Summary and appends it to [Benchmark](../benchmark.md), preserving history in version control. The raw `k6-summary.json` remains a downloadable artifact. An accelerated daily test is not a real 24-hour soak.
 
 ## Initial Acceptance Targets
 
