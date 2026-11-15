@@ -68,9 +68,19 @@ jobs:
                     docker stats --no-stream
                   } > scalability-results/docker-stats-before.txt
 
+            - name: Set up k6
+              uses: grafana/setup-k6-action@v1
+              with:
+                  k6-version: '0.57.0'
+
             - name: Run k6 owner and client journey test
-              run: |
-                  docker run --rm --network host                     -v "${GITHUB_WORKSPACE}/tests/load:/scripts:ro"                     -v "${GITHUB_WORKSPACE}/scalability-results:/results"                     grafana/k6:0.57.0 run                     --summary-export=/results/k6-summary.json                     /scripts/k6-load.js
+              uses: grafana/run-k6-action@v1
+              with:
+                  path: ./tests/load/k6-load.js
+                  flags: --summary-export=./scalability-results/k6-summary.json
+                  cloud-run-locally: true
+                  cloud-comment-on-pr: false
+                  disable-analytics: true
 
             - name: Capture post-test container resources
               if: always()
