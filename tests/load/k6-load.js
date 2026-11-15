@@ -133,7 +133,7 @@ export function handleSummary(data) {
 
     const report = [
         `<!-- benchmark-run: ${runId} -->`,
-        `### Results — ${new Date().toISOString().replace('T', ' ').replace(/:\\d{2}\\.\\d{3}Z$/, ' UTC')}`,
+        `### Results — ${new Date().toISOString()}`,
         '',
         `**Outcome:** ${result}  `,
         `**Scenario:** ${__ENV.BENCHMARK_SCENARIO || 'Not specified'}  `,
