@@ -1,6 +1,6 @@
 # Benchmark
 
-Sendocs scalability benchmark history. Each result is appended automatically by the GitHub Actions workflow.
+Sendocs scalability benchmark history. GitHub Actions generates each dated result from k6's `handleSummary()`, displays it in the workflow Job Summary, and appends it here.
 
 <!-- benchmark-run: 43748756034 -->
 ### Results — 2026-11-15 18:48 UTC
@@ -21,7 +21,7 @@ Sendocs scalability benchmark history. Each result is appended automatically by 
 | Functional checks | N/A |
 | Average journey duration | N/A ms |
 
-**Runner:** Linux/X64 · 4 vCPU · 15.6\n GB RAM
+**Runner:** Linux/X64 · 4 vCPU · 15.6 GB RAM
 
 > Results describe this workload on a shared GitHub-hosted runner. A functional baseline is not evidence of DAU capacity or production-server capacity.
 
@@ -44,6 +44,6 @@ Sendocs scalability benchmark history. Each result is appended automatically by 
 | Functional checks | 10/10 (100.0%) |
 | Average journey duration | 637.9 ms |
 
-**Runner:** Linux/X64 · 4 vCPU · 15.6\n GB RAM
+**Runner:** Linux/X64 · 4 vCPU · 15.6 GB RAM
 
 > Results describe this workload on a shared GitHub-hosted runner. A functional baseline is not evidence of DAU capacity or production-server capacity.
