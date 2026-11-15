@@ -177,30 +177,26 @@ export function handleSummary(data) {
     const commitLabel = commitUrl ? '[`' + commitShort + '`](' + commitUrl + ')' : '`' + commitShort + '`';
     const runLabel = runUrl ? ` · [Workflow run](${runUrl})` : '';
 
+    const timestamp = new Date().toISOString().slice(0, 10);
     const lines = [
         `<!-- benchmark-run: ${runId} -->`,
-        `### Browser results — ${new Date().toISOString()}`,
+        `### Scalability Test — ${timestamp}`,
         '',
-        `**Outcome:** ${passed ? 'Passed' : 'Failed'}  `,
-        `**Target:** ${TARGET_SCALE_USER.toLocaleString()} concurrent users  `,
-        `**Browser validation:** ${TARGET_SCALE_USER.toLocaleString()} concurrent Chromium journeys  `,
-        `**Commit:** ${commitLabel}${runLabel}`,
+        `**Result:** ${passed ? 'Passed' : 'Failed'}  `,
+        `**Load target:** ${TARGET_SCALE_USER.toLocaleString()} concurrent users`,
         '',
         '| Metric | Result |',
         '|---|---:|',
-        `| Browser journeys completed | ${completed}/${TARGET_SCALE_USER} |`,
-        `| Concurrent browser VUs reached | ${maxVus} |`,
-        `| Functional checks | ${totalChecks ? `${passedChecks}/${totalChecks} (${(checkRate * 100).toFixed(1)}%)` : '0'} |`,
+        `| Concurrent users reached | ${maxVus} |`,
+        `| Completed user journeys | ${completed}/${TARGET_SCALE_USER} |`,
+        `| Functional checks passed | ${totalChecks ? `${passedChecks}/${totalChecks} (${(checkRate * 100).toFixed(1)}%)` : '0'} |`,
     ];
 
-    if (browserRequests && typeof browserRequests.count === 'number') {
-        lines.push(`| Browser requests | ${browserRequests.count} |`);
-    }
     if (browserRequests && typeof browserRequests['p(95)'] === 'number') {
-        lines.push(`| Browser request p95 | ${formatMetric(browserRequests['p(95)'], ' ms')} |`);
+        lines.push(`| Request p95 latency | ${formatMetric(browserRequests['p(95)'], ' ms')} |`);
     }
     if (requestFailureRate !== null) {
-        lines.push(`| Browser request failure rate | ${formatMetric(requestFailureRate * 100, '%')} |`);
+        lines.push(`| Request failure rate | ${formatMetric(requestFailureRate * 100, '%')} |`);
     }
     if (journey && typeof journey['p(95)'] === 'number') {
         lines.push(`| End-to-end journey p95 | ${formatMetric(journey['p(95)'], ' ms')} |`);
@@ -209,12 +205,14 @@ export function handleSummary(data) {
         lines.push(`| Largest Contentful Paint p95 | ${formatMetric(lcp['p(95)'], ' ms')} |`);
     }
     if (__ENV.RUNNER_CPU_COUNT && __ENV.RUNNER_MEMORY_GB) {
-        lines.push(`| GitHub runner | ${__ENV.RUNNER_CPU_COUNT} vCPU / ${__ENV.RUNNER_MEMORY_GB} GB RAM |`);
+        lines.push(`| Test environment | GitHub Actions · ${__ENV.RUNNER_CPU_COUNT} vCPU · ${__ENV.RUNNER_MEMORY_GB} GB RAM |`);
     }
 
     lines.push(
         '',
-        'Journey: landing → login/register/forgot password → owner dashboard → account/settings → create request → request detail → client portal → PDF upload.',
+        'User journey: Registration → Dashboard → Request creation → Client document upload.',
+        '',
+        `[Commit](${commitUrl || '#'}) · [Workflow run](${runUrl || '#'})`,
         '',
     );
 
