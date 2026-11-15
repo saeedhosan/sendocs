@@ -17,12 +17,12 @@ require $apiRoot.'/vendor/autoload.php';
 $app = require $apiRoot.'/bootstrap/app.php';
 $app->make(Kernel::class)->bootstrap();
 
-$count = max(1, (int) ($argv[1] ?? 1010));
-$password = 'benchmark-password-123';
+$count        = max(1, (int) ($argv[1] ?? 1010));
+$password     = 'benchmark-password-123';
 $passwordHash = Hash::make($password);
-$csrf = $app->make(CsrfTokenService::class);
-$prefix = 'k6-'.bin2hex(random_bytes(6));
-$identities = [];
+$csrf         = $app->make(CsrfTokenService::class);
+$prefix       = 'k6-'.bin2hex(random_bytes(6));
+$identities   = [];
 
 for ($index = 0; $index < $count; $index++) {
     $user = User::query()->create([
@@ -32,7 +32,7 @@ for ($index = 0; $index < $count; $index++) {
         'provider' => 'custom',
     ]);
 
-    $token = SecureToken::generate();
+    $token   = SecureToken::generate();
     $session = Session::query()->create([
         'user_id'    => $user->getKey(),
         'token_hash' => SecureToken::hash($token),
