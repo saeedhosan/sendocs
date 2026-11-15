@@ -61,6 +61,11 @@ jobs:
                   docker compose logs --no-color
                   exit 1
 
+            - name: Capture baseline container resources
+              run: |
+                  docker stats --no-stream > scalability-results/docker-stats-before.txt
+                  docker compose ps > scalability-results/compose-ps-before.txt
+
             - name: Run k6 owner and client journey test
               run: |
                   docker run --rm --network host \
@@ -70,13 +75,15 @@ jobs:
                     --summary-export=/results/k6-summary.json \
                     /scripts/k6-load.js
 
-            - name: Capture container state
+            - name: Capture post-test container resources
               if: always()
               run: |
-                  mkdir -p scalability-results
-                  docker compose ps > scalability-results/compose-ps.txt || true
-                  docker stats --no-stream > scalability-results/docker-stats.txt || true
-                  docker compose logs --no-color > scalability-results/compose.log 2>&1 || true
+                  docker stats --no-stream > scalability-results/docker-stats-after.txt || true
+                  docker compose ps > scalability-results/compose-ps-after.txt || true
+
+            - name: Capture application logs on failure
+              if: failure()
+              run: docker compose logs --no-color > scalability-results/compose-failure.log 2>&1 || true
 
             - name: Upload benchmark artifacts
               if: always()
