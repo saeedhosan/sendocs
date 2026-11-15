@@ -3,7 +3,7 @@ import { check } from 'k6';
 import { Counter, Trend } from 'k6/metrics';
 
 const BASE_URL = __ENV.BASE_URL || 'http://127.0.0.1:3000';
-const SEEDED_OWNERS = JSON.parse(open('../../scalability-results/owners.json'));
+const SEEDED_OWNERS = JSON.parse(open(__ENV.SEEDED_OWNERS_FILE));
 const PASSWORD = 'benchmark-password-123';
 const REGISTER_PASSWORD = 'StrongPass123!';
 
