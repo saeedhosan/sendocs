@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate a concise Markdown report from a k6 summary export."""
+"""Create one concise, dated benchmark entry from a k6 summary export."""
 
 import json
 import os
@@ -9,7 +9,7 @@ from pathlib import Path
 RESULTS = Path("scalability-results")
 SUMMARY = RESULTS / "k6-summary.json"
 ENVIRONMENT = RESULTS / "environment.txt"
-REPORT = RESULTS / "results.md"
+ENTRY = RESULTS / "benchmark-entry.md"
 
 
 def read_environment():
@@ -28,9 +28,7 @@ def metric(metrics, name):
 
 
 def fmt_number(value, digits=0):
-    if value is None:
-        return "N/A"
-    return f"{value:,.{digits}f}"
+    return "N/A" if value is None else f"{value:,.{digits}f}"
 
 
 def main():
@@ -39,42 +37,42 @@ def main():
         try:
             summary = json.loads(SUMMARY.read_text(encoding="utf-8"))
         except (json.JSONDecodeError, OSError):
-            summary = {}
+            pass
 
     metrics = summary.get("metrics", {})
     env = read_environment()
     checks = metric(metrics, "checks")
-    http_failed = metric(metrics, "http_req_failed")
+    failed = metric(metrics, "http_req_failed")
     duration = metric(metrics, "http_req_duration")
     requests = metric(metrics, "http_reqs")
     iterations = metric(metrics, "iterations")
-    iteration_duration = metric(metrics, "iteration_duration")
+    journey = metric(metrics, "iteration_duration")
 
-    check_total = checks.get("passes", 0) + checks.get("fails", 0)
-    check_rate = (checks.get("passes", 0) / check_total * 100) if check_total else None
-    error_rate = http_failed.get("value")
-    error_rate_text = f"{error_rate * 100:.2f}%" if isinstance(error_rate, (int, float)) else "N/A"
+    passed = checks.get("passes", 0)
+    total_checks = passed + checks.get("fails", 0)
+    check_rate = passed / total_checks * 100 if total_checks else None
+    error_rate = failed.get("value")
+    error_text = f"{error_rate * 100:.2f}%" if isinstance(error_rate, (int, float)) else "N/A"
 
     job_status = os.getenv("JOB_STATUS", "unknown").lower()
     outcome = "Passed" if job_status == "success" else "Failed" if job_status == "failure" else "Inconclusive"
-    run_url = os.getenv("GITHUB_SERVER_URL", "https://github.com") + "/" + os.getenv("GITHUB_REPOSITORY", "") + "/actions/runs/" + os.getenv("GITHUB_RUN_ID", "")
-    run_url = run_url.rstrip("/")
+    run_id = os.getenv("GITHUB_RUN_ID", "unknown")
+    repository = os.getenv("GITHUB_REPOSITORY", "")
+    server = os.getenv("GITHUB_SERVER_URL", "https://github.com")
     commit = env.get("commit", os.getenv("GITHUB_SHA", ""))
     commit_short = commit[:7] if commit else "unknown"
-    commit_url = f"{os.getenv('GITHUB_SERVER_URL', 'https://github.com')}/{os.getenv('GITHUB_REPOSITORY', '')}/commit/{commit}"
+    run_url = f"{server}/{repository}/actions/runs/{run_id}"
+    commit_url = f"{server}/{repository}/commit/{commit}" if commit else f"{server}/{repository}"
 
     lines = [
-        "# Scalability Test Results",
+        f"<!-- benchmark-run: {run_id} -->",
+        f"### Results — {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}",
         "",
-        f"**Workflow outcome:** {outcome}  ",
+        f"**Outcome:** {outcome}  ",
         f"**Scenario:** {os.getenv('BENCHMARK_SCENARIO', 'Not specified')}  ",
         f"**DAU target:** {os.getenv('BENCHMARK_DAU_TARGET', 'Not tested')}  ",
         f"**Workload:** {os.getenv('BENCHMARK_WORKLOAD', 'Not specified')}  ",
-        f"**Date (UTC):** {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}  ",
-        f"**Commit:** [`{commit_short}`]({commit_url})  ",
-        f"**Workflow run:** [View run]({run_url})",
-        "",
-        "## Results",
+        f"**Commit:** [`{commit_short}`]({commit_url}) · [Workflow run]({run_url})",
         "",
         "| Metric | Result |",
         "|---|---:|",
@@ -82,23 +80,19 @@ def main():
         f"| Iterations | {fmt_number(iterations.get('count'))} |",
         f"| Average latency | {fmt_number(duration.get('avg'), 1)} ms |",
         f"| p95 latency | {fmt_number(duration.get('p(95)'), 1)} ms |",
-        f"| HTTP error rate | {error_rate_text} |",
-        f"| Functional checks | {checks.get('passes', 0)}/{check_total} ({fmt_number(check_rate, 1)}%) |" if check_total else "| Functional checks | N/A |",
-        f"| Average journey duration | {fmt_number(iteration_duration.get('avg'), 1)} ms |",
+        f"| HTTP error rate | {error_text} |",
+        f"| Functional checks | {passed}/{total_checks} ({fmt_number(check_rate, 1)}%) |" if total_checks else "| Functional checks | N/A |",
+        f"| Average journey duration | {fmt_number(journey.get('avg'), 1)} ms |",
         "",
-        "## Test environment",
-        "",
-        f"- GitHub-hosted runner: {env.get('runner', 'N/A')}",
-        f"- CPU: {env.get('cpu_count', 'N/A')} vCPU",
-        f"- Memory: {env.get('memory_gb', 'N/A')} GB",
+        f"**Runner:** {env.get('runner', 'N/A')} · {env.get('cpu_count', 'N/A')} vCPU · {env.get('memory_gb', 'N/A')} GB RAM",
         "",
         "> Results describe this workload on a shared GitHub-hosted runner. A functional baseline is not evidence of DAU capacity or production-server capacity.",
         "",
     ]
 
     RESULTS.mkdir(parents=True, exist_ok=True)
-    REPORT.write_text("\n".join(lines), encoding="utf-8")
-    print(f"Generated {REPORT}")
+    ENTRY.write_text("\n".join(lines), encoding="utf-8")
+    print(f"Generated {ENTRY}")
 
 
 if __name__ == "__main__":
