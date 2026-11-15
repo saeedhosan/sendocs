@@ -37,13 +37,13 @@ Model owner and client journeys with varied request sizes, upload sizes, think t
 1. [x] Add the owner/client journey: registration, request list/create/detail, portal lookup, and PDF upload.
 2. [x] Add the [Scalability Load Test workflow](../../.github/workflows/k6-loading.yml).
 3. [x] Run the journey successfully on GitHub Actions.
-4. [x] Generate a concise Markdown report automatically from each k6 run.
+4. [x] Append a concise, dated benchmark result to [Benchmark](../benchmark.md) automatically from each k6 run.
 5. [ ] Add isolated synthetic data for 1,000 owners.
 6. [ ] Run progressively at 100, 250, 500, and 1,000 daily active owners.
 7. [ ] Run accelerated daily, peak, upload, and bounded soak scenarios.
 8. [ ] Record bottlenecks and rerun after changes.
 
-The workflow uploads `results.md` for quick review and retains `k6-summary.json` as supporting evidence. An accelerated daily test is not a real 24-hour soak.
+The workflow appends each run to [Benchmark](../benchmark.md), preserving the history in version control. It also retains the raw `k6-summary.json` as a downloadable artifact. An accelerated daily test is not a real 24-hour soak.
 
 ## Initial Acceptance Targets
 
