@@ -120,7 +120,7 @@ jobs:
                       scalability-results/k6-summary.json
                       scalability-results/compose-failure.log
                   if-no-files-found: warn
-                  retention-days: 14
+                  retention-days: 1
 
             - name: Stop Compose services
               if: always()
