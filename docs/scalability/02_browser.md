@@ -10,7 +10,7 @@ Each run starts five concurrent Chromium virtual users. Each user completes one 
 
 1. Open the public landing page.
 2. Authenticate through the UI: three users register; two users sign in with isolated seeded accounts. The sign-in users also open the forgot-password page.
-3. Load the owner dashboard.
+3. Load the owner dashboard, account page, password settings page, and account deletion page (without submitting the destructive form).
 4. Create a document request through the owner form.
 5. Open the request detail page.
 6. Follow the generated client portal link.
@@ -41,7 +41,7 @@ The dated result is appended to [Benchmark](../benchmark.md). The raw k6 summary
 
 ## Covered pages
 
-Landing, login, registration, forgot password, owner dashboard, new request, request detail, and client portal.
+Landing, login, registration, forgot password, owner dashboard, account, password settings, account deletion, new request, request detail, and client portal.
 
 ## References
 
