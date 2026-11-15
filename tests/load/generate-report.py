@@ -59,16 +59,19 @@ def main():
     outcome = "Passed" if job_status == "success" else "Failed" if job_status == "failure" else "Inconclusive"
     run_url = os.getenv("GITHUB_SERVER_URL", "https://github.com") + "/" + os.getenv("GITHUB_REPOSITORY", "") + "/actions/runs/" + os.getenv("GITHUB_RUN_ID", "")
     run_url = run_url.rstrip("/")
+    commit = env.get("commit", os.getenv("GITHUB_SHA", ""))
+    commit_short = commit[:7] if commit else "unknown"
+    commit_url = f"{os.getenv('GITHUB_SERVER_URL', 'https://github.com')}/{os.getenv('GITHUB_REPOSITORY', '')}/commit/{commit}"
 
     lines = [
         "# Scalability Test Results",
         "",
-        f"**Outcome:** {outcome}  ",
+        f"**Workflow outcome:** {outcome}  ",
         f"**Scenario:** {os.getenv('BENCHMARK_SCENARIO', 'Not specified')}  ",
         f"**DAU target:** {os.getenv('BENCHMARK_DAU_TARGET', 'Not tested')}  ",
         f"**Workload:** {os.getenv('BENCHMARK_WORKLOAD', 'Not specified')}  ",
         f"**Date (UTC):** {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}  ",
-        f"**Commit:** [`{env.get('commit', os.getenv('GITHUB_SHA', 'unknown')[:7])}`]({os.getenv('GITHUB_SERVER_URL', 'https://github.com')}/{os.getenv('GITHUB_REPOSITORY', '')}/commit/{env.get('commit', os.getenv('GITHUB_SHA', ''))})  ",
+        f"**Commit:** [`{commit_short}`]({commit_url})  ",
         f"**Workflow run:** [View run]({run_url})",
         "",
         "## Results",
@@ -89,7 +92,7 @@ def main():
         f"- CPU: {env.get('cpu_count', 'N/A')} vCPU",
         f"- Memory: {env.get('memory_gb', 'N/A')} GB",
         "",
-        "> This result describes this workload on a shared GitHub-hosted runner. A functional baseline is not evidence of DAU capacity or production-server capacity.",
+        "> Results describe this workload on a shared GitHub-hosted runner. A functional baseline is not evidence of DAU capacity or production-server capacity.",
         "",
     ]
 
