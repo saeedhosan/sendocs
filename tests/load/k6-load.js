@@ -13,13 +13,13 @@ export const options = {
 };
 
 export default function () {
-    const identity = `k6-smoke-${Date.now()}-${__ITER}@example.test`;
+    const identity = `k6-load-${Date.now()}-${__ITER}@example.test`;
     const password = 'benchmark-password-123';
 
     const registration = http.post(
         `${baseUrl}/api/v1/auth/register`,
         JSON.stringify({
-            name: 'k6 Smoke Owner',
+            name: 'k6 Load Owner',
             email: identity,
             password,
         }),
@@ -49,7 +49,7 @@ export default function () {
     const created = http.post(
         `${baseUrl}/api/v1/requests`,
         JSON.stringify({
-            title: 'k6 smoke request',
+            title: 'k6 load request',
             items: [
                 { label: 'Proof of identity' },
                 { label: 'Proof of address' },
@@ -86,7 +86,7 @@ export default function () {
         fail('Client portal response did not contain a request item');
     }
 
-    const pdf = '%PDF-1.7\n1 0 obj\n<< /Type /Catalog >>\nendobj\n%%EOF\n';
+    const pdf = '%PDF-1.7\\n1 0 obj\\n<< /Type /Catalog >>\\nendobj\\n%%EOF\\n';
     const upload = http.post(
         `${baseUrl}/api/v1/portal/${token}/items/${itemId}/file`,
         { file: http.file(pdf, 'identity.pdf', 'application/pdf') },
