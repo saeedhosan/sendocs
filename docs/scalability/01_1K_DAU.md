@@ -26,7 +26,7 @@ A small authentication burst also exercises the login and registration endpoints
 
 ### Client traffic and shared-IP limits
 
-All clients originate from one GitHub-hosted runner address. Sendocs intentionally rate-limits unauthenticated client traffic by IP:
+All API traffic passes through the single Compose web proxy. Laravel sees the same proxy source IP for every synthetic client, so Sendocs' per-IP limits apply to the combined workload:
 
 | Endpoint | Application limit | Test workload |
 |---|---:|---:|
