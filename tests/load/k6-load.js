@@ -261,11 +261,4 @@ export function handleSummary(data) {
     }
     return output;
 }
-    const output = {
-        'scalability-results/benchmark-entry.md': report,
-    };
-    if (__ENV.GITHUB_STEP_SUMMARY) {
-        output[__ENV.GITHUB_STEP_SUMMARY] = report;
-    }
-    return output;
 }
