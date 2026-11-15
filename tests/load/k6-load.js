@@ -30,14 +30,6 @@ export const options = {
             gracefulRampDown: '10s',
             exec: 'ownerJourney',
         },
-        auth_burst: {
-            executor: 'per-vu-iterations',
-            vus: 10,
-            iterations: 1,
-            maxDuration: '30s',
-            startTime: '55s',
-            exec: 'authJourney',
-        },
     },
     thresholds: {
         checks: ['rate>0.99'],
@@ -55,7 +47,7 @@ export function ownerJourney() {
 
     if (ownerState === null) {
         http.cookieJar().set(baseUrl, 'sendocs_session', owner.cookie, { path: '/' });
-        ownerState = { requestId: null, token: null, itemId: null, portalChecked: false };
+        ownerState = { requestId: null, token: null, itemId: null, portalChecked: false, authChecked: false };
     }
 
     const home = http.get(`${baseUrl}/`, { tags: { area: 'home' } });
@@ -63,6 +55,42 @@ export function ownerJourney() {
 
     const dashboard = http.get(`${baseUrl}/dashboard`, { tags: { area: 'home' } });
     check(dashboard, { 'dashboard shell returns 200': (r) => r.status === 200 });
+
+    // Exercise login and registration once for ten owners, within each
+    // endpoint's documented 10 requests/minute source-IP limit.
+    if (ownerIndex < 10 && !ownerState.authChecked) {
+        const loginPage = http.get(`${baseUrl}/login`, { tags: { area: 'home' } });
+        check(loginPage, { 'login page returns 200': (r) => r.status === 200 });
+
+        const login = http.post(
+            `${baseUrl}/api/v1/auth/login`,
+            JSON.stringify({ email: owner.email, password }),
+            { headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, tags: { area: 'auth' } },
+        );
+        loginRequests.add(1);
+        check(login, {
+            'owner login returns 200': (r) => r.status === 200,
+            'login returns a CSRF token': (r) => typeof r.json('csrfToken') === 'string',
+        });
+
+        const registration = http.post(
+            `${baseUrl}/api/v1/auth/register`,
+            JSON.stringify({
+                name: 'k6 registration burst',
+                email: `k6-register-${Date.now()}-${ownerIndex}@example.test`,
+                password,
+            }),
+            { headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, tags: { area: 'auth' } },
+        );
+        registrationRequests.add(1);
+        check(registration, {
+            'owner registration returns 201': (r) => r.status === 201,
+            'registration returns a CSRF token': (r) => typeof r.json('csrfToken') === 'string',
+        });
+
+        http.cookieJar().set(baseUrl, 'sendocs_session', owner.cookie, { path: '/' });
+        ownerState.authChecked = true;
+    }
 
     const session = http.get(`${baseUrl}/api/v1/auth/session`, {
         headers: { Accept: 'application/json' },
@@ -160,58 +188,8 @@ export function ownerJourney() {
     sleep(2 + Math.random() * 3);
 }
 
-export function authJourney() {
-    const identityIndex = 1000 + ((exec.vu.idInTest - 1) % 10);
-    const identity = identities[identityIndex];
-
-    if (!identity) {
-        fail(`No seeded authentication identity for VU ${exec.vu.idInTest}`);
-    }
-
-    const loginPage = http.get(`${baseUrl}/login`, { tags: { area: 'home' } });
-    check(loginPage, { 'login page returns 200': (r) => r.status === 200 });
-
-    const login = http.post(
-        `${baseUrl}/api/v1/auth/login`,
-        JSON.stringify({ email: identity.email, password }),
-        {
-            headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-            tags: { area: 'auth' },
-        },
-    );
-    loginRequests.add(1);
-    check(login, {
-        'owner login returns 200': (r) => r.status === 200,
-        'login returns a CSRF token': (r) => typeof r.json('csrfToken') === 'string',
-    });
-
-    const session = http.get(`${baseUrl}/api/v1/auth/session`, {
-        headers: { Accept: 'application/json' },
-        tags: { area: 'auth' },
-    });
-    check(session, { 'logged-in session resolves': (r) => r.status === 200 });
-
-    const registration = http.post(
-        `${baseUrl}/api/v1/auth/register`,
-        JSON.stringify({
-            name: 'k6 registration burst',
-            email: `k6-register-${Date.now()}-${identityIndex}@example.test`,
-            password,
-        }),
-        {
-            headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-            tags: { area: 'auth' },
-        },
-    );
-    registrationRequests.add(1);
-    check(registration, {
-        'owner registration returns 201': (r) => r.status === 201,
-        'registration returns a CSRF token': (r) => typeof r.json('csrfToken') === 'string',
-    });
-}
-
 function number(value, digits = 1) {
-    return typeof value === 'number' ? value.toFixed(digits) : 'N/A';
+    return typeof value === 'number' ? value.toFixed(digits) : null;
 }
 
 export function handleSummary(data) {
@@ -223,7 +201,6 @@ export function handleSummary(data) {
     const iterations = metrics.iterations?.values || {};
     const journey = metrics.iteration_duration?.values || {};
     const vus = metrics.vus?.values || {};
-    const vusMax = metrics.vus_max?.values || {};
     const dropped = metrics.dropped_iterations?.values || {};
 
     const passedChecks = checks.passes || 0;
@@ -231,7 +208,7 @@ export function handleSummary(data) {
     const totalChecks = passedChecks + failedChecks;
     const checkRate = totalChecks > 0 ? passedChecks / totalChecks : 0;
     const errorRate = typeof failed.rate === 'number' ? failed.rate : null;
-    const maxVus = vus.max ?? vusMax.max ?? 0;
+    const maxVus = vus.max ?? 0;
     const targetReached = maxVus >= 1000;
     const result = targetReached && checkRate > 0.99 && errorRate !== null && errorRate < 0.01
         ? 'Passed'
@@ -252,32 +229,38 @@ export function handleSummary(data) {
         `### Results — ${new Date().toISOString()}`,
         '',
         `**Outcome:** ${result}  `,
-        `**Scenario:** ${__ENV.BENCHMARK_SCENARIO || 'Not specified'}  `,
-        `**Concurrent owner target:** ${__ENV.BENCHMARK_CONCURRENT_OWNER_TARGET || 'Not specified'}  `,
-        `**Workload:** ${__ENV.BENCHMARK_WORKLOAD || 'Not specified'}  `,
+        `**Scenario:** ${__ENV.BENCHMARK_SCENARIO}  `,
+        `**Concurrent owner target:** ${__ENV.BENCHMARK_CONCURRENT_OWNER_TARGET}  `,
         `**Commit:** ${commitLabel}${runLabel}`,
         '',
         '| Metric | Result |',
         '|---|---:|',
-        `| HTTP requests | ${requests.count ?? 'N/A'} |`,
-        `| Average throughput | ${number(requests.rate, 1)} requests/s |`,
-        `| Maximum concurrent VUs (owners + auth burst) | ${number(maxVus, 0)} |`,
-        `| Iterations | ${iterations.count ?? 'N/A'} |`,
+        `| Concurrent owners reached | ${maxVus} |`,
+        `| HTTP requests | ${requests.count} |`,
+        `| Average throughput | ${number(requests.rate)} requests/s |`,
         `| Average latency | ${number(duration.avg)} ms |`,
         `| p95 latency | ${number(duration['p(95)'])} ms |`,
-        `| HTTP error rate | ${errorRate === null ? 'N/A' : (errorRate * 100).toFixed(2) + '%'} |`,
-        `| Dropped iterations | ${dropped.count ?? 0} |`,
-        `| Functional checks | ${totalChecks ? `${passedChecks}/${totalChecks} (${(checkRate * 100).toFixed(1)}%)` : 'N/A'} |`,
+        `| HTTP error rate | ${errorRate === null ? null : (errorRate * 100).toFixed(2) + '%'} |`,
+        `| Dropped iterations | ${dropped.count} |`,
+        `| Functional checks | ${totalChecks ? `${passedChecks}/${totalChecks} (${(checkRate * 100).toFixed(1)}%)` : null} |`,
         `| Average journey duration | ${number(journey.avg)} ms |`,
-        `| Authentication logins / registrations | ${metrics.auth_login_requests?.values?.count ?? 0} / ${metrics.auth_registration_requests?.values?.count ?? 0} |`,
-        `| Client portal reads / uploads | ${metrics.client_portal_reads?.values?.count ?? 0} / ${metrics.client_portal_uploads?.values?.count ?? 0} |`,
+        `| Login / registration requests | ${metrics.auth_login_requests?.values?.count ?? 0} / ${metrics.auth_registration_requests?.values?.count ?? 0} |`,
+        `| Portal reads / uploads | ${metrics.client_portal_reads?.values?.count ?? 0} / ${metrics.client_portal_uploads?.values?.count ?? 0} |`,
         '',
-        `**Runner:** ${__ENV.RUNNER_OS || 'N/A'}/${__ENV.RUNNER_ARCH || 'N/A'} · ${__ENV.RUNNER_CPU_COUNT || 'N/A'} vCPU · ${__ENV.RUNNER_MEMORY_GB || 'N/A'} GB RAM`,
+        `**Runner:** ${__ENV.RUNNER_OS} / ${__ENV.RUNNER_ARCH} · ${__ENV.RUNNER_CPU_COUNT} vCPU · ${__ENV.RUNNER_MEMORY_GB} GB RAM`,
         '',
-        '> App and k6 share a GitHub-hosted runner. All API traffic passes through one Compose web proxy, so its shared source IP applies the documented limits to the synthetic population: 60 portal reads/minute, 30 uploads/hour, and 10 login or registration requests/minute. Results are not production-capacity claims.',
+        '> The application and k6 share this GitHub-hosted runner. API requests pass through one Compose web proxy, so IP-based limits cap portal reads at 60/minute, uploads at 30/hour, and login and registration at 10/minute each. Results describe this workload, not production capacity.',
         '',
-    ].join('\\n');
+    ].filter((line) => !line.endsWith('| null |')).join('\n');
 
+    const output = {
+        'scalability-results/benchmark-entry.md': report,
+    };
+    if (__ENV.GITHUB_STEP_SUMMARY) {
+        output[__ENV.GITHUB_STEP_SUMMARY] = report;
+    }
+    return output;
+}
     const output = {
         'scalability-results/benchmark-entry.md': report,
     };
