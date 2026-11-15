@@ -26,6 +26,9 @@ jobs:
         steps:
             - name: Check out repository
               uses: actions/checkout@v7
+              with:
+                  ref: ${{ github.head_ref || github.ref_name }}
+                  persist-credentials: true
 
             - name: Record runner resources
               id: runner
@@ -76,29 +79,13 @@ jobs:
                   cloud-comment-on-pr: false
                   disable-analytics: true
 
-            - name: Publish result to docs/benchmark.md
+            - name: Commit benchmark result
               if: always() && hashFiles('scalability-results/benchmark-entry.md') != '' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
-              env:
-                  TARGET_BRANCH: ${{ github.head_ref || github.ref_name }}
-              run: |
-                  git config user.name "github-actions[bot]"
-                  git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-                  git fetch origin "${TARGET_BRANCH}"
-                  git checkout -B "${TARGET_BRANCH}" "origin/${TARGET_BRANCH}"
-
-                  marker="<!-- benchmark-run: ${GITHUB_RUN_ID} -->"
-                  if ! grep -Fq "${marker}" docs/benchmark.md; then
-                    printf '\n\n' >> docs/benchmark.md
-                    cat scalability-results/benchmark-entry.md >> docs/benchmark.md
-                  fi
-
-                  git add docs/benchmark.md
-                  if git diff --cached --quiet; then
-                    echo "No benchmark document changes."
-                    exit 0
-                  fi
-                  git commit -m "docs: record benchmark result"
-                  git push origin "HEAD:${TARGET_BRANCH}"
+              uses: stefanzweifel/git-auto-commit-action@v7
+              with:
+                  branch: ${{ github.head_ref || github.ref_name }}
+                  file_pattern: docs/benchmark.md
+                  commit_message: "docs: record benchmark result"
 
             - name: Capture application logs on failure
               if: failure()
