@@ -34,7 +34,7 @@ jobs:
                     echo "commit=${GITHUB_SHA}"
                     echo "runner=${RUNNER_OS}/${RUNNER_ARCH}"
                     echo "cpu_count=$(nproc)"
-                    awk '/MemTotal/ {printf "memory_gb=%.1f\\n", $2/1024/1024}' /proc/meminfo
+                    awk '/MemTotal/ {printf "memory_gb=%.1f\n", $2/1024/1024}' /proc/meminfo
                   } > scalability-results/environment.txt
 
             - name: Create Compose environment
