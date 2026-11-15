@@ -95,7 +95,10 @@ jobs:
               uses: actions/upload-artifact@v6
               with:
                   name: scalability-load-${{ github.run_id }}
-                  path: scalability-results/
+                  path: |
+                      scalability-results/results.md
+                      scalability-results/k6-summary.json
+                      scalability-results/compose-failure.log
                   if-no-files-found: warn
                   retention-days: 14
 
