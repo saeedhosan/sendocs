@@ -128,7 +128,7 @@ export function handleSummary(data) {
     const commitShort = commit ? commit.slice(0, 7) : 'unknown';
     const runUrl = repository ? `${server}/${repository}/actions/runs/${runId}` : '';
     const commitUrl = repository && commit ? `${server}/${repository}/commit/${commit}` : '';
-    const commitLabel = commitUrl ? `[`${commitShort}`](${commitUrl})` : `\`${commitShort}\``;
+    const commitLabel = commitUrl ? '[' + '`' + commitShort + '`' + '](' + commitUrl + ')' : '`' + commitShort + '`';
     const runLabel = runUrl ? ` · [Workflow run](${runUrl})` : '';
 
     const report = [
