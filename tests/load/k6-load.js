@@ -167,7 +167,7 @@ export function ownerJourney() {
         // Upload is limited to 30 requests/hour per source IP. Keep this burst
         // within the real application limit on the single GitHub runner address.
         if (ownerIndex < 30) {
-            const pdf = '%PDF-1.7\\n1 0 obj\\n<< /Type /Catalog >>\\nendobj\\n%%EOF\\n';
+            const pdf = '%PDF-1.7\n1 0 obj\n<< /Type /Catalog >>\nendobj\n%%EOF\n';
             const upload = http.post(
                 `${baseUrl}/api/v1/portal/${ownerState.token}/items/${ownerState.itemId}/file`,
                 { file: http.file(pdf, 'identity.pdf', 'application/pdf') },
@@ -198,7 +198,6 @@ export function handleSummary(data) {
     const failed = metrics.http_req_failed?.values || {};
     const duration = metrics.http_req_duration?.values || {};
     const requests = metrics.http_reqs?.values || {};
-    const iterations = metrics.iterations?.values || {};
     const journey = metrics.iteration_duration?.values || {};
     const vus = metrics.vus?.values || {};
     const dropped = metrics.dropped_iterations?.values || {};
@@ -260,5 +259,4 @@ export function handleSummary(data) {
         output[__ENV.GITHUB_STEP_SUMMARY] = report;
     }
     return output;
-}
 }
