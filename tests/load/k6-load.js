@@ -161,7 +161,7 @@ export function ownerJourney() {
 }
 
 export function authJourney() {
-    const identityIndex = exec.vu.idInTest - 1;
+    const identityIndex = 1000 + ((exec.vu.idInTest - 1) % 10);
     const identity = identities[identityIndex];
 
     if (!identity) {
