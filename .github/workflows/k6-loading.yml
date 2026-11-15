@@ -30,8 +30,9 @@ jobs:
             - name: Record runner resources
               id: runner
               run: |
+                  mkdir -p scalability-results
                   echo "cpu_count=$(nproc)" >> "$GITHUB_OUTPUT"
-                  awk '/MemTotal/ {printf "memory_gb=%.1f\\n", $2/1024/1024}' /proc/meminfo >> "$GITHUB_OUTPUT"
+                  awk '/MemTotal/ {printf "memory_gb=%.1f\n", $2/1024/1024}' /proc/meminfo >> "$GITHUB_OUTPUT"
 
             - name: Create Compose environment
               run: cp .env.example .env
@@ -87,7 +88,7 @@ jobs:
 
                   marker="<!-- benchmark-run: ${GITHUB_RUN_ID} -->"
                   if ! grep -Fq "${marker}" docs/benchmark.md; then
-                    printf '\\n\\n' >> docs/benchmark.md
+                    printf '\n\n' >> docs/benchmark.md
                     cat scalability-results/benchmark-entry.md >> docs/benchmark.md
                   fi
 
