@@ -1,4 +1,4 @@
-name: Browser-Based Scalability Test
+name: 1K Concurrent User Scalability Test
 
 on:
     workflow_dispatch:
@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
     load_test:
-        name: Docker Compose + k6 Chromium journeys
+        name: Docker Compose + k6 browser validation
         runs-on: ubuntu-latest
         timeout-minutes: 30
 
