@@ -26,22 +26,22 @@ $identities = [];
 
 for ($index = 0; $index < $count; $index++) {
     $user = User::query()->create([
-        'name' => 'k6 benchmark owner',
-        'email' => sprintf('%s-%04d@example.test', $prefix, $index + 1),
+        'name'     => 'k6 benchmark owner',
+        'email'    => sprintf('%s-%04d@example.test', $prefix, $index + 1),
         'password' => $passwordHash,
         'provider' => 'custom',
     ]);
 
     $token = SecureToken::generate();
     $session = Session::query()->create([
-        'user_id' => $user->getKey(),
+        'user_id'    => $user->getKey(),
         'token_hash' => SecureToken::hash($token),
         'expires_at' => now()->addDays((int) config('session.owner_cookie.lifetime_days')),
     ]);
 
     $identities[] = [
-        'email' => $user->email,
-        'cookie' => $token,
+        'email'     => $user->email,
+        'cookie'    => $token,
         'csrfToken' => $csrf->derive($session->getKey()),
     ];
 }
