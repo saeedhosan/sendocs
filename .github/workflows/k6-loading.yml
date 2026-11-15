@@ -63,23 +63,22 @@ jobs:
 
             - name: Capture baseline container resources
               run: |
-                  docker stats --no-stream > scalability-results/docker-stats-before.txt
-                  docker compose ps > scalability-results/compose-ps-before.txt
+                  {
+                    echo "captured_at_utc=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+                    docker stats --no-stream
+                  } > scalability-results/docker-stats-before.txt
 
             - name: Run k6 owner and client journey test
               run: |
-                  docker run --rm --network host \
-                    -v "${GITHUB_WORKSPACE}/tests/load:/scripts:ro" \
-                    -v "${GITHUB_WORKSPACE}/scalability-results:/results" \
-                    grafana/k6:0.57.0 run \
-                    --summary-export=/results/k6-summary.json \
-                    /scripts/k6-load.js
+                  docker run --rm --network host                     -v "${GITHUB_WORKSPACE}/tests/load:/scripts:ro"                     -v "${GITHUB_WORKSPACE}/scalability-results:/results"                     grafana/k6:0.57.0 run                     --summary-export=/results/k6-summary.json                     /scripts/k6-load.js
 
             - name: Capture post-test container resources
               if: always()
               run: |
-                  docker stats --no-stream > scalability-results/docker-stats-after.txt || true
-                  docker compose ps > scalability-results/compose-ps-after.txt || true
+                  {
+                    echo "captured_at_utc=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+                    docker stats --no-stream
+                  } > scalability-results/docker-stats-after.txt || true
 
             - name: Capture application logs on failure
               if: failure()
