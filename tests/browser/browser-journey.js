@@ -74,6 +74,22 @@ export default async function () {
         });
         check(true, { 'owner dashboard loads after authentication': (value) => value === true });
 
+        // Visit every protected owner screen without submitting destructive settings forms.
+        await page.goto(`${BASE_URL}/account`, { waitUntil: 'domcontentloaded' });
+        await page.getByRole('heading', { name: 'Account', exact: true }).waitFor({ state: 'visible' });
+        check(true, { 'owner account page loads': (value) => value === true });
+
+        await page.goto(`${BASE_URL}/settings/password`, { waitUntil: 'domcontentloaded' });
+        await page.getByRole('heading', { name: 'Change password', exact: true }).waitFor({ state: 'visible' });
+        check(true, { 'owner password settings page loads': (value) => value === true });
+
+        await page.goto(`${BASE_URL}/settings/delete`, { waitUntil: 'domcontentloaded' });
+        await page.getByRole('heading', { name: 'Delete account', exact: true }).waitFor({ state: 'visible' });
+        check(true, { 'owner account deletion page loads without submitting': (value) => value === true });
+
+        await page.goto(`${BASE_URL}/dashboard`, { waitUntil: 'domcontentloaded' });
+        await page.getByRole('heading', { name: 'Document Requests' }).waitFor({ state: 'visible' });
+
         // Create a real request through the owner UI and capture its one-time portal link.
         await page.getByRole('button', { name: 'New request' }).click();
         await page.locator('#request-title').fill(requestTitle);
