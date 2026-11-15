@@ -33,7 +33,7 @@ jobs:
               run: |
                   mkdir -p scalability-results
                   echo "cpu_count=$(nproc)" >> "$GITHUB_OUTPUT"
-                  awk '/MemTotal/ {printf "memory_gb=%.1f\\n", $2/1024/1024}' /proc/meminfo >> "$GITHUB_OUTPUT"
+                  awk '/MemTotal/ {printf "memory_gb=%.1f\n", $2/1024/1024}' /proc/meminfo >> "$GITHUB_OUTPUT"
 
             - name: Create Compose environment
               run: cp .env.example .env
@@ -71,6 +71,7 @@ jobs:
             - name: Run real-browser user journeys
               env:
                   BASE_URL: http://127.0.0.1:3000
+                  SEEDED_OWNERS_FILE: ${{ github.workspace }}/scalability-results/owners.json
                   GITHUB_RUN_ID: ${{ github.run_id }}
                   GITHUB_RUN_ATTEMPT: ${{ github.run_attempt }}
                   RUNNER_CPU_COUNT: ${{ steps.runner.outputs.cpu_count }}
