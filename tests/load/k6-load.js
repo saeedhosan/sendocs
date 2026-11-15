@@ -178,43 +178,44 @@ export function handleSummary(data) {
     const runLabel = runUrl ? ` · [Workflow run](${runUrl})` : '';
 
     const timestamp = new Date().toISOString().slice(0, 10);
+    const testDuration = data.state && typeof data.state.testRunDurationMs === 'number'
+        ? (data.state.testRunDurationMs / 1000).toFixed(1) + 's'
+        : '—';
+    const checkResult = checkRate === null ? '—' : (checkRate * 100).toFixed(1) + '%';
+    const requestLatency = browserRequests && typeof browserRequests['p(95)'] === 'number'
+        ? formatMetric(browserRequests['p(95)'], ' ms')
+        : '—';
+    const requestFailures = requestFailureRate === null
+        ? '—'
+        : formatMetric(requestFailureRate * 100, '%');
+    const journeyLatency = journey && typeof journey['p(95)'] === 'number'
+        ? formatMetric(journey['p(95)'], ' ms')
+        : '—';
+    const testMachine = __ENV.RUNNER_CPU_COUNT && __ENV.RUNNER_MEMORY_GB
+        ? 'GitHub Actions · ' + __ENV.RUNNER_CPU_COUNT + ' vCPU · ' + __ENV.RUNNER_MEMORY_GB + ' GB RAM'
+        : '—';
+
     const lines = [
-        `<!-- benchmark-run: ${runId} -->`,
-        `### Scalability Test — ${timestamp}`,
+        '### Scalability Test - ' + timestamp,
         '',
-        `**Result:** ${passed ? 'Passed' : 'Failed'}  `,
-        `**Load target:** ${TARGET_SCALE_USER.toLocaleString()} concurrent users`,
+        '- **Result:** ' + (passed ? 'Passed' : 'Failed'),
+        '- **Load target:** ' + TARGET_SCALE_USER.toLocaleString() + ' concurrent users',
+        '- **Test machine:** ' + testMachine,
+        '- **Test scenario:** Complete user journeys through the Sendocs application.',
+        '- **User journey:** Registration → Dashboard → Create request → Client document upload.',
+        '- **Evidence:** [Workflow run](' + (runUrl || '#') + ') · [Commit](' + (commitUrl || '#') + ')',
         '',
         '| Metric | Result |',
-        '|---|---:|',
-        `| Concurrent users reached | ${maxVus} |`,
-        `| Completed user journeys | ${completed}/${TARGET_SCALE_USER} |`,
-        `| Functional checks passed | ${totalChecks ? `${passedChecks}/${totalChecks} (${(checkRate * 100).toFixed(1)}%)` : '0'} |`,
+        '| -------------------------------- | --------: |',
+        '| Peak concurrent users | ' + maxVus.toLocaleString() + ' |',
+        '| Completed user journeys | ' + completed.toLocaleString() + ' / ' + TARGET_SCALE_USER.toLocaleString() + ' |',
+        '| Functional checks | ' + checkResult + ' |',
+        '| Browser request latency (p95) | ' + requestLatency + ' |',
+        '| Browser request failure rate | ' + requestFailures + ' |',
+        '| End-to-end journey latency (p95) | ' + journeyLatency + ' |',
+        '| Test duration | ' + testDuration + ' |',
+        '',
     ];
-
-    if (browserRequests && typeof browserRequests['p(95)'] === 'number') {
-        lines.push(`| Request p95 latency | ${formatMetric(browserRequests['p(95)'], ' ms')} |`);
-    }
-    if (requestFailureRate !== null) {
-        lines.push(`| Request failure rate | ${formatMetric(requestFailureRate * 100, '%')} |`);
-    }
-    if (journey && typeof journey['p(95)'] === 'number') {
-        lines.push(`| End-to-end journey p95 | ${formatMetric(journey['p(95)'], ' ms')} |`);
-    }
-    if (lcp && typeof lcp['p(95)'] === 'number') {
-        lines.push(`| Largest Contentful Paint p95 | ${formatMetric(lcp['p(95)'], ' ms')} |`);
-    }
-    if (__ENV.RUNNER_CPU_COUNT && __ENV.RUNNER_MEMORY_GB) {
-        lines.push(`| Test environment | GitHub Actions · ${__ENV.RUNNER_CPU_COUNT} vCPU · ${__ENV.RUNNER_MEMORY_GB} GB RAM |`);
-    }
-
-    lines.push(
-        '',
-        'User journey: Registration → Dashboard → Request creation → Client document upload.',
-        '',
-        `[Commit](${commitUrl || '#'}) · [Workflow run](${runUrl || '#'})`,
-        '',
-    );
 
     const report = lines.join('\n');
     const output = {
