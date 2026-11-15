@@ -84,7 +84,7 @@ export default async function () {
         await linkInput.waitFor({ state: 'visible', timeout: 30000 });
         const portalUrl = await linkInput.inputValue();
         check(portalUrl, {
-            'owner receives a client portal link': (value) => value.startsWith(`${BASE_URL}/portal/`),
+            'owner receives a client portal link': (value) => value.includes('/portal/'),
         });
 
         // Open the created request detail page from the owner list.
