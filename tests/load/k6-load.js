@@ -86,7 +86,7 @@ export default function () {
         fail('Client portal response did not contain a request item');
     }
 
-    const pdf = '%PDF-1.7\\n1 0 obj\\n<< /Type /Catalog >>\\nendobj\\n%%EOF\\n';
+    const pdf = '%PDF-1.7\n1 0 obj\n<< /Type /Catalog >>\nendobj\n%%EOF\n';
     const upload = http.post(
         `${baseUrl}/api/v1/portal/${token}/items/${itemId}/file`,
         { file: http.file(pdf, 'identity.pdf', 'application/pdf') },
