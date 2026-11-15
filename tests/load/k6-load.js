@@ -3,8 +3,6 @@ import { check } from 'k6';
 import { Counter, Trend } from 'k6/metrics';
 
 const BASE_URL = __ENV.BASE_URL || 'http://127.0.0.1:3000';
-const SEEDED_OWNERS = JSON.parse(open(__ENV.SEEDED_OWNERS_FILE));
-const PASSWORD = 'benchmark-password-123';
 const REGISTER_PASSWORD = 'StrongPass123!';
 
 const journeysCompleted = new Counter('browser_journeys_completed');
@@ -56,24 +54,15 @@ export default async function () {
         await page.goto(`${BASE_URL}/forgot-password`, { waitUntil: 'domcontentloaded' });
         await page.locator('body').waitFor({ state: 'visible' });
 
-        // Three VUs register through the UI; two sign in with isolated seeded accounts.
-        if (__VU <= 3) {
-            await page.goto(`${BASE_URL}/register`, { waitUntil: 'domcontentloaded' });
-            await page.locator('input[name="name"]').fill('Sendocs Browser Benchmark');
-            await page.locator('input[name="email"]').fill(
-                `browser-${__ENV.GITHUB_RUN_ID || Date.now()}-${__ENV.GITHUB_RUN_ATTEMPT || '1'}-${__VU}@example.test`,
-            );
-            await page.locator('input[name="password"]').fill(REGISTER_PASSWORD);
-            await page.locator('input[name="confirmPassword"]').fill(REGISTER_PASSWORD);
-            await page.locator('button[type="submit"]').click();
-        } else {
-            const owner = SEEDED_OWNERS[__VU - 4];
-
-            await page.goto(`${BASE_URL}/login`, { waitUntil: 'domcontentloaded' });
-            await page.locator('input[name="email"]').fill(owner.email);
-            await page.locator('input[name="password"]').fill(PASSWORD);
-            await page.locator('button[type="submit"]').click();
-        }
+        // Each browser user creates and uses its own account through the UI.
+        await page.goto(`${BASE_URL}/register`, { waitUntil: 'domcontentloaded' });
+        await page.locator('input[name="name"]').fill('Sendocs Browser Benchmark');
+        await page.locator('input[name="email"]').fill(
+            `browser-${__ENV.GITHUB_RUN_ID || Date.now()}-${__ENV.GITHUB_RUN_ATTEMPT || '1'}-${__VU}@example.test`,
+        );
+        await page.locator('input[name="password"]').fill(REGISTER_PASSWORD);
+        await page.locator('input[name="confirmPassword"]').fill(REGISTER_PASSWORD);
+        await page.locator('button[type="submit"]').click();
 
         await page.waitForURL(`${BASE_URL}/dashboard`, { timeout: 30000 });
         await page.getByRole('heading', { name: 'Document Requests' }).waitFor({
@@ -188,7 +177,8 @@ export function handleSummary(data) {
         `### Browser results — ${new Date().toISOString()}`,
         '',
         `**Outcome:** ${passed ? 'Passed' : 'Failed'}  `,
-        '**Scenario:** 5 concurrent Chromium users completing one journey each  ',
+        '**Target:** 1,000 concurrent users  ',
+        '**Browser validation:** 5 concurrent Chromium journeys  ',
         `**Commit:** ${commitLabel}${runLabel}`,
         '',
         '| Metric | Result |',
