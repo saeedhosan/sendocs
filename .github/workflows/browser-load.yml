@@ -72,6 +72,7 @@ jobs:
               env:
                   BASE_URL: http://127.0.0.1:3000
                   GITHUB_RUN_ID: ${{ github.run_id }}
+                  GITHUB_RUN_ATTEMPT: ${{ github.run_attempt }}
                   RUNNER_CPU_COUNT: ${{ steps.runner.outputs.cpu_count }}
                   RUNNER_MEMORY_GB: ${{ steps.runner.outputs.memory_gb }}
               run: |
