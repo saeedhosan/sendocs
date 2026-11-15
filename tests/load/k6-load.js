@@ -4,6 +4,11 @@ import { Counter, Trend } from 'k6/metrics';
 
 const BASE_URL = __ENV.BASE_URL || 'http://127.0.0.1:3000';
 const REGISTER_PASSWORD = 'StrongPass123!';
+const TARGET_SCALE_USER = Number(__ENV.TARGET_SCALE_USER || 1000);
+
+if (!Number.isSafeInteger(TARGET_SCALE_USER) || TARGET_SCALE_USER < 1) {
+    throw new Error('TARGET_SCALE_USER must be a positive integer.');
+}
 
 const journeysCompleted = new Counter('browser_journeys_completed');
 const journeyDuration = new Trend('browser_journey_duration', true);
@@ -14,7 +19,7 @@ export const options = {
     scenarios: {
         browser_journeys: {
             executor: 'per-vu-iterations',
-            vus: 5,
+            vus: TARGET_SCALE_USER,
             iterations: 1,
             maxDuration: '5m',
             options: {
@@ -157,7 +162,7 @@ export function handleSummary(data) {
         : null;
     const maxVus = vus && typeof vus.max === 'number' ? vus.max : 0;
 
-    const passed = completed === 5
+    const passed = completed === TARGET_SCALE_USER
         && checkRate === 1
         && requestFailureRate !== null
         && requestFailureRate < 0.01;
@@ -177,13 +182,13 @@ export function handleSummary(data) {
         `### Browser results — ${new Date().toISOString()}`,
         '',
         `**Outcome:** ${passed ? 'Passed' : 'Failed'}  `,
-        '**Target:** 1,000 concurrent users  ',
-        '**Browser validation:** 5 concurrent Chromium journeys  ',
+        `**Target:** ${TARGET_SCALE_USER.toLocaleString()} concurrent users  `,
+        `**Browser validation:** ${TARGET_SCALE_USER.toLocaleString()} concurrent Chromium journeys  `,
         `**Commit:** ${commitLabel}${runLabel}`,
         '',
         '| Metric | Result |',
         '|---|---:|',
-        `| Browser journeys completed | ${completed}/5 |`,
+        `| Browser journeys completed | ${completed}/${TARGET_SCALE_USER} |`,
         `| Concurrent browser VUs reached | ${maxVus} |`,
         `| Functional checks | ${totalChecks ? `${passedChecks}/${totalChecks} (${(checkRate * 100).toFixed(1)}%)` : '0'} |`,
     ];
