@@ -57,9 +57,6 @@ jobs:
                   docker compose logs --no-color
                   exit 1
 
-            - name: Seed two isolated login accounts
-              run: docker compose exec -T api php tests/Load/seed-owners.php 2 > scalability-results/owners.json
-
             - name: Set up k6 and Chromium
               uses: grafana/setup-k6-action@v1
               with:
@@ -69,15 +66,10 @@ jobs:
             - name: Run browser-based user journeys
               env:
                   BASE_URL: http://127.0.0.1:3000
-                  SEEDED_OWNERS_FILE: ${{ github.workspace }}/scalability-results/owners.json
                   RUNNER_CPU_COUNT: ${{ steps.runner.outputs.cpu_count }}
                   RUNNER_MEMORY_GB: ${{ steps.runner.outputs.memory_gb }}
               run: |
                   k6 run --summary-export=./scalability-results/k6-summary.json ./tests/load/k6-load.js
-
-            - name: Remove temporary synthetic credentials
-              if: always()
-              run: rm -f scalability-results/owners.json
 
             - name: Append result to benchmark history
               if: always() && hashFiles('scalability-results/benchmark-entry.md') != ''
