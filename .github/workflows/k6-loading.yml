@@ -77,7 +77,7 @@ jobs:
                   disable-analytics: true
 
             - name: Generate benchmark entry
-              if: always()
+              if: always() && hashFiles('scalability-results/k6-summary.json') != ''
               env:
                   JOB_STATUS: ${{ job.status }}
                   GITHUB_RUN_ID: ${{ github.run_id }}
