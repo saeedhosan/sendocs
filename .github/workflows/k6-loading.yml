@@ -19,9 +19,9 @@ jobs:
         runs-on: ubuntu-latest
         timeout-minutes: 25
         env:
-            BENCHMARK_SCENARIO: Functional baseline
-            BENCHMARK_DAU_TARGET: Not tested
-            BENCHMARK_WORKLOAD: 1 owner completing one request and one client upload
+            BENCHMARK_SCENARIO: Progressive concurrent owner workload
+            BENCHMARK_CONCURRENT_OWNER_TARGET: '1000'
+            BENCHMARK_WORKLOAD: 1,000 owner VUs across home, auth session, and owner APIs; 10 login and registration requests; up to 60 portal reads and 30 uploads within shared-IP limits
 
         steps:
             - name: Check out repository
@@ -62,14 +62,20 @@ jobs:
                   docker compose logs --no-color
                   exit 1
 
+            - name: Seed isolated synthetic owners and sessions
+              run: docker compose exec -T api php tests/Load/seed-owners.php 1010 > scalability-results/owners.json
+
             - name: Set up k6
               uses: grafana/setup-k6-action@v1
               with:
                   k6-version: '0.57.0'
 
-            - name: Run k6 owner and client journey test
+            - name: Run k6 progressive owner and endpoint workload
               uses: grafana/run-k6-action@v1
               env:
+                  BASE_URL: http://127.0.0.1:3000
+                  RUNNER_OS: ${{ runner.os }}
+                  RUNNER_ARCH: ${{ runner.arch }}
                   RUNNER_CPU_COUNT: ${{ steps.runner.outputs.cpu_count }}
                   RUNNER_MEMORY_GB: ${{ steps.runner.outputs.memory_gb }}
               with:
@@ -78,6 +84,10 @@ jobs:
                   cloud-run-locally: true
                   cloud-comment-on-pr: false
                   disable-analytics: true
+
+            - name: Remove temporary synthetic credentials
+              if: always()
+              run: rm -f scalability-results/owners.json
 
             - name: Append result to benchmark history
               if: always() && hashFiles('scalability-results/benchmark-entry.md') != ''
