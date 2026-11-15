@@ -37,7 +37,7 @@ Model owner and client journeys with varied request sizes, upload sizes, think t
 1. [x] Add the owner/client journey: registration, request list/create/detail, portal lookup, and PDF upload.
 2. [x] Add the [Scalability Load Test workflow](../../.github/workflows/k6-loading.yml).
 3. [x] Run the journey successfully on GitHub Actions.
-4. [ ] Generate a concise Markdown report automatically from each k6 run.
+4. [x] Generate a concise Markdown report automatically from each k6 run.
 5. [ ] Add isolated synthetic data for 1,000 owners.
 6. [ ] Run progressively at 100, 250, 500, and 1,000 daily active owners.
 7. [ ] Run accelerated daily, peak, upload, and bounded soak scenarios.
