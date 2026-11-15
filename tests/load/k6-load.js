@@ -5,7 +5,7 @@ import { Counter } from 'k6/metrics';
 
 const baseUrl = __ENV.BASE_URL || 'http://127.0.0.1:3000';
 const password = 'benchmark-password-123';
-const identities = JSON.parse(open('./scalability-results/owners.json'));
+const identities = JSON.parse(open('../../scalability-results/owners.json'));
 
 const portalReads = new Counter('client_portal_reads');
 const portalUploads = new Counter('client_portal_uploads');
@@ -274,7 +274,7 @@ export function handleSummary(data) {
         '',
         `**Runner:** ${__ENV.RUNNER_OS || 'N/A'}/${__ENV.RUNNER_ARCH || 'N/A'} · ${__ENV.RUNNER_CPU_COUNT || 'N/A'} vCPU · ${__ENV.RUNNER_MEMORY_GB || 'N/A'} GB RAM`,
         '',
-        '> App and k6 share a GitHub-hosted runner. All synthetic clients share its egress IP, so portal traffic is capped at the documented 60 reads/minute and 30 uploads/hour; login and registration bursts are capped at 10 requests/minute each. Results are not production-capacity claims.',
+        '> App and k6 share a GitHub-hosted runner. All API traffic passes through one Compose web proxy, so its shared source IP applies the documented limits to the synthetic population: 60 portal reads/minute, 30 uploads/hour, and 10 login or registration requests/minute. Results are not production-capacity claims.',
         '',
     ].join('\\n');
 
