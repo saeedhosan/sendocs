@@ -24,3 +24,26 @@ Sendocs scalability benchmark history. Each result is appended automatically by 
 **Runner:** Linux/X64 · 4 vCPU · 15.6\n GB RAM
 
 > Results describe this workload on a shared GitHub-hosted runner. A functional baseline is not evidence of DAU capacity or production-server capacity.
+
+<!-- benchmark-run: 43748805973 -->
+### Results — 2026-11-15 18:52 UTC
+
+**Outcome:** Passed  
+**Scenario:** Functional baseline  
+**DAU target:** Not tested  
+**Workload:** 1 owner completing one request and one client upload  
+**Commit:** [`f8154bd`](https://github.com/saeedhosan/sendocs/commit/f8154bd17e9fdf2b0e8006fb0055a1129ab284fa) · [Workflow run](https://github.com/saeedhosan/sendocs/actions/runs/43748805973)
+
+| Metric | Result |
+|---|---:|
+| HTTP requests | 6 |
+| Iterations | 1 |
+| Average latency | 105.8 ms |
+| p95 latency | 305.1 ms |
+| HTTP error rate | 0.00% |
+| Functional checks | 10/10 (100.0%) |
+| Average journey duration | 637.9 ms |
+
+**Runner:** Linux/X64 · 4 vCPU · 15.6\n GB RAM
+
+> Results describe this workload on a shared GitHub-hosted runner. A functional baseline is not evidence of DAU capacity or production-server capacity.
