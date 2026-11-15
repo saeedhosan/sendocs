@@ -7,10 +7,10 @@ on:
             - main
 
 permissions:
-    contents: read
+    contents: write
 
 concurrency:
-    group: scalability-load-${{ github.ref }}
+    group: scalability-load-${{ github.head_ref || github.ref }}
     cancel-in-progress: true
 
 jobs:
@@ -34,7 +34,7 @@ jobs:
                     echo "commit=${GITHUB_SHA}"
                     echo "runner=${RUNNER_OS}/${RUNNER_ARCH}"
                     echo "cpu_count=$(nproc)"
-                    awk '/MemTotal/ {printf "memory_gb=%.1f\n", $2/1024/1024}' /proc/meminfo
+                    awk '/MemTotal/ {printf "memory_gb=%.1f\\n", $2/1024/1024}' /proc/meminfo
                   } > scalability-results/environment.txt
 
             - name: Create Compose environment
@@ -76,7 +76,7 @@ jobs:
                   cloud-comment-on-pr: false
                   disable-analytics: true
 
-            - name: Generate concise benchmark report
+            - name: Generate benchmark entry
               if: always()
               env:
                   JOB_STATUS: ${{ job.status }}
@@ -90,13 +90,36 @@ jobs:
               if: failure()
               run: docker compose logs --no-color > scalability-results/compose-failure.log 2>&1 || true
 
-            - name: Upload benchmark artifacts
+            - name: Publish result to docs/benchmark.md
+              if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+              env:
+                  TARGET_BRANCH: ${{ github.head_ref || github.ref_name }}
+              run: |
+                  if [ ! -f scalability-results/benchmark-entry.md ]; then
+                    echo "No benchmark entry to publish."
+                    exit 0
+                  fi
+
+                  git config user.name "github-actions[bot]"
+                  git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+                  git fetch origin "${TARGET_BRANCH}"
+                  git checkout -B "${TARGET_BRANCH}" "origin/${TARGET_BRANCH}"
+                  python3 tests/load/publish-benchmark.py
+                  git add docs/benchmark.md
+                  if git diff --cached --quiet; then
+                    echo "No benchmark document changes."
+                    exit 0
+                  fi
+                  git commit -m "docs: record benchmark result"
+                  git push origin "HEAD:${TARGET_BRANCH}"
+
+            - name: Upload supporting benchmark artifacts
               if: always()
               uses: actions/upload-artifact@v6
               with:
                   name: scalability-load-${{ github.run_id }}
                   path: |
-                      scalability-results/results.md
+                      scalability-results/benchmark-entry.md
                       scalability-results/k6-summary.json
                       scalability-results/compose-failure.log
                   if-no-files-found: warn
