@@ -3,7 +3,7 @@ import { check } from 'k6';
 import { Counter, Trend } from 'k6/metrics';
 
 const BASE_URL = __ENV.BASE_URL || 'http://127.0.0.1:3000';
-const SEEDED_OWNERS = JSON.parse(open('./scalability-results/owners.json'));
+const SEEDED_OWNERS = JSON.parse(open('../../scalability-results/owners.json'));
 const PASSWORD = 'benchmark-password-123';
 const REGISTER_PASSWORD = 'StrongPass123!';
 
@@ -32,15 +32,10 @@ export const options = {
     },
 };
 
-function assertVisible(page, selector, name) {
-    return page.locator(selector).waitFor({ state: 'visible', timeout: 30000 })
-        .then(() => check(true, { [name]: (value) => value === true }));
-}
-
 export default async function () {
     const page = await browser.newPage();
     const startedAt = Date.now();
-    const requestTitle = `Browser journey ${__ENV.GITHUB_RUN_ID || 'local'}-${__VU}`;
+    const requestTitle = `Browser journey ${__ENV.GITHUB_RUN_ID || 'local'}-${__ENV.GITHUB_RUN_ATTEMPT || '1'}-${__VU}`;
 
     try {
         // Public landing page.
@@ -56,7 +51,7 @@ export default async function () {
             await page.goto(`${BASE_URL}/register`, { waitUntil: 'domcontentloaded' });
             await page.locator('input[name="name"]').fill('Sendocs Browser Benchmark');
             await page.locator('input[name="email"]').fill(
-                `browser-${__ENV.GITHUB_RUN_ID || Date.now()}-${__VU}@example.test`,
+                `browser-${__ENV.GITHUB_RUN_ID || Date.now()}-${__ENV.GITHUB_RUN_ATTEMPT || '1'}-${__VU}@example.test`,
             );
             await page.locator('input[name="password"]').fill(REGISTER_PASSWORD);
             await page.locator('input[name="confirmPassword"]').fill(REGISTER_PASSWORD);
@@ -144,16 +139,22 @@ export function handleSummary(data) {
         '',
         '- **Scenario:** 5 concurrent Chromium users; one complete journey per user',
         '- **Journeys completed:** ' + completed,
-        '- **Checks passed:** ' + (checksRate === null ? 'unavailable' : formatMetric(checksRate * 100, '%')),
-        '- **Browser HTTP request failure rate:** ' + (failedRate === null ? 'unavailable' : formatMetric(failedRate * 100, '%')),
-        '- **Journey duration (p95):** ' + (journeyP95 === null ? 'unavailable' : formatMetric(journeyP95, ' ms')),
-        '- **Browser HTTP request duration (p95):** ' + (browserRequestP95 === null ? 'unavailable' : formatMetric(browserRequestP95, ' ms')),
-        '- **Largest Contentful Paint (p95):** ' + (lcpP95 === null ? 'unavailable' : formatMetric(lcpP95, ' ms')),
-        '- **Runner:** ' + (__ENV.RUNNER_CPU_COUNT || 'unknown') + ' vCPU, ' + (__ENV.RUNNER_MEMORY_GB || 'unknown') + ' GB RAM',
+    ];
+
+    if (checksRate !== null) lines.push('- **Checks passed:** ' + formatMetric(checksRate * 100, '%'));
+    if (failedRate !== null) lines.push('- **Browser HTTP request failure rate:** ' + formatMetric(failedRate * 100, '%'));
+    if (journeyP95 !== null) lines.push('- **Journey duration (p95):** ' + formatMetric(journeyP95, ' ms'));
+    if (browserRequestP95 !== null) lines.push('- **Browser HTTP request duration (p95):** ' + formatMetric(browserRequestP95, ' ms'));
+    if (lcpP95 !== null) lines.push('- **Largest Contentful Paint (p95):** ' + formatMetric(lcpP95, ' ms'));
+    if (__ENV.RUNNER_CPU_COUNT && __ENV.RUNNER_MEMORY_GB) {
+        lines.push('- **Runner:** ' + __ENV.RUNNER_CPU_COUNT + ' vCPU, ' + __ENV.RUNNER_MEMORY_GB + ' GB RAM');
+    }
+
+    lines.push(
         '',
         'Journey: landing page → register/login → owner dashboard → create request → request detail → client portal → PDF upload.',
         '',
-    ];
+    );
 
     const markdown = lines.join('\n');
     return {
