@@ -16,15 +16,15 @@ The single k6 script, `tests/load/k6-load.js`, exercises these real application 
 
 The setup logs in once with the seeded demo account and creates one temporary request for owner-detail and portal reads. Teardown deletes that temporary request. The API has no separate public user-profile read endpoint; the session response includes the user.
 
-The benchmark does not repeatedly register or log in each VU: authentication is limited to 10 requests per minute per IP. Setup performs one client file upload as a smoke check; uploads are not part of the concurrent workload because they are limited to 30 per hour per IP and each request item accepts only one file. These limits must not be bypassed by spoofing IP addresses.
+The benchmark does not repeatedly register or log in each VU. Setup signs in once, creates one temporary request, and performs one client upload smoke check. Concurrent VUs send a unique `X-Client-IP` from the reserved `198.18.0.0/15` range. In the `testing` environment only, the middleware maps that header to `REMOTE_ADDR`, and rate-limit buckets use the per-VU IP with an elevated ceiling. Production rate-limit keys and limits remain unchanged.
 
 ## Duration and Rate Limits
 
 - Default VUs: 100; the workflow input remains configurable.
 - Default duration: `0`, meaning k6 runs until manually cancelled or the GitHub Actions job timeout is reached.
 - GitHub Actions job timeout: 30 minutes, including image build, migrations, startup, and the load test.
-- VUs are staggered and paced to keep the shared demo owner's user-level reads and the shared runner IP's portal reads within documented limits.
-- Raising VUs increases the pacing interval; it does not create more test accounts or bypass rate limits.
+- Each VU sends requests continuously without artificial sleep or pacing.
+- The testing-only rate-limit override isolates each VU, including endpoints that normally key limits by owner ID. Requests without `X-Client-IP` retain their normal configured limits.
 
 ## Environment
 
