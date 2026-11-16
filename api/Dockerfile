@@ -62,6 +62,7 @@ USER www-data
 EXPOSE 9000
 
 ENTRYPOINT ["entrypoint"]
+CMD ["php-fpm", "-F"]
 
 FROM base AS dev
 
