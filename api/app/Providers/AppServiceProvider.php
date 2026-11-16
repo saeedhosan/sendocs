@@ -36,66 +36,68 @@ class AppServiceProvider extends ServiceProvider
     {
         EncryptCookies::except((string) config('session.owner_cookie.name'));
 
-        // Benchmark requests use a unique synthetic IP per k6 VU. Keep this
-        // override and the elevated ceiling confined to the testing environment.
-        $limit = static function (Request $request, int $attempts, string $period = 'minute', ?string $ownerId = null): Limit {
-            $benchmark = app()->environment('testing') && $request->headers->has('X-Client-IP');
-            $key       = $benchmark ? $request->ip() : ($ownerId ?? $request->ip());
+        RateLimiter::for('auth.register', fn (Request $request) => Limit::perMinute(10)
+            ->by($request->ip()));
 
-            if ($benchmark) {
-                $attempts = PHP_INT_MAX;
-            }
-
-            return ($period === 'hour' ? Limit::perHour($attempts) : Limit::perMinute($attempts))
-                ->by($key);
-        };
-
-        RateLimiter::for('auth.register', fn (Request $request) => $limit($request, 10));
-
-        RateLimiter::for('auth.login', fn (Request $request) => $limit($request, 10));
+        RateLimiter::for('auth.login', fn (Request $request) => Limit::perMinute(10)
+            ->by($request->ip()));
 
         // Both ends of the Google flow share one bucket per address, so a
         // callback cannot be used to buy extra authorization codes.
-        RateLimiter::for('auth.oauth', fn (Request $request) => $limit($request, 10));
+        RateLimiter::for('auth.oauth', fn (Request $request) => Limit::perMinute(10)
+            ->by($request->ip()));
 
         // Once a caller is known the bucket is per owner, so one noisy browser
         // cannot spend another owner's allowance.
-        RateLimiter::for('auth.session', fn (Request $request) => $limit($request, 120, ownerId: $request->user()?->getKey()));
+        RateLimiter::for('auth.session', fn (Request $request) => Limit::perMinute(120)
+            ->by($request->user()?->getKey() ?? $request->ip()));
 
         // Recovery is limited per address rather than per owner, because the
         // caller is not signed in and may not exist.
-        RateLimiter::for('auth.password.forgot', fn (Request $request) => $limit($request, 5, 'hour'));
+        RateLimiter::for('auth.password.forgot', fn (Request $request) => Limit::perHour(5)
+            ->by($request->ip()));
 
         // Redemption gets the same ceiling as the request that starts recovery,
         // in its own bucket, because the contract limits each endpoint
         // separately and neither has an owner to count against.
-        RateLimiter::for('auth.password.reset', fn (Request $request) => $limit($request, 5, 'hour'));
+        RateLimiter::for('auth.password.reset', fn (Request $request) => Limit::perHour(5)
+            ->by($request->ip()));
 
         // The caller is signed in here, so the bucket is per owner.
-        RateLimiter::for('auth.password.change', fn (Request $request) => $limit($request, 120, ownerId: $request->user()?->getKey()));
+        RateLimiter::for('auth.password.change', fn (Request $request) => Limit::perMinute(120)
+            ->by($request->user()?->getKey() ?? $request->ip()));
 
         // The link itself is the credential here, and the caller may be a
         // browser that never signed in, so redemption is limited per address.
-        RateLimiter::for('auth.email.verify', fn (Request $request) => $limit($request, 5, 'hour'));
+        RateLimiter::for('auth.email.verify', fn (Request $request) => Limit::perHour(5)
+            ->by($request->ip()));
 
         // Asking for another link requires a session, so this one is per owner.
-        RateLimiter::for('auth.email.resend', fn (Request $request) => $limit($request, 5, 'hour', $request->user()?->getKey()));
+        RateLimiter::for('auth.email.resend', fn (Request $request) => Limit::perHour(5)
+            ->by($request->user()?->getKey() ?? $request->ip()));
 
         // Deletion is irreversible, so it shares the ceiling of the other owner
         // writes rather than getting a budget of its own.
-        RateLimiter::for('auth.account.destroy', fn (Request $request) => $limit($request, 120, ownerId: $request->user()?->getKey()));
+        RateLimiter::for('auth.account.destroy', fn (Request $request) => Limit::perMinute(120)
+            ->by($request->user()?->getKey() ?? $request->ip()));
 
-        RateLimiter::for('auth.logout', fn (Request $request) => $limit($request, 120, ownerId: $request->user()?->getKey()));
+        RateLimiter::for('auth.logout', fn (Request $request) => Limit::perMinute(120)
+            ->by($request->user()?->getKey() ?? $request->ip()));
 
-        RateLimiter::for('account.update', fn (Request $request) => $limit($request, 30, ownerId: $request->user()?->getKey()));
+        RateLimiter::for('account.update', fn (Request $request) => Limit::perMinute(30)
+            ->by($request->user()?->getKey() ?? $request->ip()));
 
-        RateLimiter::for('portal.read', fn (Request $request) => $limit($request, 60));
+        RateLimiter::for('portal.read', fn (Request $request) => Limit::perMinute(60)
+            ->by($request->ip()));
 
-        RateLimiter::for('portal.upload', fn (Request $request) => $limit($request, 30, 'hour'));
+        RateLimiter::for('portal.upload', fn (Request $request) => Limit::perHour(30)
+            ->by($request->ip()));
 
-        RateLimiter::for('document-requests.read', fn (Request $request) => $limit($request, 120, ownerId: $request->user()?->getKey()));
+        RateLimiter::for('document-requests.read', fn (Request $request) => Limit::perMinute(120)
+            ->by($request->user()?->getKey() ?? $request->ip()));
 
-        RateLimiter::for('document-requests.write', fn (Request $request) => $limit($request, 120, ownerId: $request->user()?->getKey()));
+        RateLimiter::for('document-requests.write', fn (Request $request) => Limit::perMinute(120)
+            ->by($request->user()?->getKey() ?? $request->ip()));
 
         // The owner guard reads the opaque cookie from the sessions table.
         Auth::viaRequest('owner', function (Request $request) {
