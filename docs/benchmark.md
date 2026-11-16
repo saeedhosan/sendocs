@@ -2,7 +2,7 @@
 
 This file records automated load-test results. Each entry describes the exact test scenario; results from different scenarios are not directly comparable.
 
-\n### Scalability Test - 2026-11-16
+### Scalability Test - 2026-11-16
 
 - **Result:** Failed
 - **Load target:** 1000 concurrent HTTP VUs
