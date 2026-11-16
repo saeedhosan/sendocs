@@ -1,7 +1,7 @@
 import { browser } from 'k6/browser';
 import http from 'k6/http';
 import { check, sleep } from 'k6';
-import { Counter, Trend } from 'k6/metrics';
+import { Counter, Rate, Trend } from 'k6/metrics';
 
 const BASE_URL = __ENV.BASE_URL || 'http://127.0.0.1:3000';
 const REGISTER_PASSWORD = 'StrongPass123!';
@@ -16,6 +16,7 @@ if (!Number.isSafeInteger(TARGET_API_VUS) || TARGET_API_VUS < 1
 
 const journeysCompleted = new Counter('browser_journeys_completed');
 const apiHealthChecks = new Counter('api_health_checks');
+const apiHealthCheckSuccess = new Rate('api_health_check_success');
 const apiHealthFailures = new Counter('api_health_failures');
 const journeyDuration = new Trend('browser_journey_duration', true);
 
@@ -57,6 +58,7 @@ export function apiLoad() {
     });
     const ok = response.status === 200;
     apiHealthChecks.add(1);
+    apiHealthCheckSuccess.add(ok);
     if (!ok) {
         apiHealthFailures.add(1);
     }
