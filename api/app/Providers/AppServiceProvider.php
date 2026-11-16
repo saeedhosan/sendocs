@@ -41,7 +41,6 @@ class AppServiceProvider extends ServiceProvider
         $benchmarkRateLimits = (bool) env('SENDOCS_BENCHMARK_RATE_LIMITS', false)
             && $this->app->environment(['local', 'testing']);
         $publicMinuteLimit = $benchmarkRateLimits ? 10000 : 10;
-        $publicHourLimit = $benchmarkRateLimits ? 10000 : 5;
 
         RateLimiter::for('auth.register', fn (Request $request) => Limit::perMinute($publicMinuteLimit)
             ->by($request->ip()));
@@ -61,7 +60,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Recovery is limited per address rather than per owner, because the
         // caller is not signed in and may not exist.
-        RateLimiter::for('auth.password.forgot', fn (Request $request) => Limit::perHour($publicHourLimit)
+        RateLimiter::for('auth.password.forgot', fn (Request $request) => Limit::perHour(5)
             ->by($request->ip()));
 
         // Redemption gets the same ceiling as the request that starts recovery,
