@@ -11,7 +11,7 @@ This file records automated load-test results. Each entry describes the exact te
 
 ## Historical browser journey test — 2026-11-16
 
-<badge>Failed</badge>
+**Result: Failed**
 
 This was an earlier browser-based experiment and is retained for history. It is not part of the current HTTP-only scalability benchmark.
 
@@ -35,7 +35,7 @@ This was an earlier browser-based experiment and is retained for history. It is 
 
 ## HTTP health-endpoint load test — 2026-11-16
 
-<badge color="danger">Failed</badge>
+**Result: Failed**
 
 - **Load target:** 1,000 concurrent HTTP VUs.
 - **Scenario:** Each VU repeatedly sends `GET /health` requests during the test.
