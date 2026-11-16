@@ -6,14 +6,16 @@ Measure Sendocs HTTP behavior with a configurable number of concurrent virtual u
 
 ## Parallel workload groups
 
-The workflow runs four independent GitHub Actions matrix jobs in parallel. Each job starts its own Docker Compose application/database stack and runs the same k6 script for the configured duration (default: 60 seconds).
+The workflow runs four independent GitHub Actions matrix jobs in parallel. Each job starts its own Docker Compose application/database stack and runs the same k6 entry point for the configured duration (default: 60 seconds). The entry point dispatches to the workload selected by `WORKLOAD_GROUP`.
 
-| Group | Endpoints exercised |
-| --- | --- |
-| Landing | `GET /` |
-| Authentication | `POST /api/v1/auth/login`, `GET /api/v1/auth/session` |
-| Owner portal | `GET /api/v1/requests`, `GET /api/v1/requests/{requestId}` |
-| Client portal | `POST /api/v1/portal/{token}/items/{itemId}/file`, `GET /api/v1/portal/{token}` |
+| Group | Workload module | Endpoints exercised |
+| --- | --- | --- |
+| Landing | `tests/load/workloads/landing.js` | `GET /` |
+| Authentication | `tests/load/workloads/auth.js` | `POST /api/v1/auth/login`, `GET /api/v1/auth/session` |
+| Owner portal | `tests/load/workloads/owner.js` | `GET /api/v1/requests`, `GET /api/v1/requests/{requestId}` |
+| Client portal | `tests/load/workloads/client.js` | `POST /api/v1/portal/{token}/items/{itemId}/file`, `GET /api/v1/portal/{token}` |
+
+Shared configuration lives in `tests/load/config.js`, and account/request setup helpers live in `tests/load/helpers/accounts.js`. Each workload owns its setup and request execution. The shared entry point, `tests/load/k6-load.js`, owns scenario configuration, workload dispatch, thresholds, and report generation.
 
 Each authenticated VU receives its own benchmark account during setup. Owner and client groups also create one request per VU. This isolates user-keyed rate-limit buckets and avoids making all virtual users share one owner account. Each VU receives a unique synthetic client IP from the reserved `198.18.0.0/15` range. In the `testing` environment only, `ApplyBenchmarkClientIp` maps `X-Client-IP` to `REMOTE_ADDR`. `AppServiceProvider.php` and production rate-limit configuration are not modified for this benchmark.
 
@@ -34,6 +36,8 @@ The pacing is intentional so the benchmark measures application behavior without
 - Four GitHub-hosted runners execute in parallel. Each runner hosts its own app stack and k6 generator, so each result represents that runner's combined environment.
 - Each workload produces a separate k6 summary and resource-usage log.
 - A final aggregation job appends all available workload reports to `docs/benchmark.md` in one commit.
-- One k6 script: `tests/load/k6-load.js`.
+- One k6 entry point: `tests/load/k6-load.js`.
+- Four workload modules under `tests/load/workloads/`.
+- Shared configuration: `tests/load/config.js`; shared setup helpers: `tests/load/helpers/accounts.js`.
 - One workflow: `.github/workflows/k6-loading.yml`.
 - The previous mixed-workload and health-only results remain historical and are not directly comparable with these isolated workload results.
