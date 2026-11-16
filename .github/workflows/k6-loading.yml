@@ -6,7 +6,7 @@ on:
             target_vus:
                 description: "Concurrent HTTP virtual users"
                 type: string
-                default: "1000"
+                default: "500"
                 required: true
             test_duration:
                 description: "Load test duration (for example: 60s, 5m)"
@@ -135,7 +135,7 @@ jobs:
                       scalability-results/resource-usage.log
                       scalability-results/compose-failure.log
                   if-no-files-found: warn
-                  retention-days: 14
+                  retention-days: 1
 
             - name: Stop Compose services
               if: always()
