@@ -182,7 +182,6 @@ export function handleSummary(data) {
     const browserRequests = data.metrics.browser_http_req_duration && data.metrics.browser_http_req_duration.values;
     const failedBrowserRequests = data.metrics.browser_http_req_failed && data.metrics.browser_http_req_failed.values;
     const apiRequests = data.metrics.http_req_duration && data.metrics.http_req_duration.values;
-    const failedApiRequests = data.metrics.http_req_failed && data.metrics.http_req_failed.values;
     const journey = data.metrics.browser_journey_duration && data.metrics.browser_journey_duration.values;
     const completed = metricValue(data, 'browser_journeys_completed', 'count') || 0;
     const apiChecks = metricValue(data, 'api_health_checks', 'count') || 0;
