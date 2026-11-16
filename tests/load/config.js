@@ -3,6 +3,7 @@ export const TARGET_VUS = Number(__ENV.TARGET_VUS || 100);
 export const WORKLOAD_GROUP = __ENV.WORKLOAD_GROUP || 'landing';
 export const RAW_TEST_DURATION = __ENV.TEST_DURATION || '60s';
 export const TEST_DURATION = RAW_TEST_DURATION === '0' ? '24h' : RAW_TEST_DURATION;
+export const SETUP_TIMEOUT = __ENV.SETUP_TIMEOUT || '20m';
 export const PASSWORD = 'Benchmark-pass-123!';
 
 export const GROUPS = ['landing', 'auth', 'owner', 'client'];
