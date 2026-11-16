@@ -28,3 +28,7 @@ services:
             api:
                 condition: service_started
         restart: unless-stopped
+
+    # Only the landing workload needs the Vite development server.
+    web:
+        profiles: ["landing"]
