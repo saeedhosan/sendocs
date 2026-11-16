@@ -102,33 +102,39 @@ export async function browserJourney() {
         await page.locator('input[name="confirmPassword"]').fill(REGISTER_PASSWORD);
         await page.locator('button[type="submit"]').click();
 
-        await page.getByRole('heading', { name: 'Document Requests' }).waitFor({
-            state: 'visible',
-            timeout: 30000,
+        const dashboardHeading = page.locator('h1');
+        await dashboardHeading.waitFor({ state: 'visible', timeout: 30000 });
+        check(await dashboardHeading.textContent(), {
+            'owner dashboard loads after authentication': (value) => value.includes('Document Requests'),
         });
-        check(true, { 'owner dashboard loads after authentication': (value) => value === true });
-
         // Visit every protected owner screen without submitting destructive settings forms.
         await page.goto(`${BASE_URL}/account`, { waitUntil: 'domcontentloaded' });
-        await page.getByRole('heading', { name: 'Account', exact: true }).waitFor({ state: 'visible' });
-        check(true, { 'owner account page loads': (value) => value === true });
+        const accountHeading = page.locator('h1');
+        await accountHeading.waitFor({ state: 'visible' });
+        check(await accountHeading.textContent(), {
+            'owner account page loads': (value) => value.trim() === 'Account',
+        });
 
         await page.goto(`${BASE_URL}/settings/password`, { waitUntil: 'domcontentloaded' });
-        await page.getByRole('heading', { name: 'Change password', exact: true }).waitFor({ state: 'visible' });
-        check(true, { 'owner password settings page loads': (value) => value === true });
+        const passwordHeading = page.locator('h1');
+        await passwordHeading.waitFor({ state: 'visible' });
+        check(await passwordHeading.textContent(), {
+            'owner password settings page loads': (value) => value.trim() === 'Change password',
+        });
 
         await page.goto(`${BASE_URL}/settings/delete`, { waitUntil: 'domcontentloaded' });
-        await page.getByRole('heading', { name: 'Delete account', exact: true }).waitFor({ state: 'visible' });
-        check(true, { 'owner account deletion page loads without submitting': (value) => value === true });
+        const deleteHeading = page.locator('h1');
+        await deleteHeading.waitFor({ state: 'visible' });
+        check(await deleteHeading.textContent(), {
+            'owner account deletion page loads without submitting': (value) => value.trim() === 'Delete account',
+        });
 
-        await page.goto(`${BASE_URL}/dashboard`, { waitUntil: 'domcontentloaded' });
-        await page.getByRole('heading', { name: 'Document Requests' }).waitFor({ state: 'visible' });
-
-        // Create a real request through the owner UI and capture its one-time portal link.
-        await page.getByRole('button', { name: 'New request' }).click();
+        // Open the request form and create a real request through the owner UI.
+        await page.goto(`${BASE_URL}/requests/new`, { waitUntil: 'domcontentloaded' });
+        await page.locator('#request-title').waitFor({ state: 'visible' });
         await page.locator('#request-title').fill(requestTitle);
         await page.locator('input[aria-label="Document 1"]').fill('Proof of address');
-        await page.getByRole('button', { name: 'Create request' }).click();
+        await page.locator('button[type="submit"]').click();
 
         const linkInput = page.locator('input[aria-label="Client portal link"]');
         await linkInput.waitFor({ state: 'visible', timeout: 30000 });
@@ -138,13 +144,15 @@ export async function browserJourney() {
         });
 
         // Open the created request detail page from the owner list.
-        await page.getByRole('button', { name: 'Done' }).click();
-        await page.getByRole('link', { name: requestTitle, exact: true }).click();
-        await page.getByRole('heading', { name: requestTitle }).waitFor({
-            state: 'visible',
-            timeout: 30000,
+        await page.goto(`${BASE_URL}/dashboard`, { waitUntil: 'domcontentloaded' });
+        const requestLink = page.locator('a[href^="/requests/"]').first();
+        await requestLink.waitFor({ state: 'visible', timeout: 30000 });
+        await requestLink.click();
+        const detailHeading = page.locator('h1');
+        await detailHeading.waitFor({ state: 'visible', timeout: 30000 });
+        check(await detailHeading.textContent(), {
+            'owner request detail page loads': (value) => value.trim() === requestTitle,
         });
-        check(true, { 'owner request detail page loads': (value) => value === true });
 
         // Follow the actual one-time link in Chromium and upload a valid PDF.
         await page.goto(portalUrl, { waitUntil: 'domcontentloaded' });
@@ -154,11 +162,11 @@ export async function browserJourney() {
             mimeType: 'application/pdf',
             buffer: PDF_BASE64,
         });
-        await page.getByText('All documents received').waitFor({
-            state: 'visible',
-            timeout: 30000,
+        const portalBody = page.locator('body');
+        await portalBody.waitFor({ state: 'visible', timeout: 30000 });
+        check(await portalBody.textContent(), {
+            'client portal upload completes in browser': (value) => value.includes('All documents received'),
         });
-        check(true, { 'client portal upload completes in browser': (value) => value === true });
 
         journeyDuration.add(Date.now() - startedAt);
         journeysCompleted.add(1);
