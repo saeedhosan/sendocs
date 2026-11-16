@@ -3,6 +3,7 @@ import { check, sleep } from 'k6';
 import { BASE_URL } from '../config.js';
 import { Rate } from 'k6/metrics';
 import { prepareAccounts } from '../helpers/accounts.js';
+import { recordWorkloadRequest } from '../helpers/metrics.js';
 
 export const ownerListSuccess = new Rate('owner_list_success');
 export const ownerDetailSuccess = new Rate('owner_detail_success');
@@ -25,6 +26,7 @@ export default function (data) {
             },
             tags: { endpoint: 'owner_request_list' },
         });
+        recordWorkloadRequest(list);
         ownerListSuccess.add(check(list, {
             'owner request list returns HTTP 200': (res) => res.status === 200,
         }));
@@ -36,6 +38,7 @@ export default function (data) {
             },
             tags: { endpoint: 'owner_request_detail' },
         });
+        recordWorkloadRequest(detail);
         ownerDetailSuccess.add(check(detail, {
             'owner request detail returns HTTP 200': (res) => res.status === 200,
         }));
