@@ -30,7 +30,7 @@ jobs:
     load_test:
         name: HTTP load - ${{ matrix.group }}
         runs-on: ubuntu-latest
-        timeout-minutes: 30
+        timeout-minutes: 60
         env:
             API_TARGET: prod
             COMPOSE_FILE: compose.yaml:compose.benchmark.yaml
@@ -98,6 +98,8 @@ jobs:
                       ps -eo pid,comm,%cpu,%mem,rss --sort=-%cpu | head -n 12
                       echo "--- Docker container usage ---"
                       docker stats --no-stream --format "table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.MemPerc}}"
+                      echo "--- PHP-FPM pool status ---"
+                      curl --fail --silent "http://127.0.0.1:8000/fpm-status?json" || true
                       sleep 5
                     done
                   ) >> scalability-results/resource-usage-${{ matrix.group }}.log 2>&1 &
