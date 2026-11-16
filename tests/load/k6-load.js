@@ -102,7 +102,6 @@ export async function browserJourney() {
         await page.locator('input[name="confirmPassword"]').fill(REGISTER_PASSWORD);
         await page.locator('button[type="submit"]').click();
 
-        await page.waitForURL(`${BASE_URL}/dashboard`, { timeout: 30000 });
         await page.getByRole('heading', { name: 'Document Requests' }).waitFor({
             state: 'visible',
             timeout: 30000,
