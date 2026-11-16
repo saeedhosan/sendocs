@@ -1,9 +1,8 @@
-import landing from './workloads/landing.js';
-import auth from './workloads/auth.js';
-import owner from './workloads/owner.js';
-import client from './workloads/client.js';
+import * as landing from './workloads/landing.js';
+import * as auth from './workloads/auth.js';
+import * as owner from './workloads/owner.js';
+import * as client from './workloads/client.js';
 import {
-    GROUPS,
     RAW_TEST_DURATION,
     TARGET_VUS,
     TEST_DURATION,
