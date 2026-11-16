@@ -34,6 +34,7 @@ jobs:
         env:
             API_TARGET: prod
             COMPOSE_FILE: compose.yaml:compose.benchmark.yaml
+            COMPOSE_PROFILES: ${{ matrix.group == 'landing' && 'landing' || '' }}
         strategy:
             fail-fast: false
             matrix:
