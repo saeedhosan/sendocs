@@ -50,6 +50,7 @@ jobs:
               run: |
                   cp .env.example .env
                   sed -i 's/^APP_ENV=.*/APP_ENV=testing/' .env
+                  mkdir -p scalability-results
 
             - name: Validate benchmark Compose config
               run: docker compose config --quiet
@@ -71,8 +72,10 @@ jobs:
                     fi
                     sleep 2
                   done
-                  docker compose ps
+                  echo "::error::Application health check failed."
+                  docker compose ps -a
                   docker compose logs --no-color
+                  docker compose exec -T api php-fpm -tt || true
                   exit 1
 
             - name: Set up k6
@@ -119,7 +122,10 @@ jobs:
             - name: Capture application logs on failure
               if: failure()
               run: |
-                  docker compose logs --no-color > scalability-results/compose-failure-${{ matrix.group }}.log 2>&1 || true
+                  mkdir -p scalability-results
+                  docker compose ps -a > scalability-results/compose-failure-${{ matrix.group }}.log 2>&1 || true
+                  docker compose logs --no-color >> scalability-results/compose-failure-${{ matrix.group }}.log 2>&1 || true
+                  docker compose exec -T api php-fpm -tt >> scalability-results/compose-failure-${{ matrix.group }}.log 2>&1 || true
 
             - name: Upload workload artifacts
               if: always()
