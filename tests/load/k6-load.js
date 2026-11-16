@@ -145,8 +145,7 @@ export async function browserJourney() {
 
         // Open the created request detail page from the owner list.
         await page.goto(`${BASE_URL}/dashboard`, { waitUntil: 'domcontentloaded' });
-        const requestLink = page.locator('a[href^="/requests/"]').first();
-        await requestLink.waitFor({ state: 'visible', timeout: 30000 });
+        const requestLink = page.locator(`//a[normalize-space(.)="${requestTitle}"]`);
         await requestLink.click();
         const detailHeading = page.locator('h1');
         await detailHeading.waitFor({ state: 'visible', timeout: 30000 });
@@ -162,9 +161,9 @@ export async function browserJourney() {
             mimeType: 'application/pdf',
             buffer: PDF_BASE64,
         });
-        const portalBody = page.locator('body');
-        await portalBody.waitFor({ state: 'visible', timeout: 30000 });
-        check(await portalBody.textContent(), {
+        const uploadCompleteMessage = page.locator('//*[contains(normalize-space(.), "All documents received")]');
+        await uploadCompleteMessage.waitFor({ state: 'visible', timeout: 30000 });
+        check(await uploadCompleteMessage.textContent(), {
             'client portal upload completes in browser': (value) => value.includes('All documents received'),
         });
 
