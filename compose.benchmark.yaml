@@ -1,6 +1,8 @@
 services:
     # Replace the development server with the production PHP-FPM image.
     api:
+        command: ["php-fpm", "-F"]
+        restart: "no"
         ports: !reset []
         volumes: !override
             - ./tests/load/php-fpm-www.conf:/usr/local/etc/php-fpm.d/www.conf:ro
