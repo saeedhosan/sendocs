@@ -4,7 +4,6 @@ import * as owner from './workloads/owner.js';
 import * as client from './workloads/client.js';
 import {
     RAW_TEST_DURATION,
-    SETUP_TIMEOUT,
     TARGET_VUS,
     TEST_DURATION,
     WORKLOAD_GROUP,
@@ -28,7 +27,7 @@ function groupThresholds() {
 }
 
 export const options = {
-    setupTimeout: SETUP_TIMEOUT,
+    setupTimeout: '20m',
     scenarios: {
         workload: {
             executor: 'constant-vus',
