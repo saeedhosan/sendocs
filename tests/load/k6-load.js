@@ -13,7 +13,7 @@ const WORKLOADS = { landing, auth, owner, client };
 const workload = WORKLOADS[WORKLOAD_GROUP];
 
 function groupThresholds() {
-    const thresholds = { http_req_failed: ['rate<0.01'] };
+    const thresholds = { 'http_req_failed{phase:workload}': ['rate<0.01'] };
     const names = {
         landing: ['landing_success'],
         auth: ['auth_login_success', 'auth_session_success'],
@@ -34,6 +34,7 @@ export const options = {
             vus: TARGET_VUS,
             duration: TEST_DURATION,
             gracefulStop: '5s',
+            tags: { phase: 'workload' },
         },
     },
     thresholds: groupThresholds(),
@@ -67,8 +68,9 @@ function formatDuration(value) {
 }
 
 export function handleSummary(data) {
-    const requests = metricValue(data, 'http_reqs', 'count') || 0;
-    const failedRate = metricValue(data, 'http_req_failed', 'rate');
+    const requests = metricValue(data, 'http_reqs{phase:workload}', 'count') || 0;
+    const setupRequests = metricValue(data, 'http_reqs{phase:setup}', 'count') || 0;
+    const failedRate = metricValue(data, 'http_req_failed{phase:workload}', 'rate');
     const maxVus = metricValue(data, 'vus_max', 'max');
     const metricLabels = {
         landing: [['landing_success', 'Landing success']],
@@ -102,18 +104,19 @@ export function handleSummary(data) {
         '',
         '- **Result:** ' + (passed ? 'Passed' : 'Failed'),
         '- **Target load:** ' + TARGET_VUS.toLocaleString() + ' concurrent HTTP VUs · ' + formatDuration(RAW_TEST_DURATION),
-        '- **Environment:** GitHub Actions runner (application + k6)',
+        '- **Environment:** GitHub Actions runner (Nginx + PHP-FPM + k6)',
         '- **Evidence:** ' + (runUrl ? '[Workflow run](' + runUrl + ')' : 'Local run') +
             (commitUrl ? ' · [Commit](' + commitUrl + ')' : ''),
         '',
         '| Metric | Result |',
         '|---|---:|',
         '| Peak virtual users | ' + (maxVus === null ? '—' : maxVus.toLocaleString()) + ' |',
-        '| Total HTTP requests | ' + requests.toLocaleString() + ' |',
-        '| Throughput | ' + format(metricValue(data, 'http_reqs', 'rate'), ' req/s') + ' |',
-        '| Average response time | ' + format(metricValue(data, 'http_req_duration', 'avg'), ' ms') + ' |',
-        '| p95 response time | ' + format(metricValue(data, 'http_req_duration', 'p(95)'), ' ms') + ' |',
-        '| HTTP failure rate | ' + format(failedRate === null ? null : failedRate * 100, '%') + ' |',
+        '| Workload HTTP requests | ' + requests.toLocaleString() + ' |',
+        '| Setup HTTP requests (excluded) | ' + setupRequests.toLocaleString() + ' |',
+        '| Workload throughput | ' + format(metricValue(data, 'http_reqs{phase:workload}', 'rate'), ' req/s') + ' |',
+        '| Average workload response time | ' + format(metricValue(data, 'http_req_duration{phase:workload}', 'avg'), ' ms') + ' |',
+        '| Workload p95 response time | ' + format(metricValue(data, 'http_req_duration{phase:workload}', 'p(95)'), ' ms') + ' |',
+        '| Workload HTTP failure rate | ' + format(failedRate === null ? null : failedRate * 100, '%') + ' |',
         '',
     ].join('\n');
 
