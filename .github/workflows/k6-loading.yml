@@ -31,6 +31,9 @@ jobs:
         name: HTTP load - ${{ matrix.group }}
         runs-on: ubuntu-latest
         timeout-minutes: 30
+        env:
+            API_TARGET: prod
+            COMPOSE_FILE: compose.yaml:compose.benchmark.yaml
         strategy:
             fail-fast: false
             matrix:
@@ -95,7 +98,7 @@ jobs:
 
             - name: Run HTTP load test
               env:
-                  BASE_URL: http://127.0.0.1:8000
+                  BASE_URL: ${{ matrix.group == 'landing' && 'http://127.0.0.1:3000' || 'http://127.0.0.1:8000' }}
                   TARGET_VUS: ${{ github.event_name == 'workflow_dispatch' && inputs.target_vus || '100' }}
                   TEST_DURATION: ${{ github.event_name == 'workflow_dispatch' && inputs.test_duration || '60s' }}
                   WORKLOAD_GROUP: ${{ matrix.group }}
