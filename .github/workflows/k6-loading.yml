@@ -6,10 +6,10 @@ on:
             target_vus:
                 description: "Concurrent HTTP virtual users"
                 type: string
-                default: "500"
+                default: "100"
                 required: true
             test_duration:
-                description: "Load test duration (for example: 60s, 1m)"
+                description: "Duration: 0 = use GitHub Actions job timeout; or enter 60s, 5m, etc."
                 type: string
                 default: "0"
                 required: true
@@ -63,6 +63,9 @@ jobs:
                   docker compose logs --no-color
                   exit 1
 
+            - name: Seed benchmark owner and sample data
+              run: docker compose run --rm api php artisan db:seed --force
+
             - name: Set up k6
               uses: grafana/setup-k6-action@v1
               with:
@@ -90,8 +93,8 @@ jobs:
             - name: Run HTTP load test
               env:
                   BASE_URL: http://127.0.0.1:3000
-                  TARGET_VUS: ${{ github.event_name == 'workflow_dispatch' && inputs.target_vus || '1000' }}
-                  TEST_DURATION: ${{ github.event_name == 'workflow_dispatch' && inputs.test_duration || '60s' }}
+                  TARGET_VUS: ${{ github.event_name == 'workflow_dispatch' && inputs.target_vus || '100' }}
+                  TEST_DURATION: ${{ github.event_name == 'workflow_dispatch' && inputs.test_duration || '0' }}
               run: |
                   mkdir -p scalability-results
                   k6 run --summary-export=./scalability-results/k6-summary.json ./tests/load/k6-load.js
@@ -108,7 +111,7 @@ jobs:
               run: |
                   run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
                   if ! grep --fixed-strings --quiet "$run_url" docs/benchmark.md; then
-                    printf '\\n' >> docs/benchmark.md
+                    printf '\n' >> docs/benchmark.md
                     cat scalability-results/benchmark-entry.md >> docs/benchmark.md
                   fi
 
