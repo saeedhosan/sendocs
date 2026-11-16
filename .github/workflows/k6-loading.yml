@@ -60,7 +60,7 @@ jobs:
             - name: Wait for application health
               run: |
                   for attempt in $(seq 1 60); do
-                    if curl --fail --silent http://127.0.0.1:3000/health > /dev/null; then
+                    if curl --fail --silent http://127.0.0.1:8000/health > /dev/null; then
                       exit 0
                     fi
                     sleep 2
@@ -95,7 +95,7 @@ jobs:
 
             - name: Run HTTP load test
               env:
-                  BASE_URL: http://127.0.0.1:3000
+                  BASE_URL: http://127.0.0.1:8000
                   TARGET_VUS: ${{ github.event_name == 'workflow_dispatch' && inputs.target_vus || '100' }}
                   TEST_DURATION: ${{ github.event_name == 'workflow_dispatch' && inputs.test_duration || '60s' }}
                   WORKLOAD_GROUP: ${{ matrix.group }}
