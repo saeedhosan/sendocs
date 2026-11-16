@@ -1,148 +1,262 @@
 import http from 'k6/http';
-import { check } from 'k6';
+import { check, sleep } from 'k6';
 import { Rate } from 'k6/metrics';
 
 const BASE_URL = __ENV.BASE_URL || 'http://127.0.0.1:3000';
 const TARGET_VUS = Number(__ENV.TARGET_VUS || 100);
-const RAW_TEST_DURATION = __ENV.TEST_DURATION || '0';
+const WORKLOAD_GROUP = __ENV.WORKLOAD_GROUP || 'landing';
+const RAW_TEST_DURATION = __ENV.TEST_DURATION || '60s';
 const TEST_DURATION = RAW_TEST_DURATION === '0' ? '24h' : RAW_TEST_DURATION;
+const PASSWORD = 'Benchmark-pass-123!';
 
+const GROUPS = ['landing', 'auth', 'owner', 'client'];
+if (GROUPS.indexOf(WORKLOAD_GROUP) === -1) {
+    throw new Error('WORKLOAD_GROUP must be one of: ' + GROUPS.join(', '));
+}
 if (!Number.isSafeInteger(TARGET_VUS) || TARGET_VUS < 1) {
     throw new Error('TARGET_VUS must be a positive integer.');
 }
 
 const success = {
-    home: new Rate('home_success'),
-    user: new Rate('user_session_success'),
+    landing: new Rate('landing_success'),
+    authLogin: new Rate('auth_login_success'),
+    authSession: new Rate('auth_session_success'),
     ownerList: new Rate('owner_list_success'),
     ownerDetail: new Rate('owner_detail_success'),
+    clientUpload: new Rate('client_upload_success'),
     clientPortal: new Rate('client_portal_success'),
 };
 
+function groupThresholds() {
+    const thresholds = { http_req_failed: ['rate<0.01'] };
+    const names = {
+        landing: ['landing_success'],
+        auth: ['auth_login_success', 'auth_session_success'],
+        owner: ['owner_list_success', 'owner_detail_success'],
+        client: ['client_upload_success', 'client_portal_success'],
+    };
+    names[WORKLOAD_GROUP].forEach((name) => {
+        thresholds[name] = ['rate>0.99'];
+    });
+    return thresholds;
+}
+
 export const options = {
     scenarios: {
-        sendocs_http_load: {
+        workload: {
             executor: 'constant-vus',
             vus: TARGET_VUS,
             duration: TEST_DURATION,
-            gracefulStop: '30s',
+            gracefulStop: '5s',
         },
     },
-    thresholds: {
-        http_req_failed: ['rate<0.01'],
-        home_success: ['rate>0.99'],
-        user_session_success: ['rate>0.99'],
-        owner_list_success: ['rate>0.99'],
-        owner_detail_success: ['rate>0.99'],
-        client_portal_success: ['rate>0.99'],
-    },
+    thresholds: groupThresholds(),
 };
 
-export function setup() {
-    const login = http.post(BASE_URL + '/api/v1/auth/login', JSON.stringify({
-        email: 'alex@example.com',
-        password: 'alex7890',
-    }), { headers: { 'Content-Type': 'application/json' } });
+// 198.18.0.0/15 is reserved for benchmarking. Each test account/VU gets one address.
+function clientIp(index) {
+    const offset = index;
+    return '198.' + (18 + Math.floor(offset / 65536)) + '.' +
+        Math.floor((offset % 65536) / 256) + '.' + (offset % 256);
+}
 
-    if (login.status !== 200) {
-        throw new Error('Benchmark login failed with HTTP ' + login.status);
-    }
-
-    const cookie = login.cookies.sendocs_session && login.cookies.sendocs_session[0];
-    const session = login.json();
-    if (!cookie || !session.csrfToken) {
-        throw new Error('Benchmark login did not return a session cookie and CSRF token.');
-    }
-
+function registerAccount(index) {
+    const runId = __ENV.GITHUB_RUN_ID || 'local';
+    const email = 'k6-' + runId + '-' + WORKLOAD_GROUP + '-' + Date.now() + '-' + index + '@example.test';
+    const ip = clientIp(index);
     const headers = {
-        Cookie: 'sendocs_session=' + cookie.value,
-        'X-CSRF-Token': session.csrfToken,
         'Content-Type': 'application/json',
+        'X-Client-IP': ip,
     };
+    const registered = http.post(BASE_URL + '/api/v1/auth/register', JSON.stringify({
+        name: 'k6 benchmark ' + WORKLOAD_GROUP + ' ' + index,
+        email: email,
+        password: PASSWORD,
+    }), { headers: headers, tags: { phase: 'setup' } });
+
+    if (registered.status !== 201) {
+        throw new Error('Benchmark account registration failed for VU ' + index + ' with HTTP ' + registered.status);
+    }
+
+    const session = registered.json();
+    const cookie = registered.cookies.sendocs_session && registered.cookies.sendocs_session[0];
+    if (!cookie || !session.csrfToken) {
+        throw new Error('Benchmark registration did not return a session cookie and CSRF token for VU ' + index);
+    }
+
+    return {
+        email: email,
+        password: PASSWORD,
+        cookie: 'sendocs_session=' + cookie.value,
+        csrfToken: session.csrfToken,
+        clientIp: ip,
+    };
+}
+
+function createRequest(account, index) {
     const created = http.post(BASE_URL + '/api/v1/requests', JSON.stringify({
-        title: 'k6 benchmark ' + new Date().toISOString(),
-        items: [{ label: 'Benchmark document' }],
-    }), { headers: headers });
+        title: 'k6 ' + WORKLOAD_GROUP + ' benchmark ' + index,
+        items: [{ label: 'Benchmark document ' + index }],
+    }), {
+        headers: {
+            Cookie: account.cookie,
+            'X-CSRF-Token': account.csrfToken,
+            'X-Client-IP': account.clientIp,
+            'Content-Type': 'application/json',
+        },
+        tags: { phase: 'setup' },
+    });
 
     if (created.status !== 201) {
-        throw new Error('Benchmark request setup failed with HTTP ' + created.status);
+        throw new Error('Benchmark request setup failed for VU ' + index + ' with HTTP ' + created.status);
     }
 
     const payload = created.json();
     const linkUrl = payload.link && payload.link.url;
     const portalToken = linkUrl ? linkUrl.split('/').filter(Boolean).pop() : null;
-    if (!payload.request || !payload.request.id || !portalToken || !payload.request.items || !payload.request.items[0]) {
-        throw new Error('Benchmark setup did not return a request ID, item ID, and portal token.');
+    if (!payload.request || !payload.request.id || !portalToken ||
+        !payload.request.items || !payload.request.items[0]) {
+        throw new Error('Benchmark setup did not return request and portal identifiers for VU ' + index);
     }
 
-    // Exercise the client upload route once. The API intentionally limits
-    // uploads per source IP, so this is a smoke request, not concurrent upload load.
-    const itemId = payload.request.items[0].id;
-    const pdfContent = '%PDF-1.4\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n2 0 obj\n<< /Type /Pages /Kids [] /Count 0 >>\nendobj\ntrailer\n<< /Root 1 0 R >>\n%%EOF';
-    const upload = http.post(
-        BASE_URL + '/api/v1/portal/' + portalToken + '/items/' + itemId + '/file',
-        { file: http.file(pdfContent, 'benchmark.pdf', 'application/pdf') },
-    );
-
-    if (upload.status !== 200) {
-        throw new Error('Benchmark client upload setup failed with HTTP ' + upload.status);
-    }
-
-    return {
-        cookie: headers.Cookie,
-        csrfToken: session.csrfToken,
-        requestId: payload.request.id,
-        portalToken: portalToken,
-    };
+    account.requestId = payload.request.id;
+    account.itemId = payload.request.items[0].id;
+    account.portalToken = portalToken;
 }
+
+export function setup() {
+    if (WORKLOAD_GROUP === 'landing') {
+        return { accounts: [] };
+    }
+
+    const accounts = [];
+    for (let index = 1; index <= TARGET_VUS; index += 1) {
+        const account = registerAccount(index);
+        if (WORKLOAD_GROUP === 'owner' || WORKLOAD_GROUP === 'client') {
+            createRequest(account, index);
+        }
+        accounts.push(account);
+    }
+
+    return { accounts: accounts };
+}
+
+let authCookie = null;
+let clientUploadDone = false;
 
 export default function (data) {
-    // 198.18.0.0/15 is reserved for benchmarking. Assign one address per VU.
-    const ipOffset = __VU;
-    const clientIp = `198.${18 + Math.floor(ipOffset / 65536)}.${Math.floor((ipOffset % 65536) / 256)}.${ipOffset % 256}`;
-    const authenticated = {
-        headers: {
-            Cookie: data.cookie,
-            'X-Client-IP': clientIp,
-        },
-    };
-    const endpoint = (__VU - 1) % 5;
-    let response;
-    let metric;
-    let label;
-
-    if (endpoint === 0) {
-        response = http.get(BASE_URL + '/');
-        metric = success.home;
-        label = 'home page returns HTTP 200';
-    } else if (endpoint === 1) {
-        response = http.get(BASE_URL + '/api/v1/auth/session', authenticated);
-        metric = success.user;
-        label = 'authenticated user session returns HTTP 200';
-    } else if (endpoint === 2) {
-        response = http.get(BASE_URL + '/api/v1/requests', authenticated);
-        metric = success.ownerList;
-        label = 'owner request list returns HTTP 200';
-    } else if (endpoint === 3) {
-        response = http.get(BASE_URL + '/api/v1/requests/' + data.requestId, authenticated);
-        metric = success.ownerDetail;
-        label = 'owner request detail returns HTTP 200';
-    } else {
-        response = http.get(BASE_URL + '/api/v1/portal/' + data.portalToken, { headers: { 'X-Client-IP': clientIp } });
-        metric = success.clientPortal;
-        label = 'client portal returns HTTP 200';
+    const account = WORKLOAD_GROUP === 'landing' ? null : data.accounts[__VU - 1];
+    if (WORKLOAD_GROUP !== 'landing' && !account) {
+        throw new Error('No benchmark account was prepared for VU ' + __VU);
     }
 
-    metric.add(check(response, { [label]: (res) => res.status === 200 }));
-}
+    if (WORKLOAD_GROUP === 'landing') {
+        const response = http.get(BASE_URL + '/', { tags: { endpoint: 'landing' } });
+        success.landing.add(check(response, {
+            'landing returns HTTP 200': (res) => res.status === 200,
+        }));
+        return;
+    }
 
-export function teardown(data) {
-    http.del(BASE_URL + '/api/v1/requests/' + data.requestId, null, {
-        headers: {
-            Cookie: data.cookie,
-            'X-CSRF-Token': data.csrfToken,
-        },
+    if (WORKLOAD_GROUP === 'auth') {
+        if (!authCookie) {
+            const login = http.post(BASE_URL + '/api/v1/auth/login', JSON.stringify({
+                email: account.email,
+                password: account.password,
+            }), {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Client-IP': account.clientIp,
+                },
+                tags: { endpoint: 'auth_login' },
+            });
+            const loginOk = check(login, {
+                'auth login returns HTTP 200': (res) => res.status === 200,
+            });
+            success.authLogin.add(loginOk);
+            if (!loginOk) {
+                return;
+            }
+            const loginCookie = login.cookies.sendocs_session && login.cookies.sendocs_session[0];
+            if (!loginCookie) {
+                success.authSession.add(false);
+                return;
+            }
+            authCookie = 'sendocs_session=' + loginCookie.value;
+        }
+
+        const session = http.get(BASE_URL + '/api/v1/auth/session', {
+            headers: {
+                Cookie: authCookie,
+                'X-Client-IP': account.clientIp,
+            },
+            tags: { endpoint: 'auth_session' },
+        });
+        success.authSession.add(check(session, {
+            'auth session returns HTTP 200': (res) => res.status === 200,
+        }));
+        // The session route is limited to 120 requests/minute per user.
+        sleep(0.55);
+        return;
+    }
+
+    if (WORKLOAD_GROUP === 'owner') {
+        if (__ITER % 2 === 0) {
+            const list = http.get(BASE_URL + '/api/v1/requests', {
+                headers: {
+                    Cookie: account.cookie,
+                    'X-Client-IP': account.clientIp,
+                },
+                tags: { endpoint: 'owner_request_list' },
+            });
+            success.ownerList.add(check(list, {
+                'owner request list returns HTTP 200': (res) => res.status === 200,
+            }));
+        } else {
+            const detail = http.get(BASE_URL + '/api/v1/requests/' + account.requestId, {
+                headers: {
+                    Cookie: account.cookie,
+                    'X-Client-IP': account.clientIp,
+                },
+                tags: { endpoint: 'owner_request_detail' },
+            });
+            success.ownerDetail.add(check(detail, {
+                'owner request detail returns HTTP 200': (res) => res.status === 200,
+            }));
+        }
+        // Both owner read routes share a 120 requests/minute per-user limit.
+        sleep(0.55);
+        return;
+    }
+
+    if (!clientUploadDone) {
+        const pdfContent = '%PDF-1.4\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n2 0 obj\n<< /Type /Pages /Kids [] /Count 0 >>\nendobj\ntrailer\n<< /Root 1 0 R >>\n%%EOF';
+        const upload = http.post(
+            BASE_URL + '/api/v1/portal/' + account.portalToken + '/items/' + account.itemId + '/file',
+            { file: http.file(pdfContent, 'benchmark.pdf', 'application/pdf') },
+            {
+                headers: { 'X-Client-IP': account.clientIp },
+                tags: { endpoint: 'client_upload' },
+            }
+        );
+        clientUploadDone = check(upload, {
+            'client upload returns HTTP 200': (res) => res.status === 200,
+        });
+        success.clientUpload.add(clientUploadDone);
+        if (!clientUploadDone) {
+            return;
+        }
+    }
+
+    const portal = http.get(BASE_URL + '/api/v1/portal/' + account.portalToken, {
+        headers: { 'X-Client-IP': account.clientIp },
+        tags: { endpoint: 'client_portal' },
     });
+    success.clientPortal.add(check(portal, {
+        'client portal returns HTTP 200': (res) => res.status === 200,
+    }));
+    // The portal read route is limited to 60 requests/minute per source IP.
+    sleep(1.1);
 }
 
 function metricValue(data, name, key) {
@@ -150,23 +264,26 @@ function metricValue(data, name, key) {
     return values && values[key] !== undefined ? values[key] : null;
 }
 
-function format(value, suffix = '') {
-    return value === null ? '—' : value.toFixed(2) + suffix;
+function format(value, suffix) {
+    return value === null ? '—' : value.toFixed(2) + (suffix || '');
 }
 
 export function handleSummary(data) {
     const requests = metricValue(data, 'http_reqs', 'count') || 0;
     const failedRate = metricValue(data, 'http_req_failed', 'rate');
     const maxVus = metricValue(data, 'vus_max', 'max');
-    const rates = [
-        ['home_success', 'Home success'],
-        ['user_session_success', 'User/session success'],
-        ['owner_list_success', 'Owner list success'],
-        ['owner_detail_success', 'Owner detail success'],
-        ['client_portal_success', 'Client portal success'],
-    ];
-    const passed = requests > 0 && failedRate !== null && failedRate < 0.01
-        && rates.every(([name]) => metricValue(data, name, 'rate') > 0.99);
+    const metricLabels = {
+        landing: [['landing_success', 'Landing success']],
+        auth: [['auth_login_success', 'Login success'], ['auth_session_success', 'Session success']],
+        owner: [['owner_list_success', 'Owner request-list success'], ['owner_detail_success', 'Owner request-detail success']],
+        client: [['client_upload_success', 'Client upload success'], ['client_portal_success', 'Client portal success']],
+    };
+    const rates = metricLabels[WORKLOAD_GROUP];
+    const passed = requests > 0 && failedRate !== null && failedRate < 0.01 &&
+        rates.every(([name]) => {
+            const value = metricValue(data, name, 'rate');
+            return value !== null && value > 0.99;
+        });
     const runId = __ENV.GITHUB_RUN_ID || 'local';
     const repository = __ENV.GITHUB_REPOSITORY || '';
     const server = __ENV.GITHUB_SERVER_URL || 'https://github.com';
@@ -176,34 +293,36 @@ export function handleSummary(data) {
     const duration = data.state && typeof data.state.testRunDurationMs === 'number'
         ? (data.state.testRunDurationMs / 1000).toFixed(1) + 's' : '—';
     const report = [
-        '### Scalability Test - ' + new Date().toISOString().slice(0, 10),
+        '### Scalability Test - ' + new Date().toISOString().slice(0, 10) + ' (' + WORKLOAD_GROUP + ')',
         '',
         '- **Result:** ' + (passed ? 'Passed' : 'Failed'),
+        '- **Workload group:** ' + WORKLOAD_GROUP,
         '- **Load target:** ' + TARGET_VUS.toLocaleString() + ' concurrent HTTP VUs',
-        '- **Duration policy:** ' + (RAW_TEST_DURATION === '0' ? 'Until manually cancelled or GitHub Actions job timeout' : RAW_TEST_DURATION),
-        '- **Traffic:** Home, authenticated user/session, owner request list/detail, and client portal reads; one client upload is exercised during setup.',
-        '- **Rate-limit handling:** Each VU uses a unique synthetic client IP; testing-only rate-limit ceilings are elevated for requests carrying that header. Production limits are unchanged.',
-        '- **Evidence:** ' + (runUrl ? '[Workflow run](' + runUrl + ')' : 'Local run')
-            + (commitUrl ? ' · [Commit](' + commitUrl + ')' : ''),
+        '- **Duration policy:** ' + RAW_TEST_DURATION,
+        '- **Evidence:** ' + (runUrl ? '[Workflow run](' + runUrl + ')' : 'Local run') +
+            (commitUrl ? ' · [Commit](' + commitUrl + ')' : ''),
         '',
         '| Metric | Result |',
         '| -------------------------------- | --------: |',
         '| Target virtual users | ' + TARGET_VUS.toLocaleString() + ' |',
         '| Peak virtual users | ' + (maxVus === null ? '—' : maxVus.toLocaleString()) + ' |',
-        '| Total HTTP requests | ' + requests.toLocaleString() + ' |',
+        '| Total HTTP requests (including setup) | ' + requests.toLocaleString() + ' |',
         '| Request rate | ' + format(metricValue(data, 'http_reqs', 'rate'), ' req/s') + ' |',
         '| Request latency (average) | ' + format(metricValue(data, 'http_req_duration', 'avg'), ' ms') + ' |',
         '| Request latency (p95) | ' + format(metricValue(data, 'http_req_duration', 'p(95)'), ' ms') + ' |',
         '| Request failure rate | ' + format(failedRate === null ? null : failedRate * 100, '%') + ' |',
-        ...rates.map(([name, label]) => '| ' + label + ' | ' + format(metricValue(data, name, 'rate') * 100, '%') + ' |'),
+        ...rates.map(([name, label]) => '| ' + label + ' | ' + format(metricValue(data, name, 'rate') === null ? null : metricValue(data, name, 'rate') * 100, '%') + ' |'),
         '| Actual test duration | ' + duration + ' |',
         '',
     ].join('\n');
 
     const output = {
-        'scalability-results/benchmark-entry.md': report,
+        ['scalability-results/benchmark-entry-' + WORKLOAD_GROUP + '.md']: report,
+        ['scalability-results/k6-summary-' + WORKLOAD_GROUP + '.json']: JSON.stringify(data, null, 2),
         stdout: report,
     };
-    if (__ENV.GITHUB_STEP_SUMMARY) output[__ENV.GITHUB_STEP_SUMMARY] = report;
+    if (__ENV.GITHUB_STEP_SUMMARY) {
+        output[__ENV.GITHUB_STEP_SUMMARY] = report;
+    }
     return output;
 }
