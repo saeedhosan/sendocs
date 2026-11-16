@@ -32,7 +32,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->api(prepend: [
-            ApplyBenchkmarkClientip::class,
+            ApplyBenchmarkClientIp::class,
             HandleCors::class,
         ]);
 
