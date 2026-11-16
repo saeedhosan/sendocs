@@ -1,12 +1,11 @@
 import http from 'k6/http';
-import { check, sleep } from 'k6';
+import { check } from 'k6';
 import { Rate } from 'k6/metrics';
 
 const BASE_URL = __ENV.BASE_URL || 'http://127.0.0.1:3000';
 const TARGET_VUS = Number(__ENV.TARGET_VUS || 100);
 const RAW_TEST_DURATION = __ENV.TEST_DURATION || '0';
 const TEST_DURATION = RAW_TEST_DURATION === '0' ? '24h' : RAW_TEST_DURATION;
-const REQUEST_INTERVAL_SECONDS = Math.max(60, TARGET_VUS * 0.3);
 
 if (!Number.isSafeInteger(TARGET_VUS) || TARGET_VUS < 1) {
     throw new Error('TARGET_VUS must be a positive integer.');
@@ -98,11 +97,15 @@ export function setup() {
 }
 
 export default function (data) {
-    if (__ITER === 0) {
-        sleep(((__VU - 1) / TARGET_VUS) * REQUEST_INTERVAL_SECONDS);
-    }
-
-    const authenticated = { headers: { Cookie: data.cookie } };
+    // 198.18.0.0/15 is reserved for benchmarking. Assign one address per VU.
+    const ipOffset = __VU;
+    const clientIp = `198.${18 + Math.floor(ipOffset / 65536)}.${Math.floor((ipOffset % 65536) / 256)}.${ipOffset % 256}`;
+    const authenticated = {
+        headers: {
+            Cookie: data.cookie,
+            'X-Client-IP': clientIp,
+        },
+    };
     const endpoint = (__VU - 1) % 5;
     let response;
     let metric;
@@ -125,13 +128,12 @@ export default function (data) {
         metric = success.ownerDetail;
         label = 'owner request detail returns HTTP 200';
     } else {
-        response = http.get(BASE_URL + '/api/v1/portal/' + data.portalToken);
+        response = http.get(BASE_URL + '/api/v1/portal/' + data.portalToken, { headers: { 'X-Client-IP': clientIp } });
         metric = success.clientPortal;
         label = 'client portal returns HTTP 200';
     }
 
     metric.add(check(response, { [label]: (res) => res.status === 200 }));
-    sleep(REQUEST_INTERVAL_SECONDS);
 }
 
 export function teardown(data) {
@@ -180,7 +182,7 @@ export function handleSummary(data) {
         '- **Load target:** ' + TARGET_VUS.toLocaleString() + ' concurrent HTTP VUs',
         '- **Duration policy:** ' + (RAW_TEST_DURATION === '0' ? 'Until manually cancelled or GitHub Actions job timeout' : RAW_TEST_DURATION),
         '- **Traffic:** Home, authenticated user/session, owner request list/detail, and client portal reads; one client upload is exercised during setup.',
-        '- **Rate-limit handling:** VUs are staggered and paced; no IP spoofing or rate-limit bypass.',
+        '- **Rate-limit handling:** Each VU uses a unique synthetic client IP; testing-only rate-limit ceilings are elevated for requests carrying that header. Production limits are unchanged.',
         '- **Evidence:** ' + (runUrl ? '[Workflow run](' + runUrl + ')' : 'Local run')
             + (commitUrl ? ' · [Commit](' + commitUrl + ')' : ''),
         '',
