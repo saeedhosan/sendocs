@@ -36,21 +36,15 @@ class AppServiceProvider extends ServiceProvider
     {
         EncryptCookies::except((string) config('session.owner_cookie.name'));
 
-        // Benchmark overrides are restricted to isolated local/testing environments.
-        // Production always uses the normal public-IP limits below.
-        $benchmarkRateLimits = (bool) env('SENDOCS_BENCHMARK_RATE_LIMITS', false)
-            && $this->app->environment(['local', 'testing']);
-        $publicMinuteLimit = $benchmarkRateLimits ? 10000 : 10;
-
-        RateLimiter::for('auth.register', fn (Request $request) => Limit::perMinute($publicMinuteLimit)
+        RateLimiter::for('auth.register', fn (Request $request) => Limit::perMinute(10)
             ->by($request->ip()));
 
-        RateLimiter::for('auth.login', fn (Request $request) => Limit::perMinute($publicMinuteLimit)
+        RateLimiter::for('auth.login', fn (Request $request) => Limit::perMinute(10)
             ->by($request->ip()));
 
         // Both ends of the Google flow share one bucket per address, so a
         // callback cannot be used to buy extra authorization codes.
-        RateLimiter::for('auth.oauth', fn (Request $request) => Limit::perMinute($publicMinuteLimit)
+        RateLimiter::for('auth.oauth', fn (Request $request) => Limit::perMinute(10)
             ->by($request->ip()));
 
         // Once a caller is known the bucket is per owner, so one noisy browser
@@ -93,10 +87,10 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('account.update', fn (Request $request) => Limit::perMinute(30)
             ->by($request->user()?->getKey() ?? $request->ip()));
 
-        RateLimiter::for('portal.read', fn (Request $request) => Limit::perMinute($benchmarkRateLimits ? 10000 : 60)
+        RateLimiter::for('portal.read', fn (Request $request) => Limit::perMinute(60)
             ->by($request->ip()));
 
-        RateLimiter::for('portal.upload', fn (Request $request) => Limit::perHour($benchmarkRateLimits ? 10000 : 30)
+        RateLimiter::for('portal.upload', fn (Request $request) => Limit::perHour(30)
             ->by($request->ip()));
 
         RateLimiter::for('document-requests.read', fn (Request $request) => Limit::perMinute(120)
