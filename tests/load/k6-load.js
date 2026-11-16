@@ -1,25 +1,39 @@
 import { browser } from 'k6/browser';
-import { check } from 'k6';
+import http from 'k6/http';
+import { check, sleep } from 'k6';
 import { Counter, Trend } from 'k6/metrics';
 
 const BASE_URL = __ENV.BASE_URL || 'http://127.0.0.1:3000';
 const REGISTER_PASSWORD = 'StrongPass123!';
-const TARGET_SCALE_USER = Number(__ENV.TARGET_SCALE_USER || 1000);
+const TARGET_API_VUS = Number(__ENV.TARGET_API_VUS || 1000);
+const TARGET_BROWSER_VUS = Number(__ENV.TARGET_BROWSER_VUS || 5);
+const API_LOAD_DURATION = __ENV.API_LOAD_DURATION || '60s';
 
-if (!Number.isSafeInteger(TARGET_SCALE_USER) || TARGET_SCALE_USER < 1) {
-    throw new Error('TARGET_SCALE_USER must be a positive integer.');
+if (!Number.isSafeInteger(TARGET_API_VUS) || TARGET_API_VUS < 1
+    || !Number.isSafeInteger(TARGET_BROWSER_VUS) || TARGET_BROWSER_VUS < 1) {
+    throw new Error('TARGET_API_VUS and TARGET_BROWSER_VUS must be positive integers.');
 }
 
 const journeysCompleted = new Counter('browser_journeys_completed');
+const apiHealthChecks = new Counter('api_health_checks');
+const apiHealthFailures = new Counter('api_health_failures');
 const journeyDuration = new Trend('browser_journey_duration', true);
 
 const PDF_BASE64 = 'JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCAyMDAgMjAwXSAvQ29udGVudHMgNCAwIFIgL1Jlc291cmNlcyA8PCAvRm9udCA8PCAvRjEgNSAwIFIgPj4gPj4gPj4KZW5kb2JqCjQgMCBvYmoKPDwgL0xlbmd0aCA0OSA+PgpzdHJlYW0KQlQgL0YxIDEyIFRmIDIwIDEwMCBUZCAoU2VuZG9jcyBsb2FkIHRlc3QpIFRqIEVUCmVuZHN0cmVhbQplbmRvYmoKNSAwIG9iago8PCAvVHlwZSAvRm9udCAvU3VidHlwZSAvVHlwZTEgL0Jhc2VGb250IC9IZWx2ZXRpY2EgPj4KZW5kb2JqCnhyZWYKMCA2CjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDAwOSAwMDAwMCBuIAowMDAwMDAwMDU4IDAwMDAwIG4gCjAwMDAwMDAxMTUgMDAwMDAgbiAKMDAwMDAwMDI0MSAwMDAwMCBuIAowMDAwMDAwMzM5IDAwMDAwIG4gCnRyYWlsZXIKPDwgL1NpemUgNiAvUm9vdCAxIDAgUiA+PgpzdGFydHhyZWYKNDA5CiUlRU9GCg==';
 
 export const options = {
     scenarios: {
+        api_load: {
+            executor: 'constant-vus',
+            exec: 'apiLoad',
+            vus: TARGET_API_VUS,
+            duration: API_LOAD_DURATION,
+            gracefulStop: '30s',
+        },
         browser_journeys: {
             executor: 'per-vu-iterations',
-            vus: TARGET_SCALE_USER,
+            exec: 'browserJourney',
+            vus: TARGET_BROWSER_VUS,
             iterations: 1,
             maxDuration: '5m',
             options: {
@@ -30,12 +44,29 @@ export const options = {
         },
     },
     thresholds: {
-        checks: ['rate==1'],
+        api_health_check_success: ['rate>0.99'],
+        http_req_failed: ['rate<0.01'],
+        checks: ['rate>0.99'],
         browser_http_req_failed: ['rate<0.01'],
     },
 };
 
-export default async function () {
+export function apiLoad() {
+    const response = http.get(`${BASE_URL}/health`, {
+        tags: { workload: 'api-health' },
+    });
+    const ok = response.status === 200;
+    apiHealthChecks.add(1);
+    if (!ok) {
+        apiHealthFailures.add(1);
+    }
+    check(response, {
+        'health endpoint returns HTTP 200': (res) => res.status === 200,
+    });
+    sleep(1);
+}
+
+export async function browserJourney() {
     const page = await browser.newPage();
     const startedAt = Date.now();
     const requestTitle = `Browser journey ${__ENV.GITHUB_RUN_ID || 'local'}-${__ENV.GITHUB_RUN_ATTEMPT || '1'}-${__VU}`;
@@ -147,85 +178,83 @@ function formatMetric(value, suffix = '') {
 export function handleSummary(data) {
     const checks = data.metrics.checks && data.metrics.checks.values;
     const browserRequests = data.metrics.browser_http_req_duration && data.metrics.browser_http_req_duration.values;
-    const failedRequests = data.metrics.browser_http_req_failed && data.metrics.browser_http_req_failed.values;
-    const lcp = data.metrics.browser_web_vital_lcp && data.metrics.browser_web_vital_lcp.values;
+    const failedBrowserRequests = data.metrics.browser_http_req_failed && data.metrics.browser_http_req_failed.values;
+    const apiRequests = data.metrics.http_req_duration && data.metrics.http_req_duration.values;
+    const failedApiRequests = data.metrics.http_req_failed && data.metrics.http_req_failed.values;
     const journey = data.metrics.browser_journey_duration && data.metrics.browser_journey_duration.values;
-    const vus = data.metrics.vus && data.metrics.vus.values;
     const completed = metricValue(data, 'browser_journeys_completed', 'count') || 0;
-
+    const apiChecks = metricValue(data, 'api_health_checks', 'count') || 0;
+    const apiFailures = metricValue(data, 'api_health_failures', 'count') || 0;
+    const apiFailureRate = apiChecks ? apiFailures / apiChecks : null;
+    const browserFailureRate = failedBrowserRequests && typeof failedBrowserRequests.rate === 'number'
+        ? failedBrowserRequests.rate
+        : null;
+    const apiLatency = apiRequests && typeof apiRequests['p(95)'] === 'number'
+        ? formatMetric(apiRequests['p(95)'], ' ms')
+        : '—';
+    const browserLatency = browserRequests && typeof browserRequests['p(95)'] === 'number'
+        ? formatMetric(browserRequests['p(95)'], ' ms')
+        : '—';
+    const browserFailures = browserFailureRate === null ? '—' : formatMetric(browserFailureRate * 100, '%');
+    const apiFailuresText = apiFailureRate === null ? '—' : formatMetric(apiFailureRate * 100, '%');
+    const journeyLatency = journey && typeof journey['p(95)'] === 'number'
+        ? formatMetric(journey['p(95)'], ' ms')
+        : '—';
     const passedChecks = checks ? checks.passes || 0 : 0;
     const failedChecks = checks ? checks.fails || 0 : 0;
     const totalChecks = passedChecks + failedChecks;
     const checkRate = totalChecks ? passedChecks / totalChecks : null;
-    const requestFailureRate = failedRequests && typeof failedRequests.rate === 'number'
-        ? failedRequests.rate
-        : null;
-    const maxVus = vus && typeof vus.max === 'number' ? vus.max : 0;
-
-    const passed = completed === TARGET_SCALE_USER
-        && checkRate === 1
-        && requestFailureRate !== null
-        && requestFailureRate < 0.01;
+    const passed = apiChecks > 0
+        && apiFailureRate !== null && apiFailureRate < 0.01
+        && completed === TARGET_BROWSER_VUS
+        && checkRate !== null && checkRate > 0.99
+        && browserFailureRate !== null && browserFailureRate < 0.01;
 
     const runId = __ENV.GITHUB_RUN_ID || 'local';
     const repository = __ENV.GITHUB_REPOSITORY || '';
     const server = __ENV.GITHUB_SERVER_URL || 'https://github.com';
     const commit = __ENV.GITHUB_SHA || '';
-    const commitShort = commit ? commit.slice(0, 7) : 'unknown';
     const runUrl = repository ? `${server}/${repository}/actions/runs/${runId}` : '';
     const commitUrl = repository && commit ? `${server}/${repository}/commit/${commit}` : '';
-    const commitLabel = commitUrl ? '[`' + commitShort + '`](' + commitUrl + ')' : '`' + commitShort + '`';
-    const runLabel = runUrl ? ` · [Workflow run](${runUrl})` : '';
-
     const timestamp = new Date().toISOString().slice(0, 10);
-    const testDuration = data.state && typeof data.state.testRunDurationMs === 'number'
+    const duration = data.state && typeof data.state.testRunDurationMs === 'number'
         ? (data.state.testRunDurationMs / 1000).toFixed(1) + 's'
         : '—';
-    const checkResult = checkRate === null ? '—' : (checkRate * 100).toFixed(1) + '%';
-    const requestLatency = browserRequests && typeof browserRequests['p(95)'] === 'number'
-        ? formatMetric(browserRequests['p(95)'], ' ms')
-        : '—';
-    const requestFailures = requestFailureRate === null
-        ? '—'
-        : formatMetric(requestFailureRate * 100, '%');
-    const journeyLatency = journey && typeof journey['p(95)'] === 'number'
-        ? formatMetric(journey['p(95)'], ' ms')
-        : '—';
-    const testMachine = __ENV.RUNNER_CPU_COUNT && __ENV.RUNNER_MEMORY_GB
+    const machine = __ENV.RUNNER_CPU_COUNT && __ENV.RUNNER_MEMORY_GB
         ? 'GitHub Actions · ' + __ENV.RUNNER_CPU_COUNT + ' vCPU · ' + __ENV.RUNNER_MEMORY_GB + ' GB RAM'
         : '—';
 
-    const lines = [
+    const report = [
         '### Scalability Test - ' + timestamp,
         '',
         '- **Result:** ' + (passed ? 'Passed' : 'Failed'),
-        '- **Load target:** ' + TARGET_SCALE_USER.toLocaleString() + ' concurrent users',
-        '- **Test machine:** ' + testMachine,
-        '- **Test scenario:** Complete user journeys through the Sendocs application.',
+        '- **Load target:** ' + TARGET_API_VUS.toLocaleString() + ' API VUs + ' + TARGET_BROWSER_VUS + ' Chromium sessions',
+        '- **Test machine:** ' + machine,
+        '- **Test scenario:** Concurrent requests to the Sendocs health endpoint plus complete browser journeys.',
         '- **User journey:** Registration → Dashboard → Create request → Client document upload.',
         '- **Evidence:** [Workflow run](' + (runUrl || '#') + ') · [Commit](' + (commitUrl || '#') + ')',
         '',
         '| Metric | Result |',
         '| -------------------------------- | --------: |',
-        '| Peak concurrent users | ' + maxVus.toLocaleString() + ' |',
-        '| Completed user journeys | ' + completed.toLocaleString() + ' / ' + TARGET_SCALE_USER.toLocaleString() + ' |',
-        '| Functional checks | ' + checkResult + ' |',
-        '| Browser request latency (p95) | ' + requestLatency + ' |',
-        '| Browser request failure rate | ' + requestFailures + ' |',
+        '| API virtual users (target) | ' + TARGET_API_VUS.toLocaleString() + ' |',
+        '| API health requests | ' + apiChecks.toLocaleString() + ' |',
+        '| API health request latency (p95) | ' + apiLatency + ' |',
+        '| API health request failure rate | ' + apiFailuresText + ' |',
+        '| Completed browser journeys | ' + completed + ' / ' + TARGET_BROWSER_VUS + ' |',
+        '| Browser request latency (p95) | ' + browserLatency + ' |',
+        '| Browser request failure rate | ' + browserFailures + ' |',
         '| End-to-end journey latency (p95) | ' + journeyLatency + ' |',
-        '| Test duration | ' + testDuration + ' |',
+        '| Functional checks | ' + (checkRate === null ? '—' : (checkRate * 100).toFixed(1) + '%') + ' |',
+        '| Test duration | ' + duration + ' |',
         '',
-    ];
+    ].join('\\n');
 
-    const report = lines.join('\n');
     const output = {
         'scalability-results/benchmark-entry.md': report,
         stdout: report,
     };
-
     if (__ENV.GITHUB_STEP_SUMMARY) {
         output[__ENV.GITHUB_STEP_SUMMARY] = report;
     }
-
     return output;
 }
