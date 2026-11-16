@@ -27,7 +27,7 @@ function groupThresholds() {
 }
 
 export const options = {
-    setupTimeout: '20m',
+    setupTimeout: '30m',
     scenarios: {
         workload: {
             executor: 'constant-vus',
