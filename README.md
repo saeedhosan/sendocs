@@ -58,6 +58,7 @@ The React (web) app and API are separate parts of the same repository. PostgreSQ
 
 - [Design](docs/design.md) - system scope, data, architecture, deployment.
 - [Decisions](docs/decisions.md) - architectural choices and their reasoning.
+- [Scalability](docs/scalability/01_1k_scale_load.md) - 1,000 concurrent-user load test.
 - [Frontend](docs/frontend.md) - shared React rendering and data handling.
 - [Feature specs](docs/features/) - auth, account, document requests, magic links, dashboards etc.
 - [API reference](https://saeedhosan.github.io/sendocs/) - browse endpoints, schemas, and responses.
