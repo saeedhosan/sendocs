@@ -9,7 +9,7 @@ on:
                 default: "500"
                 required: true
             test_duration:
-                description: "Load test duration (for example: 60s, 5m)"
+                description: "Load test duration (for example: 60s, 1m)"
                 type: string
                 default: "0"
                 required: true
