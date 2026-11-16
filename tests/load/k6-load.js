@@ -72,8 +72,21 @@ export function setup() {
     const payload = created.json();
     const linkUrl = payload.link && payload.link.url;
     const portalToken = linkUrl ? linkUrl.split('/').filter(Boolean).pop() : null;
-    if (!payload.request || !payload.request.id || !portalToken) {
-        throw new Error('Benchmark setup did not return a request ID and portal token.');
+    if (!payload.request || !payload.request.id || !portalToken || !payload.request.items || !payload.request.items[0]) {
+        throw new Error('Benchmark setup did not return a request ID, item ID, and portal token.');
+    }
+
+    // Exercise the client upload route once. The API intentionally limits
+    // uploads per source IP, so this is a smoke request, not concurrent upload load.
+    const itemId = payload.request.items[0].id;
+    const pdfContent = '%PDF-1.4\\n1 0 obj\\n<< /Type /Catalog /Pages 2 0 R >>\\nendobj\\n2 0 obj\\n<< /Type /Pages /Kids [] /Count 0 >>\\nendobj\\ntrailer\\n<< /Root 1 0 R >>\\n%%EOF';
+    const upload = http.post(
+        BASE_URL + '/api/v1/portal/' + portalToken + '/items/' + itemId + '/file',
+        { file: http.file(pdfContent, 'benchmark.pdf', 'application/pdf') },
+    );
+
+    if (upload.status !== 200) {
+        throw new Error('Benchmark client upload setup failed with HTTP ' + upload.status);
     }
 
     return {
@@ -166,7 +179,7 @@ export function handleSummary(data) {
         '- **Result:** ' + (passed ? 'Passed' : 'Failed'),
         '- **Load target:** ' + TARGET_VUS.toLocaleString() + ' concurrent HTTP VUs',
         '- **Duration policy:** ' + (RAW_TEST_DURATION === '0' ? 'Until manually cancelled or GitHub Actions job timeout' : RAW_TEST_DURATION),
-        '- **Traffic:** Home, authenticated user/session, owner request list/detail, and client portal reads.',
+        '- **Traffic:** Home, authenticated user/session, owner request list/detail, and client portal reads; one client upload is exercised during setup.',
         '- **Rate-limit handling:** VUs are staggered and paced; no IP spoofing or rate-limit bypass.',
         '- **Evidence:** ' + (runUrl ? '[Workflow run](' + runUrl + ')' : 'Local run')
             + (commitUrl ? ' · [Commit](' + commitUrl + ')' : ''),
