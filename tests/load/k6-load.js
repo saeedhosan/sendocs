@@ -77,29 +77,32 @@ export function handleSummary(data) {
     const commit = __ENV.GITHUB_SHA || '';
     const runUrl = repository ? server + '/' + repository + '/actions/runs/' + runId : '';
     const commitUrl = repository && commit ? server + '/' + repository + '/commit/' + commit : '';
-    const duration = data.state && typeof data.state.testRunDurationMs === 'number'
-        ? (data.state.testRunDurationMs / 1000).toFixed(1) + 's' : '—';
+    const workloadNames = {
+        landing: 'Landing',
+        auth: 'Authentication',
+        owner: 'Owner portal',
+        client: 'Client portal',
+    };
+    const timestamp = new Date().toISOString();
     const report = [
-        '### Scalability Test - ' + new Date().toISOString().slice(0, 10) + ' (' + WORKLOAD_GROUP + ')',
+        '### Scalability Test — ' + timestamp,
+        '',
+        '**Workload:** ' + workloadNames[WORKLOAD_GROUP],
         '',
         '- **Result:** ' + (passed ? 'Passed' : 'Failed'),
-        '- **Workload group:** ' + WORKLOAD_GROUP,
-        '- **Load target:** ' + TARGET_VUS.toLocaleString() + ' concurrent HTTP VUs',
-        '- **Duration policy:** ' + RAW_TEST_DURATION,
+        '- **Target load:** ' + TARGET_VUS.toLocaleString() + ' concurrent HTTP VUs · ' + RAW_TEST_DURATION,
+        '- **Environment:** GitHub Actions runner (application + k6)',
         '- **Evidence:** ' + (runUrl ? '[Workflow run](' + runUrl + ')' : 'Local run') +
             (commitUrl ? ' · [Commit](' + commitUrl + ')' : ''),
         '',
         '| Metric | Result |',
-        '| -------------------------------- | --------: |',
-        '| Target virtual users | ' + TARGET_VUS.toLocaleString() + ' |',
+        '|---|---:|',
         '| Peak virtual users | ' + (maxVus === null ? '—' : maxVus.toLocaleString()) + ' |',
-        '| Total HTTP requests (including setup) | ' + requests.toLocaleString() + ' |',
-        '| Request rate | ' + format(metricValue(data, 'http_reqs', 'rate'), ' req/s') + ' |',
-        '| Request latency (average) | ' + format(metricValue(data, 'http_req_duration', 'avg'), ' ms') + ' |',
-        '| Request latency (p95) | ' + format(metricValue(data, 'http_req_duration', 'p(95)'), ' ms') + ' |',
-        '| Request failure rate | ' + format(failedRate === null ? null : failedRate * 100, '%') + ' |',
-        ...rates.map(([name, label]) => '| ' + label + ' | ' + format(metricValue(data, name, 'rate') === null ? null : metricValue(data, name, 'rate') * 100, '%') + ' |'),
-        '| Actual test duration | ' + duration + ' |',
+        '| Total HTTP requests | ' + requests.toLocaleString() + ' |',
+        '| Throughput | ' + format(metricValue(data, 'http_reqs', 'rate'), ' req/s') + ' |',
+        '| Average response time | ' + format(metricValue(data, 'http_req_duration', 'avg'), ' ms') + ' |',
+        '| p95 response time | ' + format(metricValue(data, 'http_req_duration', 'p(95)'), ' ms') + ' |',
+        '| HTTP failure rate | ' + format(failedRate === null ? null : failedRate * 100, '%') + ' |',
         '',
     ].join('\n');
 
