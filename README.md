@@ -56,18 +56,16 @@ The React (web) app and API are separate parts of the same repository. PostgreSQ
 
 ## Performance Metrics
 
-Latest HTTP load-test snapshot:
+2026-11-16 · GitHub-hosted runners · 100 concurrent virtual users per workload · 60 seconds
 
-| Workload | Throughput | Median latency | Error rate |
+| Workload | Throughput (RPS) | Median latency | Error rate |
 | --- | ---: | ---: | ---: |
-| Landing | 5,100.99 req/s | 18.50 ms | 0.00% |
-| Authentication | 27.01 req/s | 1,515.17 ms | 0.00% |
-| Owner portal | 39.54 req/s | 1,344.00 ms | 0.00% |
-| Client portal | 23.35 req/s | 1,929.32 ms | 0.00% |
+| Landing | 5,100.99 | 18.50 ms | 0.00% |
+| Authentication | 27.01 | 1,515.17 ms | 0.00% |
+| Owner portal | 39.54 | 1,344.00 ms | 0.00% |
+| Client portal | 23.35 | 1,929.32 ms | 0.00% |
 
-Measured with 100 concurrent HTTP VUs per workload over 60 seconds on separate GitHub-hosted runners (each runner hosted both the application and k6). Authenticated workload figures include account/request setup traffic. These are benchmark results, not production performance guarantees.
-
-See the [benchmark history](docs/benchmark.md) and [load-test methodology](docs/scalability/01_1k_scale_load.md). The [workflow run](https://github.com/saeedhosan/sendocs/actions/runs/43882154747) contains the test evidence.
+See the [benchmark results](docs/benchmark.md) for detailed measurements and methodology.
 
 ## Documentation Guide
 
