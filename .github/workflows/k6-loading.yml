@@ -40,7 +40,9 @@ jobs:
                   persist-credentials: true
 
             - name: Create Compose environment
-              run: cp .env.example .env
+              run: |
+                  cp .env.example .env
+                  sed -i 's/^APP_ENV=.*/APP_ENV=testing/' .env
 
             - name: Build Compose images
               run: docker compose build
