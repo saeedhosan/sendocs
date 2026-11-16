@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Exceptions\ApiException;
-use App\Http\Middleware\ApplyBenchkmarkClientip;
+use App\Http\Middleware\ApplyBenchmarkClientIp;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Foundation\Application;
