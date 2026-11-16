@@ -16,7 +16,7 @@ The single k6 script, `tests/load/k6-load.js`, exercises these real application 
 
 The setup logs in once with the seeded demo account and creates one temporary request for owner-detail and portal reads. Teardown deletes that temporary request. The API has no separate public user-profile read endpoint; the session response includes the user.
 
-The benchmark does not repeatedly register or log in each VU: authentication is limited to 10 requests per minute per IP. It also does not load-test file uploads in this mixed read workload: uploads are limited to 30 per hour per IP and each request item accepts only one file. These limits must not be bypassed by spoofing IP addresses.
+The benchmark does not repeatedly register or log in each VU: authentication is limited to 10 requests per minute per IP. Setup performs one client file upload as a smoke check; uploads are not part of the concurrent workload because they are limited to 30 per hour per IP and each request item accepts only one file. These limits must not be bypassed by spoofing IP addresses.
 
 ## Duration and Rate Limits
 
