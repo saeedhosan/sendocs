@@ -55,6 +55,16 @@ function format(value, suffix) {
     return value === null ? '—' : value.toFixed(2) + (suffix || '');
 }
 
+function formatDuration(value) {
+    const match = /^(\d+)(s|m|h)$/.exec(value);
+    if (!match) {
+        return value;
+    }
+    const units = { s: 'second', m: 'minute', h: 'hour' };
+    const amount = Number(match[1]);
+    return amount + ' ' + units[match[2]] + (amount === 1 ? '' : 's');
+}
+
 export function handleSummary(data) {
     const requests = metricValue(data, 'http_reqs', 'count') || 0;
     const failedRate = metricValue(data, 'http_req_failed', 'rate');
@@ -90,7 +100,7 @@ export function handleSummary(data) {
         '**Workload:** ' + workloadNames[WORKLOAD_GROUP],
         '',
         '- **Result:** ' + (passed ? 'Passed' : 'Failed'),
-        '- **Target load:** ' + TARGET_VUS.toLocaleString() + ' concurrent HTTP VUs · ' + RAW_TEST_DURATION,
+        '- **Target load:** ' + TARGET_VUS.toLocaleString() + ' concurrent HTTP VUs · ' + formatDuration(RAW_TEST_DURATION),
         '- **Environment:** GitHub Actions runner (application + k6)',
         '- **Evidence:** ' + (runUrl ? '[Workflow run](' + runUrl + ')' : 'Local run') +
             (commitUrl ? ' · [Commit](' + commitUrl + ')' : ''),
