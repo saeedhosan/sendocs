@@ -13,6 +13,11 @@ on:
                 type: string
                 default: "60s"
                 required: true
+            setup_timeout:
+                description: "Maximum k6 setup time (must fit within the 30-minute job limit, e.g. 10m or 20m)"
+                type: string
+                default: "20m"
+                required: true
     # pull_request:
     #     branches:
     #         - main
@@ -98,6 +103,7 @@ jobs:
                   BASE_URL: http://127.0.0.1:3000
                   TARGET_VUS: ${{ github.event_name == 'workflow_dispatch' && inputs.target_vus || '100' }}
                   TEST_DURATION: ${{ github.event_name == 'workflow_dispatch' && inputs.test_duration || '60s' }}
+                  SETUP_TIMEOUT: ${{ github.event_name == 'workflow_dispatch' && inputs.setup_timeout || '20m' }}
                   WORKLOAD_GROUP: ${{ matrix.group }}
               run: |
                   mkdir -p scalability-results
@@ -176,4 +182,3 @@ jobs:
                   branch: ${{ github.head_ref || github.ref_name }}
                   file_pattern: docs/benchmark.md
                   commit_message: "docs: record parallel HTTP load benchmark"
-
