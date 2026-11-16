@@ -6,12 +6,12 @@ import { Counter, Rate, Trend } from 'k6/metrics';
 const BASE_URL = __ENV.BASE_URL || 'http://127.0.0.1:3000';
 const REGISTER_PASSWORD = 'StrongPass123!';
 const TARGET_API_VUS = Number(__ENV.TARGET_API_VUS || 1000);
-const TARGET_BROWSER_VUS = Number(__ENV.TARGET_BROWSER_VUS || 5);
+const TARGET_BROWSER_VUS = Number(__ENV.TARGET_BROWSER_VUS ?? 5);
 const API_LOAD_DURATION = __ENV.API_LOAD_DURATION || '60s';
 
 if (!Number.isSafeInteger(TARGET_API_VUS) || TARGET_API_VUS < 1
-    || !Number.isSafeInteger(TARGET_BROWSER_VUS) || TARGET_BROWSER_VUS < 1) {
-    throw new Error('TARGET_API_VUS and TARGET_BROWSER_VUS must be positive integers.');
+    || !Number.isSafeInteger(TARGET_BROWSER_VUS) || TARGET_BROWSER_VUS < 0) {
+    throw new Error('TARGET_API_VUS must be a positive integer and TARGET_BROWSER_VUS must be a non-negative integer.');
 }
 
 const journeysCompleted = new Counter('browser_journeys_completed');
@@ -22,35 +22,39 @@ const journeyDuration = new Trend('browser_journey_duration', true);
 
 const PDF_BASE64 = 'JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCAyMDAgMjAwXSAvQ29udGVudHMgNCAwIFIgL1Jlc291cmNlcyA8PCAvRm9udCA8PCAvRjEgNSAwIFIgPj4gPj4gPj4KZW5kb2JqCjQgMCBvYmoKPDwgL0xlbmd0aCA0OSA+PgpzdHJlYW0KQlQgL0YxIDEyIFRmIDIwIDEwMCBUZCAoU2VuZG9jcyBsb2FkIHRlc3QpIFRqIEVUCmVuZHN0cmVhbQplbmRvYmoKNSAwIG9iago8PCAvVHlwZSAvRm9udCAvU3VidHlwZSAvVHlwZTEgL0Jhc2VGb250IC9IZWx2ZXRpY2EgPj4KZW5kb2JqCnhyZWYKMCA2CjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDAwOSAwMDAwMCBuIAowMDAwMDAwMDU4IDAwMDAwIG4gCjAwMDAwMDAxMTUgMDAwMDAgbiAKMDAwMDAwMDI0MSAwMDAwMCBuIAowMDAwMDAwMzM5IDAwMDAwIG4gCnRyYWlsZXIKPDwgL1NpemUgNiAvUm9vdCAxIDAgUiA+PgpzdGFydHhyZWYKNDA5CiUlRU9GCg==';
 
-export const options = {
-    scenarios: {
-        api_load: {
-            executor: 'constant-vus',
-            exec: 'apiLoad',
-            vus: TARGET_API_VUS,
-            duration: API_LOAD_DURATION,
-            gracefulStop: '30s',
-        },
-        browser_journeys: {
-            executor: 'per-vu-iterations',
-            exec: 'browserJourney',
-            vus: TARGET_BROWSER_VUS,
-            iterations: 1,
-            maxDuration: '5m',
-            options: {
-                browser: {
-                    type: 'chromium',
-                },
-            },
-        },
-    },
-    thresholds: {
-        api_health_check_success: ['rate>0.99'],
-        http_req_failed: ['rate<0.01'],
-        checks: ['rate>0.99'],
-        browser_http_req_failed: ['rate<0.01'],
+const scenarios = {
+    api_load: {
+        executor: 'constant-vus',
+        exec: 'apiLoad',
+        vus: TARGET_API_VUS,
+        duration: API_LOAD_DURATION,
+        gracefulStop: '30s',
     },
 };
+
+const thresholds = {
+    api_health_check_success: ['rate>0.99'],
+    http_req_failed: ['rate<0.01'],
+};
+
+if (TARGET_BROWSER_VUS > 0) {
+    scenarios.browser_journeys = {
+        executor: 'per-vu-iterations',
+        exec: 'browserJourney',
+        vus: TARGET_BROWSER_VUS,
+        iterations: 1,
+        maxDuration: '5m',
+        options: {
+            browser: {
+                type: 'chromium',
+            },
+        },
+    };
+    thresholds.checks = ['rate>0.99'];
+    thresholds.browser_http_req_failed = ['rate<0.01'];
+}
+
+export const options = { scenarios, thresholds };
 
 export function apiLoad() {
     const response = http.get(`${BASE_URL}/health`, {
@@ -214,8 +218,10 @@ export function handleSummary(data) {
     const passed = apiChecks > 0
         && apiFailureRate !== null && apiFailureRate < 0.01
         && completed === TARGET_BROWSER_VUS
-        && checkRate !== null && checkRate > 0.99
-        && browserFailureRate !== null && browserFailureRate < 0.01;
+        && (TARGET_BROWSER_VUS === 0 || (
+            checkRate !== null && checkRate > 0.99
+            && browserFailureRate !== null && browserFailureRate < 0.01
+        ));
 
     const runId = __ENV.GITHUB_RUN_ID || 'local';
     const repository = __ENV.GITHUB_REPOSITORY || '';
@@ -235,10 +241,10 @@ export function handleSummary(data) {
         '### Scalability Test - ' + timestamp,
         '',
         '- **Result:** ' + (passed ? 'Passed' : 'Failed'),
-        '- **Load target:** ' + TARGET_API_VUS.toLocaleString() + ' API VUs + ' + TARGET_BROWSER_VUS + ' Chromium sessions',
+        '- **Load target:** ' + TARGET_API_VUS.toLocaleString() + ' API VUs' + (TARGET_BROWSER_VUS > 0 ? ' + ' + TARGET_BROWSER_VUS + ' Chromium sessions' : ' (API-only)'),
         '- **Test machine:** ' + machine,
-        '- **Test scenario:** Concurrent requests to the Sendocs health endpoint plus complete browser journeys.',
-        '- **User journey:** Registration → Dashboard → Create request → Client document upload.',
+        '- **Test scenario:** ' + (TARGET_BROWSER_VUS > 0 ? 'Concurrent health checks plus complete browser journeys.' : 'Concurrent requests to the Sendocs health endpoint.'),
+        '- **User journey:** ' + (TARGET_BROWSER_VUS > 0 ? 'Registration → Dashboard → Create request → Client document upload.' : 'Not run (API-only test).'),
         '- **Evidence:** [Workflow run](' + (runUrl || '#') + ') · [Commit](' + (commitUrl || '#') + ')',
         '',
         '| Metric | Result |',
@@ -247,7 +253,7 @@ export function handleSummary(data) {
         '| API health requests | ' + apiChecks.toLocaleString() + ' |',
         '| API health request latency (p95) | ' + apiLatency + ' |',
         '| API health request failure rate | ' + apiFailuresText + ' |',
-        '| Completed browser journeys | ' + completed + ' / ' + TARGET_BROWSER_VUS + ' |',
+        '| Completed browser journeys | ' + (TARGET_BROWSER_VUS > 0 ? completed + ' / ' + TARGET_BROWSER_VUS : 'Not run') + ' |',
         '| Browser request latency (p95) | ' + browserLatency + ' |',
         '| Browser request failure rate | ' + browserFailures + ' |',
         '| End-to-end journey latency (p95) | ' + journeyLatency + ' |',
