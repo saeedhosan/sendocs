@@ -40,7 +40,7 @@ class AppServiceProvider extends ServiceProvider
         // override and the elevated ceiling confined to the testing environment.
         $limit = static function (Request $request, int $attempts, string $period = 'minute', ?string $ownerId = null): Limit {
             $benchmark = app()->environment('testing') && $request->headers->has('X-Client-IP');
-            $key = $benchmark ? $request->ip() : ($ownerId ?? $request->ip());
+            $key       = $benchmark ? $request->ip() : ($ownerId ?? $request->ip());
 
             if ($benchmark) {
                 $attempts = PHP_INT_MAX;
