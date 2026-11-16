@@ -79,7 +79,7 @@ export function setup() {
     // Exercise the client upload route once. The API intentionally limits
     // uploads per source IP, so this is a smoke request, not concurrent upload load.
     const itemId = payload.request.items[0].id;
-    const pdfContent = '%PDF-1.4\\n1 0 obj\\n<< /Type /Catalog /Pages 2 0 R >>\\nendobj\\n2 0 obj\\n<< /Type /Pages /Kids [] /Count 0 >>\\nendobj\\ntrailer\\n<< /Root 1 0 R >>\\n%%EOF';
+    const pdfContent = '%PDF-1.4\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n2 0 obj\n<< /Type /Pages /Kids [] /Count 0 >>\nendobj\ntrailer\n<< /Root 1 0 R >>\n%%EOF';
     const upload = http.post(
         BASE_URL + '/api/v1/portal/' + portalToken + '/items/' + itemId + '/file',
         { file: http.file(pdfContent, 'benchmark.pdf', 'application/pdf') },
