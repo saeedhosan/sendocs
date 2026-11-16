@@ -1,3 +1,5 @@
 # Sendocs - Scalability Benchmarks
 
 Automated performance test results from GitHub Actions.
+
+### Scalability Test - 2026-11-16\n\n- **Result:** Failed\n- **Load target:** 1000 API VUs + 5 Chromium sessions\n- **Test machine:** GitHub Actions · 4 vCPU · 15.6\n GB RAM\n- **Test scenario:** Concurrent requests to the Sendocs health endpoint plus complete browser journeys.\n- **User journey:** Registration → Dashboard → Create request → Client document upload.\n- **Evidence:** [Workflow run](https://github.com/saeedhosan/sendocs/actions/runs/43827920004) · [Commit](https://github.com/saeedhosan/sendocs/commit/36c1990228750aabc9b0100076284a0838aee315)\n\n| Metric | Result |\n| -------------------------------- | --------: |\n| API virtual users (target) | 1000 |\n| API health requests | 13523 |\n| API health request latency (p95) | 15946.20 ms |\n| API health request failure rate | 4.82% |\n| Completed browser journeys | 0 / 5 |\n| Browser request latency (p95) | 503.84 ms |\n| Browser request failure rate | 0.62% |\n| End-to-end journey latency (p95) | — |\n| Functional checks | 95.1% |\n| Test duration | 84.2s |\n
