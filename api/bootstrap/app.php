@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Exceptions\ApiException;
+use App\Http\Middleware\ApplyBenchkmarkClientip;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Foundation\Application;
@@ -31,6 +32,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->api(prepend: [
+            ApplyBenchkmarkClientip::class,
             HandleCors::class,
         ]);
 
