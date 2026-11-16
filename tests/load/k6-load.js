@@ -101,7 +101,7 @@ export function handleSummary(data) {
         ...rates.map(([name, label]) => '| ' + label + ' | ' + format(metricValue(data, name, 'rate') === null ? null : metricValue(data, name, 'rate') * 100, '%') + ' |'),
         '| Actual test duration | ' + duration + ' |',
         '',
-    ].join('\\n');
+    ].join('\n');
 
     const output = {
         ['scalability-results/benchmark-entry-' + WORKLOAD_GROUP + '.md']: report,
