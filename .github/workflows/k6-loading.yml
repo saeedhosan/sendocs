@@ -11,7 +11,7 @@ on:
             test_duration:
                 description: "Load test duration (for example: 60s, 5m)"
                 type: string
-                default: "60s"
+                default: "0"
                 required: true
     pull_request:
         branches:
