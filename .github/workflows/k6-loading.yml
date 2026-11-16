@@ -59,6 +59,9 @@ jobs:
             - name: Build Compose images
               run: docker compose build
 
+            - name: Validate PHP-FPM configuration
+              run: docker compose run --rm --no-deps --entrypoint php-fpm api -tt
+
             - name: Run migrations
               run: docker compose run --rm migrate
 
