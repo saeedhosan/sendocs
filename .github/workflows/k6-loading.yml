@@ -145,6 +145,7 @@ jobs:
                   persist-credentials: true
 
             - name: Download workload artifacts
+              continue-on-error: true
               uses: actions/download-artifact@v6
               with:
                   pattern: http-scalability-${{ github.run_id }}-*
