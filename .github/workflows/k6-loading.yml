@@ -5,6 +5,8 @@ on:
     pull_request:
         branches:
             - main
+        paths-ignore:
+            - docs/benchmark.md
 
 permissions:
     contents: write
@@ -80,7 +82,7 @@ jobs:
               run: |
                   run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
                   if ! grep --fixed-strings --quiet "$run_url" docs/benchmark.md; then
-                    printf '\n' >> docs/benchmark.md
+                    printf '\\n' >> docs/benchmark.md
                     cat scalability-results/benchmark-entry.md >> docs/benchmark.md
                   fi
 
