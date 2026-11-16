@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
     load_test:
-        name: Docker Compose + k6 browser validation
+        name: Docker Compose + 1k API VUs + browser validation
         runs-on: ubuntu-latest
         timeout-minutes: 30
 
@@ -64,10 +64,12 @@ jobs:
                   k6-version: '0.57.0'
                   browser: true
 
-            - name: Run browser-based user journeys
+            - name: Run 1k API VUs and browser user journeys
               env:
                   BASE_URL: http://127.0.0.1:3000
-                  TARGET_SCALE_USER: 1000
+                  TARGET_API_VUS: 1000
+                  TARGET_BROWSER_VUS: 5
+                  API_LOAD_DURATION: 60s
                   RUNNER_CPU_COUNT: ${{ steps.runner.outputs.cpu_count }}
                   RUNNER_MEMORY_GB: ${{ steps.runner.outputs.memory_gb }}
               run: |
@@ -98,7 +100,7 @@ jobs:
               if: always()
               uses: actions/upload-artifact@v6
               with:
-                  name: browser-scalability-${{ github.run_id }}
+                  name: api-and-browser-scalability-${{ github.run_id }}
                   path: |
                       scalability-results/benchmark-entry.md
                       scalability-results/k6-summary.json
