@@ -21,3 +21,21 @@ This file records automated load-test results. Each entry describes the exact te
 | Request failure rate | 5.42% |
 | Successful health checks | 94.58% |
 | Test duration | 83.1s |
+\n### Scalability Test - 2026-11-16
+
+- **Result:** Failed
+- **Load target:** 1000 concurrent HTTP VUs
+- **Test scenario:** Repeated HTTP requests to the Sendocs health endpoint.
+- **Evidence:** [Workflow run](https://github.com/saeedhosan/sendocs/actions/runs/43843418857) · [Commit](https://github.com/saeedhosan/sendocs/commit/b02b1dd2f7dda6d44932ecd2fc7c793e1ded2b90)
+
+| Metric | Result |
+| -------------------------------- | --------: |
+| Target virtual users | 1000 |
+| Peak virtual users | 1000 |
+| Total HTTP requests | 11741 |
+| Request rate | 141.59 req/s |
+| Request latency (average) | 4350.26 ms |
+| Request latency (p95) | 30592.93 ms |
+| Request failure rate | 5.81% |
+| Successful health checks | 94.19% |
+| Test duration | 82.9s |
