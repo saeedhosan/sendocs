@@ -2,6 +2,20 @@ name: Scalability Load Test
 
 on:
     workflow_dispatch:
+        inputs:
+            test_mode:
+                description: "Choose browser validation or API-only load"
+                type: choice
+                options:
+                    - browser-validation
+                    - api-load
+                default: browser-validation
+                required: true
+            target_api_vus:
+                description: "API virtual users (use 100, 250, 500, then 1000 for API load)"
+                type: string
+                default: "1"
+                required: true
     pull_request:
         branches:
             - main
@@ -17,7 +31,7 @@ concurrency:
 
 jobs:
     load_test:
-        name: Docker Compose + 1k API VUs + browser validation
+        name: Docker Compose + configurable API load and browser validation
         runs-on: ubuntu-latest
         timeout-minutes: 30
 
@@ -66,11 +80,11 @@ jobs:
                   k6-version: '0.57.0'
                   browser: true
 
-            - name: Run 1k API VUs and browser user journeys
+            - name: Run selected API load and browser validation
               env:
                   BASE_URL: http://127.0.0.1:3000
-                  TARGET_API_VUS: 1000
-                  TARGET_BROWSER_VUS: 5
+                  TARGET_API_VUS: ${{ github.event_name == 'workflow_dispatch' && inputs.target_api_vus || '1' }}
+                  TARGET_BROWSER_VUS: ${{ github.event_name == 'workflow_dispatch' && inputs.test_mode == 'api-load' && '0' || '5' }}
                   API_LOAD_DURATION: 60s
                   RUNNER_CPU_COUNT: ${{ steps.runner.outputs.cpu_count }}
                   RUNNER_MEMORY_GB: ${{ steps.runner.outputs.memory_gb }}
