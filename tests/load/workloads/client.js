@@ -3,6 +3,7 @@ import { check, sleep } from 'k6';
 import { BASE_URL } from '../config.js';
 import { Rate } from 'k6/metrics';
 import { prepareAccounts } from '../helpers/accounts.js';
+import { recordWorkloadRequest } from '../helpers/metrics.js';
 
 export const clientUploadSuccess = new Rate('client_upload_success');
 export const clientPortalSuccess = new Rate('client_portal_success');
@@ -29,6 +30,7 @@ export default function (data) {
                 tags: { endpoint: 'client_upload' },
             }
         );
+        recordWorkloadRequest(upload);
         clientUploadDone = check(upload, {
             'client upload returns HTTP 200': (res) => res.status === 200,
         });
@@ -42,6 +44,7 @@ export default function (data) {
         headers: { 'X-Client-IP': account.clientIp },
         tags: { endpoint: 'client_portal' },
     });
+    recordWorkloadRequest(portal);
     clientPortalSuccess.add(check(portal, {
         'client portal returns HTTP 200': (res) => res.status === 200,
     }));
