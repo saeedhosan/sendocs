@@ -60,10 +60,10 @@ The React (web) app and API are separate parts of the same repository. PostgreSQ
 
 | Workload | Throughput (RPS) | Median latency | Error rate |
 | --- | ---: | ---: | ---: |
-| Landing | 5,100.99 | 18.50 ms | 0.00% |
-| Authentication | 27.01 | 1,515.17 ms | 0.00% |
-| Owner portal | 39.54 | 1,344.00 ms | 0.00% |
-| Client portal | 23.35 | 1,929.32 ms | 0.00% |
+| Landing (1) | 5,100.99 | 18.50 ms | 0.00% |
+| Authentication (2) | 27.01 | 1,515.17 ms | 0.00% |
+| Owner portal (2) | 39.54 | 1,344.00 ms | 0.00% |
+| Client portal (2) | 23.35 | 1,929.32 ms | 0.00% |
 
 See the [benchmark results](docs/benchmark.md) for detailed measurements and methodology.
 
