@@ -3,18 +3,15 @@ name: Scalability Load Test
 on:
     workflow_dispatch:
         inputs:
-            test_mode:
-                description: "Choose browser validation or API-only load"
-                type: choice
-                options:
-                    - browser-validation
-                    - api-load
-                default: browser-validation
-                required: true
-            target_api_vus:
-                description: "API virtual users (use 100, 250, 500, then 1000 for API load)"
+            target_vus:
+                description: "Concurrent HTTP virtual users"
                 type: string
-                default: "1"
+                default: "1000"
+                required: true
+            test_duration:
+                description: "Load test duration (for example: 60s, 5m)"
+                type: string
+                default: "60s"
                 required: true
     pull_request:
         branches:
@@ -31,7 +28,7 @@ concurrency:
 
 jobs:
     load_test:
-        name: Docker Compose + configurable API load and browser validation
+        name: Docker Compose + HTTP load test
         runs-on: ubuntu-latest
         timeout-minutes: 30
 
@@ -42,16 +39,8 @@ jobs:
                   ref: ${{ github.head_ref || github.ref_name }}
                   persist-credentials: true
 
-            - name: Record runner resources
-              id: runner
-              run: |
-                  mkdir -p scalability-results
-                  echo "cpu_count=$(nproc)" >> "$GITHUB_OUTPUT"
-                  awk '/MemTotal/ {printf "memory_gb=%.1f\\n", $2/1024/1024}' /proc/meminfo >> "$GITHUB_OUTPUT"
-
             - name: Create Compose environment
-              run: |
-                  cp .env.example .env
+              run: cp .env.example .env
 
             - name: Build Compose images
               run: docker compose build
@@ -59,10 +48,10 @@ jobs:
             - name: Run migrations
               run: docker compose run --rm migrate
 
-            - name: Start the complete Compose application stack
+            - name: Start the application stack
               run: docker compose up -d --scale test=0 --scale migrate=0
 
-            - name: Wait for frontend and API health
+            - name: Wait for application health
               run: |
                   for attempt in $(seq 1 60); do
                     if curl --fail --silent http://127.0.0.1:3000/health > /dev/null; then
@@ -74,21 +63,18 @@ jobs:
                   docker compose logs --no-color
                   exit 1
 
-            - name: Set up k6 and Chromium
+            - name: Set up k6
               uses: grafana/setup-k6-action@v1
               with:
                   k6-version: '0.57.0'
-                  browser: true
 
-            - name: Run selected API load and browser validation
+            - name: Run HTTP load test
               env:
                   BASE_URL: http://127.0.0.1:3000
-                  TARGET_API_VUS: ${{ github.event_name == 'workflow_dispatch' && inputs.target_api_vus || '1' }}
-                  TARGET_BROWSER_VUS: ${{ github.event_name == 'workflow_dispatch' && inputs.test_mode == 'api-load' && '0' || '5' }}
-                  API_LOAD_DURATION: 60s
-                  RUNNER_CPU_COUNT: ${{ steps.runner.outputs.cpu_count }}
-                  RUNNER_MEMORY_GB: ${{ steps.runner.outputs.memory_gb }}
+                  TARGET_VUS: ${{ github.event_name == 'workflow_dispatch' && inputs.target_vus || '1000' }}
+                  TEST_DURATION: ${{ github.event_name == 'workflow_dispatch' && inputs.test_duration || '60s' }}
               run: |
+                  mkdir -p scalability-results
                   k6 run --summary-export=./scalability-results/k6-summary.json ./tests/load/k6-load.js
 
             - name: Append result to benchmark history
@@ -106,7 +92,7 @@ jobs:
               with:
                   branch: ${{ github.head_ref || github.ref_name }}
                   file_pattern: docs/benchmark.md
-                  commit_message: "docs: record browser benchmark result"
+                  commit_message: "docs: record HTTP load benchmark"
 
             - name: Capture application logs on failure
               if: failure()
@@ -116,7 +102,7 @@ jobs:
               if: always()
               uses: actions/upload-artifact@v6
               with:
-                  name: api-and-browser-scalability-${{ github.run_id }}
+                  name: http-scalability-${{ github.run_id }}
                   path: |
                       scalability-results/benchmark-entry.md
                       scalability-results/k6-summary.json
