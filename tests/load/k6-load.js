@@ -89,7 +89,7 @@ export function handleSummary(data) {
         `| Successful health checks | ${format(checkRate === null ? null : checkRate * 100, '%')} |`,
         `| Test duration | ${duration} |`,
         '',
-    ].join('\\n');
+    ].join('\n');
 
     const output = {
         'scalability-results/benchmark-entry.md': report,
