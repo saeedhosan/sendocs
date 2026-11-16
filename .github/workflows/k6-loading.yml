@@ -68,6 +68,25 @@ jobs:
               with:
                   k6-version: '0.57.0'
 
+            - name: Start resource monitor
+              run: |
+                  mkdir -p scalability-results
+                  (
+                    while true; do
+                      echo "===== $(date -u '+%Y-%m-%dT%H:%M:%SZ') ====="
+                      echo "--- Host memory ---"
+                      free -h
+                      echo "--- Host load average ---"
+                      cat /proc/loadavg
+                      echo "--- Top host processes ---"
+                      ps -eo pid,comm,%cpu,%mem,rss --sort=-%cpu | head -n 12
+                      echo "--- Docker container usage ---"
+                      docker stats --no-stream --format "table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.MemPerc}}"
+                      sleep 5
+                    done
+                  ) >> scalability-results/resource-usage.log 2>&1 &
+                  echo $! > scalability-results/resource-monitor.pid
+
             - name: Run HTTP load test
               env:
                   BASE_URL: http://127.0.0.1:3000
@@ -76,6 +95,13 @@ jobs:
               run: |
                   mkdir -p scalability-results
                   k6 run --summary-export=./scalability-results/k6-summary.json ./tests/load/k6-load.js
+
+            - name: Stop resource monitor
+              if: always()
+              run: |
+                  if [ -f scalability-results/resource-monitor.pid ]; then
+                    kill "$(cat scalability-results/resource-monitor.pid)" 2>/dev/null || true
+                  fi
 
             - name: Append result to benchmark history
               if: always() && hashFiles('scalability-results/benchmark-entry.md') != ''
@@ -106,6 +132,7 @@ jobs:
                   path: |
                       scalability-results/benchmark-entry.md
                       scalability-results/k6-summary.json
+                      scalability-results/resource-usage.log
                       scalability-results/compose-failure.log
                   if-no-files-found: warn
                   retention-days: 14
