@@ -54,6 +54,21 @@ The React (web) app and API are separate parts of the same repository. PostgreSQ
 - **Dev/prod parity:** one Compose file and multi-stage images run the same code everywhere; Vite and nginx proxy the API so sessions and CSRF match.
 - **Automated quality gates:** CI runs Pest, PHPStan, Pint, Rector, Vitest, Playwright, ESLint, and tsc, then builds images and ships production on a version tag.
 
+## Performance Metrics
+
+Latest HTTP load-test snapshot:
+
+| Workload | Throughput | Median latency | Error rate |
+| --- | ---: | ---: | ---: |
+| Landing | 5,100.99 req/s | 18.50 ms | 0.00% |
+| Authentication | 27.01 req/s | 1,515.17 ms | 0.00% |
+| Owner portal | 39.54 req/s | 1,344.00 ms | 0.00% |
+| Client portal | 23.35 req/s | 1,929.32 ms | 0.00% |
+
+Measured with 100 concurrent HTTP VUs per workload over 60 seconds on separate GitHub-hosted runners (each runner hosted both the application and k6). Authenticated workload figures include account/request setup traffic. These are benchmark results, not production performance guarantees.
+
+See the [benchmark history](docs/benchmark.md) and [load-test methodology](docs/scalability/01_1k_scale_load.md). The [workflow run](https://github.com/saeedhosan/sendocs/actions/runs/43882154747) contains the test evidence.
+
 ## Documentation Guide
 
 - [Design](docs/design.md) - system scope, data, architecture, deployment.
