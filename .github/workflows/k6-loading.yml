@@ -13,11 +13,11 @@ on:
                 type: string
                 default: "60s"
                 required: true
-    pull_request:
-        branches:
-            - main
-        paths-ignore:
-            - docs/benchmark.md
+    # pull_request:
+    #     branches:
+    #         - main
+    #     paths-ignore:
+    #         - docs/benchmark.md
 
 permissions:
     contents: write
