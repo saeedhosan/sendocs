@@ -17,10 +17,7 @@ class ApplyBenchmarkClientIp
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (
-            app()->environment('testing') &&
-            $clientIp = $request->header('X-Client-IP')
-        ) {
+        if (app()->environment('testing') && ($clientIp = $request->header('X-Client-IP'))) {
             $request->server->set('REMOTE_ADDR', $clientIp);
         }
 
