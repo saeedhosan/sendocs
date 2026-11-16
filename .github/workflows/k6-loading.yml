@@ -138,10 +138,10 @@ jobs:
         needs: [load_test]
         runs-on: ubuntu-latest
         steps:
-            - name: Check out repository
+            - name: Check out reports branch
               uses: actions/checkout@v7
               with:
-                  ref: ${{ github.head_ref || github.ref_name }}
+                  ref: reports
                   persist-credentials: true
 
             - name: Download workload artifacts
@@ -173,6 +173,6 @@ jobs:
               if: always() && hashFiles('scalability-results/benchmark-entry-*.md') != '' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
               uses: stefanzweifel/git-auto-commit-action@v7
               with:
-                  branch: ${{ github.head_ref || github.ref_name }}
+                  branch: reports
                   file_pattern: docs/benchmark.md
                   commit_message: "docs: record parallel HTTP load benchmark"
