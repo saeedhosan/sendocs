@@ -34,7 +34,9 @@ jobs:
                   awk '/MemTotal/ {printf "memory_gb=%.1f\\n", $2/1024/1024}' /proc/meminfo >> "$GITHUB_OUTPUT"
 
             - name: Create Compose environment
-              run: cp .env.example .env
+              run: |
+                  cp .env.example .env
+                  echo "SENDOCS_BENCHMARK_RATE_LIMITS=true" >> .env
 
             - name: Build Compose images
               run: docker compose build
