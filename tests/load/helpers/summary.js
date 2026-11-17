@@ -10,22 +10,33 @@ function metricValue(data, name, key) {
     return values && values[key] !== undefined ? values[key] : null;
 }
 
-function format(value, suffix) {
-    return value === null ? '—' : value.toFixed(2) + (suffix || '');
+function format(value) {
+    return value === null ? '—' : value.toFixed(2);
 }
 
 function formatDuration(value) {
-    const match = /^(\\d+)(s|m|h)$/.exec(value);
+    const match = /^(\d+)(ms|s|m|h)$/.exec(value);
     if (!match) {
         return value;
     }
-    const units = { s: 'second', m: 'minute', h: 'hour' };
-    const amount = Number(match[1]);
-    return amount + ' ' + units[match[2]] + (amount === 1 ? '' : 's');
+
+    const multipliers = { ms: 0.001, s: 1, m: 60, h: 3600 };
+    const seconds = Number(match[1]) * multipliers[match[2]];
+
+    if (seconds < 60) {
+        return seconds + ' second' + (seconds === 1 ? '' : 's');
+    }
+    if (seconds < 3600) {
+        const minutes = seconds / 60;
+        return minutes + ' minute' + (minutes === 1 ? '' : 's');
+    }
+
+    const hours = seconds / 3600;
+    return hours + ' hour' + (hours === 1 ? '' : 's');
 }
 
 function durationSeconds(value) {
-    const match = /^(\\d+)(ms|s|m|h)$/.exec(value);
+    const match = /^(\d+)(ms|s|m|h)$/.exec(value);
     if (!match) {
         return null;
     }
@@ -35,24 +46,11 @@ function durationSeconds(value) {
 
 export function handleSummary(data) {
     const requests = metricValue(data, 'workload_http_requests', 'count') || 0;
-    const totalRequests = metricValue(data, 'http_reqs', 'count') || 0;
-    const setupRequests = Math.max(0, totalRequests - requests);
     const failedRate = metricValue(data, 'workload_http_failed', 'rate');
     const testSeconds = durationSeconds(TEST_DURATION);
     const throughput = testSeconds ? requests / testSeconds : null;
-    const maxVus = metricValue(data, 'vus_max', 'max');
-    const metricLabels = {
-        landing: [['landing_success', 'Landing success']],
-        auth: [['auth_login_success', 'Login success'], ['auth_session_success', 'Session success']],
-        owner: [['owner_list_success', 'Owner request-list success'], ['owner_detail_success', 'Owner request-detail success']],
-        client: [['client_upload_success', 'Client upload success'], ['client_portal_success', 'Client portal success']],
-    };
-    const rates = metricLabels[WORKLOAD_GROUP];
-    const passed = requests > 0 && failedRate !== null && failedRate < 0.01 &&
-        rates.every(([name]) => {
-            const value = metricValue(data, name, 'rate');
-            return value !== null && value > 0.99;
-        });
+    const average = metricValue(data, 'workload_http_req_duration', 'avg');
+    const p95 = metricValue(data, 'workload_http_req_duration', 'p(95)');
     const runId = __ENV.GITHUB_RUN_ID || 'local';
     const repository = __ENV.GITHUB_REPOSITORY || '';
     const server = __ENV.GITHUB_SERVER_URL || 'https://github.com';
@@ -65,29 +63,22 @@ export function handleSummary(data) {
         owner: 'Owner portal',
         client: 'Client portal',
     };
-    const timestamp = new Date().toISOString();
+    const timestamp = __ENV.RUN_STARTED_AT || new Date().toISOString();
     const report = [
-        '### Scalability Test — ' + timestamp,
+        '### Results — ' + TARGET_VUS.toLocaleString() + ' VUs · ' + timestamp,
         '',
-        '**Workload:** ' + workloadNames[WORKLOAD_GROUP],
-        '',
-        '- **Result:** ' + (passed ? 'Passed' : 'Failed'),
-        '- **Target load:** ' + TARGET_VUS.toLocaleString() + ' concurrent HTTP VUs · ' + formatDuration(RAW_TEST_DURATION),
-        '- **Environment:** GitHub Actions runner (Vite + Nginx + PHP-FPM + k6)',
+        '- **Target load:** ' + TARGET_VUS.toLocaleString() + ' VUs · ' + formatDuration(RAW_TEST_DURATION),
+        '- **Environment:** GitHub Actions · `ubuntu-latest`',
         '- **Evidence:** ' + (runUrl ? '[Workflow run](' + runUrl + ')' : 'Local run') +
             (commitUrl ? ' · [Commit](' + commitUrl + ')' : ''),
         '',
-        '| Metric | Result |',
-        '|---|---:|',
-        '| Peak virtual users | ' + (maxVus === null ? '—' : maxVus.toLocaleString()) + ' |',
-        '| Workload HTTP requests | ' + requests.toLocaleString() + ' |',
-        '| Setup HTTP requests (excluded) | ' + setupRequests.toLocaleString() + ' |',
-        '| Workload throughput | ' + format(throughput, ' req/s') + ' |',
-        '| Average workload response time | ' + format(metricValue(data, 'workload_http_req_duration', 'avg'), ' ms') + ' |',
-        '| Workload p95 response time | ' + format(metricValue(data, 'workload_http_req_duration', 'p(95)'), ' ms') + ' |',
-        '| Workload HTTP failure rate | ' + format(failedRate === null ? null : failedRate * 100, '%') + ' |',
+        '| Workload | Throughput (req/s) | Avg (ms) | p95 (ms) | Failures (%) |',
+        '|---|---:|---:|---:|---:|',
+        '| ' + workloadNames[WORKLOAD_GROUP] + ' | ' + format(throughput) + ' | ' +
+            format(average) + ' | ' + format(p95) + ' | ' +
+            format(failedRate === null ? null : failedRate * 100) + ' |',
         '',
-    ].join('\\n');
+    ].join('\n');
 
     // Keep setup_data out of artifacts: it contains generated account passwords,
     // session cookies, CSRF tokens, and client portal tokens.
