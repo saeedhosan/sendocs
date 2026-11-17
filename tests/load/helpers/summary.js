@@ -64,11 +64,18 @@ export function handleSummary(data) {
         client: 'Client portal',
     };
     const timestamp = __ENV.RUN_STARTED_AT || new Date().toISOString();
+    const environment = {
+        os: __ENV.RUNNER_OS_NAME || 'Unknown',
+        architecture: __ENV.RUNNER_ARCH || 'Unknown',
+        cpu_model: __ENV.RUNNER_CPU_MODEL || 'Unknown',
+        cpu_count: __ENV.RUNNER_CPU_COUNT || 'Unknown',
+        memory_gib: __ENV.RUNNER_MEMORY_GIB || 'Unknown',
+    };
     const report = [
         '### Results — ' + TARGET_VUS.toLocaleString() + ' VUs - ' + timestamp,
         '',
         '- **Target load:** ' + TARGET_VUS.toLocaleString() + ' Virtual Users · ' + formatDuration(RAW_TEST_DURATION),
-        '- **Environment:** GitHub Actions · `ubuntu-latest`',
+        '- **Environment:** GitHub Actions hosted runner',
         '- **Evidence:** ' + (runUrl ? '[Workflow run](' + runUrl + ')' : 'Local run') +
             (commitUrl ? ' · [Commit](' + commitUrl + ')' : ''),
         '',
@@ -78,6 +85,14 @@ export function handleSummary(data) {
             format(average) + ' | ' + format(p95) + ' | ' +
             format(failedRate === null ? null : failedRate * 100) + ' |',
         '',
+        '#### Runner hardware',
+        '',
+        '| OS | Architecture | CPU | vCPU | RAM |',
+        '|---|---|---|---:|---:|',
+        '| ' + environment.os + ' | ' + environment.architecture + ' | ' +
+            environment.cpu_model + ' | ' + environment.cpu_count + ' | ' +
+            environment.memory_gib + ' GiB |',
+        '',
     ].join('\n');
 
     // Keep setup_data out of artifacts: it contains generated account passwords,
@@ -86,6 +101,7 @@ export function handleSummary(data) {
         root_group: data.root_group,
         options: data.options,
         state: data.state,
+        environment,
         metrics: data.metrics,
     };
     const output = {
