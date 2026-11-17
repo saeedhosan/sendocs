@@ -65,9 +65,9 @@ export function handleSummary(data) {
     };
     const timestamp = __ENV.RUN_STARTED_AT || new Date().toISOString();
     const report = [
-        '### Results — ' + TARGET_VUS.toLocaleString() + ' VUs · ' + timestamp,
+        '### Results — ' + TARGET_VUS.toLocaleString() + ' VUs - ' + timestamp,
         '',
-        '- **Target load:** ' + TARGET_VUS.toLocaleString() + ' VUs · ' + formatDuration(RAW_TEST_DURATION),
+        '- **Target load:** ' + TARGET_VUS.toLocaleString() + ' Virtual Users · ' + formatDuration(RAW_TEST_DURATION),
         '- **Environment:** GitHub Actions · `ubuntu-latest`',
         '- **Evidence:** ' + (runUrl ? '[Workflow run](' + runUrl + ')' : 'Local run') +
             (commitUrl ? ' · [Commit](' + commitUrl + ')' : ''),
