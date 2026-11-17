@@ -113,6 +113,7 @@ jobs:
                   BASE_URL: ${{ matrix.group == 'landing' && 'http://127.0.0.1:3000' || 'http://127.0.0.1:8000' }}
                   TARGET_VUS: ${{ github.event_name == 'workflow_dispatch' && inputs.target_vus || '100' }}
                   TEST_DURATION: ${{ github.event_name == 'workflow_dispatch' && inputs.test_duration || '60s' }}
+                  RUN_STARTED_AT: ${{ github.run_started_at }}
                   WORKLOAD_GROUP: ${{ matrix.group }}
               run: |
                   mkdir -p scalability-results
