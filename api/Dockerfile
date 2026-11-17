@@ -58,8 +58,6 @@ RUN chmod +x /usr/local/bin/entrypoint
 
 RUN chown -R www-data:www-data bootstrap/cache storage
 
-USER www-data
-
 EXPOSE 9000
 
 ENTRYPOINT ["entrypoint"]
