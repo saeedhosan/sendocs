@@ -33,8 +33,8 @@ jobs:
         timeout-minutes: 60
         env:
             API_TARGET: prod
-            COMPOSE_FILE: compose.yaml:compose.benchmark.yaml
-            COMPOSE_PROFILES: ${{ matrix.group == 'landing' && 'landing' || '' }}
+            WEB_TARGET: prod
+            WEB_CONTAINER_PORT: 80
         strategy:
             fail-fast: false
             matrix:
@@ -71,7 +71,7 @@ jobs:
             - name: Wait for application health
               run: |
                   for attempt in $(seq 1 60); do
-                    if curl --fail --silent http://127.0.0.1:8000/health > /dev/null; then
+                    if curl --fail --silent http://127.0.0.1:3000/health > /dev/null; then
                       exit 0
                     fi
                     sleep 2
@@ -101,8 +101,6 @@ jobs:
                       ps -eo pid,comm,%cpu,%mem,rss --sort=-%cpu | head -n 12
                       echo "--- Docker container usage ---"
                       docker stats --no-stream --format "table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.MemPerc}}"
-                      echo "--- PHP-FPM pool status ---"
-                      curl --fail --silent "http://127.0.0.1:8000/fpm-status?json" || true
                       sleep 5
                     done
                   ) >> scalability-results/resource-usage-${{ matrix.group }}.log 2>&1 &
@@ -125,7 +123,7 @@ jobs:
 
             - name: Run HTTP load test
               env:
-                  BASE_URL: ${{ matrix.group == 'landing' && 'http://127.0.0.1:3000' || 'http://127.0.0.1:8000' }}
+                  BASE_URL: http://127.0.0.1:3000
                   TARGET_VUS: ${{ github.event_name == 'workflow_dispatch' && inputs.target_vus || '100' }}
                   TEST_DURATION: ${{ github.event_name == 'workflow_dispatch' && inputs.test_duration || '60s' }}
                   RUN_STARTED_AT: ${{ github.run_started_at }}
