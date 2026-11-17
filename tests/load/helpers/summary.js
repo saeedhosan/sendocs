@@ -75,7 +75,13 @@ export function handleSummary(data) {
         '### Results — ' + TARGET_VUS.toLocaleString() + ' VUs · ' + timestamp,
         '',
         '- **Target load:** ' + TARGET_VUS.toLocaleString() + ' VUs · ' + formatDuration(RAW_TEST_DURATION),
-        '- **Environment:** GitHub Actions hosted runner',
+        '- **Environment:** GitHub runner (' + [
+            environment.os,
+            environment.architecture,
+            environment.cpu_model,
+            environment.cpu_count + ' vCPU',
+            environment.memory_gib + ' GB RAM',
+        ].join(' · ') + ')',
         '- **Evidence:** ' + (runUrl ? '[Workflow run](' + runUrl + ')' : 'Local run') +
             (commitUrl ? ' · [Commit](' + commitUrl + ')' : ''),
         '',
@@ -84,14 +90,6 @@ export function handleSummary(data) {
         '| ' + workloadNames[WORKLOAD_GROUP] + ' | ' + format(throughput) + ' | ' +
             format(average) + ' | ' + format(p95) + ' | ' +
             format(failedRate === null ? null : failedRate * 100) + ' |',
-        '',
-        '#### Runner hardware',
-        '',
-        '| OS | Architecture | CPU | vCPU | RAM |',
-        '|---|---|---|---:|---:|',
-        '| ' + environment.os + ' | ' + environment.architecture + ' | ' +
-            environment.cpu_model + ' | ' + environment.cpu_count + ' | ' +
-            environment.memory_gib + ' GiB |',
         '',
     ].join('\n');
 
