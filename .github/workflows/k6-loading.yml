@@ -237,11 +237,7 @@ jobs:
                         "GitHub runner" "$os" "$architecture" "$cpu" "$cpu_count" "$memory"
                     }
 
-                    echo "- **Environment:**"
-                    echo "  - Landing: $(environment_for landing)"
-                    echo "  - Authentication: $(environment_for auth)"
-                    echo "  - Owner: $(environment_for owner)"
-                    echo "  - Client: $(environment_for client)"
+                    echo "- **Environment:** $(environment_for landing); $(environment_for auth); $(environment_for owner); $(environment_for client)"
                     echo "- **Evidence:** [Workflow run](${RUN_URL}) · [Commit](${COMMIT_URL})"
                     echo
                     echo "| Workload | Throughput (req/s) | Avg (ms) | p95 (ms) | Failures (%) |"
