@@ -170,21 +170,77 @@ jobs:
                   path: scalability-results
                   merge-multiple: true
 
-            - name: Append workload results to benchmark history
+            - name: Generate benchmark summary report
+              env:
+                  TARGET_VUS: ${{ inputs.target_vus || '100' }}
+                  TEST_DURATION: ${{ inputs.test_duration || '60s' }}
+                  RUN_STARTED_AT: ${{ github.run_started_at }}
+                  RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+                  COMMIT_URL: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
               run: |
-                  shopt -s nullglob
-                  reports=(scalability-results/benchmark-entry-*.md)
-                  if [ "${#reports[@]}" -eq 0 ]; then
-                    echo "No benchmark reports were produced."
-                    exit 0
-                  fi
+                  set -euo pipefail
 
-                  run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-                  if ! grep --fixed-strings --quiet "$run_url" docs/benchmark.md; then
-                    printf '\n' >> docs/benchmark.md
-                    for report in "${reports[@]}"; do
-                      cat "$report" >> docs/benchmark.md
-                    done
+                  for group in landing auth owner client; do
+                    file="scalability-results/k6-summary-${group}.json"
+                    if [ ! -f "$file" ]; then
+                      echo "::error::Missing summary for workload: $group"
+                      exit 1
+                    fi
+                  done
+
+                  duration_seconds=$(awk -v duration="$TEST_DURATION" 'BEGIN {
+                    if (duration ~ /ms$/) {
+                      sub(/ms$/, "", duration); print duration / 1000
+                    } else if (duration ~ /s$/) {
+                      sub(/s$/, "", duration); print duration
+                    } else if (duration ~ /m$/) {
+                      sub(/m$/, "", duration); print duration * 60
+                    } else if (duration ~ /h$/) {
+                      sub(/h$/, "", duration); print duration * 3600
+                    } else {
+                      exit 1
+                    }
+                  }')
+
+                  {
+                    echo "### Results — ${TARGET_VUS} VUs · ${RUN_STARTED_AT}"
+                    echo
+                    echo "- **Target load:** ${TARGET_VUS} VUs · ${TEST_DURATION}"
+                    echo "- **Environment:** GitHub Actions · `ubuntu-latest`"
+                    echo "- **Evidence:** [Workflow run](${RUN_URL}) · [Commit](${COMMIT_URL})"
+                    echo
+                    echo "| Workload | Throughput (req/s) | Avg (ms) | p95 (ms) | Failures (%) |"
+                    echo "|---|---:|---:|---:|---:|"
+
+                    add_row() {
+                      local group="$1"
+                      local label="$2"
+                      local file="scalability-results/k6-summary-${group}.json"
+                      local requests average p95 failures throughput
+
+                      requests=$(jq -r '.metrics.workload_http_requests.values.count // 0' "$file")
+                      average=$(jq -r '.metrics.workload_http_req_duration.values.avg // 0' "$file")
+                      p95=$(jq -r '.metrics.workload_http_req_duration.values["p(95)"] // 0' "$file")
+                      failures=$(jq -r '(.metrics.workload_http_failed.values.rate // 0) * 100' "$file")
+                      throughput=$(awk -v requests="$requests" -v seconds="$duration_seconds" 'BEGIN {
+                        if (seconds > 0) printf "%.2f", requests / seconds
+                        else print "0.00"
+                      }')
+
+                      printf '| %s | %s | %.2f | %.2f | %.2f |\\n' \
+                        "$label" "$throughput" "$average" "$p95" "$failures"
+                    }
+
+                    add_row landing "Landing"
+                    add_row auth "Authentication"
+                    add_row owner "Owner portal"
+                    add_row client "Client portal"
+                    echo
+                  } > scalability-results/benchmark-report.md
+
+                  if ! grep --fixed-strings --quiet "$RUN_URL" docs/benchmark.md; then
+                    printf '\\n' >> docs/benchmark.md
+                    cat scalability-results/benchmark-report.md >> docs/benchmark.md
                   fi
 
             - name: Commit benchmark results
