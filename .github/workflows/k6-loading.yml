@@ -222,7 +222,26 @@ jobs:
                     echo "### Results — ${TARGET_VUS} VUs · ${RUN_STARTED_AT}"
                     echo
                     echo "- **Target load:** ${TARGET_VUS} VUs · ${TEST_DURATION}"
-                    echo "- **Environment:** GitHub Actions hosted runners · hardware recorded per workload"
+                    environment_for() {
+                      local group="$1"
+                      local file="scalability-results/k6-summary-${group}.json"
+                      local os architecture cpu cpu_count memory
+
+                      os=$(jq -r '.environment.os // "Unknown"' "$file")
+                      architecture=$(jq -r '.environment.architecture // "Unknown"' "$file")
+                      cpu=$(jq -r '.environment.cpu_model // "Unknown"' "$file")
+                      cpu_count=$(jq -r '.environment.cpu_count // "Unknown"' "$file")
+                      memory=$(jq -r '.environment.memory_gib // "Unknown"' "$file")
+
+                      printf '%s (%s · %s · %s · %s vCPU · %s GB RAM)' \
+                        "GitHub runner" "$os" "$architecture" "$cpu" "$cpu_count" "$memory"
+                    }
+
+                    echo "- **Environment:**"
+                    echo "  - Landing: $(environment_for landing)"
+                    echo "  - Authentication: $(environment_for auth)"
+                    echo "  - Owner: $(environment_for owner)"
+                    echo "  - Client: $(environment_for client)"
                     echo "- **Evidence:** [Workflow run](${RUN_URL}) · [Commit](${COMMIT_URL})"
                     echo
                     echo "| Workload | Throughput (req/s) | Avg (ms) | p95 (ms) | Failures (%) |"
@@ -252,30 +271,6 @@ jobs:
                     add_row owner "Owner portal"
                     add_row client "Client portal"
                     echo
-                    echo "#### Runner hardware"
-                    echo
-                    echo "| Workload | OS | Architecture | CPU | vCPU | RAM |"
-                    echo "|---|---|---|---|---:|---:|"
-
-                    add_hardware_row() {
-                      local group="$1"
-                      local label="$2"
-                      local file="scalability-results/k6-summary-${group}.json"
-                      local os architecture cpu cpu_count memory
-
-                      os=$(jq -r '.environment.os // "—"' "$file")
-                      architecture=$(jq -r '.environment.architecture // "—"' "$file")
-                      cpu=$(jq -r '.environment.cpu_model // "—"' "$file")
-                      cpu_count=$(jq -r '.environment.cpu_count // "—"' "$file")
-                      memory=$(jq -r '.environment.memory_gib // "—"' "$file")
-
-                      printf '| %s | %s | %s | %s | %s | %s GiB |\n' "$label" "$os" "$architecture" "$cpu" "$cpu_count" "$memory"
-                    }
-
-                    add_hardware_row landing "Landing"
-                    add_hardware_row auth "Authentication"
-                    add_hardware_row owner "Owner portal"
-                    add_hardware_row client "Client portal"
                     echo
                   } > scalability-results/benchmark-report.md
 
