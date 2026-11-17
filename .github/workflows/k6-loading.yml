@@ -227,7 +227,7 @@ jobs:
                         else print "0.00"
                       }')
 
-                      printf '| %s | %s | %.2f | %.2f | %.2f |\\n' \
+                      printf '| %s | %s | %.2f | %.2f | %.2f |\n' \
                         "$label" "$throughput" "$average" "$p95" "$failures"
                     }
 
@@ -239,7 +239,7 @@ jobs:
                   } > scalability-results/benchmark-report.md
 
                   if ! grep --fixed-strings --quiet "$RUN_URL" docs/benchmark.md; then
-                    printf '\\n' >> docs/benchmark.md
+                    printf '\n' >> docs/benchmark.md
                     cat scalability-results/benchmark-report.md >> docs/benchmark.md
                   fi
 
