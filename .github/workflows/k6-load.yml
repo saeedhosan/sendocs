@@ -83,6 +83,9 @@ jobs:
                   ) >> test_results/resource-usage-${{ matrix.group }}.log 2>&1 &
                   echo $! > test_results/resource-monitor.pid
 
+            - name: Capture runner metadata
+              uses: ./.github/actions/runner-metadata
+
             - name: Run HTTP load test
               env:
                   BASE_URL: http://127.0.0.1:3000
@@ -134,6 +137,18 @@ jobs:
                   ref: reports
                   persist-credentials: true
 
+            - name: Check out workflow sources
+              uses: actions/checkout@v7
+              with:
+                  repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+                  ref: ${{ github.head_ref || github.ref_name }}
+                  path: .workflow-source
+                  clean: false
+                  persist-credentials: false
+
+            - name: Ignore temporary checkout paths
+              run: printf '%s\n' '.workflow-source/' 'test_results/' >> .git/info/exclude
+
             - name: Download workload artifacts
               continue-on-error: true
               uses: actions/download-artifact@v6
@@ -141,6 +156,10 @@ jobs:
                   pattern: http-scalability-${{ github.run_id }}-*
                   path: test_results
                   merge-multiple: true
+
+            - name: Write combined job summary
+              if: always()
+              uses: ./.workflow-source/.github/actions/benchmark-summary
 
             - name: Append workload results to benchmark history
               run: |
