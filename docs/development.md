@@ -127,6 +127,8 @@ docker compose up -d             # Start all services
 
 - Web and API: [http://localhost:3000](http://localhost:3000); Vite proxies API requests to the internal API service.
 
+The API, worker, and scheduler run from the built image rather than a host bind mount. Rebuild their image after backend source changes with `docker compose build api worker scheduler migrate`.
+
 Stop: `docker compose down`
 
 ## Running a Single Service
