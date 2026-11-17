@@ -125,8 +125,7 @@ docker compose run --rm migrate  # Run database migrations
 docker compose up -d             # Start all services
 ```
 
-- Web: [http://localhost:3000](http://localhost:3000)
-- API: [http://localhost:8000](http://localhost:8000)
+- Web and API: [http://localhost:3000](http://localhost:3000); Vite proxies API requests to the internal API service.
 
 Stop: `docker compose down`
 
@@ -185,7 +184,6 @@ The Vite dev server proxies `/api` and `/health` to `http://127.0.0.1:8000`, so 
 | Service    | Port       |
 | :--------- | :--------- |
 | Web        | 3000       |
-| API        | 8000       |
 | PostgreSQL | 5432       |
 | RustFS     | 9000, 9001 |
 
