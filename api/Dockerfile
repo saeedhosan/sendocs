@@ -26,6 +26,7 @@ RUN apk add --no-cache \
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 COPY docker/php.ini /usr/local/etc/php/conf.d/zz-api.ini
+COPY docker/php-fpm-www.conf /usr/local/etc/php-fpm.d/www.conf
 
 ENV COMPOSER_ALLOW_SUPERUSER=1 \
     COMPOSER_NO_INTERACTION=1
