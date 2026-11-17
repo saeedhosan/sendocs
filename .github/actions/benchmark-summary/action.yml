@@ -1,0 +1,17 @@
+name: Benchmark job summary
+description: Writes a combined k6 benchmark report to the GitHub step summary.
+
+inputs:
+  results-directory:
+    description: Directory containing k6-summary-*.json files.
+    required: false
+    default: test_results
+
+runs:
+  using: composite
+  steps:
+    - name: Write combined summary
+      shell: bash
+      env:
+          RESULTS_DIRECTORY: ${{ inputs['results-directory'] }}
+      run: python3 "${{ github.action_path }}/write_summary.py"

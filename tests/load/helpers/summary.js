@@ -54,9 +54,7 @@ export function handleSummary(data) {
     const runId = __ENV.GITHUB_RUN_ID || 'local';
     const repository = __ENV.GITHUB_REPOSITORY || '';
     const server = __ENV.GITHUB_SERVER_URL || 'https://github.com';
-    const commit = __ENV.GITHUB_SHA || '';
     const runUrl = repository ? server + '/' + repository + '/actions/runs/' + runId : '';
-    const commitUrl = repository && commit ? server + '/' + repository + '/commit/' + commit : '';
     const workloadNames = {
         landing: 'Landing',
         auth: 'Authentication',
@@ -72,7 +70,7 @@ export function handleSummary(data) {
         memory_gib: __ENV.RUNNER_MEMORY_GIB || 'Unknown',
     };
     const report = [
-        '### Results — ' + TARGET_VUS.toLocaleString() + ' VUs · ' + timestamp,
+        '### Results — ' + TARGET_VUS.toLocaleString() + ' VUs - ' + timestamp,
         '',
         '- **Target load:** ' + TARGET_VUS.toLocaleString() + ' VUs · ' + formatDuration(RAW_TEST_DURATION),
         '- **Environment:** GitHub runner (' + [
@@ -82,10 +80,9 @@ export function handleSummary(data) {
             environment.cpu_count + ' vCPU',
             environment.memory_gib + ' GiB RAM',
         ].join(' · ') + ')',
-        '- **Evidence:** ' + (runUrl ? '[Workflow run](' + runUrl + ')' : 'Local run') +
-            (commitUrl ? ' · [Commit](' + commitUrl + ')' : ''),
+        '- **Evidence:** ' + (runUrl ? '[Workflow run](' + runUrl + ')' : 'Local run'),
         '',
-        '| Workload | Throughput (req/s) | Avg (ms) | p95 (ms) | Failures (%) |',
+        '| Workload | Throughput (req/s) | Avg response (ms) | p95 (ms) | Failures (%) |',
         '|---|---:|---:|---:|---:|',
         '| ' + workloadNames[WORKLOAD_GROUP] + ' | ' + format(throughput) + ' | ' +
             format(average) + ' | ' + format(p95) + ' | ' +
@@ -99,16 +96,16 @@ export function handleSummary(data) {
         root_group: data.root_group,
         options: data.options,
         state: data.state,
+        target_vus: TARGET_VUS,
+        test_duration: RAW_TEST_DURATION,
+        workload_group: WORKLOAD_GROUP,
+        started_at: timestamp,
         environment,
         metrics: data.metrics,
     };
-    const output = {
+    return {
         ['test_results/benchmark-entry-' + WORKLOAD_GROUP + '.md']: report,
         ['test_results/k6-summary-' + WORKLOAD_GROUP + '.json']: JSON.stringify(safeSummary, null, 2),
         stdout: report,
     };
-    if (__ENV.GITHUB_STEP_SUMMARY) {
-        output[__ENV.GITHUB_STEP_SUMMARY] = report;
-    }
-    return output;
 }

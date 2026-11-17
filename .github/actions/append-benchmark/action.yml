@@ -1,0 +1,31 @@
+name: Append benchmark result
+description: Prepares an updated benchmark history from the current reports branch.
+
+inputs:
+  combined-report:
+    description: Path to the combined benchmark markdown file.
+    required: false
+    default: test_results/benchmark-combined.md
+  history-ref:
+    description: Local git ref for the reports branch history.
+    required: false
+    default: refs/remotes/upstream/reports
+
+outputs:
+  appended:
+    description: Whether the history was changed.
+    value: ${{ steps.append.outputs.appended }}
+  prepared-history:
+    description: Path to the prepared benchmark history file.
+    value: ${{ steps.append.outputs.prepared-history }}
+
+runs:
+  using: composite
+  steps:
+    - id: append
+      shell: bash
+      env:
+          COMBINED_REPORT: ${{ inputs['combined-report'] }}
+          HISTORY_REF: ${{ inputs['history-ref'] }}
+          PREPARED_HISTORY: ${{ runner.temp }}/benchmark.md
+      run: python3 "${{ github.action_path }}/append_benchmark.py"

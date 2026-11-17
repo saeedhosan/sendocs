@@ -1,0 +1,9 @@
+name: Capture runner metadata
+description: Exposes runner OS, architecture, CPU, and memory to later steps through GITHUB_ENV.
+
+runs:
+  using: composite
+  steps:
+    - name: Capture metadata
+      shell: bash
+      run: python3 "${{ github.action_path }}/runner_metadata.py"
