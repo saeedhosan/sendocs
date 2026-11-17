@@ -101,7 +101,8 @@ docker compose run --rm migrate  # Run database migrations
 docker compose up -d             # Start all services
 ```
 
-- Web and API: [http://localhost:3000](http://localhost:3000) (API health: `/health`)
+- Web: [http://localhost:3000](http://localhost:3000)
+- API: [http://localhost:8000](http://localhost:8000)
 
 Stop: `docker compose down`
 
