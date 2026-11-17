@@ -17,10 +17,10 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
-    build:
-        name: Build and verify
+    tests:
+        name: Container tests
         runs-on: ubuntu-latest
-        timeout-minutes: 45
+        timeout-minutes: 30
 
         steps:
             - name: Check out repository
@@ -30,10 +30,23 @@ jobs:
               run: cp -n .env.example .env
 
             - name: Run API tests
-              run: docker compose run --rm --no-deps api composer test
+              run: docker compose run --rm api composer test
 
             - name: Run web tests
-              run: docker compose run --rm --no-deps web bun run test
+              run: docker compose run --rm web bun run test
+
+    production-images:
+        name: Production images
+        needs: tests
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+
+        steps:
+            - name: Check out repository
+              uses: actions/checkout@v7
+
+            - name: Create environment file
+              run: cp -n .env.example .env
 
             - name: Build production images
               env:
@@ -42,20 +55,10 @@ jobs:
               run: docker compose build
 
             - name: Run migrations
-              env:
-                  API_TARGET: prod
-                  WEB_TARGET: prod
               run: docker compose run --rm migrate
 
             - name: Start the application
-              env:
-                  API_TARGET: prod
-                  WEB_TARGET: prod
               run: docker compose up -d --scale test=0 --scale migrate=0
 
             - name: Health check
               run: curl -fsS --retry 5 --retry-connrefused "http://127.0.0.1:3000/health"
-
-            - name: Stop Compose services
-              if: always()
-              run: docker compose down --volumes --remove-orphans
