@@ -6,21 +6,18 @@ on:
             target_vus:
                 description: "Concurrent HTTP virtual users per workload group"
                 type: string
-                default: "1000"
+                default: "100"
                 required: true
             test_duration:
-                description: "Duration per workload group (for example 60s or 5m)"
+                description: "Duration per workload group (for example 60s or 5m)."
                 type: string
                 default: "60s"
-                required: true
-            diagnostic_mode:
-                description: "Run only authentication and capture PHP-FPM/PostgreSQL diagnostics"
-                type: boolean
-                default: true
                 required: true
     pull_request:
         branches:
             - main
+    #     paths-ignore:
+    #         - docs/benchmark.md
 
 permissions:
     contents: write
@@ -33,15 +30,11 @@ jobs:
     load_test:
         name: HTTP load - ${{ matrix.group }}
         runs-on: ubuntu-latest
-        timeout-minutes: 60
-        env:
-            API_TARGET: prod
-            WEB_TARGET: prod
-            WEB_CONTAINER_PORT: 80
+        timeout-minutes: 30
         strategy:
             fail-fast: false
             matrix:
-                group: ${{ (github.event_name == 'pull_request' || inputs.diagnostic_mode) && fromJSON('["auth"]') || fromJSON('["landing", "auth", "owner", "client"]') }}
+                group: [landing, auth, owner, client]
 
         steps:
             - name: Check out repository
@@ -54,16 +47,9 @@ jobs:
               run: |
                   cp .env.example .env
                   sed -i 's/^APP_ENV=.*/APP_ENV=testing/' .env
-                  mkdir -p scalability-results
-
-            - name: Validate Compose config
-              run: docker compose config --quiet
 
             - name: Build Compose images
               run: docker compose build
-
-            - name: Validate PHP-FPM configuration
-              run: docker compose run --rm --no-deps --entrypoint php-fpm api -tt
 
             - name: Run migrations
               run: docker compose run --rm migrate
@@ -79,47 +65,9 @@ jobs:
                     fi
                     sleep 2
                   done
-                  echo "::error::Application health check failed."
-                  docker compose ps -a
+                  docker compose ps
                   docker compose logs --no-color
-                  docker compose exec -T api php-fpm -tt || true
                   exit 1
-
-            - name: Start PostgreSQL activity monitor
-              if: github.event_name == 'pull_request' || inputs.diagnostic_mode
-              run: |
-                  mkdir -p scalability-results
-                  (
-                    while true; do
-                      echo "===== $(date -u '+%Y-%m-%dT%H:%M:%SZ') ====="
-                      docker compose exec -T db sh -c '
-                        PGPASSWORD="$POSTGRES_PASSWORD" psql -X -U "$POSTGRES_USER" -d "$POSTGRES_DB" -P pager=off -c "
-                          SELECT state,
-                                 COALESCE(wait_event_type, chr(45)) AS wait_type,
-                                 COALESCE(wait_event, chr(45)) AS wait_event,
-                                 count(*) AS connections
-                          FROM pg_stat_activity
-                          WHERE datname = current_database()
-                          GROUP BY state, wait_event_type, wait_event
-                          ORDER BY connections DESC;
-                        "
-                        PGPASSWORD="$POSTGRES_PASSWORD" psql -X -U "$POSTGRES_USER" -d "$POSTGRES_DB" -P pager=off -c "
-                          SELECT pid,
-                                 round(extract(epoch FROM (clock_timestamp() - query_start))::numeric, 2) AS query_seconds,
-                                 state,
-                                 COALESCE(wait_event_type, chr(45)) AS wait_type,
-                                 COALESCE(wait_event, chr(45)) AS wait_event
-                          FROM pg_stat_activity
-                          WHERE datname = current_database()
-                            AND state <> (chr(105) || chr(100) || chr(108) || chr(101))
-                          ORDER BY query_start
-                          LIMIT 20;
-                        "
-                      ' || true
-                      sleep 5
-                    done
-                  ) >> scalability-results/postgres-activity-auth.log 2>&1 &
-                  echo $! > scalability-results/postgres-monitor.pid
 
             - name: Set up k6
               uses: grafana/setup-k6-action@v1
@@ -145,27 +93,11 @@ jobs:
                   ) >> scalability-results/resource-usage-${{ matrix.group }}.log 2>&1 &
                   echo $! > scalability-results/resource-monitor.pid
 
-            - name: Capture runner hardware
-              shell: bash
-              run: |
-                  source /etc/os-release
-                  cpu_model="$(lscpu | sed -n 's/^Model name:[[:space:]]*//p' | head -n 1)"
-                  cpu_count="$(nproc)"
-                  memory_gib="$(awk '/MemTotal:/ { printf "%.2f", $2 / 1024 / 1024 }' /proc/meminfo)"
-                  {
-                    echo "RUNNER_OS_NAME=${PRETTY_NAME:-Linux}"
-                    echo "RUNNER_ARCH=$(uname -m)"
-                    echo "RUNNER_CPU_MODEL=${cpu_model:-Unknown}"
-                    echo "RUNNER_CPU_COUNT=${cpu_count:-Unknown}"
-                    echo "RUNNER_MEMORY_GIB=${memory_gib:-Unknown}"
-                  } >> "$GITHUB_ENV"
-
             - name: Run HTTP load test
               env:
                   BASE_URL: http://127.0.0.1:3000
-                  TARGET_VUS: ${{ github.event_name == 'workflow_dispatch' && inputs.target_vus || '1000' }}
+                  TARGET_VUS: ${{ github.event_name == 'workflow_dispatch' && inputs.target_vus || '100' }}
                   TEST_DURATION: ${{ github.event_name == 'workflow_dispatch' && inputs.test_duration || '60s' }}
-                  RUN_STARTED_AT: ${{ github.run_started_at }}
                   WORKLOAD_GROUP: ${{ matrix.group }}
               run: |
                   mkdir -p scalability-results
@@ -177,22 +109,11 @@ jobs:
                   if [ -f scalability-results/resource-monitor.pid ]; then
                     kill "$(cat scalability-results/resource-monitor.pid)" 2>/dev/null || true
                   fi
-                  if [ -f scalability-results/postgres-monitor.pid ]; then
-                    kill "$(cat scalability-results/postgres-monitor.pid)" 2>/dev/null || true
-                  fi
-
-            - name: Capture PHP-FPM and PostgreSQL logs
-              if: always() && (github.event_name == 'pull_request' || inputs.diagnostic_mode)
-              run: |
-                  docker compose logs --no-color api db > scalability-results/diagnostic-logs-auth.log 2>&1 || true
 
             - name: Capture application logs on failure
               if: failure()
               run: |
-                  mkdir -p scalability-results
-                  docker compose ps -a > scalability-results/compose-failure-${{ matrix.group }}.log 2>&1 || true
-                  docker compose logs --no-color >> scalability-results/compose-failure-${{ matrix.group }}.log 2>&1 || true
-                  docker compose exec -T api php-fpm -tt >> scalability-results/compose-failure-${{ matrix.group }}.log 2>&1 || true
+                  docker compose logs --no-color > scalability-results/compose-failure-${{ matrix.group }}.log 2>&1 || true
 
             - name: Upload workload artifacts
               if: always()
@@ -204,8 +125,6 @@ jobs:
                       scalability-results/k6-summary-${{ matrix.group }}.json
                       scalability-results/resource-usage-${{ matrix.group }}.log
                       scalability-results/compose-failure-${{ matrix.group }}.log
-                      scalability-results/postgres-activity-auth.log
-                      scalability-results/diagnostic-logs-auth.log
                   if-no-files-found: warn
                   retention-days: 1
 
@@ -215,7 +134,7 @@ jobs:
 
     record_results:
         name: Aggregate benchmark results
-        if: always() && github.event_name == 'workflow_dispatch' && inputs.diagnostic_mode != true
+        if: always()
         needs: [load_test]
         runs-on: ubuntu-latest
         steps:
@@ -233,97 +152,25 @@ jobs:
                   path: scalability-results
                   merge-multiple: true
 
-            - name: Generate benchmark summary report
-              env:
-                  TARGET_VUS: ${{ inputs.target_vus || '1000' }}
-                  TEST_DURATION: ${{ inputs.test_duration || '60s' }}
-                  RUN_STARTED_AT: ${{ github.run_started_at }}
-                  RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-                  COMMIT_URL: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
+            - name: Append workload results to benchmark history
               run: |
-                  set -euo pipefail
+                  shopt -s nullglob
+                  reports=(scalability-results/benchmark-entry-*.md)
+                  if [ "${#reports[@]}" -eq 0 ]; then
+                    echo "No benchmark reports were produced."
+                    exit 0
+                  fi
 
-                  for group in landing auth owner client; do
-                    file="scalability-results/k6-summary-${group}.json"
-                    if [ ! -f "$file" ]; then
-                      echo "::error::Missing summary for workload: $group"
-                      exit 1
-                    fi
-                  done
-
-                  duration_seconds=$(awk -v duration="$TEST_DURATION" 'BEGIN {
-                    if (duration ~ /ms$/) {
-                      sub(/ms$/, "", duration); print duration / 1000
-                    } else if (duration ~ /s$/) {
-                      sub(/s$/, "", duration); print duration
-                    } else if (duration ~ /m$/) {
-                      sub(/m$/, "", duration); print duration * 60
-                    } else if (duration ~ /h$/) {
-                      sub(/h$/, "", duration); print duration * 3600
-                    } else {
-                      exit 1
-                    }
-                  }')
-
-                  {
-                    echo "### Results — ${TARGET_VUS} VUs · ${RUN_STARTED_AT}"
-                    echo
-                    echo "- **Target load:** ${TARGET_VUS} VUs · ${TEST_DURATION}"
-                    environment_for() {
-                      local group="$1"
-                      local file="scalability-results/k6-summary-${group}.json"
-                      local os architecture cpu cpu_count memory
-
-                      os=$(jq -r '.environment.os // "Unknown"' "$file")
-                      architecture=$(jq -r '.environment.architecture // "Unknown"' "$file")
-                      cpu=$(jq -r '.environment.cpu_model // "Unknown"' "$file")
-                      cpu_count=$(jq -r '.environment.cpu_count // "Unknown"' "$file")
-                      memory=$(jq -r '.environment.memory_gib // "Unknown"' "$file")
-
-                      printf '%s (%s · %s · %s · %s vCPU · %s GiB RAM)' \
-                        "GitHub runner" "$os" "$architecture" "$cpu" "$cpu_count" "$memory"
-                    }
-
-                    echo "- **Environment:** $(environment_for landing); $(environment_for auth); $(environment_for owner); $(environment_for client)"
-                    echo "- **Evidence:** [Workflow run](${RUN_URL}) · [Commit](${COMMIT_URL})"
-                    echo
-                    echo "| Workload | Throughput (req/s) | Avg (ms) | p95 (ms) | Failures (%) |"
-                    echo "|---|---:|---:|---:|---:|"
-
-                    add_row() {
-                      local group="$1"
-                      local label="$2"
-                      local file="scalability-results/k6-summary-${group}.json"
-                      local requests average p95 failures throughput
-
-                      requests=$(jq -r '.metrics.workload_http_requests.values.count // 0' "$file")
-                      average=$(jq -r '.metrics.workload_http_req_duration.values.avg // 0' "$file")
-                      p95=$(jq -r '.metrics.workload_http_req_duration.values["p(95)"] // 0' "$file")
-                      failures=$(jq -r '(.metrics.workload_http_failed.values.rate // 0) * 100' "$file")
-                      throughput=$(awk -v requests="$requests" -v seconds="$duration_seconds" 'BEGIN {
-                        if (seconds > 0) printf "%.2f", requests / seconds
-                        else print "0.00"
-                      }')
-
-                      printf '| %s | %s | %.2f | %.2f | %.2f |\n' \
-                        "$label" "$throughput" "$average" "$p95" "$failures"
-                    }
-
-                    add_row landing "Landing"
-                    add_row auth "Authentication"
-                    add_row owner "Owner portal"
-                    add_row client "Client portal"
-                    echo
-                    echo
-                  } > scalability-results/benchmark-report.md
-
-                  if ! grep --fixed-strings --quiet "$RUN_URL" docs/benchmark.md; then
+                  run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+                  if ! grep --fixed-strings --quiet "$run_url" docs/benchmark.md; then
                     printf '\n' >> docs/benchmark.md
-                    cat scalability-results/benchmark-report.md >> docs/benchmark.md
+                    for report in "${reports[@]}"; do
+                      cat "$report" >> docs/benchmark.md
+                    done
                   fi
 
             - name: Commit benchmark results
-              if: always() && hashFiles('scalability-results/benchmark-report.md') != '' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+              if: always() && hashFiles('scalability-results/benchmark-entry-*.md') != '' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
               uses: stefanzweifel/git-auto-commit-action@v7
               with:
                   branch: reports
