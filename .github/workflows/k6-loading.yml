@@ -113,7 +113,7 @@ jobs:
                                  COALESCE(wait_event, chr(45)) AS wait_event
                           FROM pg_stat_activity
                           WHERE datname = current_database()
-                            AND state <> 'idle'
+                            AND state <> (chr(105) || chr(100) || chr(108) || chr(101))
                           ORDER BY query_start
                           LIMIT 20;
                         "
