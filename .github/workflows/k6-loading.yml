@@ -112,9 +112,9 @@ jobs:
               shell: bash
               run: |
                   source /etc/os-release
-                  cpu_model="$(lscpu | awk -F: '/^Model name:/ { sub(/^[ \\t]+/, \"\", $2); print $2; exit }')"
+                  cpu_model="$(lscpu | sed -n 's/^Model name:[[:space:]]*//p' | head -n 1)"
                   cpu_count="$(nproc)"
-                  memory_gib="$(awk '/MemTotal:/ { printf \"%.2f\", $2 / 1024 / 1024 }' /proc/meminfo)"
+                  memory_gib="$(awk '/MemTotal:/ { printf "%.2f", $2 / 1024 / 1024 }' /proc/meminfo)
                   {
                     echo "RUNNER_OS_NAME=${PRETTY_NAME:-Linux}"
                     echo "RUNNER_ARCH=$(uname -m)"
@@ -269,8 +269,7 @@ jobs:
                       cpu_count=$(jq -r '.environment.cpu_count // "—"' "$file")
                       memory=$(jq -r '.environment.memory_gib // "—"' "$file")
 
-                      printf '| %s | %s | %s | %s | %s | %s GiB |\\n' \\
-                        "$label" "$os" "$architecture" "$cpu" "$cpu_count" "$memory"
+                      printf '| %s | %s | %s | %s | %s | %s GiB |\n' "$label" "$os" "$architecture" "$cpu" "$cpu_count" "$memory"
                     }
 
                     add_hardware_row landing "Landing"
