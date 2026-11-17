@@ -103,8 +103,8 @@ export function handleSummary(data) {
         metrics: data.metrics,
     };
     const output = {
-        ['scalability-results/benchmark-entry-' + WORKLOAD_GROUP + '.md']: report,
-        ['scalability-results/k6-summary-' + WORKLOAD_GROUP + '.json']: JSON.stringify(safeSummary, null, 2),
+        ['test_results/benchmark-entry-' + WORKLOAD_GROUP + '.md']: report,
+        ['test_results/k6-summary-' + WORKLOAD_GROUP + '.json']: JSON.stringify(safeSummary, null, 2),
         stdout: report,
     };
     if (__ENV.GITHUB_STEP_SUMMARY) {
