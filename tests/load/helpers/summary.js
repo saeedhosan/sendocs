@@ -72,9 +72,9 @@ export function handleSummary(data) {
         memory_gib: __ENV.RUNNER_MEMORY_GIB || 'Unknown',
     };
     const report = [
-        '### Results — ' + TARGET_VUS.toLocaleString() + ' VUs - ' + timestamp,
+        '### Results — ' + TARGET_VUS.toLocaleString() + ' VUs · ' + timestamp,
         '',
-        '- **Target load:** ' + TARGET_VUS.toLocaleString() + ' Virtual Users · ' + formatDuration(RAW_TEST_DURATION),
+        '- **Target load:** ' + TARGET_VUS.toLocaleString() + ' VUs · ' + formatDuration(RAW_TEST_DURATION),
         '- **Environment:** GitHub Actions hosted runner',
         '- **Evidence:** ' + (runUrl ? '[Workflow run](' + runUrl + ')' : 'Local run') +
             (commitUrl ? ' · [Commit](' + commitUrl + ')' : ''),
