@@ -231,7 +231,7 @@ jobs:
                       cpu_count=$(jq -r '.environment.cpu_count // "Unknown"' "$file")
                       memory=$(jq -r '.environment.memory_gib // "Unknown"' "$file")
 
-                      printf '%s (%s · %s · %s · %s vCPU · %s GB RAM)' \
+                      printf '%s (%s · %s · %s · %s vCPU · %s GiB RAM)' \
                         "GitHub runner" "$os" "$architecture" "$cpu" "$cpu_count" "$memory"
                     }
 
