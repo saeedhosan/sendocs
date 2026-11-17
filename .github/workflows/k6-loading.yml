@@ -114,7 +114,7 @@ jobs:
                   source /etc/os-release
                   cpu_model="$(lscpu | sed -n 's/^Model name:[[:space:]]*//p' | head -n 1)"
                   cpu_count="$(nproc)"
-                  memory_gib="$(awk '/MemTotal:/ { printf "%.2f", $2 / 1024 / 1024 }' /proc/meminfo)
+                  memory_gib="$(awk '/MemTotal:/ { printf "%.2f", $2 / 1024 / 1024 }' /proc/meminfo)"
                   {
                     echo "RUNNER_OS_NAME=${PRETTY_NAME:-Linux}"
                     echo "RUNNER_ARCH=$(uname -m)"
