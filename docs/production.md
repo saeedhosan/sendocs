@@ -4,7 +4,7 @@ How to run and deploy production. For local development, see [development.md](de
 
 ## Production Mode
 
-Set `API_TARGET=prod` and `WEB_TARGET=prod` in `.env`, then run the commands from the development Quick Start:
+Set `API_TARGET=prod`, `WEB_TARGET=prod`, and `WEB_CONTAINER_PORT=80` in `.env`, then run the commands from the development Quick Start:
 
 ```bash
 cp -n .env.example .env          # set API_TARGET=prod and WEB_TARGET=prod
@@ -13,8 +13,8 @@ docker compose run --rm migrate  # run database migrations
 docker compose up -d             # start production services
 ```
 
-- Web: [http://localhost:3000](http://localhost:3000); nginx serves the bundle and proxies `/api` and `/health` to PHP-FPM.
-- Set `WEB_BIND=0.0.0.0` to expose publicly; `API_BIND=0.0.0.0` only to reach the API directly.
+- Web and API: [http://localhost:3000](http://localhost:3000); the production Nginx image serves the bundle and proxies `/api` and `/health` to PHP-FPM over the private Compose network.
+- Set `WEB_BIND=0.0.0.0` to expose the application. PHP-FPM is not published directly.
 - Set `APP_KEY` to a production value, never the development key.
 - Set `S3_BROWSER_ENDPOINT` to the HTTPS S3 API endpoint that clients' browsers can reach.
 
@@ -27,9 +27,8 @@ Compose reads these from the root `.env`; the application does not.
 | `API_TARGET`          | `dev`                   | Dockerfile stage built for the API and worker                                              |
 | `WEB_TARGET`          | `dev`                   | Dockerfile stage built for the web service                                                 |
 | `WEB_BIND`            | `127.0.0.1`             | Address the published web port binds to                                                    |
-| `WEB_PORT`            | `3000`                  | Port published for the web service                                                         |
-| `API_BIND`            | `127.0.0.1`             | Address the published API port binds to                                                    |
-| `API_PORT`            | `8000`                  | Port published for the API                                                                 |
+| `WEB_PORT`            | `3000`                  | Host port published for the web service                                                    |
+| `WEB_CONTAINER_PORT`  | `3000`                  | Container port (`3000` for Vite dev, `80` for production Nginx)                             |
 | `POSTGRES_BIND`       | `127.0.0.1`             | Address the published PostgreSQL port binds to                                             |
 | `S3_BROWSER_ENDPOINT` | `http://localhost:9000` | Browser-reachable S3 endpoint used when signing downloads; HTTPS is required in production |
 
