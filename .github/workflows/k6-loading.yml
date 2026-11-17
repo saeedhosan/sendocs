@@ -13,6 +13,11 @@ on:
                 type: string
                 default: "60s"
                 required: true
+            diagnostic_mode:
+                description: "Run only authentication and capture PHP-FPM/PostgreSQL diagnostics"
+                type: boolean
+                default: false
+                required: true
     # pull_request:
     #     branches:
     #         - main
@@ -38,7 +43,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                group: [landing, auth, owner, client]
+                group: ${{ inputs.diagnostic_mode && fromJSON('["auth"]') || fromJSON('["landing", "auth", "owner", "client"]') }}
 
         steps:
             - name: Check out repository
@@ -81,6 +86,42 @@ jobs:
                   docker compose logs --no-color
                   docker compose exec -T api php-fpm -tt || true
                   exit 1
+
+            - name: Start PostgreSQL activity monitor
+              if: inputs.diagnostic_mode
+              run: |
+                  mkdir -p scalability-results
+                  (
+                    while true; do
+                      echo "===== $(date -u '+%Y-%m-%dT%H:%M:%SZ') ====="
+                      docker compose exec -T db sh -c '
+                        PGPASSWORD="$POSTGRES_PASSWORD" psql -X -U "$POSTGRES_USER" -d "$POSTGRES_DB" -P pager=off -c "
+                          SELECT state,
+                                 COALESCE(wait_event_type, chr(45)) AS wait_type,
+                                 COALESCE(wait_event, chr(45)) AS wait_event,
+                                 count(*) AS connections
+                          FROM pg_stat_activity
+                          WHERE datname = current_database()
+                          GROUP BY state, wait_event_type, wait_event
+                          ORDER BY connections DESC;
+                        "
+                        PGPASSWORD="$POSTGRES_PASSWORD" psql -X -U "$POSTGRES_USER" -d "$POSTGRES_DB" -P pager=off -c "
+                          SELECT pid,
+                                 round(extract(epoch FROM (clock_timestamp() - query_start))::numeric, 2) AS query_seconds,
+                                 state,
+                                 COALESCE(wait_event_type, chr(45)) AS wait_type,
+                                 COALESCE(wait_event, chr(45)) AS wait_event
+                          FROM pg_stat_activity
+                          WHERE datname = current_database()
+                            AND state <> 'idle'
+                          ORDER BY query_start
+                          LIMIT 20;
+                        "
+                      ' || true
+                      sleep 5
+                    done
+                  ) >> scalability-results/postgres-activity-auth.log 2>&1 &
+                  echo $! > scalability-results/postgres-monitor.pid
 
             - name: Set up k6
               uses: grafana/setup-k6-action@v1
@@ -138,6 +179,14 @@ jobs:
                   if [ -f scalability-results/resource-monitor.pid ]; then
                     kill "$(cat scalability-results/resource-monitor.pid)" 2>/dev/null || true
                   fi
+                  if [ -f scalability-results/postgres-monitor.pid ]; then
+                    kill "$(cat scalability-results/postgres-monitor.pid)" 2>/dev/null || true
+                  fi
+
+            - name: Capture PHP-FPM and PostgreSQL logs
+              if: always() && inputs.diagnostic_mode
+              run: |
+                  docker compose logs --no-color api db > scalability-results/diagnostic-logs-auth.log 2>&1 || true
 
             - name: Capture application logs on failure
               if: failure()
@@ -157,6 +206,8 @@ jobs:
                       scalability-results/k6-summary-${{ matrix.group }}.json
                       scalability-results/resource-usage-${{ matrix.group }}.log
                       scalability-results/compose-failure-${{ matrix.group }}.log
+                      scalability-results/postgres-activity-auth.log
+                      scalability-results/diagnostic-logs-auth.log
                   if-no-files-found: warn
                   retention-days: 1
 
@@ -166,7 +217,7 @@ jobs:
 
     record_results:
         name: Aggregate benchmark results
-        if: always()
+        if: always() && inputs.diagnostic_mode != true
         needs: [load_test]
         runs-on: ubuntu-latest
         steps:
