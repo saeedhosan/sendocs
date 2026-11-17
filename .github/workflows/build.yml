@@ -17,10 +17,10 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
-    tests:
-        name: Container tests
+    build:
+        name: Build and verify
         runs-on: ubuntu-latest
-        timeout-minutes: 30
+        timeout-minutes: 45
 
         steps:
             - name: Check out repository
@@ -30,23 +30,10 @@ jobs:
               run: cp -n .env.example .env
 
             - name: Run API tests
-              run: docker compose run --rm api composer test
+              run: docker compose run --rm --no-deps api composer test
 
             - name: Run web tests
-              run: docker compose run --rm web bun run test
-
-    production-images:
-        name: Production images
-        needs: tests
-        runs-on: ubuntu-latest
-        timeout-minutes: 20
-
-        steps:
-            - name: Check out repository
-              uses: actions/checkout@v7
-
-            - name: Create environment file
-              run: cp -n .env.example .env
+              run: docker compose run --rm --no-deps web bun run test
 
             - name: Build production images
               env:
@@ -55,9 +42,15 @@ jobs:
               run: docker compose build
 
             - name: Run migrations
+              env:
+                  API_TARGET: prod
+                  WEB_TARGET: prod
               run: docker compose run --rm migrate
 
             - name: Start the application
+              env:
+                  API_TARGET: prod
+                  WEB_TARGET: prod
               run: docker compose up -d --scale test=0 --scale migrate=0
 
             - name: Health check
