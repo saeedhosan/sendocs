@@ -80,7 +80,7 @@ export function handleSummary(data) {
             environment.architecture,
             environment.cpu_model,
             environment.cpu_count + ' vCPU',
-            environment.memory_gib + ' GB RAM',
+            environment.memory_gib + ' GiB RAM',
         ].join(' · ') + ')',
         '- **Evidence:** ' + (runUrl ? '[Workflow run](' + runUrl + ')' : 'Local run') +
             (commitUrl ? ' · [Commit](' + commitUrl + ')' : ''),
