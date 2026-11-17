@@ -5,7 +5,10 @@ on:
     push:
         branches:
             - main
-            
+    pull_request:
+        branches:
+            - main
+
 permissions:
     contents: read
 
@@ -50,3 +53,16 @@ jobs:
                   API_TARGET: prod
                   WEB_TARGET: prod
               run: docker compose build
+
+            - name: Run migrations
+              run: docker compose run --rm migrate
+
+            - name: Start the application
+              run: docker compose up -d --scale test=0 --scale migrate=0
+
+            - name: Health check
+              run: curl -fsS --retry 5 --retry-connrefused "http://127.0.0.1:3000/health"
+
+            - name: Stop Compose services
+              if: always()
+              run: docker compose down --volumes --remove-orphans
