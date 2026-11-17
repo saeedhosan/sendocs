@@ -131,9 +131,17 @@ export function handleSummary(data) {
         '',
     ].join('\n');
 
+    // Keep setup_data out of artifacts: it contains generated account passwords,
+    // session cookies, CSRF tokens, and client portal tokens.
+    const safeSummary = {
+        root_group: data.root_group,
+        options: data.options,
+        state: data.state,
+        metrics: data.metrics,
+    };
     const output = {
         ['scalability-results/benchmark-entry-' + WORKLOAD_GROUP + '.md']: report,
-        ['scalability-results/k6-summary-' + WORKLOAD_GROUP + '.json']: JSON.stringify(data, null, 2),
+        ['scalability-results/k6-summary-' + WORKLOAD_GROUP + '.json']: JSON.stringify(safeSummary, null, 2),
         stdout: report,
     };
     if (__ENV.GITHUB_STEP_SUMMARY) {
