@@ -96,16 +96,16 @@ export function handleSummary(data) {
         root_group: data.root_group,
         options: data.options,
         state: data.state,
+        target_vus: TARGET_VUS,
+        test_duration: RAW_TEST_DURATION,
+        workload_group: WORKLOAD_GROUP,
+        started_at: timestamp,
         environment,
         metrics: data.metrics,
     };
-    const output = {
+    return {
         ['test_results/benchmark-entry-' + WORKLOAD_GROUP + '.md']: report,
         ['test_results/k6-summary-' + WORKLOAD_GROUP + '.json']: JSON.stringify(safeSummary, null, 2),
         stdout: report,
     };
-    if (__ENV.GITHUB_STEP_SUMMARY) {
-        output[__ENV.GITHUB_STEP_SUMMARY] = report;
-    }
-    return output;
 }

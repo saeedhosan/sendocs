@@ -35,7 +35,7 @@ jobs:
                 group: [landing, auth, owner, client]
 
         steps:
-            - name: Check out repository
+            - name: Checkout repository
               uses: actions/checkout@v7
               with:
                   ref: ${{ github.head_ref || github.ref_name }}
@@ -126,28 +126,16 @@ jobs:
               run: docker compose down --volumes --remove-orphans
 
     record_results:
-        name: Aggregate benchmark results
+        name: Benchmark results
         if: always()
         needs: [load_test]
         runs-on: ubuntu-latest
         steps:
-            - name: Check out reports branch
+            - name: Checkout current branch
               uses: actions/checkout@v7
               with:
-                  ref: reports
-                  persist-credentials: true
-
-            - name: Check out workflow sources
-              uses: actions/checkout@v7
-              with:
-                  repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
                   ref: ${{ github.head_ref || github.ref_name }}
-                  path: .workflow-source
-                  clean: false
                   persist-credentials: false
-
-            - name: Ignore temporary checkout paths
-              run: printf '%s\n' '.workflow-source/' 'test_results/' >> .git/info/exclude
 
             - name: Download workload artifacts
               continue-on-error: true
@@ -159,27 +147,26 @@ jobs:
 
             - name: Write combined job summary
               if: always()
-              uses: ./.workflow-source/.github/actions/benchmark-summary
+              uses: ./.github/actions/benchmark-summary
 
-            - name: Append workload results to benchmark history
-              run: |
-                  shopt -s nullglob
-                  reports=(test_results/benchmark-entry-*.md)
-                  if [ "${#reports[@]}" -eq 0 ]; then
-                    echo "No benchmark reports were produced."
-                    exit 0
-                  fi
+            - name: Append combined result to benchmark history
+              id: append
+              if: always()
+              uses: ./.github/actions/append-benchmark
 
-                  run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-                  if ! grep --fixed-strings --quiet "$run_url" docs/benchmark.md; then
-                    printf '\n' >> docs/benchmark.md
-                    for report in "${reports[@]}"; do
-                      cat "$report" >> docs/benchmark.md
-                    done
-                  fi
+            - name: Checkout reports branch
+              if: always()
+              uses: actions/checkout@v7
+              with:
+                  ref: reports
+                  persist-credentials: true
+
+            - name: Apply benchmark history
+              if: always() && steps.append.outputs.appended == 'true'
+              run: cp "${{ steps.append.outputs.prepared-history }}" docs/benchmark.md
 
             - name: Commit benchmark results
-              if: always() && hashFiles('test_results/benchmark-entry-*.md') != '' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+              if: always() && steps.append.outputs.appended == 'true' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
               uses: stefanzweifel/git-auto-commit-action@v7
               with:
                   branch: reports
