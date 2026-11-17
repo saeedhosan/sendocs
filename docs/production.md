@@ -7,7 +7,7 @@ How to run and deploy production. For local development, see [development.md](de
 Set `API_TARGET=prod`, `WEB_TARGET=prod`, and `WEB_CONTAINER_PORT=80` in `.env`, then run the commands from the development Quick Start:
 
 ```bash
-cp -n .env.example .env          # set API_TARGET=prod and WEB_TARGET=prod
+cp -n .env.example .env          # set API_TARGET=prod, WEB_TARGET=prod, WEB_CONTAINER_PORT=80
 docker compose build             # build production images
 docker compose run --rm migrate  # run database migrations
 docker compose up -d             # start production services
