@@ -45,6 +45,7 @@ jobs:
               run: |
                   cp .env.example .env
                   sed -i 's/^APP_ENV=.*/APP_ENV=testing/' .env
+                  mkdir -p test_results
 
             - name: Build Compose images
               run: docker compose build
@@ -56,7 +57,7 @@ jobs:
               run: docker compose up -d --scale test=0 --scale migrate=0
 
             - name: Health check
-              run: curl -fsS --retry 5 --retry-connrefused "http://127.0.0.1:3000/health"
+              run: curl -fsS --retry 10 --retry-all-errors --retry-delay 2 --retry-connrefused "http://127.0.0.1:3000/health"
 
             - name: Set up k6
               uses: grafana/setup-k6-action@v1
