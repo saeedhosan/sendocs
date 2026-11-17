@@ -3,6 +3,7 @@ import { check, sleep } from 'k6';
 import { BASE_URL } from '../config.js';
 import { Rate } from 'k6/metrics';
 import { prepareAccounts } from '../helpers/accounts.js';
+import { recordWorkloadRequest } from '../helpers/metrics.js';
 
 export const authLoginSuccess = new Rate('auth_login_success');
 export const authSessionSuccess = new Rate('auth_session_success');
@@ -30,6 +31,7 @@ export default function (data) {
             },
             tags: { endpoint: 'auth_login' },
         });
+        recordWorkloadRequest(login);
         const loginOk = check(login, {
             'auth login returns HTTP 200': (res) => res.status === 200,
         });
@@ -52,6 +54,7 @@ export default function (data) {
         },
         tags: { endpoint: 'auth_session' },
     });
+    recordWorkloadRequest(session);
     authSessionSuccess.add(check(session, {
         'auth session returns HTTP 200': (res) => res.status === 200,
     }));

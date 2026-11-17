@@ -5,7 +5,10 @@ on:
     push:
         branches:
             - main
-            
+    pull_request:
+        branches:
+            - main
+
 permissions:
     contents: read
 
@@ -37,6 +40,9 @@ jobs:
         needs: tests
         runs-on: ubuntu-latest
         timeout-minutes: 20
+        env:
+            API_TARGET: prod
+            WEB_TARGET: prod
 
         steps:
             - name: Check out repository
@@ -46,7 +52,13 @@ jobs:
               run: cp -n .env.example .env
 
             - name: Build production images
-              env:
-                  API_TARGET: prod
-                  WEB_TARGET: prod
               run: docker compose build
+
+            - name: Run migrations
+              run: docker compose run --rm migrate
+
+            - name: Start the application
+              run: docker compose up -d --scale test=0 --scale migrate=0
+
+            - name: Health check
+              run: curl -fsS --retry 10 --retry-all-errors --retry-delay 2 --retry-connrefused "http://127.0.0.1:3000/health"
