@@ -56,7 +56,7 @@ The React (web) app and API are separate parts of the same repository. PostgreSQ
 
 ## Performance Metrics
 
-See the [benchmark results](docs/benchmark.md) for detailed measurements and methodology.
+See the [benchmark results](docs/performance.md) for detailed measurements and methodology.
 
 **Load test - 1k virtual users - 2026-11-18 06:51:21 UTC**
 
