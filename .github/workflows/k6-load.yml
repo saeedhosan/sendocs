@@ -149,11 +149,11 @@ jobs:
                   path: test_results
                   merge-multiple: true
 
-            - name: Write combined job summary
+            - name: Write performance summary
               if: always()
               uses: ./.github/actions/benchmark-summary
 
-            - name: Append combined result to benchmark history
+            - name: Append result to performance history
               id: append
               if: always()
               uses: ./.github/actions/append-benchmark
@@ -165,14 +165,14 @@ jobs:
                   ref: reports
                   persist-credentials: true
 
-            - name: Apply benchmark history
+            - name: Apply performance history
               if: always() && steps.append.outputs.appended == 'true'
-              run: cp "${{ steps.append.outputs.prepared-history }}" docs/benchmark.md
+              run: cp "${{ steps.append.outputs.prepared-history }}" docs/performance.md
 
-            - name: Commit benchmark results
+            - name: Commit performance metrics
               if: always() && steps.append.outputs.appended == 'true' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
               uses: stefanzweifel/git-auto-commit-action@v7
               with:
                   branch: reports
-                  file_pattern: docs/benchmark.md
-                  commit_message: "docs: record parallel HTTP load benchmark"
+                  file_pattern: docs/performance.md
+                  commit_message: "docs: record performance metrics"

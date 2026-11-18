@@ -1,8 +1,8 @@
 import os
+import re
 import subprocess
 
-TITLE = "# Sendocs — Scalability Benchmarks"
-INTRO = "This file records automated load-test results. Each entry describes the exact test scenario; results from different scenarios are not directly comparable."
+TITLE = "## Performance Metrics"
 
 combined_path = os.environ.get("COMBINED_REPORT", "test_results/benchmark-combined.md")
 history_ref = os.environ.get("HISTORY_REF", "refs/remotes/upstream/reports")
@@ -36,26 +36,33 @@ else:
         )
 
     show = subprocess.run(
-        ["git", "show", f"{history_ref}:docs/benchmark.md"],
+        ["git", "show", f"{history_ref}:docs/performance.md"],
         check=False,
         capture_output=True,
         text=True,
     )
-    history = show.stdout if show.returncode == 0 else f"{TITLE}\n\n{INTRO}\n\n"
-    changed = False
-
-    if TITLE not in history:
-        history = f"{TITLE}\n\n{INTRO}\n\n{history}"
-        changed = True
-
+    history = show.stdout.strip() if show.returncode == 0 else ""
     with open(combined_path, encoding="utf-8") as combined_file:
-        combined = combined_file.read()
+        combined = combined_file.read().strip()
 
     lines = combined.splitlines()
     marker = lines[0] if lines else ""
-    if marker and marker not in history:
-        history = history.rstrip("\n") + "\n\n" + combined
+    changed = False
+
+    if not history:
+        history = TITLE
         changed = True
+    elif not history.startswith(TITLE):
+        history = f"{TITLE}\n\n{history}"
+        changed = True
+
+    if marker and marker not in history:
+        body = history.split("\n", 1)[1].lstrip("\n") if "\n" in history else ""
+        entries = [entry.strip("\n") for entry in re.split(r"(?m)^(?=### )", body) if entry.strip()]
+        history = f"{TITLE}\n\n" + "\n\n".join([combined] + entries) + "\n"
+        changed = True
+    else:
+        history = history.rstrip("\n") + "\n"
 
     with open(prepared_path, "w", encoding="utf-8") as prepared_file:
         prepared_file.write(history)
