@@ -1,6 +1,6 @@
 ## Performance Metrics
 
-**Load test - 1k virtual users - 2026-11-18 06:51:21 UTC**
+### Load test - 1k virtual users - 2026-11-18 06:51:21 UTC
 
 | Workload       | Throughput (RPS) | Avg. latency |  p95 latency | Failures | Coverage |
 | -------------- | ---------------: | -----------: | -----------: | -------: | -------: |
@@ -12,7 +12,7 @@
 _GitHub-hosted runner · 1000 concurrent virtual users · 60 seconds_ <br>
 _Environment: Ubuntu 26.04.1 LTS · AMD EPYC 9V74 · 4 vCPU · 15.6 GiB RAM_
 
-**Load test - 500 virtual users - 2026-11-18 04:42:31 UTC**
+### Load test - 500 virtual users - 2026-11-18 04:42:31 UTC
 
 | Workload       | Throughput (RPS) | Avg. latency |  p95 latency | Failures | Coverage |
 | -------------- | ---------------: | -----------: | -----------: | -------: | -------: |
