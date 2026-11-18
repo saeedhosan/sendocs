@@ -22,6 +22,6 @@ jobs:
       - name: Merge main into reports
         run: |
           git fetch origin
-          git checkout devereportslop
+          git checkout reports
           git merge origin/main --no-edit
           git push origin reports
