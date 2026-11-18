@@ -60,7 +60,7 @@ services:
             AWS_BROWSER_ENDPOINT: ${S3_BROWSER_ENDPOINT:-http://localhost:9000}
             AWS_USE_PATH_STYLE_ENDPOINT: "true"
         ports:
-            - "${API_BIND:-127.0.0.1}:${API_PORT:-8000}:${API_CONTAINER_PORT:-8000}"
+            - "${API_BIND:-127.0.0.1}:${API_PORT:-8000}:8000"
         volumes:
             - ./api:/var/www/html
             - /var/www/html/vendor
