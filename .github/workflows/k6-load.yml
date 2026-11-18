@@ -94,7 +94,7 @@ jobs:
             - name: Run HTTP load test
               env:
                   BASE_URL: http://127.0.0.1:3000
-                  TARGET_VUS: ${{ github.event_name == 'workflow_dispatch' && inputs.target_vus || '1' }}
+                  TARGET_VUS: ${{ github.event_name == 'workflow_dispatch' && inputs.target_vus || '100' }}
                   TEST_DURATION: ${{ github.event_name == 'workflow_dispatch' && inputs.test_duration || '60s' }}
                   WORKLOAD_GROUP: ${{ matrix.group }}
               run: |
