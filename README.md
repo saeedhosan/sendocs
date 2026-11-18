@@ -56,31 +56,18 @@ The React (web) app and API are separate parts of the same repository. PostgreSQ
 
 ## Performance Metrics
 
-### Load test — 1,000 virtual users
+### Load test — 1k virtual users
 
-2026-11-18 06:51:21 UTC · GitHub-hosted runner · 1,000 concurrent virtual users · 60 seconds
+2026-11-18 06:51:21 UTC · GitHub-hosted runner · 1000 concurrent virtual users · 60 seconds
 
 Environment: Ubuntu 26.04.1 LTS · AMD EPYC 9V74 · 4 vCPU · 15.6 GiB RAM
 
 | Workload | Throughput (RPS) | Average latency | p95 latency | Failures |
 | --- | ---: | ---: | ---: | ---: |
 | Landing | 11,818.03 | 48.33 ms | 100.22 ms | 0.00% |
-| Authentication | 32.90 | 30,952.08 ms | 55,573.60 ms | 0.00% |
-| Client portal | 143.60 | 6,026.85 ms | 9,316.21 ms | 0.00% |
-| Owner portal | 95.95 | 9,524.07 ms | 10,809.28 ms | 0.00% |
-
-All workloads completed with 0.00% request failures. Latency is reported separately because a successful request does not necessarily indicate a fast response.
-
-### Earlier baseline — 100 virtual users
-
-2026-11-16 · GitHub-hosted runners · 100 concurrent virtual users per workload · 60 seconds
-
-| Workload | Throughput (RPS) | Median latency | Error rate |
-| --- | ---: | ---: | ---: |
-| Landing (1) | 5,100.99 | 18.50 ms | 0.00% |
-| Authentication (2) | 27.01 | 1,515.17 ms | 0.00% |
-| Owner portal (2) | 39.54 | 1,344.00 ms | 0.00% |
-| Client portal (2) | 23.35 | 1,929.32 ms | 0.00% |
+| Authentication | 32.90 | 30,952.08 ms | 55,573 ms | 0.00% |
+| Client portal | 143.60 | 6,026.85 ms | 9,316 ms | 0.00% |
+| Owner portal | 95.95 | 9,524.07 ms | 10,809 ms | 0.00% |
 
 See the [benchmark results](docs/benchmark.md) for detailed measurements and methodology.
 
