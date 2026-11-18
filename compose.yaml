@@ -72,6 +72,8 @@ services:
                 condition: service_healthy
             object-storage-init:
                 condition: service_completed_successfully
+            redis:
+                condition: service_healthy
         restart: unless-stopped
 
     worker:
@@ -106,6 +108,8 @@ services:
                 condition: service_healthy
             object-storage-init:
                 condition: service_completed_successfully
+            redis:
+                condition: service_healthy
         restart: unless-stopped
 
     scheduler:
@@ -137,6 +141,8 @@ services:
                 condition: service_healthy
             object-storage-init:
                 condition: service_completed_successfully
+            redis:
+                condition: service_healthy
         restart: unless-stopped
 
     web:
