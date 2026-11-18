@@ -33,7 +33,6 @@ jobs:
             # Exercise the production Nginx + PHP-FPM runtime, not the dev servers.
             API_TARGET: prod
             WEB_TARGET: prod
-            API_CONTAINER_PORT: "9000"
         strategy:
             fail-fast: false
             matrix:
