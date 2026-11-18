@@ -1,14 +1,18 @@
 import glob
 import json
 import os
+import re
 from datetime import datetime, timezone
 
 GROUP_NAMES = [
-    ("landing", "Landing"),
-    ("auth", "Authentication"),
-    ("client", "Client portal"),
-    ("owner", "Owner portal"),
+    ("landing", "Landing", 1),
+    ("auth", "Authentication", 2),
+    ("client", "Client portal", 2),
+    ("owner", "Owner portal", 2),
 ]
+
+TABLE_HEADER = "| Workload       | Throughput (RPS) | Avg. latency |  p95 latency | Failures | Coverage |"
+TABLE_DIVIDER = "| -------------- | ---------------: | -----------: | -----------: | -------: | -------: |"
 
 
 def metric(summary, name, key):
@@ -27,21 +31,37 @@ def duration_seconds(value):
     return None
 
 
-def format_value(value):
-    return "—" if value is None else f"{value:.2f}"
-
-
 def format_duration(value):
-    seconds = duration_seconds(value)
-    if seconds is None:
-        return str(value or "—")
-    for size, label in [(86400, "day"), (3600, "hour"), (60, "minute"), (1, "second")]:
-        if seconds >= size:
-            amount = round(seconds / size, 1)
-            if amount.is_integer():
-                amount = int(amount)
-            return f"{amount:g} {label}" + ("" if amount == 1 else "s")
-    return "0 seconds"
+    text = str(value or "")
+    match = re.fullmatch(r"(\d+(?:\.\d+)?)(ms|s|m|h)", text)
+    if not match:
+        return text or "—"
+    amount, unit = match.groups()
+    if unit == "ms":
+        return f"{amount} ms"
+    label = {"s": "second", "m": "minute", "h": "hour"}[unit]
+    return f"{amount} {label}" + ("" if float(amount) == 1 else "s")
+
+
+def format_number(value, suffix=""):
+    return "—" if value is None else f"{value:,.2f}{suffix}"
+
+
+def format_timestamp(value):
+    text = str(value or "").replace("Z", "+00:00")
+    try:
+        parsed = datetime.fromisoformat(text)
+    except ValueError:
+        parsed = datetime.now(timezone.utc)
+    if parsed.tzinfo is not None:
+        parsed = parsed.astimezone(timezone.utc)
+    return parsed.strftime("%Y-%m-%d %H:%M:%S UTC")
+
+
+def vus_label(vus):
+    if vus >= 1000 and vus % 1000 == 0:
+        return f"{vus // 1000}k"
+    return f"{vus:,}"
 
 
 results_directory = os.environ.get("RESULTS_DIRECTORY", "test_results")
@@ -65,26 +85,16 @@ else:
     repository = os.environ.get("GITHUB_REPOSITORY", "")
     run_id = os.environ.get("GITHUB_RUN_ID", "")
     run_url = f"{server}/{repository}/actions/runs/{run_id}" if repository else ""
-    timestamp = sample.get("started_at") or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    env_parts = [
-        environment.get("os", "Unknown"),
-        environment.get("cpu_model", "Unknown"),
-        f"{environment.get('cpu_count', 'Unknown')} vCPU",
-        f"{environment.get('memory_gib', 'Unknown')} GiB RAM",
-    ]
+    evidence = f"[Workflow run]({run_url})" if run_url else "Local run"
 
     lines = [
-        f"### Results — {vus:,} VUs - {timestamp}",
+        f"### Load test - {vus_label(vus)} virtual users - {format_timestamp(sample.get('started_at'))}",
         "",
-        f"- **Target load:** {vus:,} VUs · {format_duration(duration)}",
-        "- **Environment:** GitHub runner (" + " · ".join(env_parts) + ")",
-        "- **Evidence:** " + (f"[Workflow run]({run_url})" if run_url else "Local run"),
-        "",
-        "| Workload       | Throughput (req/s) | Avg response (ms) | p95 (ms) | Failures (%) |",
-        "| -------------- | -----------------: | ----------------: | -------: | -----------: |",
+        TABLE_HEADER,
+        TABLE_DIVIDER,
     ]
 
-    for group, name in GROUP_NAMES:
+    for group, name, routes in GROUP_NAMES:
         summary = summaries.get(group)
         if summary is None:
             continue
@@ -94,10 +104,24 @@ else:
         average = metric(summary, "workload_http_req_duration", "avg")
         p95 = metric(summary, "workload_http_req_duration", "p(95)")
         failures = metric(summary, "workload_http_failed", "rate")
+        coverage = f"{routes} route" + ("" if routes == 1 else "s")
         lines.append(
-            f"| {name} | {format_value(throughput)} | {format_value(average)} | "
-            f"{format_value(p95)} | {format_value(None if failures is None else failures * 100)} |"
+            f"| {name:<14} | {format_number(throughput):>16} | "
+            f"{format_number(average, ' ms'):>12} | {format_number(p95, ' ms'):>12} | "
+            f"{format_number(None if failures is None else failures * 100, '%'):>8} | "
+            f"{coverage:>8} |"
         )
+
+    lines.extend([
+        "",
+        "Environment: " + " · ".join([
+            environment.get("os", "Unknown"),
+            environment.get("cpu_model", "Unknown"),
+            f"{environment.get('cpu_count', 'Unknown')} vCPU",
+            f"{environment.get('memory_gib', 'Unknown')} GiB RAM",
+        ]) + " <br>",
+        f"GitHub runner · {vus} concurrent virtual users · {format_duration(duration)} · {evidence}",
+    ])
 
     report = "\n".join(lines) + "\n"
     with open(os.path.join(results_directory, "benchmark-combined.md"), "w", encoding="utf-8") as combined_file:
