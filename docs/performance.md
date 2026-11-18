@@ -9,8 +9,8 @@
 | Client portal  |           143.60 |  6,026.85 ms |  9,316.21 ms |    0.00% | 2 routes |
 | Owner portal   |            95.95 |  9,524.07 ms | 10,809.28 ms |    0.00% | 2 routes |
 
-_GitHub-hosted runner · 1000 concurrent virtual users · 60 seconds_ <br>
-_Environment: Ubuntu 26.04.1 LTS · AMD EPYC 9V74 · 4 vCPU · 15.6 GiB RAM_
+Environment: Ubuntu 26.04.1 LTS · AMD EPYC 9V74 · 4 vCPU · 15.6 GiB RAM <br>
+GitHub runner · 1000 concurrent virtual users · 60 seconds · [Workflow run](https://github.com/saeedhosan/sendocs/actions/runs/44253988941)
 
 ### Load test - 500 virtual users - 2026-11-18 04:42:31 UTC
 
@@ -21,5 +21,5 @@ _Environment: Ubuntu 26.04.1 LTS · AMD EPYC 9V74 · 4 vCPU · 15.6 GiB RAM_
 | Client portal  |            63.90 |  6,560.85 ms | 59,644.93 ms |    7.72% | 2 routes |
 | Owner portal   |            37.60 | 12,192.85 ms | 59,742.28 ms |   18.31% | 2 routes |
 
-_GitHub-hosted runner · 500 concurrent virtual users · 60 seconds_<br>
-_Environment: Ubuntu 26.04.1 LTS · AMD EPYC 7763 · 4 vCPU · 15.6 GiB RAM_
+Environment: Ubuntu 26.04.1 LTS · AMD EPYC 7763 · 4 vCPU · 15.6 GiB RAM<br>
+GitHub runner · 500 concurrent virtual users · 60 seconds · [Workflow run](https://github.com/saeedhosan/sendocs/actions/runs/44245054363)
