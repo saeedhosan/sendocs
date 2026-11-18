@@ -39,6 +39,8 @@ services:
                 condition: service_healthy
             object-storage-init:
                 condition: service_completed_successfully
+            redis:
+                condition: service_healthy
         restart: "no"
 
     api:
@@ -224,6 +226,18 @@ services:
                 condition: service_started
         restart: "no"
 
+    redis:
+        image: redis:7-alpine
+        command: [ "redis-server", "--appendonly", "yes" ]
+        volumes:
+            - redis-data:/data
+        healthcheck:
+            test: [ "CMD", "redis-cli", "ping" ]
+            interval: 5s
+            timeout: 3s
+            retries: 10
+        restart: unless-stopped
+
     db:
         image: postgres:17-alpine
         env_file:
@@ -243,4 +257,5 @@ services:
 
 volumes:
     db-data:
+    redis-data:
     rustfs-data:
