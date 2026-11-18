@@ -56,20 +56,20 @@ The React (web) app and API are separate parts of the same repository. PostgreSQ
 
 ## Performance Metrics
 
-The following isolated workload groups ran in parallel. Each group used its own application stack and k6 runner for 60 seconds. The scenario column summarizes the operations exercised; it is not a count of all requests generated during the test.
+Each isolated workload group ran on its own application stack and k6 runner for 60 seconds.
 
-| Workload | Scenario | Throughput (RPS) | Average latency | p95 latency | Failures |
-| --- | --- | ---: | ---: | ---: | ---: |
+| Workload | Throughput (RPS) | Avg. latency | p95 latency | Failures | Coverage |
+| --- | ---: | ---: | ---: | ---: | --- |
 | **500 VUs** | | | | | |
-| Landing | Homepage requests | 7,589.72 | 65.63 ms | 86.11 ms | 0.00% |
-| Authentication | One login per VU, then repeated session reads | 21.07 | 23,726.29 ms | 59,952.83 ms | 30.30% |
-| Client portal | One PDF upload per VU, then repeated portal reads | 63.90 | 6,560.85 ms | 59,644.93 ms | 7.72% |
-| Owner portal | Repeated request-list and request-detail reads | 37.60 | 12,192.85 ms | 59,742.28 ms | 18.31% |
+| Landing | 7,589.72 | 65.63 ms | 86.11 ms | 0.00% | 1 route |
+| Authentication | 21.07 | 23,726.29 ms | 59,952.83 ms | 30.30% | 2 routes |
+| Client portal | 63.90 | 6,560.85 ms | 59,644.93 ms | 7.72% | 2 routes |
+| Owner portal | 37.60 | 12,192.85 ms | 59,742.28 ms | 18.31% | 2 routes |
 | **1,000 VUs** | | | | | |
-| Landing | Homepage requests | 11,818.03 | 48.33 ms | 100.22 ms | 0.00% |
-| Authentication | One login per VU, then repeated session reads | 32.90 | 30,952.08 ms | 55,573.60 ms | 0.00% |
-| Client portal | One PDF upload per VU, then repeated portal reads | 143.60 | 6,026.85 ms | 9,316.21 ms | 0.00% |
-| Owner portal | Repeated request-list and request-detail reads | 95.95 | 9,524.07 ms | 10,809.28 ms | 0.00% |
+| Landing | 11,818.03 | 48.33 ms | 100.22 ms | 0.00% | 1 route |
+| Authentication | 32.90 | 30,952.08 ms | 55,573.60 ms | 0.00% | 2 routes |
+| Client portal | 143.60 | 6,026.85 ms | 9,316.21 ms | 0.00% | 2 routes |
+| Owner portal | 95.95 | 9,524.07 ms | 10,809.28 ms | 0.00% | 2 routes |
 
 **Test environment:** GitHub-hosted Ubuntu 26.04.1 runners, 4 vCPU and 15.6 GiB RAM per runner. The 500-VU run used an AMD EPYC 7763 processor; the 1,000-VU run used an AMD EPYC 9V74 processor.
 
