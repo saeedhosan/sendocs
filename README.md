@@ -56,35 +56,26 @@ The React (web) app and API are separate parts of the same repository. PostgreSQ
 
 ## Performance Metrics
 
-### Load test — 500 virtual users
+The following isolated workload groups ran in parallel. Each group used its own application stack and k6 runner for 60 seconds. The scenario column summarizes the operations exercised; it is not a count of all requests generated during the test.
 
-2026-11-18 04:42:31 UTC · GitHub-hosted runner · 500 concurrent virtual users · 60 seconds
+| Workload | Scenario | Throughput (RPS) | Average latency | p95 latency | Failures |
+| --- | --- | ---: | ---: | ---: | ---: |
+| **500 VUs** | | | | | |
+| Landing | Homepage requests | 7,589.72 | 65.63 ms | 86.11 ms | 0.00% |
+| Authentication | One login per VU, then repeated session reads | 21.07 | 23,726.29 ms | 59,952.83 ms | 30.30% |
+| Client portal | One PDF upload per VU, then repeated portal reads | 63.90 | 6,560.85 ms | 59,644.93 ms | 7.72% |
+| Owner portal | Repeated request-list and request-detail reads | 37.60 | 12,192.85 ms | 59,742.28 ms | 18.31% |
+| **1,000 VUs** | | | | | |
+| Landing | Homepage requests | 11,818.03 | 48.33 ms | 100.22 ms | 0.00% |
+| Authentication | One login per VU, then repeated session reads | 32.90 | 30,952.08 ms | 55,573.60 ms | 0.00% |
+| Client portal | One PDF upload per VU, then repeated portal reads | 143.60 | 6,026.85 ms | 9,316.21 ms | 0.00% |
+| Owner portal | Repeated request-list and request-detail reads | 95.95 | 9,524.07 ms | 10,809.28 ms | 0.00% |
 
-Environment: Ubuntu 26.04.1 LTS · AMD EPYC 7763 · 4 vCPU · 15.6 GiB RAM
+**Test environment:** GitHub-hosted Ubuntu 26.04.1 runners, 4 vCPU and 15.6 GiB RAM per runner. The 500-VU run used an AMD EPYC 7763 processor; the 1,000-VU run used an AMD EPYC 9V74 processor.
 
-| Workload | Throughput (RPS) | Average latency | p95 latency | Failures |
-| --- | ---: | ---: | ---: | ---: |
-| Landing | 7,589.72 | 65.63 ms | 86.11 ms | 0.00% |
-| Authentication | 21.07 | 23,726.29 ms | 59,952.83 ms | 30.30% |
-| Client portal | 63.90 | 6,560.85 ms | 59,644.93 ms | 7.72% |
-| Owner portal | 37.60 | 12,192.85 ms | 59,742.28 ms | 18.31% |
+A zero-failure run does not necessarily mean low latency. The authenticated workloads still show substantial response times. These are isolated workload tests, not a single mixed-traffic test; results should be interpreted accordingly.
 
-### Load test — 1,000 virtual users
-
-2026-11-18 06:51:21 UTC · GitHub-hosted runner · 1,000 concurrent virtual users · 60 seconds
-
-Environment: Ubuntu 26.04.1 LTS · AMD EPYC 9V74 · 4 vCPU · 15.6 GiB RAM
-
-| Workload | Throughput (RPS) | Average latency | p95 latency | Failures |
-| --- | ---: | ---: | ---: | ---: |
-| Landing | 11,818.03 | 48.33 ms | 100.22 ms | 0.00% |
-| Authentication | 32.90 | 30,952.08 ms | 55,573.60 ms | 0.00% |
-| Client portal | 143.60 | 6,026.85 ms | 9,316.21 ms | 0.00% |
-| Owner portal | 95.95 | 9,524.07 ms | 10,809.28 ms | 0.00% |
-
-The results show that a zero-failure run does not necessarily mean low latency. The authenticated workloads still have substantial response times at both load levels.
-
-See the [benchmark results](docs/benchmark.md) for historical measurements and methodology.
+See the [benchmark results](docs/benchmark.md) for historical measurements and methodology, and the [scalability test documentation](docs/scalability/01_1k_scale_load.md) for the exact endpoints and test setup.
 
 ## Documentation Guide
 
