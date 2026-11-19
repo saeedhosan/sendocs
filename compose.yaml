@@ -33,7 +33,7 @@ services:
             - ./api:/var/www/html
             - /var/www/html/vendor
         depends_on:
-            db:
+            pgsql:
                 condition: service_healthy
             object-storage-init:
                 condition: service_completed_successfully
@@ -64,7 +64,7 @@ services:
             - /var/www/html/vendor
             - /var/www/html/storage/framework/testing
         depends_on:
-            db:
+            pgsql:
                 condition: service_healthy
             object-storage-init:
                 condition: service_completed_successfully
@@ -98,7 +98,7 @@ services:
             - ./api:/var/www/html
             - /var/www/html/vendor
         depends_on:
-            db:
+            pgsql:
                 condition: service_healthy
             object-storage-init:
                 condition: service_completed_successfully
@@ -129,7 +129,7 @@ services:
             - ./api:/var/www/html
             - /var/www/html/vendor
         depends_on:
-            db:
+            pgsql:
                 condition: service_healthy
             object-storage-init:
                 condition: service_completed_successfully
@@ -234,7 +234,7 @@ services:
             retries: 10
         restart: unless-stopped
 
-    db:
+    pgsql:
         image: postgres:17-alpine
         env_file:
             - .env
