@@ -20,8 +20,6 @@ services:
             target: ${API_TARGET:-dev}
         env_file:
             - .env
-            - path: api/.env
-              required: false
         environment:
             FILESYSTEM_DISK: ${FILESYSTEM_DISK:-s3}
             AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-sendocs-local-access}
@@ -50,8 +48,6 @@ services:
             target: ${API_TARGET:-dev}
         env_file:
             - .env
-            - path: api/.env
-              required: false
         environment:
             FILESYSTEM_DISK: ${FILESYSTEM_DISK:-s3}
             AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-sendocs-local-access}
@@ -90,8 +86,6 @@ services:
             - --max-time=3600
         env_file:
             - .env
-            - path: api/.env
-              required: false
         environment:
             FILESYSTEM_DISK: ${FILESYSTEM_DISK:-s3}
             AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-sendocs-local-access}
@@ -123,8 +117,6 @@ services:
             - schedule:work
         env_file:
             - .env
-            - path: api/.env
-              required: false
         environment:
             FILESYSTEM_DISK: ${FILESYSTEM_DISK:-s3}
             AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-sendocs-local-access}
@@ -152,8 +144,6 @@ services:
             target: ${WEB_TARGET:-dev}
         env_file:
             - .env
-            - path: web/.env
-              required: false
         environment:
             VITE_API_PROXY: http://api:8000
         ports:
@@ -251,7 +241,7 @@ services:
         ports:
             - "${POSTGRES_BIND:-127.0.0.1}:5432:5432"
         volumes:
-            - db-data:/var/lib/postgresql/data
+            - pgsql-data:/var/lib/postgresql/data
         healthcheck:
             test:
                 - CMD-SHELL
@@ -262,6 +252,6 @@ services:
         restart: unless-stopped
 
 volumes:
-    db-data:
+    pgsql-data:
     redis-data:
     rustfs-data:
