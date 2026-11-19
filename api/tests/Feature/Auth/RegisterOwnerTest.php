@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Auth\Services\CsrfTokenService;
 use App\Models\AccountToken;
 use App\Models\Session;
 use App\Models\User;
@@ -65,7 +66,7 @@ test('register returns a csrf token derived from the session id', function (): v
     $response = registerOwner();
 
     expect($response->json('csrfToken'))
-        ->toBe(hash_hmac('sha256', Session::query()->sole()->id, config('auth.csrf_secret')));
+        ->toBe(app(CsrfTokenService::class)->derive(Session::query()->sole()->id));
 });
 
 test('register issues one verification token for sixty minutes and emails its raw value', function (): void {
