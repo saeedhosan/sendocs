@@ -11,8 +11,9 @@ test('deletes pending storage objects and removes completed outbox entries', fun
     Storage::put('requests/pending.pdf', 'pdf');
 
     DB::table('storage_deletion_outbox')->insert([
-        'storage_key' => 'requests/pending.pdf',
-        'created_at'  => now(),
+        'storage_key'  => 'requests/pending.pdf',
+        'available_at' => now(),
+        'created_at'   => now(),
     ]);
 
     test()->artisan('storage:cleanup')->assertExitCode(0);
@@ -24,8 +25,9 @@ test('deletes pending storage objects and removes completed outbox entries', fun
 test('keeps failed storage deletions queued for a later retry', function (): void {
     $key = 'requests/retry.pdf';
     DB::table('storage_deletion_outbox')->insert([
-        'storage_key' => $key,
-        'created_at'  => now(),
+        'storage_key'  => $key,
+        'available_at' => now(),
+        'created_at'   => now(),
     ]);
 
     Storage::shouldReceive('delete')->once()->with($key)->andThrow(new RuntimeException('Storage unavailable.'));

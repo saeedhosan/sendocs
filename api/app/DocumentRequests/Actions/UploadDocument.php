@@ -64,6 +64,14 @@ final readonly class UploadDocument
             throw new ApiException('not_found', 'Not found.', 404);
         }
 
+        if ($item->document()->exists()) {
+            throw new ApiException(
+                'duplicate_upload',
+                'A file has already been uploaded for this item.',
+                409,
+            );
+        }
+
         $detected = $this->typeDetector->detect($file);
 
         if ($detected === null) {
