@@ -10,4 +10,4 @@ Route::prefix('v1')->group(function (): void {
     Route::middleware('auth:owner')->group(base_path('routes/v1/owner.php'));
 });
 
-Route::get('/ping', fn () => 'pong1');
+Route::get('/ping', fn (): string => 'pong1');
