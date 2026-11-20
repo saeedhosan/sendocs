@@ -12,4 +12,9 @@ Route::get('/docs/openapi.yaml', function () {
     return response($content)->header('Content-Type', 'text/yaml');
 });
 
-Route::get('/docs', fn (): Factory|View => view('docs'));
+Route::get('/docs', fn(): Factory|View => view('docs'));
+
+
+Route::get('/hello', function () {
+    return 'Hello 2';
+});
