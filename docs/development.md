@@ -82,7 +82,7 @@ sendocs/
 | `worker`    | Laravel queue worker for account email                         |
 | `scheduler` | Laravel scheduler; retries durable object cleanup every minute |
 | `web`       | Vite development server, or the built assets behind nginx      |
-| `db`        | PostgreSQL database                                            |
+| `pgsql`     | PostgreSQL database                                            |
 
 ## Environments
 
