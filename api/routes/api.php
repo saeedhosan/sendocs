@@ -9,3 +9,5 @@ Route::prefix('v1')->group(function (): void {
     Route::group([], base_path('routes/v1/portal.php'));
     Route::middleware('auth:owner')->group(base_path('routes/v1/owner.php'));
 });
+
+Route::get('/ping', fn () => 'pong1');
