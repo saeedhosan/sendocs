@@ -63,6 +63,7 @@ services:
             - ./api:/var/www/html
             - /var/www/html/vendor
             - /var/www/html/storage/framework/testing
+            - ./api/docker/dev.ini:/usr/local/etc/php/conf.d/zz-dev.ini:ro
         depends_on:
             pgsql:
                 condition: service_healthy
