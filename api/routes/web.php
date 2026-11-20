@@ -13,3 +13,5 @@ Route::get('/docs/openapi.yaml', function () {
 });
 
 Route::get('/docs', fn (): Factory|View => view('docs'));
+
+Route::get('/hello', fn (): string => 'Hello 2');
