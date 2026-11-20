@@ -14,7 +14,7 @@ on:
                 default: "60s"
                 required: true
             target_base_url:
-                description: "Optional HTTPS URL for an application running on a separate host. Leave empty to build the app on this runner."
+                description: "HTTPS URL for an isolated test deployment on a separate host (APP_ENV=testing; never production). Leave empty to build the app on this runner."
                 type: string
                 default: ""
                 required: false
