@@ -128,12 +128,11 @@ jobs:
 
             - name: Run HTTP load test
               env:
-                  BASE_URL: ${{ env.TARGET_BASE_URL }}
                   TARGET_VUS: ${{ github.event_name == 'workflow_dispatch' && inputs.target_vus || '500' }}
                   TEST_DURATION: ${{ github.event_name == 'workflow_dispatch' && inputs.test_duration || '60s' }}
                   WORKLOAD_GROUP: ${{ matrix.group }}
               run: |
-                  k6 run ./tests/load/k6-load.js
+                  BASE_URL="$TARGET_BASE_URL" k6 run ./tests/load/k6-load.js
 
             - name: Stop resource monitor
               if: always()
