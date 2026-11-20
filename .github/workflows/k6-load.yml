@@ -13,6 +13,11 @@ on:
                 type: string
                 default: "60s"
                 required: true
+            target_base_url:
+                description: "Optional HTTPS URL for an application running on a separate host. Leave empty to build the app on this runner."
+                type: string
+                default: ""
+                required: false
     # pull_request:
     #     branches:
     #         - main
@@ -45,23 +50,57 @@ jobs:
                   ref: ${{ github.head_ref || github.ref_name }}
                   persist-credentials: true
 
+            - name: Select benchmark target
+              shell: bash
+              env:
+                  TARGET_BASE_URL_INPUT: ${{ inputs.target_base_url }}
+              run: |
+                  set -euo pipefail
+                  mkdir -p test_results
+
+                  if [ -n "$TARGET_BASE_URL_INPUT" ]; then
+                      case "$TARGET_BASE_URL_INPUT" in
+                          https://*) ;;
+                          *)
+                              echo "An external benchmark target must use HTTPS." >&2
+                              exit 1
+                              ;;
+                      esac
+                      target_url="$TARGET_BASE_URL_INPUT"
+                      target_mode="external"
+                  else
+                      target_url="http://127.0.0.1:3000"
+                      target_mode="local"
+                  fi
+
+                  while [ "$target_url" != "${target_url%/}" ]; do
+                      target_url="${target_url%/}"
+                  done
+
+                  echo "TARGET_BASE_URL=$target_url" >> "$GITHUB_ENV"
+                  echo "Benchmark target mode: $target_mode"
+                  echo "Benchmark target host: $(printf '%s' "$target_url" | sed -E 's#https?://([^/]+).*#\\1#')"
+
             - name: Create Compose environment
+              if: inputs.target_base_url == ''
               run: |
                   cp .env.example .env
                   sed -i 's/^APP_ENV=.*/APP_ENV=testing/' .env
-                  mkdir -p test_results
 
             - name: Build production Compose images
+              if: inputs.target_base_url == ''
               run: docker compose build
 
             - name: Run migrations
+              if: inputs.target_base_url == ''
               run: docker compose run --rm migrate
 
             - name: Start the production application stack
+              if: inputs.target_base_url == ''
               run: docker compose up -d --scale test=0 --scale migrate=0
 
             - name: Health check
-              run: curl -fsS --retry 10 --retry-all-errors --retry-delay 2 --retry-connrefused "http://127.0.0.1:3000/health"
+              run: curl -fsS --retry 10 --retry-all-errors --retry-delay 2 --retry-connrefused "$TARGET_BASE_URL/health"
 
             - name: Set up k6
               uses: grafana/setup-k6-action@v1
@@ -70,18 +109,15 @@ jobs:
 
             - name: Start resource monitor
               run: |
-                  mkdir -p test_results
                   (
                     while true; do
                       echo "===== $(date -u '+%Y-%m-%dT%H:%M:%SZ') ====="
-                      echo "--- Host memory ---"
+                      echo "--- Load-generator host memory ---"
                       free -h
-                      echo "--- Host load average ---"
+                      echo "--- Load-generator host load average ---"
                       cat /proc/loadavg
-                      echo "--- Top host processes ---"
+                      echo "--- Top load-generator host processes ---"
                       ps -eo pid,comm,%cpu,%mem,rss --sort=-%cpu | head -n 12
-                      echo "--- Docker container usage ---"
-                      docker stats --no-stream --format "table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.MemPerc}}"
                       sleep 5
                     done
                   ) >> test_results/resource-usage-${{ matrix.group }}.log 2>&1 &
@@ -92,12 +128,11 @@ jobs:
 
             - name: Run HTTP load test
               env:
-                  BASE_URL: http://127.0.0.1:3000
+                  BASE_URL: ${{ env.TARGET_BASE_URL }}
                   TARGET_VUS: ${{ github.event_name == 'workflow_dispatch' && inputs.target_vus || '500' }}
                   TEST_DURATION: ${{ github.event_name == 'workflow_dispatch' && inputs.test_duration || '60s' }}
                   WORKLOAD_GROUP: ${{ matrix.group }}
               run: |
-                  mkdir -p test_results
                   k6 run ./tests/load/k6-load.js
 
             - name: Stop resource monitor
@@ -108,7 +143,7 @@ jobs:
                   fi
 
             - name: Capture application logs on failure
-              if: failure()
+              if: failure() && inputs.target_base_url == ''
               run: |
                   docker compose logs --no-color > test_results/compose-failure-${{ matrix.group }}.log 2>&1 || true
 
@@ -126,7 +161,7 @@ jobs:
                   retention-days: 1
 
             - name: Stop Compose services
-              if: always()
+              if: always() && inputs.target_base_url == ''
               run: docker compose down --volumes --remove-orphans
 
     record_results:
