@@ -76,7 +76,7 @@ class AuthController extends Controller
 
         if ($user !== null && $user->password !== null) {
             $token = $accountTokens->issue($user, AccountToken::PURPOSE_PASSWORD_RESET);
-            DB::afterCommit(fn() => $mailer->sendPasswordReset($user, $token));
+            DB::afterCommit(fn () => $mailer->sendPasswordReset($user, $token));
         }
 
         return response()->json([], 202);
@@ -131,7 +131,7 @@ class AuthController extends Controller
     ): JsonResponse {
         $user  = $request->user();
         $token = $accountTokens->issue($user, AccountToken::PURPOSE_EMAIL_VERIFICATION);
-        DB::afterCommit(fn() => $mailer->sendVerification($user, $token));
+        DB::afterCommit(fn () => $mailer->sendVerification($user, $token));
 
         return response()->json([], 202);
     }
