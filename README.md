@@ -96,7 +96,7 @@ _Environment: Ubuntu 26.04.1 LTS · AMD EPYC 7763 · 4 vCPU · 15.6 GiB RAM_
 
 | Layer              | Technologies                                    |
 | ------------------ | ----------------------------------------------- |
-| **API / Backend**  | Laravel 13, PHP 8.4, RESTful Architecture       |
+| **API / Backend**  | Laravel 13, PHP 8.4, Octane, FrankenPHP, RESTful Architecture       |
 | **Web / Frontend** | React, TypeScript, Vite, Shadcn UI              |
 | **Database**       | PostgreSQL                                      |
 | **Services**       | Docker Compose, S3-compatible object storage    |
