@@ -59,4 +59,4 @@ RUN composer install --prefer-dist
 
 EXPOSE 8000
 
-CMD ["php", "artisan", "octane:frankenphp", "--host=0.0.0.0", "--port=8000", "--workers=1", "--max-requests=1", "--watch"]
+CMD ["php", "artisan", "octane:frankenphp", "--host=0.0.0.0", "--port=8000", "--workers=1", "--max-requests=1"]
