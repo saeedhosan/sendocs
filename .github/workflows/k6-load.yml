@@ -6,16 +6,16 @@ on:
             target_vus:
                 description: "Concurrent HTTP virtual users per workload group"
                 type: string
-                default: "500"
+                default: "1500"
                 required: true
             test_duration:
                 description: "Duration per workload group (for example 60s or 5m)."
                 type: string
                 default: "60s"
                 required: true
-    # pull_request:
-    #     branches:
-    #         - main
+    pull_request:
+        branches:
+            - main
 
 permissions:
     contents: write
@@ -93,7 +93,7 @@ jobs:
             - name: Run HTTP load test
               env:
                   BASE_URL: http://127.0.0.1:3000
-                  TARGET_VUS: ${{ github.event_name == 'workflow_dispatch' && inputs.target_vus || '500' }}
+                  TARGET_VUS: ${{ github.event_name == 'workflow_dispatch' && inputs.target_vus || '1500' }}
                   TEST_DURATION: ${{ github.event_name == 'workflow_dispatch' && inputs.test_duration || '60s' }}
                   WORKLOAD_GROUP: ${{ matrix.group }}
               run: |
