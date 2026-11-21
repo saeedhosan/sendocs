@@ -1,13 +1,9 @@
 name: Generate Octane dependencies
 
 on:
-    workflow_dispatch:
-        inputs:
-            target_branch:
-                description: "PR branch to update"
-                required: true
-                type: string
-                default: "perf/separate-load-generator"
+    pull_request:
+        branches:
+            - main
 
 permissions:
     contents: write
