@@ -16,7 +16,7 @@ jobs:
             - name: Check out target branch
               uses: actions/checkout@v7
               with:
-                  ref: ${{ inputs.target_branch }}
+                  ref: ${{ github.event.pull_request.head.ref }}
                   persist-credentials: true
 
             - name: Set up PHP
@@ -48,4 +48,4 @@ jobs:
                   git add api/composer.json api/composer.lock api/config/octane.php
                   git diff --cached --quiet && exit 0
                   git commit -m "build: add Laravel Octane FrankenPHP dependencies"
-                  git push origin HEAD:"${{ inputs.target_branch }}"
+                  git push origin HEAD:"${{ github.event.pull_request.head.ref }}"
