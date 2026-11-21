@@ -37,6 +37,8 @@ Compose reads these from the root `.env`; the application does not.
 
 Two environments deploy over GitHub Actions using a cPanel SSH/SCP model.
 
+**Deployment gap:** the Docker production image and Compose load-test stack use FrankenPHP/Octane, but the current cPanel SCP workflows still deploy PHP source and run Artisan commands directly. They do not start or supervise a persistent Octane server. Therefore, this runtime migration does not by itself switch the live cPanel deployment to FrankenPHP. Before claiming live production uses Octane, the deployment host must be confirmed to support a long-running FrankenPHP process and a reliable restart/supervision mechanism, or the deployment target must move to the production Docker stack.
+
 | Environment | Trigger                             | Workflow                       |
 | :---------- | :---------------------------------- | :----------------------------- |
 | Stage       | push to `stage`, or manual dispatch | `.github/workflows/stage.yml`  |
