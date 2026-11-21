@@ -84,7 +84,7 @@ sendocs/
 | `web`       | Vite development server, or the built assets behind nginx |
 | `pgsql`     | PostgreSQL database |
 
-The API container is a long-lived Octane application server. Queue and scheduler processes remain separate PHP CLI processes and do not run inside Octane workers. Development uses one worker with request recycling and file watching; production uses Octane's automatic worker sizing and recycles workers after a bounded number of requests.
+The API container is a long-lived Octane application server. Queue and scheduler processes remain separate PHP CLI processes and do not run inside Octane workers. Development uses one worker recycled after every request so code changes are picked up without an external file watcher; production uses Octane's automatic worker sizing and recycles workers after a bounded number of requests.
 
 ## Environments
 
