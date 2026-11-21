@@ -416,6 +416,7 @@ The API needs a consistent HTTP runtime in development, production, and load tes
 Run the Laravel HTTP API through **Laravel Octane on FrankenPHP** in both development and production.
 
 - Nginx serves the production React bundle and reverse-proxies API and health requests to FrankenPHP over HTTP.
+- Nginx logs requests taking at least five seconds to container stderr with request and upstream timings; sensitive magic-link paths remain redacted.
 - The development Compose API service runs the same Octane/FrankenPHP server.
 - Queue workers, the scheduler, and migrations remain separate PHP CLI processes.
 - Octane workers are recycled after a bounded request count; development uses one worker recycled after every request.
