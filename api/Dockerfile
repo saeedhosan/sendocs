@@ -1,35 +1,20 @@
 # syntax=docker/dockerfile:1
 
-FROM php:8.4-fpm-alpine AS base
+FROM dunglas/frankenphp:1-php8.4-alpine AS base
 
-RUN apk add --no-cache \
-    git \
-    unzip \
-    icu-libs \
-    libpq \
-    libzip \
-    && apk add --no-cache --virtual .build-deps \
-    $PHPIZE_DEPS \
-    icu-dev \
-    libzip-dev \
-    oniguruma-dev \
-    postgresql-dev \
-    && docker-php-ext-install -j"$(nproc)" \
+RUN install-php-extensions \
     bcmath \
     intl \
     mbstring \
     opcache \
     pcntl \
     pdo_pgsql \
-    zip \
-    && pecl install redis \
-    && docker-php-ext-enable redis \
-    && apk del .build-deps
+    redis \
+    zip
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 COPY docker/php.ini /usr/local/etc/php/conf.d/zz-api.ini
-COPY docker/php-fpm-www.conf /usr/local/etc/php-fpm.d/www.conf
 
 ENV COMPOSER_ALLOW_SUPERUSER=1 \
     COMPOSER_NO_INTERACTION=1
@@ -57,14 +42,14 @@ RUN composer dump-autoload \
 
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint
 
-RUN chmod +x /usr/local/bin/entrypoint
+RUN chmod +x /usr/local/bin/entrypoint \
+    && mkdir -p bootstrap/cache storage \
+    && chown -R www-data:www-data bootstrap/cache storage
 
-RUN chown -R www-data:www-data bootstrap/cache storage
-
-EXPOSE 9000
+EXPOSE 8000
 
 ENTRYPOINT ["entrypoint"]
-CMD ["php-fpm", "-F"]
+CMD ["php", "artisan", "octane:frankenphp", "--host=0.0.0.0", "--port=8000", "--workers=auto", "--max-requests=500"]
 
 FROM base AS dev
 
@@ -74,4 +59,4 @@ RUN composer install --prefer-dist
 
 EXPOSE 8000
 
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+CMD ["php", "artisan", "octane:frankenphp", "--host=0.0.0.0", "--port=8000", "--workers=1", "--max-requests=1", "--watch"]
