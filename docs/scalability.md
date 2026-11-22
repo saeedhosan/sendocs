@@ -1,98 +1,42 @@
-# Scalability and Load Testing
+# Scalability
 
-This document defines how Sendocs measures application capacity, validates performance changes, and gathers evidence for scalability claims. It is the source of truth for the scalability test strategy; individual benchmark results belong in [performance.md](./performance.md).
+This document defines how Sendocs tests application capacity. Benchmark results are recorded in [performance.md](./performance.md).
 
-## Goals
+## Goal
 
-- Establish a repeatable baseline for representative application workloads.
-- Validate a target of 2,000 concurrent active virtual users (VUs).
-- Measure headroom beyond the target and identify saturation points.
-- Detect degradation that only appears during sustained load.
-- Keep capacity claims tied to a documented workload, environment, duration, and measured results.
+Validate whether Sendocs can handle 2,000 concurrent virtual users (VUs), measure capacity beyond that target, and check for problems that appear under sustained load.
 
-A k6 VU represents a simulated user executing a workload. A result of 2,000 VUs does not mean 2,000 requests per second, 2,000 registered accounts, or a guarantee that every production deployment supports 2,000 real users.
+A VU is a simulated user running a k6 workflow. It is not the same as requests per second (RPS), registered accounts, or real-world users.
 
-## Scope and terminology
+## Test profiles
 
-### Concurrency versus throughput
+| Test | Target | Steady period | Purpose |
+| --- | ---: | ---: | --- |
+| Baseline | 500 VUs | Short | Establish latency, throughput, errors, and resource use |
+| Capacity | 2,000 VUs | 10–15 min | Validate the target under a representative workload |
+| Headroom | 2,500–3,000 VUs | Record per run | Find the saturation point |
+| Soak | 2,000 VUs | 30–60 min | Check for leaks and performance degradation over time |
 
-- **Virtual users (VUs):** concurrent k6 workers executing the configured workflow.
-- **Iterations:** executions of a VU's default function. One iteration may issue multiple HTTP requests.
-- **Requests per second (RPS):** HTTP requests completed per second.
-- **Latency:** time taken by an HTTP request; report at least average and p95, and p99 where useful.
-- **Failure rate:** proportion of requests or business checks that fail. Report both rather than treating them as interchangeable.
+Each test ramps up gradually before the steady period. The ramp time is additional to the steady period.
 
-The current k6 scenarios use `ramping-vus`. This is appropriate for concurrency tests. Arrival-rate executors such as `ramping-arrival-rate` answer a different question: whether the system can sustain a specified iteration arrival rate independently of response time.
+## Workloads
 
-### Workload groups
+The load suite currently has four groups:
 
-The existing load suite has four workload groups:
+- **Landing:** public routes.
+- **Authentication:** login and session resolution.
+- **Owner:** authenticated owner operations.
+- **Client:** magic-link portal and upload operations.
 
-- **Landing:** public landing/health-facing route coverage.
-- **Authentication:** owner login and authenticated session resolution.
-- **Owner:** authenticated owner dashboard and request operations.
-- **Client:** magic-link portal and client upload operations.
+The GitHub Actions workflow currently runs these groups separately. These tests help isolate bottlenecks, but a 2,000-VU run in one group does not show that the application handles 2,000 users across all workflows.
 
-Each workload should exercise the real HTTP path through the production-like web/API stack. Keep setup traffic (such as benchmark-account creation) separate from measured workload results.
+To support an application-wide capacity claim, add a mixed-workload test that runs the groups against the same application stack. Its traffic distribution should reflect expected usage and be documented with the results.
 
-The current GitHub Actions workflow runs these groups as separate matrix jobs, each on its own GitHub-hosted runner and application stack. A 2,000-VU run of one group is an isolated workload test; it is not evidence that one application instance handled 2,000 mixed users at once. The overall 2,000-user capacity claim requires a mixed-workload scenario in which the groups share the same application stack.
-
-## Capacity test profiles
-
-The following profiles define the planned validation sequence. They are targets, not claims that the tests have already passed.
-
-| Test | Target | Load profile | Purpose |
-| --- | ---: | --- | --- |
-| Baseline | 500 VUs | Gradual ramp, then a short steady hold | Establish normal latency, throughput, failures, and resource use |
-| Capacity target | 2,000 VUs | Gradual ramp, then 10–15 minutes at target | Validate the stated concurrency target under representative mixed traffic |
-| Headroom | 2,500–3,000 VUs | Gradual ramp, then a steady hold | Find the saturation point and measure capacity above the target |
-| Soak | 2,000 VUs | Gradual ramp, then 30–60 minutes at target | Detect memory growth, connection leaks, queue buildup, and latency degradation |
-
-### Test 1 — Baseline (500 VUs)
-
-Establish a reference point before evaluating the 2,000-VU target.
-
-Record:
-- Requests per second and completed iterations per second.
-- Average, p95, and p99 latency by endpoint/workload.
-- HTTP failure rate and business-check success rates.
-- API, PostgreSQL, Redis, and Nginx CPU and memory use.
-- Database connection use, slow queries, and relevant application errors.
-
-Use the same workload mix, dataset shape, environment, and test settings when comparing later runs.
-
-### Test 2 — Capacity target (2,000 VUs)
-
-Gradually ramp to 2,000 concurrent VUs, then maintain that level for 10–15 minutes.
-
-The mixed workload must represent expected product usage across landing, authentication, owner, and client operations. The initial distribution must be documented and treated as a test assumption until real usage data is available. Do not assume that equal distribution is representative.
-
-Record the same metrics as the baseline, and check that performance remains stable throughout the steady period rather than relying only on a passing final summary.
-
-### Test 3 — Headroom (2,500–3,000 VUs)
-
-After the capacity target passes, increase the target to 2,500 VUs and then, if stable, 3,000 VUs.
-
-The objective is to identify where latency, errors, or resource saturation become unacceptable. Stop increasing load if the system is unstable or the test environment itself becomes the bottleneck.
-
-Report the highest level that met the agreed acceptance criteria. Do not describe the highest attempted VU count as supported capacity if it failed those criteria.
-
-### Test 4 — Soak (2,000 VUs)
-
-Ramp to 2,000 VUs and maintain the target for 30–60 minutes.
-
-Look for:
-- Increasing memory use or worker restarts.
-- Database, Redis, or HTTP connection exhaustion.
-- Growing queues or delayed background work.
-- Increasing p95/p99 latency over time.
-- Rising error rates or resource usage that does not recover.
-
-A short test can miss these issues; the soak test is a separate validation profile.
+Use realistic think time, separate test identities where needed, and keep account/data setup outside the measured test.
 
 ## Load profile
 
-Use k6's `ramping-vus` executor for concurrency profiles. The current scenario starts at zero VUs and uses three ramp stages followed by a steady stage:
+Use k6's `ramping-vus` executor for concurrency tests:
 
 ```js
 executor: 'ramping-vus',
@@ -107,84 +51,59 @@ gracefulRampDown: '30s',
 gracefulStop: '30s',
 ```
 
-For a 2,000-VU target, the ramp reaches approximately 667 VUs after two minutes, 1,333 after four minutes, and 2,000 after six minutes. The final stage holds 2,000 VUs for the configured `TEST_DURATION`.
+At 2,000 VUs, the ramp reaches about 667 after two minutes, 1,333 after four minutes, and 2,000 after six minutes. The final stage holds that level for `TEST_DURATION`.
 
-- Baseline: use a short steady period sufficient to collect a stable reference.
-- Capacity: set `TEST_DURATION` to 10–15 minutes.
-- Headroom: use a steady period long enough to observe the target and resource behavior; record the chosen duration.
-- Soak: set `TEST_DURATION` to 30–60 minutes.
+- Capacity test: set `TEST_DURATION` to 10–15 minutes.
+- Soak test: set it to 30–60 minutes.
+- Baseline and headroom: choose and record a steady period appropriate to the run.
 
-The ramp duration is additional to the steady period. `gracefulRampDown` allows VUs being removed during a ramp-down to finish an iteration within the configured window. `gracefulStop` allows in-flight iterations to finish when the scenario ends. These settings do not extend the configured steady-state duration.
+`gracefulRampDown` gives VUs being stopped time to finish their current iteration. `gracefulStop` gives in-flight iterations time to finish when the scenario ends.
 
-## Workload design
+## What to measure
 
-A capacity claim must use a mixed workload on one shared application stack. The exact distribution should reflect expected usage and be recorded with each benchmark. Until production usage data exists, document the distribution as an explicit assumption.
+Record results by workload and, where possible, by endpoint:
 
-Workloads should:
-- Use separate benchmark accounts and client identities where required.
-- Exercise authenticated owner routes with valid sessions and CSRF behavior.
-- Exercise client portal routes with valid magic links and realistic upload behavior.
-- Include realistic think time so VUs behave like users rather than tight request loops.
-- Avoid accidentally concentrating all VUs on one account, token, or rate-limit identity unless that is the behavior under test.
-- Keep account/data preparation outside the measured interval.
-- Validate response status and business outcomes, not just whether an HTTP request completed.
+- Throughput: requests per second and completed iterations per second.
+- Latency: average, p95, and p99.
+- Reliability: HTTP failure rate and business-check success rate.
+- Resources: API, PostgreSQL, Redis, and Nginx CPU and memory.
+- Database: connection use, slow queries, and locks.
+- Stability: worker restarts, queue growth, and changes in latency or memory during the test.
 
-Keep isolated workload tests as diagnostic tests. They help identify which area is responsible when a mixed test degrades.
+Also monitor the k6 runner. If the load generator is saturated, the result does not establish application capacity.
 
-## Acceptance criteria
+## Pass criteria
 
-Define and review service-level objectives before treating a run as a pass. At minimum, evaluate:
+Agree on endpoint latency objectives before treating a run as a pass. Initial reliability targets are:
 
-| Area | Measurement | Initial evaluation |
-| --- | --- | --- |
-| Reliability | HTTP request failure rate | Target below 1% |
-| Business correctness | Workload-specific success checks | Target at least 99%, with expected negative cases excluded |
-| Latency | Average, p95, and p99 by endpoint | Must meet documented endpoint-level latency objectives |
-| API resources | CPU, memory, worker restarts | No sustained saturation, OOM, or unexplained growth |
-| Database | CPU, connections, query latency, locks | No connection exhaustion or persistent query/lock bottleneck |
-| Supporting services | Redis, Nginx, queue and storage behavior | No resource exhaustion or growing backlog that affects the workload |
-| Stability | Metrics across the steady period | No material degradation during the hold or soak period |
+- HTTP request failure rate below 1%.
+- At least 99% success for expected business operations.
+- No sustained resource saturation, connection exhaustion, OOM events, or unexplained memory growth.
+- No material increase in errors or latency during the steady period.
 
-These are initial engineering gates, not measured Sendocs SLOs. Endpoint latency objectives and any workload-specific exceptions must be agreed and recorded before using a run to support a capacity claim. Do not weaken thresholds after a failed run merely to make CI green.
+These are proposed test gates, not measured production SLOs. Do not relax thresholds after a failed run just to make CI pass.
 
-A test is inconclusive if the k6 generator or GitHub runner is saturated and cannot generate the intended load. Record generator CPU and resource usage so application limits can be distinguished from load-generator limits.
+## CI and repeatability
 
-## GitHub Actions and repeatability
+Use the [k6 GitHub Actions workflow](../.github/workflows/k6-load.yml) to run the tests against the production images.
 
-Use the [k6 load workflow](../.github/workflows/k6-load.yml) to build and exercise the production Compose images in CI.
+For each run, keep the commit SHA, workflow URL, runner specifications, image identifiers, k6 settings, workload mix, and test data details with the k6 summary, resource metrics, and relevant logs.
 
-For each run, preserve:
-- Git commit SHA and workflow run URL.
-- Image/build identifiers and application configuration relevant to performance.
-- Runner specifications (CPU, memory, and operating environment).
-- k6 version, executor, VU target, ramp stages, and steady duration.
-- Workload group or mixed-workload distribution and dataset/setup details.
-- k6 summary with RPS, iteration rate, latency percentiles, request failures, and business-check rates.
-- Resource-monitor output and relevant application/container logs.
+Run important profiles at least three times under the same conditions and report every result, not just the best one. Keep setup traffic out of the measured workload.
 
-Run each important profile at least three times under the same conditions. Report individual results and the range; do not report only the best run. Keep setup and teardown outside the measured workload interval.
+GitHub-hosted runners are useful for repeatable CI checks, but their resources can vary. Before making a production-capacity claim, repeat the test on infrastructure representative of the intended deployment.
 
-GitHub-hosted runners provide repeatable CI evidence, but they are shared test infrastructure and may vary. A production-capacity claim should also be validated on infrastructure representative of the intended production deployment, including its CPU/memory limits, database, object storage, and network topology.
+## Capacity claims
 
-## Evidence and capacity claims
+A capacity claim must state the VU count, workload, test duration, environment, throughput, latency, failure rate, and resource use.
 
-A defensible claim must state:
-1. The tested concurrency (VUs), not an ambiguous number of users.
-2. The workload mix and routes/operations exercised.
-3. Ramp duration and steady-state duration.
-4. The environment and resource specifications.
-5. Repeated results for throughput, latency, failure rate, and resource use.
-6. Known limitations, including whether the test ran on CI or production-like infrastructure.
+Do not claim that Sendocs supports 2,000 concurrent users based only on an isolated workload test, one short run, or a test where the load generator was saturated. Be clear that k6 VUs are simulated users, not a guarantee of the same number of real-world users.
 
-Use precise wording. For example, after successful validation:
-
-> Sendocs was validated with 2,000 concurrent k6 virtual users using a documented mixed workload for [duration] on [environment]. The test achieved [RPS], [p95 latency], and [failure rate], with [resource observations].
-
-Do not claim that Sendocs supports 2,000 concurrent real-world users based only on an isolated workload test, a single short run, or a CI run whose load generator was saturated. Publish measured results in [performance.md](./performance.md).
+Publish measured results in [performance.md](./performance.md).
 
 ## Open questions
 
-- What mixed-workload distribution best represents expected Sendocs usage?
-- What endpoint-level latency objectives should be used for owner, authentication, and client portal operations?
-- What production-like infrastructure should be the reference environment for the capacity claim?
-- Should mixed-workload testing be added as a separate scenario alongside the existing isolated workload matrix?
+- What workload mix best represents expected Sendocs usage?
+- What latency objectives should apply to each endpoint?
+- What production-like environment will be used to validate the capacity claim?
+- Should mixed-workload testing be added alongside the existing workload matrix?
