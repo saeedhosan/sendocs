@@ -55,7 +55,8 @@ FROM base AS dev
 
 COPY . .
 
-RUN composer install --prefer-dist
+RUN --mount=type=cache,target=/root/.cache/composer \
+    composer install --prefer-dist
 
 EXPOSE 8000
 
