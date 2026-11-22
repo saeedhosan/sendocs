@@ -13,9 +13,9 @@ on:
                 type: string
                 default: "60s"
                 required: true
-    # pull_request:
-    #     branches:
-    #         - main
+    pull_request:
+        branches:
+            - main
 
 permissions:
     contents: write
@@ -30,7 +30,7 @@ jobs:
         runs-on: ubuntu-latest
         timeout-minutes: 30
         env:
-            # Exercise the production Nginx + FrankenPHP/Octane runtime, not the dev servers.
+            APP_ENV: testing
             API_TARGET: prod
             WEB_TARGET: prod
         strategy:
@@ -45,10 +45,9 @@ jobs:
                   ref: ${{ github.head_ref || github.ref_name }}
                   persist-credentials: true
 
-            - name: Create Compose environment
+            - name: Create environment
               run: |
                   cp .env.example .env
-                  sed -i 's/^APP_ENV=.*/APP_ENV=testing/' .env
                   mkdir -p test_results
 
             - name: Build production Compose images
