@@ -188,7 +188,7 @@ We wil define the main core table we need for this system and for details databa
 - `id (UUID)` - owner identifier.
 - `name (VARCHAR 120)` - display name.
 - `email (VARCHAR 254, unique)` - login email, stored lowercased.
-- `password (VARCHAR 255)` - bcrypt hash; never logged or returned.
+- `password (VARCHAR 255)` - Argon2id hash; never logged or returned.
 - `email_verified_at (TIMESTAMPTZ, nullable)` - The verification link is used.
 - `created_at (TIMESTAMPTZ)` - creation time.
 
