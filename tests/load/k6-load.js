@@ -2,11 +2,12 @@ import * as landing from './workloads/landing.js';
 import * as auth from './workloads/auth.js';
 import * as owner from './workloads/owner.js';
 import * as client from './workloads/client.js';
+import { WORKLOAD_GROUP } from './config.js';
 
 export { handleSummary } from './helpers/summary.js';
 
 const WORKLOADS = { landing, auth, owner, client };
-const workload = WORKLOADS[__ENV.WORKLOAD_GROUP || 'landing'];
+const workload = WORKLOADS[WORKLOAD_GROUP];
 
 function groupThresholds() {
     const thresholds = { workload_http_failed: ['rate<0.01'] };
@@ -16,7 +17,7 @@ function groupThresholds() {
         owner: ['owner_list_success', 'owner_detail_success'],
         client: ['client_upload_success', 'client_portal_success'],
     };
-    names[__ENV.WORKLOAD_GROUP || 'landing'].forEach((name) => {
+    names[WORKLOAD_GROUP].forEach((name) => {
         thresholds[name] = ['rate>0.99'];
     });
     return thresholds;
