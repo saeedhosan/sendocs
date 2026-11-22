@@ -15,7 +15,7 @@ docker compose up -d             # start production services
 
 - Web: [http://localhost:3000](http://localhost:3000); nginx serves the bundle and reverse-proxies `/api` and `/health` over HTTP to the Laravel Octane server running on FrankenPHP.
 - Set `WEB_BIND=0.0.0.0` to expose publicly; `API_BIND=0.0.0.0` only to reach the API directly.
-- Set `APP_KEY` to a production value, never the development key.
+- The root `.env` is mounted read-write into the Laravel containers. The migration container runs the Laravel entrypoint, which generates `APP_KEY` when it is empty and persists it in that file. Keep `.env` on persistent storage and preserve the generated key across restarts and deployments; do not regenerate an existing key.
 - Set `S3_BROWSER_ENDPOINT` to the HTTPS S3 API endpoint that clients' browsers can reach.
 
 ## Compose Variables
