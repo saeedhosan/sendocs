@@ -3,6 +3,7 @@ set -e
 
 if [ -z "${APP_KEY:-}" ]; then
     php artisan key:generate
+    unset APP_KEY
 fi
 
 mkdir -p \
