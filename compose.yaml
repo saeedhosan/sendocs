@@ -28,6 +28,7 @@ services:
             AWS_BUCKET: ${S3_BUCKET:-sendocs-private}
             AWS_ENDPOINT: http://rustfs:9000
             AWS_USE_PATH_STYLE_ENDPOINT: "true"
+        entrypoint: []
         command: [ "php", "artisan", "migrate", "--force" ]
         volumes:
             - ./api:/var/www/html
