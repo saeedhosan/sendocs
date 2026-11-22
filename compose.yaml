@@ -28,10 +28,10 @@ services:
             AWS_BUCKET: ${S3_BUCKET:-sendocs-private}
             AWS_ENDPOINT: http://rustfs:9000
             AWS_USE_PATH_STYLE_ENDPOINT: "true"
-        entrypoint: []
         command: [ "php", "artisan", "migrate", "--force" ]
         volumes:
             - ./api:/var/www/html
+            - ./.env:/var/www/html/.env:rw
             - /var/www/html/vendor
         depends_on:
             pgsql:
@@ -62,6 +62,7 @@ services:
             - "${API_BIND:-127.0.0.1}:${API_PORT:-8000}:8000"
         volumes:
             - ./api:/var/www/html
+            - ./.env:/var/www/html/.env:rw
             - /var/www/html/vendor
             - /var/www/html/storage/framework/testing
             - ./api/docker/dev.ini:/usr/local/etc/php/conf.d/zz-dev.ini:ro
@@ -98,6 +99,7 @@ services:
             AWS_USE_PATH_STYLE_ENDPOINT: "true"
         volumes:
             - ./api:/var/www/html
+            - ./.env:/var/www/html/.env:rw
             - /var/www/html/vendor
         depends_on:
             pgsql:
@@ -129,6 +131,7 @@ services:
             AWS_USE_PATH_STYLE_ENDPOINT: "true"
         volumes:
             - ./api:/var/www/html
+            - ./.env:/var/www/html/.env:rw
             - /var/www/html/vendor
         depends_on:
             pgsql:
