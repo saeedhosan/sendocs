@@ -2,7 +2,11 @@ import * as landing from './workloads/landing.js';
 import * as auth from './workloads/auth.js';
 import * as owner from './workloads/owner.js';
 import * as client from './workloads/client.js';
-import { WORKLOAD_GROUP } from './config.js';
+import {
+    TARGET_VUS,
+    TEST_DURATION,
+    WORKLOAD_GROUP,
+} from './config.js';
 
 export { handleSummary } from './helpers/summary.js';
 
@@ -30,10 +34,10 @@ export const options = {
             executor: 'ramping-vus',
             startVUs: 0,
             stages: [
-                { duration: '2m', target: 500 },
-                { duration: '2m', target: 1000 },
-                { duration: '2m', target: 1500 },
-                { duration: '1m', target: 1500 },
+                { duration: '2m', target: Math.round(TARGET_VUS / 3) },
+                { duration: '2m', target: Math.round((TARGET_VUS * 2) / 3) },
+                { duration: '2m', target: TARGET_VUS },
+                { duration: TEST_DURATION, target: TARGET_VUS },
             ],
             gracefulRampDown: '30s',
             gracefulStop: '30s',
