@@ -63,5 +63,8 @@ jobs:
             - name: About the application
               run: docker compose exec api php artisan about
 
+            - name: Show App key
+              run: docker compose exec api php artisan key:generate --show
+
             - name: Health check
               run: curl -fsS --retry 10 --retry-all-errors --retry-delay 2 --retry-connrefused "http://127.0.0.1:3000/health"
