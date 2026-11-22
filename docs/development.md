@@ -70,19 +70,21 @@ sendocs/
 
 | Directory | Manifest        | Lockfile        | Dependencies        | Runtime |
 | :-------- | :-------------- | :-------------- | :------------------ | :------ |
-| `api/`    | `composer.json` | `composer.lock` | `api/vendor/`       | PHP 8.4 |
+| `api/`    | `composer.json` | `composer.lock` | `api/vendor/`       | PHP 8.4 + FrankenPHP / Octane |
 | `web/`    | `package.json`  | `bun.lock`      | `web/node_modules/` | Bun     |
-| root      | `package.json`  | none            | none                | Node.js |
+| root      | `package.json` | none            | none                | Node.js |
 
 ## Containers
 
 | Service     | Purpose                                                        |
 | :---------- | :------------------------------------------------------------- |
-| `api`       | Laravel API, as a development server or as PHP-FPM             |
-| `worker`    | Laravel queue worker for account email                         |
-| `scheduler` | Laravel scheduler; retries durable object cleanup every minute |
-| `web`       | Vite development server, or the built assets behind nginx      |
-| `pgsql`     | PostgreSQL database                                            |
+| `api`       | Laravel HTTP API served by Octane on FrankenPHP in development and production |
+| `worker`    | Separate Laravel queue worker for account email |
+| `scheduler` | Separate Laravel scheduler; retries durable object cleanup every minute |
+| `web`       | Vite development server, or the built assets behind nginx |
+| `pgsql`     | PostgreSQL database |
+
+The API container is a long-lived Octane application server. Queue and scheduler processes remain separate PHP CLI processes and do not run inside Octane workers. Development uses one worker recycled after every request so code changes are picked up without an external file watcher; production uses Octane's automatic worker sizing and recycles workers after a bounded number of requests.
 
 ## Environments
 
@@ -120,7 +122,7 @@ git clone https://github.com/saeedhosan/sendocs.git
 cd sendocs
 
 cp -n .env.example .env          # Configure .env for all services
-docker compose build             # Build all images
+docker compose build             # Build images
 docker compose run --rm migrate  # Run database migrations
 docker compose up -d             # Start all services
 ```
@@ -161,7 +163,7 @@ Individual steps:
 
 ## Running Without Docker
 
-Requires a local PostgreSQL. Run the API and web in separate shells.
+Requires a local FrankenPHP binary and PostgreSQL. Run the API and web in separate shells.
 
 ```bash
 cd api
@@ -169,7 +171,7 @@ composer install
 cp -n .env.example .env     # set DB_HOST=127.0.0.1
 php artisan key:generate
 php artisan migrate
-php artisan serve           # http://localhost:8000
+php artisan octane:frankenphp --host=127.0.0.1 --port=8000
 ```
 
 ```bash

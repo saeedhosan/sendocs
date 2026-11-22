@@ -23,11 +23,11 @@ test('a token from one session is rejected on another', function (): void {
         ->and($csrf->verify('session-a', 'not-the-token'))->toBeFalse();
 });
 
-test('changing the secret invalidates every derived token', function (): void {
+test('changing the application key invalidates every derived token', function (): void {
     $csrf   = new CsrfTokenService;
     $before = $csrf->derive('session-a');
 
-    config(['auth.csrf_secret' => 'a-rotated-secret']);
+    config(['app.key' => 'base64:a-rotated-key']);
 
     expect($csrf->derive('session-a'))->not->toBe($before)
         ->and($csrf->verify('session-a', $before))->toBeFalse();

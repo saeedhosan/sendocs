@@ -13,9 +13,9 @@ docker compose run --rm migrate  # run database migrations
 docker compose up -d             # start production services
 ```
 
-- Web: [http://localhost:3000](http://localhost:3000); nginx serves the bundle and proxies `/api` and `/health` to PHP-FPM.
+- Web: [http://localhost:3000](http://localhost:3000); nginx serves the bundle and reverse-proxies `/api` and `/health` over HTTP to the Laravel Octane server running on FrankenPHP.
 - Set `WEB_BIND=0.0.0.0` to expose publicly; `API_BIND=0.0.0.0` only to reach the API directly.
-- Set `APP_KEY` to a production value, never the development key.
+- The root `.env` is mounted read-write into the Laravel containers.
 - Set `S3_BROWSER_ENDPOINT` to the HTTPS S3 API endpoint that clients' browsers can reach.
 
 ## Compose Variables
@@ -36,6 +36,8 @@ Compose reads these from the root `.env`; the application does not.
 ## Deployment
 
 Two environments deploy over GitHub Actions using a cPanel SSH/SCP model.
+
+**Deployment gap:** the Docker production image and Compose load-test stack use FrankenPHP/Octane, but the current cPanel SCP workflows still deploy PHP source and run Artisan commands directly. They do not start or supervise a persistent Octane server. Therefore, this runtime migration does not by itself switch the live cPanel deployment to FrankenPHP. Before claiming live production uses Octane, the deployment host must be confirmed to support a long-running FrankenPHP process and a reliable restart/supervision mechanism, or the deployment target must move to the production Docker stack.
 
 | Environment | Trigger                             | Workflow                       |
 | :---------- | :---------------------------------- | :----------------------------- |

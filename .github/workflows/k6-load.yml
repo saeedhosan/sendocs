@@ -6,16 +6,16 @@ on:
             target_vus:
                 description: "Concurrent HTTP virtual users per workload group"
                 type: string
-                default: "500"
+                default: "1500"
                 required: true
             test_duration:
                 description: "Duration per workload group (for example 60s or 5m)."
                 type: string
                 default: "60s"
                 required: true
-    # pull_request:
-    #     branches:
-    #         - main
+    pull_request:
+        branches:
+            - main
 
 permissions:
     contents: write
@@ -30,7 +30,7 @@ jobs:
         runs-on: ubuntu-latest
         timeout-minutes: 30
         env:
-            # Exercise the production Nginx + PHP-FPM runtime, not the dev servers.
+            APP_ENV: testing
             API_TARGET: prod
             WEB_TARGET: prod
         strategy:
@@ -45,10 +45,9 @@ jobs:
                   ref: ${{ github.head_ref || github.ref_name }}
                   persist-credentials: true
 
-            - name: Create Compose environment
+            - name: Create environment
               run: |
                   cp .env.example .env
-                  sed -i 's/^APP_ENV=.*/APP_ENV=testing/' .env
                   mkdir -p test_results
 
             - name: Build production Compose images
@@ -93,7 +92,7 @@ jobs:
             - name: Run HTTP load test
               env:
                   BASE_URL: http://127.0.0.1:3000
-                  TARGET_VUS: ${{ github.event_name == 'workflow_dispatch' && inputs.target_vus || '500' }}
+                  TARGET_VUS: ${{ github.event_name == 'workflow_dispatch' && inputs.target_vus || '1500' }}
                   TEST_DURATION: ${{ github.event_name == 'workflow_dispatch' && inputs.test_duration || '60s' }}
                   WORKLOAD_GROUP: ${{ matrix.group }}
               run: |
