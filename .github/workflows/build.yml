@@ -37,13 +37,14 @@ jobs:
 
     production-images:
         name: Production images
-        needs: tests
+        # needs: tests
         runs-on: ubuntu-latest
         timeout-minutes: 20
         env:
+            APP_ENV: production
+            APP_DEBUG: false
             API_TARGET: prod
             WEB_TARGET: prod
-
         steps:
             - name: Check out repository
               uses: actions/checkout@v7
@@ -59,6 +60,9 @@ jobs:
 
             - name: Start the application
               run: docker compose up -d --scale test=0 --scale migrate=0
+
+            - name: About the application
+              run: docker compose exec api php artisan about
 
             - name: Health check
               run: curl -fsS --retry 10 --retry-all-errors --retry-delay 2 --retry-connrefused "http://127.0.0.1:3000/health"

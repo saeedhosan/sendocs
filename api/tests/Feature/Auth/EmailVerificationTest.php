@@ -175,6 +175,7 @@ it('rate limits redemption to 5 an hour per address', function (): void {
 });
 
 it('sends a new link and replaces the token the old one carried', function (): void {
+    $this->travelTo(now());
     Notification::fake();
 
     [$session] = signInAndKeepToken();

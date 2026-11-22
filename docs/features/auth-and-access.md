@@ -317,7 +317,7 @@ Only the guard boundary is noted here; the endpoint itself is defined in secure-
 
 **CSRF Token**
 
-- The value is HMAC-SHA256(session_id, CSRF_SECRET).
+- The value is HMAC-SHA256(session_id, APP_KEY).
 - The check is Auth middleware, not the framework's CSRF middleware, which compares a Laravel session token this application does not have.
 - Returned by register, login, reset, and GET /auth/session.
 - The UI holds it in memory and sends X-CSRF-Token on every state-changing request.
@@ -715,7 +715,7 @@ Only the guard boundary is noted here; the endpoint itself is defined in secure-
 
 **Secret Rotation**
 
-- Rotating CSRF_SECRET invalidates every outstanding token at once.
+- Rotating APP_KEY invalidates every outstanding CSRF token and encrypted cookie at once.
 - Option: double-buffered overlap, or a coordinated sign-out.
 
 **Session Renewal**

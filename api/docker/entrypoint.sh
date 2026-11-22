@@ -1,6 +1,10 @@
 #!/bin/sh
 set -e
 
+if [ -z "${APP_KEY:-}" ]; then
+    php artisan key:generate
+fi
+
 mkdir -p \
     bootstrap/cache \
     storage/app \
@@ -10,8 +14,7 @@ mkdir -p \
     storage/logs
 chown -R www-data:www-data bootstrap/cache storage
 
-php artisan config:cache
-php artisan event:cache
+php artisan optimize
 chown -R www-data:www-data bootstrap/cache storage
 
 exec "$@"

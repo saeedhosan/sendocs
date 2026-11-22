@@ -321,7 +321,7 @@ Migrations run before the new version takes traffic.
 
 ## TD-007 - Cookie-Based API Access
 
-**Status:** Accepted
+**Status:** Accepted  
 **Date:** 2026-10-05
 
 ### Context
@@ -400,3 +400,51 @@ The API does not wait for object deletion. Account deletion, request deletion, d
 - Objects may remain in private storage briefly after metadata is deleted.
 - The scheduler and outbox table must be monitored.
 - Persistent failures require operational follow-up; retries do not make a permanently unavailable bucket recover.
+
+## TD-009 - Laravel HTTP Runtime
+
+**Status:** Accepted  
+**Date:** 2026-11-21
+
+### Context
+
+The API needs a consistent HTTP runtime in development, production, and load tests. PHP-FPM adds a separate FastCGI process model and configuration that is not needed when the API is served by a persistent application server.
+
+### Decision
+
+Run the Laravel HTTP API through **Laravel Octane on FrankenPHP** in both development and production.
+
+- Nginx serves the production React bundle and reverse-proxies API and health requests to FrankenPHP over HTTP.
+- Nginx logs requests taking at least five seconds to container stderr with request and upstream timings; sensitive magic-link paths remain redacted.
+- The development Compose API service runs the same Octane/FrankenPHP server.
+- Queue workers, the scheduler, and migrations remain separate PHP CLI processes.
+- Octane workers are recycled after a bounded request count; development uses one worker recycled after every request.
+- PHP-FPM and FastCGI are not part of the runtime.
+
+### Alternatives Considered
+
+- **PHP-FPM:** A proven production runtime, but it requires a separate FastCGI process and configuration. It would also leave development and production using different HTTP runtimes if Octane were used only in production.
+- **PHP CLI built-in server:** Simple for local development, but not intended as a production application server and would create a different runtime from production.
+- **RoadRunner:** Supports persistent Laravel workers through Octane, but adds a separate server binary and its own process configuration.
+- **Swoole:** Supports persistent workers through Octane, but requires the Swoole extension and its runtime-specific compatibility considerations.
+
+### Rationale
+
+- One HTTP runtime is used across development, production, and performance tests.
+- Octane keeps the Laravel application bootstrapped between requests.
+- FrankenPHP provides the HTTP server without a separate PHP-FPM process.
+- Nginx remains responsible for serving static frontend assets and same-origin reverse proxying.
+
+### Consequences
+
+**Positive**
+
+- Fewer runtime components and no FastCGI configuration.
+- Development and production exercise the same HTTP server.
+- Persistent workers reduce repeated application bootstrapping.
+
+**Negative**
+
+- Long-lived workers require attention to request-scoped state and worker recycling.
+- Worker count must be tuned against CPU and memory measurements rather than increased blindly.
+- FrankenPHP and Octane become required parts of the API image.
