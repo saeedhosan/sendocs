@@ -90,7 +90,9 @@ These are starting criteria, not measured SLOs. Exclude expected negative cases 
 
 ## GitHub Actions
 
-Use the [k6 load workflow](../.github/workflows/k6-load.yml) to run the production Compose stack in CI.
+Use the [k6 load workflow](../.github/workflows/k6-load.yml) to run the production Compose stack in CI. Manual runs default to 2,000 VUs per workload and a 30-minute hold; the job timeout is 90 minutes. You can change the hold to `60m` for a longer soak.
+
+The workflow runs landing, auth, owner, and client as separate matrix jobs, each with its own stack and runner. These runs measure isolated workload capacity. They do not establish that 2,000 users can use all parts of Sendocs simultaneously. A mixed-workload run on one shared stack is required before making that broader claim.
 
 For each run, retain:
 
