@@ -126,6 +126,5 @@ return [
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
     'account_token_lifetime_minutes' => (int) env('ACCOUNT_TOKEN_LIFETIME_MINUTES', 60),
-    'csrf_secret'                    => env('CSRF_SECRET'),
 
 ];
