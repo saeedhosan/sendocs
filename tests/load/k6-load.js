@@ -31,10 +31,16 @@ export const options = {
     setupTimeout: '30m',
     scenarios: {
         workload: {
-            executor: 'constant-vus',
-            vus: TARGET_VUS,
-            duration: TEST_DURATION,
-            gracefulStop: '5s',
+            executor: 'ramping-vus',
+            startVUs: 0,
+            stages: [
+                { duration: '2m', target: Math.round(TARGET_VUS / 3) },
+                { duration: '2m', target: Math.round((TARGET_VUS * 2) / 3) },
+                { duration: '2m', target: TARGET_VUS },
+                { duration: TEST_DURATION, target: TARGET_VUS },
+            ],
+            gracefulRampDown: '30s',
+            gracefulStop: '30s',
         },
     },
     thresholds: groupThresholds(),

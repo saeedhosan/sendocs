@@ -210,7 +210,7 @@ it('validates the payload and keeps the account', function (): void {
 
 it('rate limits deletion to 120 a minute per owner', function (): void {
     // The definition is checked rather than a run of 120 deletions, which would
-    // mean 120 bcrypt verifications and then 120 cascades.
+    // mean 120 Argon2id verifications and then 120 cascades.
     $request = Request::create('/api/v1/auth/account', 'DELETE');
     $request->setUserResolver(fn (): User => $this->owner);
 

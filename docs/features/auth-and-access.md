@@ -358,7 +358,7 @@ Only the guard boundary is noted here; the endpoint itself is defined in secure-
 - Unauthenticated buckets key on client IP.
 - Authenticated buckets key on user_id, falling back to IP.
 - Rejections return 429 with Retry-After in whole seconds.
-- A failed login still runs a dummy bcrypt verification.
+- A failed login still runs a dummy password verification.
 - So timing never reveals whether the email exists.
 
 **Token Hygiene**
@@ -504,12 +504,12 @@ Only the guard boundary is noted here; the endpoint itself is defined in secure-
 - Alternative: sliding expiry, rejected because it writes on most requests.
 - It also keeps a stolen cookie alive indefinitely.
 
-**bcrypt**
+**Argon2id**
 
-- In the standard library of every runtime, including Laravel's default driver.
-- Memory-hard rather than CPU-hard, so weaker against GPU attacks than Argon2id.
-- Cost is tunable through the work factor, currently 12.
-- The work factor is encoded in the stored hash, so it can be raised later.
+- Memory-hard, so it resists GPU and offline cracking better than bcrypt.
+- Laravel's supported driver here, through PHP's native password hashing API.
+- Cost is tunable through memory, time, and threads, currently 64 MiB, 4 passes, 1 thread.
+- The parameters are encoded in the stored hash, so they can be raised later.
 
 **HMAC-Derived CSRF Token**
 
@@ -549,7 +549,7 @@ Only the guard boundary is noted here; the endpoint itself is defined in secure-
 **Password Storage**
 
 - Plaintext is never stored, logged, or returned.
-- bcrypt with a per-user salt, cost and parameters encoded in the hash.
+- Argon2id with a per-user salt, cost and parameters encoded in the hash.
 - A query guard fails tests that select password outside the auth repository.
 
 **Token Storage**
@@ -662,7 +662,7 @@ Only the guard boundary is noted here; the endpoint itself is defined in secure-
 **Unit Tests**
 
 - Email normalisation maps case and whitespace variants to one stored value.
-- Hashing stores bcrypt, omits the plaintext, and verifies the same password.
+- Hashing stores Argon2id, omits the plaintext, and verifies the same password.
 - Password policy: 7 rejected, 8 accepted, 200 accepted, 201 rejected.
 - CSRF derivation is stable per session and differs across sessions.
 - A changed secret invalidates every derived token.
@@ -782,11 +782,10 @@ Only the guard boundary is noted here; the endpoint itself is defined in secure-
 - Stored-object cleanup is handled by the durable outbox documented in `document-requests.md`.
 - Failed cleanup remains queued and is retried by the scheduler; it does not reverse account deletion.
 
-**bcrypt Work Factor**
+**Argon2id Work Factors**
 
-- Cost 12 is a placeholder, not a measured target.
-- Open: calibrate against the production CPU budget.
-- Option: If Argon2id becomes available, rehash on next successful login.
+- Memory, time, and threads are placeholders, not measured targets.
+- Open: calibrate against the production CPU and memory budget.
 
 **OAuth Configuration**
 
