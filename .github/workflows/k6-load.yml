@@ -9,7 +9,7 @@ on:
                 default: "2000"
                 required: true
             test_duration:
-                description: "Time to hold the target VU count (for example 30m or 60m)."
+                description: "Time to hold the target VU count (e.g 60s, 30m)."
                 type: string
                 default: "30m"
                 required: true
