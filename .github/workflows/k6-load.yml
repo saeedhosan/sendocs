@@ -13,16 +13,16 @@ on:
                 type: string
                 default: "30m"
                 required: true
-    pull_request:
-        branches:
-            - main
+    # pull_request:
+    #     branches:
+    #         - main
 
 permissions:
     contents: write
 
-concurrency:
-    group: scale-load-${{ github.head_ref || github.ref }}
-    cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
+# concurrency:
+#     group: scale-load-${{ github.head_ref || github.ref }}
+#     cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
 
 jobs:
     load_test:
