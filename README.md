@@ -86,9 +86,10 @@ _Environment: Ubuntu 26.04.1 LTS · AMD EPYC 7763 · 4 vCPU · 15.6 GiB RAM_
 
 - [Design](docs/design.md) - system scope, data, architecture, deployment.
 - [Decisions](docs/decisions.md) - architectural choices and their reasoning.
-- [Scalability](docs/scalability/01_1k_scale_load.md) - 1,000 concurrent-user load test.
+- [Scalability](docs/scalability.md) - capacity targets, load-test, criteria, and requirements.
+- [Performance results](docs/performance.md) - recorded benchmark measurements.
 - [Frontend](docs/frontend.md) - shared React rendering and data handling.
-- [Feature specs](docs/features/) - auth, account, document requests, magic links, dashboards etc.
+- [Feature specs](docs/features/) - auth, account, document requests, magic links, dashboards, etc.
 - [API reference](https://saeedhosan.github.io/sendocs/) - browse endpoints, schemas, and responses.
 - [OpenAPI contract](api/docs/openapi.yaml) - the source specification used to generate the reference.
 

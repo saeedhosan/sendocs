@@ -4,14 +4,14 @@ on:
     workflow_dispatch:
         inputs:
             target_vus:
-                description: "Concurrent HTTP virtual users per workload group"
+                description: "Concurrent virtual users for each isolated workload"
                 type: string
-                default: "1500"
+                default: "2000"
                 required: true
             test_duration:
-                description: "Duration per workload group (for example 60s or 5m)."
+                description: "Time to hold the target VU count (for example 30m or 60m)."
                 type: string
-                default: "60s"
+                default: "30m"
                 required: true
     pull_request:
         branches:
@@ -28,7 +28,7 @@ jobs:
     load_test:
         name: HTTP load - ${{ matrix.group }}
         runs-on: ubuntu-latest
-        timeout-minutes: 30
+        timeout-minutes: 90
         env:
             APP_ENV: testing
             API_TARGET: prod
@@ -92,8 +92,8 @@ jobs:
             - name: Run HTTP load test
               env:
                   BASE_URL: http://127.0.0.1:3000
-                  TARGET_VUS: ${{ github.event_name == 'workflow_dispatch' && inputs.target_vus || '1500' }}
-                  TEST_DURATION: ${{ github.event_name == 'workflow_dispatch' && inputs.test_duration || '60s' }}
+                  TARGET_VUS: ${{ github.event_name == 'workflow_dispatch' && inputs.target_vus || '2000' }}
+                  TEST_DURATION: ${{ github.event_name == 'workflow_dispatch' && inputs.test_duration || '30m' }}
                   WORKLOAD_GROUP: ${{ matrix.group }}
               run: |
                   mkdir -p test_results
