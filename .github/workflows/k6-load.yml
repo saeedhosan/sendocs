@@ -22,7 +22,7 @@ permissions:
 
 concurrency:
     group: scale-load-${{ github.head_ref || github.ref }}
-    cancel-in-progress: true
+    cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
 
 jobs:
     load_test:
