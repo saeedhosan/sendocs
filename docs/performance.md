@@ -1,5 +1,16 @@
 ## Performance Metrics
 
+### Load test - 3k virtual users - 2026-11-24 07:43:48 UTC
+
+| Workload       | Throughput (RPS) | Avg. latency |  p95 latency | Failures | Coverage |
+| -------------- | ---------------: | -----------: | -----------: | -------: | -------: |
+| Landing        |       110,348.08 |     81.75 ms |    170.06 ms |    0.00% |  1 route |
+| Authentication |         5,134.72 |  1,806.12 ms |  7,458.84 ms |   48.56% | 2 routes |
+| Client portal  |         4,832.90 |  1,403.13 ms |  3,049.76 ms |    8.39% | 2 routes |
+
+Environment: Ubuntu 26.04.1 LTS · Intel(R) Xeon(R) 6975P-C · 4 vCPU · 15.3 GiB RAM <br>
+GitHub runner · 3000 concurrent virtual users · 60 seconds · [Workflow run](https://github.com/saeedhosan/sendocs/actions/runs/45350008495)
+
 ### Load test - 3k virtual users - 2026-11-24 07:44:50 UTC
 
 | Workload       | Throughput (RPS) | Avg. latency |  p95 latency | Failures | Coverage |
