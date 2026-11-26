@@ -82,7 +82,7 @@ jobs:
                       echo "--- Top host processes ---"
                       ps -eo pid,comm,%cpu,%mem,rss --sort=-%cpu | head -n 12
                       echo "--- Docker container usage ---"
-                      docker stats --no-stream --format "table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.MemPerc}}"
+                      docker stats --no-stream --format "table {{.Name}}\\t{{.CPUPerc}}\\t{{.MemUsage}}\\t{{.MemPerc}}"
                       sleep 5
                     done
                   ) >> test_results/resource-usage-${{ matrix.group }}.log 2>&1 &
@@ -121,6 +121,17 @@ jobs:
               run: |
                   docker compose logs --no-color > test_results/compose-failure-${{ matrix.group }}.log 2>&1 || true
 
+            - name: Capture Laravel logs on failure
+              if: failure()
+              run: |
+                  docker compose exec -T api sh -lc '
+                    for file in storage/logs/*.log; do
+                      [ -f "$file" ] || continue
+                      printf "\\n===== %s =====\\n" "$file"
+                      cat "$file"
+                    done
+                  ' > test_results/laravel-failure-${{ matrix.group }}.log 2>&1 || true
+
             - name: Upload workload artifacts
               if: always()
               uses: actions/upload-artifact@v7
@@ -131,6 +142,7 @@ jobs:
                       test_results/k6-summary-${{ matrix.group }}.json
                       test_results/resource-usage-${{ matrix.group }}.log
                       test_results/compose-failure-${{ matrix.group }}.log
+                      test_results/laravel-failure-${{ matrix.group }}.log
                   if-no-files-found: warn
                   retention-days: 1
 
