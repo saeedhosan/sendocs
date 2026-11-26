@@ -1,7 +1,8 @@
 # syntax=docker/dockerfile:1
 
 # Debian (glibc) instead of Alpine (musl): Playwright's Chromium
-# binary requires glibc, so the dev image can run the e2e suite.
+# binary requires glibc, so the dev image needs a glibc base to be
+# able to run the e2e part of `bun run test`.
 FROM oven/bun:1-debian AS base
 
 WORKDIR /app
@@ -16,7 +17,9 @@ FROM deps AS dev
 
 ENV PORT=3000
 
-# Playwright is needed only by the dev image for the test suite.
+# Playwright browser + OS dependencies, used by `bun run test` (the script runs
+# lint, unit, and the Playwright e2e suite). Only the dev image carries these;
+# the prod target is plain nginx and never installs Playwright.
 RUN bunx playwright install --with-deps chromium
 
 COPY . .
