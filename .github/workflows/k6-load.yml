@@ -13,9 +13,9 @@ on:
                 type: string
                 default: "30m"
                 required: true
-    # pull_request:
-    #     branches:
-    #         - main
+    pull_request:
+        branches:
+            - main
 
 permissions:
     contents: write
@@ -100,7 +100,7 @@ jobs:
             - name: Run HTTP load test
               env:
                   BASE_URL: http://127.0.0.1:3000
-                  TARGET_VUS: ${{ github.event_name == 'workflow_dispatch' && inputs.target_vus || '2000' }}
+                  TARGET_VUS: ${{ github.event_name == 'workflow_dispatch' && inputs.target_vus || '3000' }}
                   TEST_DURATION: ${{ github.event_name == 'workflow_dispatch' && inputs.test_duration || '30m' }}
                   WORKLOAD_GROUP: ${{ matrix.group }}
               run: |
