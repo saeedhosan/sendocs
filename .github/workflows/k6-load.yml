@@ -15,6 +15,7 @@ on:
                 required: true
 
 permissions:
+    # Required by record_results to commit benchmark history to the reports branch.
     contents: write
 
 # concurrency:
@@ -42,7 +43,7 @@ jobs:
               uses: actions/checkout@v7
               with:
                   ref: ${{ github.ref_name }}
-                  persist-credentials: true
+                  persist-credentials: false
 
             - name: Create environment
               run: |
