@@ -13,9 +13,6 @@ on:
                 type: string
                 default: "30m"
                 required: true
-    pull_request:
-        branches:
-            - main
 
 permissions:
     contents: write
@@ -33,8 +30,8 @@ jobs:
             APP_ENV: testing
             API_TARGET: prod
             WEB_TARGET: prod
-            TARGET_VUS: ${{ github.event_name == 'workflow_dispatch' && inputs.target_vus || '3000' }}
-            TEST_DURATION: ${{ github.event_name == 'workflow_dispatch' && inputs.test_duration || '30m' }}
+            TARGET_VUS: ${{ inputs.target_vus }}
+            TEST_DURATION: ${{ inputs.test_duration }}
         strategy:
             fail-fast: false
             matrix:
@@ -44,7 +41,7 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v7
               with:
-                  ref: ${{ github.head_ref || github.ref_name }}
+                  ref: ${{ github.ref_name }}
                   persist-credentials: true
 
             - name: Create environment
@@ -159,7 +156,7 @@ jobs:
             - name: Checkout current branch
               uses: actions/checkout@v7
               with:
-                  ref: ${{ github.head_ref || github.ref_name }}
+                  ref: ${{ github.ref_name }}
                   persist-credentials: false
 
             - name: Download workload artifacts
@@ -191,7 +188,7 @@ jobs:
               run: cp "${{ steps.append.outputs.prepared-history }}" docs/performance.md
 
             - name: Commit performance metrics
-              if: always() && steps.append.outputs.appended == 'true' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+              if: always() && steps.append.outputs.appended == 'true'
               uses: stefanzweifel/git-auto-commit-action@v7
               with:
                   branch: reports
