@@ -89,6 +89,14 @@ jobs:
             - name: Capture runner metadata
               uses: ./.github/actions/runner-metadata
 
+            - name: Prepare workload accounts
+              if: matrix.group != 'landing'
+              env:
+                  BASE_URL: http://127.0.0.1:3000
+                  TARGET_VUS: ${{ github.event_name == 'workflow_dispatch' && inputs.target_vus || '2000' }}
+                  WORKLOAD_GROUP: ${{ matrix.group }}
+              run: node ./tests/load/prepare-accounts.mjs
+
             - name: Run HTTP load test
               env:
                   BASE_URL: http://127.0.0.1:3000

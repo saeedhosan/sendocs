@@ -2,20 +2,15 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 import { BASE_URL } from '../config.js';
 import { Rate } from 'k6/metrics';
-import { prepareAccounts } from '../helpers/accounts.js';
 import { recordWorkloadRequest } from '../helpers/metrics.js';
 
 export const authLoginSuccess = new Rate('auth_login_success');
 export const authSessionSuccess = new Rate('auth_session_success');
 
-export function setup() {
-    return prepareAccounts(false);
-}
-
 let authCookie = null;
 
-export default function (data) {
-    const account = data.accounts[__VU - 1];
+export default function (accounts) {
+    const account = accounts[__VU - 1];
     if (!account) {
         throw new Error('No benchmark account was prepared for VU ' + __VU);
     }

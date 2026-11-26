@@ -2,20 +2,15 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 import { BASE_URL } from '../config.js';
 import { Rate } from 'k6/metrics';
-import { prepareAccounts } from '../helpers/accounts.js';
 import { recordWorkloadRequest } from '../helpers/metrics.js';
 
 export const clientUploadSuccess = new Rate('client_upload_success');
 export const clientPortalSuccess = new Rate('client_portal_success');
 
-export function setup() {
-    return prepareAccounts(true);
-}
-
 let clientUploadDone = false;
 
-export default function (data) {
-    const account = data.accounts[__VU - 1];
+export default function (accounts) {
+    const account = accounts[__VU - 1];
     if (!account) {
         throw new Error('No benchmark account was prepared for VU ' + __VU);
     }
