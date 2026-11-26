@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
-# Debian (glibc) instead of Alpine (musl): Playwright's Chromium
-# binary requires glibc, so the dev image needs a glibc base to be
+# Debian (glibc) instead of Alpine (musl): Playwright's Chromium is a glibc
+# binary and will not run on musl, so the dev image needs a glibc base to be
 # able to run the e2e part of `bun run test`.
 FROM oven/bun:1-debian AS base
 
