@@ -1,3 +1,4 @@
+import { SharedArray } from 'k6/data';
 import * as landing from './workloads/landing.js';
 import * as auth from './workloads/auth.js';
 import * as owner from './workloads/owner.js';
@@ -12,6 +13,15 @@ export { handleSummary } from './helpers/summary.js';
 
 const WORKLOADS = { landing, auth, owner, client };
 const workload = WORKLOADS[WORKLOAD_GROUP];
+const accounts = WORKLOAD_GROUP === 'landing'
+    ? null
+    : new SharedArray('benchmark-accounts', () => JSON.parse(
+        open('./accounts-' + WORKLOAD_GROUP + '.json')
+    ));
+
+if (accounts && accounts.length !== TARGET_VUS) {
+    throw new Error('Expected ' + TARGET_VUS + ' prepared accounts, found ' + accounts.length + '.');
+}
 
 function groupThresholds() {
     const thresholds = { workload_http_failed: ['rate<0.01'] };
@@ -28,7 +38,6 @@ function groupThresholds() {
 }
 
 export const options = {
-    setupTimeout: '30m',
     scenarios: {
         workload: {
             executor: 'ramping-vus',
@@ -46,10 +55,6 @@ export const options = {
     thresholds: groupThresholds(),
 };
 
-export function setup() {
-    return workload.setup();
-}
-
-export default function (data) {
-    workload.default(data);
+export default function () {
+    workload.default(accounts);
 }
